@@ -1,0 +1,17 @@
+requirement_id,domain,requirement,owner_path,verification_method,evidence_level,status
+SYS-001,System,Support Kimi-K3 inference and a 5.6T-total-parameter design envelope,models;compiler;runtime;simulator,Model manifest and capacity model,ANALYTICAL,BASELINED
+SYS-002,System,Model 32 logical NPUs with 192 GB of abstract HBM capacity per NPU,config;simulator,Capacity and address-space validation,ANALYTICAL,BASELINED
+SYS-003,System,Target 50 end-to-end decode tokens per second under a declared workload configuration,simulator;deployment,Full-model performance regression,FUNCTIONAL_SIM,PROPOSED
+MOD-001,Model,Support Kimi-K3 MXFP4 weight and MXFP8 activation semantics,models;compiler;rtl,Per-operator bit-exact tests,RTL_SIM,PROPOSED
+CMP-001,Compiler,Support TP EP PP partitioning and weight layout,compiler,IR and generated-artifact conformance,FUNCTIONAL_SIM,PROPOSED
+ISA-001,ISA,Use versioned KD-ISA binary encoding with compatibility tests,isa;specs,Assembler-disassembler round trip,FUNCTIONAL_SIM,PROPOSED
+RUN-001,Runtime,Support paged KV cache and continuous batching,runtime;drivers,End-to-end serving stress test,FUNCTIONAL_SIM,PROPOSED
+NPU-001,NPU,Model a 2-PFLOPS-equivalent MXFP4 by MXFP8 target under declared logical clock and initiation-interval assumptions,rtl;simulator,Cycle and utilization model,ANALYTICAL,PROPOSED
+NPU-002,NPU,Model at least 5 TB/s of logical HBM bandwidth per NPU,rtl;simulator,Traffic-model saturation regression,FUNCTIONAL_SIM,PROPOSED
+KDL-001,KDLink,Transfer 512 payload bits per logical port cycle with a steady-state initiation interval of one,rtl;verification,Continuous-flow RTL regression,RTL_SIM,PROPOSED
+KDL-002,KDLink,Support eight logical ports and 512 GB/s analytical payload injection per direction per NPU,rtl;simulator;verification,Multi-port fabric performance regression,RTL_SIM,PROPOSED
+KDL-003,KDLink,Support AllReduce AllGather ReduceScatter AllToAllv and point-to-point operations,rtl;verification,32-node exact-result regression,RTL_SIM,PROPOSED
+KDL-004,KDLink,Provide versioned PCS encoding lane striping training deskew and fault behavior,rtl;specs;verification,Encoded-stream and fault-injection regression,RTL_SIM,PROPOSED
+KDL-005,KDLink,Provide deadlock-free deterministic routing with a guaranteed escape path,rtl;simulator;verification,Channel-dependency analysis and congestion regression,FORMAL,PROPOSED
+VER-001,Verification,Label every performance claim with an allowed evidence level,verification;docs,Release audit,ANALYTICAL,BASELINED
+REL-001,Release,Exclude model weights credentials private datasets and non-redistributable binaries,third_party;LICENSES;ci,License and secret scan,ANALYTICAL,BASELINED
