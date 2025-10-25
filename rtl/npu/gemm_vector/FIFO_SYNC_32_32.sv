@@ -67,7 +67,7 @@ module FIFO_SYNC_32_32 ( // 使用一颗32乘32真双端口SRAM构造同步FIFO
         end // 结束FIFO正常工作分支
     end // 结束同步FIFO时序过程
 
-    SRAM_32_32 u_storage ( // 例化Tile单列输出使用的TSMC28真双端口SRAM
+    SRAM_32_32 u_storage ( // 连接外部提供的32x32真双端口SRAM宏
         .clk_i      (clk_i), // SRAM与FIFO控制共享同一时钟
         .rst_i      (flush_active), // 清空期间只复位SRAM接口有效状态
         .a_req_i    (write_fire), // 固定A口承担独立写事务

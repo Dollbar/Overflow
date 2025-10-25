@@ -52,10 +52,13 @@ module npu_local_vector_operand_buffer #(
     localparam logic [BUFFER_COMPARE_WIDTH-1:0] BUFFER_COUNT_LIMIT =
         BUFFER_COMPARE_WIDTH'(BUFFER_COUNT);
 
-    (* ram_style = "block" *) logic [511:0]
-        operand_b_mem [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
-    (* ram_style = "block" *) logic [511:0]
-        operand_c_mem [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
+    // Logical banked storage is intentionally left technology-neutral here.
+    // Integrations may replace these arrays with banked SRAM macros without
+    // changing the scheduler-facing protocol.
+    logic [511:0] operand_b_mem
+        [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
+    logic [511:0] operand_c_mem
+        [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
 
     logic write_buffer_valid;
     logic write_bank_valid;

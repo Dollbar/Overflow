@@ -50,10 +50,13 @@ module npu_local_tensor_buffer #(
     output logic protocol_error_o
 );
 
-    (* ram_style = "block" *) logic [127:0]
-        activation_mem [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
-    (* ram_style = "block" *) logic [127:0]
-        weight_mem [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
+    // Logical banked storage is intentionally left technology-neutral here.
+    // Integrations may replace these arrays with banked SRAM macros without
+    // changing the scheduler-facing protocol.
+    logic [127:0] activation_mem
+        [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
+    logic [127:0] weight_mem
+        [0:BUFFER_COUNT-1][0:BANKS-1][0:VECTOR_DEPTH-1];
 
     logic write_buffer_valid;
     logic write_address_valid;
