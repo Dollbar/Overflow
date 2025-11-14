@@ -1,0 +1,121 @@
+`ifndef COLLECTIVE_DEFS_VH // 防止协议常量头文件被重复包含
+`define COLLECTIVE_DEFS_VH // 声明协议常量头文件保护宏
+`define COLL_NUM_RANKS 4 // 固定 NUM_RANKS 协议参数
+`define COLL_NUM_VC 4 // 固定 NUM_VC 协议参数
+`define COLL_NUM_CONTEXTS 4 // 固定 NUM_CONTEXTS 协议参数
+`define COLL_VC_DEPTH 64 // 固定 VC_DEPTH 协议参数
+`define COLL_PAYLOAD_WIDTH 512 // 固定 PAYLOAD_WIDTH 协议参数
+`define COLL_HEADER_WIDTH 128 // 固定 HEADER_WIDTH 协议参数
+`define COLL_FLIT_WIDTH 640 // 固定 FLIT_WIDTH 协议参数
+`define COLL_REVERSE_WIDTH 96 // 固定 REVERSE_WIDTH 协议参数
+`define COLL_MAX_PACKET_FLITS 16 // 固定 MAX_PACKET_FLITS 协议参数
+`define COLL_OPCODE_REDUCE_SCATTER 0 // 固定协议编码
+`define COLL_OPCODE_ALL_GATHER 1 // 固定协议编码
+`define COLL_OPCODE_ALL_REDUCE 2 // 固定协议编码
+`define COLL_DTYPE_INT32 0 // 固定协议编码
+`define COLL_DTYPE_FP32 1 // 固定协议编码
+`define COLL_DTYPE_FP16 2 // 固定协议编码
+`define COLL_DTYPE_BF16 3 // 固定协议编码
+`define COLL_MESSAGE_TYPE_DATA 0 // 固定协议编码
+`define COLL_MESSAGE_TYPE_COLL_SETUP 1 // 固定协议编码
+`define COLL_MESSAGE_TYPE_COLL_COMMIT 2 // 固定协议编码
+`define COLL_MESSAGE_TYPE_COLL_ABORT 3 // 固定协议编码
+`define COLL_MESSAGE_TYPE_KEEPALIVE 4 // 固定协议编码
+`define COLL_MESSAGE_TYPE_LINK_INIT 5 // 固定协议编码
+`define COLL_REVERSE_TYPE_CREDIT 0 // 固定协议编码
+`define COLL_REVERSE_TYPE_ACK 1 // 固定协议编码
+`define COLL_REVERSE_TYPE_NACK 2 // 固定协议编码
+`define COLL_REVERSE_TYPE_LINK_RESET 3 // 固定协议编码
+`define COLL_REVERSE_TYPE_INIT_ACK 4 // 固定协议编码
+`define COLL_REVERSE_TYPE_KEEPALIVE_ACK 5 // 固定协议编码
+`define COLL_DESCRIPTOR_OPCODE_LSB 0 // 固定字段最低位
+`define COLL_DESCRIPTOR_OPCODE_WIDTH 3 // 固定字段位宽
+`define COLL_DESCRIPTOR_DTYPE_LSB 3 // 固定字段最低位
+`define COLL_DESCRIPTOR_DTYPE_WIDTH 2 // 固定字段位宽
+`define COLL_DESCRIPTOR_RANK_ID_LSB 5 // 固定字段最低位
+`define COLL_DESCRIPTOR_RANK_ID_WIDTH 2 // 固定字段位宽
+`define COLL_DESCRIPTOR_NUM_RANKS_LSB 7 // 固定字段最低位
+`define COLL_DESCRIPTOR_NUM_RANKS_WIDTH 3 // 固定字段位宽
+`define COLL_DESCRIPTOR_IN_PLACE_LSB 10 // 固定字段最低位
+`define COLL_DESCRIPTOR_IN_PLACE_WIDTH 1 // 固定字段位宽
+`define COLL_DESCRIPTOR_IRQ_ON_COMPLETION_LSB 11 // 固定字段最低位
+`define COLL_DESCRIPTOR_IRQ_ON_COMPLETION_WIDTH 1 // 固定字段位宽
+`define COLL_DESCRIPTOR_COLLECTIVE_ID_LSB 12 // 固定字段最低位
+`define COLL_DESCRIPTOR_COLLECTIVE_ID_WIDTH 12 // 固定字段位宽
+`define COLL_DESCRIPTOR_TIMEOUT_QUANTA_LSB 24 // 固定字段最低位
+`define COLL_DESCRIPTOR_TIMEOUT_QUANTA_WIDTH 16 // 固定字段位宽
+`define COLL_DESCRIPTOR_DESCRIPTOR_VERSION_LSB 40 // 固定字段最低位
+`define COLL_DESCRIPTOR_DESCRIPTOR_VERSION_WIDTH 4 // 固定字段位宽
+`define COLL_DESCRIPTOR_RESERVED0_LSB 44 // 固定字段最低位
+`define COLL_DESCRIPTOR_RESERVED0_WIDTH 20 // 固定字段位宽
+`define COLL_DESCRIPTOR_SRC_ADDR_LSB 64 // 固定字段最低位
+`define COLL_DESCRIPTOR_SRC_ADDR_WIDTH 64 // 固定字段位宽
+`define COLL_DESCRIPTOR_DST_ADDR_LSB 128 // 固定字段最低位
+`define COLL_DESCRIPTOR_DST_ADDR_WIDTH 64 // 固定字段位宽
+`define COLL_DESCRIPTOR_LENGTH_BYTES_LSB 192 // 固定字段最低位
+`define COLL_DESCRIPTOR_LENGTH_BYTES_WIDTH 32 // 固定字段位宽
+`define COLL_DESCRIPTOR_USER_TAG_LSB 224 // 固定字段最低位
+`define COLL_DESCRIPTOR_USER_TAG_WIDTH 32 // 固定字段位宽
+`define COLL_HEADER_VERSION_LSB 0 // 固定字段最低位
+`define COLL_HEADER_VERSION_WIDTH 4 // 固定字段位宽
+`define COLL_HEADER_MESSAGE_TYPE_LSB 4 // 固定字段最低位
+`define COLL_HEADER_MESSAGE_TYPE_WIDTH 4 // 固定字段位宽
+`define COLL_HEADER_OPCODE_LSB 8 // 固定字段最低位
+`define COLL_HEADER_OPCODE_WIDTH 3 // 固定字段位宽
+`define COLL_HEADER_PHASE_LSB 11 // 固定字段最低位
+`define COLL_HEADER_PHASE_WIDTH 1 // 固定字段位宽
+`define COLL_HEADER_DTYPE_LSB 12 // 固定字段最低位
+`define COLL_HEADER_DTYPE_WIDTH 2 // 固定字段位宽
+`define COLL_HEADER_VC_LSB 14 // 固定字段最低位
+`define COLL_HEADER_VC_WIDTH 2 // 固定字段位宽
+`define COLL_HEADER_SRC_RANK_LSB 16 // 固定字段最低位
+`define COLL_HEADER_SRC_RANK_WIDTH 3 // 固定字段位宽
+`define COLL_HEADER_DST_RANK_LSB 19 // 固定字段最低位
+`define COLL_HEADER_DST_RANK_WIDTH 3 // 固定字段位宽
+`define COLL_HEADER_COLLECTIVE_ID_LSB 22 // 固定字段最低位
+`define COLL_HEADER_COLLECTIVE_ID_WIDTH 12 // 固定字段位宽
+`define COLL_HEADER_CHUNK_ID_LSB 34 // 固定字段最低位
+`define COLL_HEADER_CHUNK_ID_WIDTH 16 // 固定字段位宽
+`define COLL_HEADER_PACKET_SEQ_LSB 50 // 固定字段最低位
+`define COLL_HEADER_PACKET_SEQ_WIDTH 16 // 固定字段位宽
+`define COLL_HEADER_FLIT_SEQ_LSB 66 // 固定字段最低位
+`define COLL_HEADER_FLIT_SEQ_WIDTH 8 // 固定字段位宽
+`define COLL_HEADER_PAYLOAD_BYTES_LSB 74 // 固定字段最低位
+`define COLL_HEADER_PAYLOAD_BYTES_WIDTH 7 // 固定字段位宽
+`define COLL_HEADER_SOP_LSB 81 // 固定字段最低位
+`define COLL_HEADER_SOP_WIDTH 1 // 固定字段位宽
+`define COLL_HEADER_EOP_LSB 82 // 固定字段最低位
+`define COLL_HEADER_EOP_WIDTH 1 // 固定字段位宽
+`define COLL_HEADER_RETRY_LSB 83 // 固定字段最低位
+`define COLL_HEADER_RETRY_WIDTH 1 // 固定字段位宽
+`define COLL_HEADER_LINK_EPOCH_LSB 84 // 固定字段最低位
+`define COLL_HEADER_LINK_EPOCH_WIDTH 8 // 固定字段位宽
+`define COLL_HEADER_RESERVED_LSB 92 // 固定字段最低位
+`define COLL_HEADER_RESERVED_WIDTH 4 // 固定字段位宽
+`define COLL_HEADER_CRC32_LSB 96 // 固定字段最低位
+`define COLL_HEADER_CRC32_WIDTH 32 // 固定字段位宽
+`define COLL_REVERSE_VERSION_LSB 0 // 固定字段最低位
+`define COLL_REVERSE_VERSION_WIDTH 4 // 固定字段位宽
+`define COLL_REVERSE_MESSAGE_TYPE_LSB 4 // 固定字段最低位
+`define COLL_REVERSE_MESSAGE_TYPE_WIDTH 4 // 固定字段位宽
+`define COLL_REVERSE_VC_LSB 8 // 固定字段最低位
+`define COLL_REVERSE_VC_WIDTH 2 // 固定字段位宽
+`define COLL_REVERSE_LINK_EPOCH_LSB 10 // 固定字段最低位
+`define COLL_REVERSE_LINK_EPOCH_WIDTH 8 // 固定字段位宽
+`define COLL_REVERSE_COLLECTIVE_ID_LSB 18 // 固定字段最低位
+`define COLL_REVERSE_COLLECTIVE_ID_WIDTH 12 // 固定字段位宽
+`define COLL_REVERSE_PHASE_LSB 30 // 固定字段最低位
+`define COLL_REVERSE_PHASE_WIDTH 1 // 固定字段位宽
+`define COLL_REVERSE_PACKET_SEQ_LSB 31 // 固定字段最低位
+`define COLL_REVERSE_PACKET_SEQ_WIDTH 16 // 固定字段位宽
+`define COLL_REVERSE_CREDIT_DELTA_LSB 47 // 固定字段最低位
+`define COLL_REVERSE_CREDIT_DELTA_WIDTH 7 // 固定字段位宽
+`define COLL_REVERSE_STATUS_LSB 54 // 固定字段最低位
+`define COLL_REVERSE_STATUS_WIDTH 8 // 固定字段位宽
+`define COLL_REVERSE_RESERVED_LSB 62 // 固定字段最低位
+`define COLL_REVERSE_RESERVED_WIDTH 2 // 固定字段位宽
+`define COLL_REVERSE_CREDIT_TOTAL_LSB 64 // 固定字段最低位
+`define COLL_REVERSE_CREDIT_TOTAL_WIDTH 16 // 固定字段位宽
+`define COLL_REVERSE_CRC16_LSB 80 // 固定字段最低位
+`define COLL_REVERSE_CRC16_WIDTH 16 // 固定字段位宽
+`endif // 结束协议常量头文件保护
