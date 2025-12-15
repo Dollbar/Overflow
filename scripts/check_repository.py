@@ -25,6 +25,7 @@ REQUIRED_TRACE_COLUMNS = {
     "status",
 }
 REQUIRED_TOP_LEVEL_READMES = {
+    "Library",
     "LICENSES",
     "ci",
     "compiler",

@@ -1,0 +1,34 @@
+schema_version: 1
+profile_id: versal-gtm-106g-pam4-rate-adapted
+evidence_level: ANALYTICAL
+physical:
+  line_rate_gbit_per_second: 106.25
+  modulation: PAM4
+  bits_per_symbol: 2
+  symbol_rate_gbaud: 53.125
+  encoding: 64b66b
+  pcs_data_gbit_per_second_per_lane: 103.030303030303
+  block_group_capacity_hz: 1609848484.848485
+logical_rate_adapter:
+  group_clock_hz: 1000000000
+  encoded_bits_per_lane_per_group: 66
+  physical_capacity_utilization_percent: 62.117647058824
+  required: true
+model_parameters:
+  line_rate_kbps: 106250000
+  modulation_bits_per_symbol: 2
+  propagation_cycles: 3
+  maximum_lane_skew_cycles: 2
+  cdr_lock_cycles: 16
+  block_lock_cycles: 16
+  jitter_period_blocks: 0
+  jitter_extra_cycles: 0
+  burst_error_length_blocks: 4
+  elastic_depth: 64
+source:
+  vendor: AMD
+  document: Versal Prime Series Data Sheet DS956
+  url: https://docs.amd.com/r/en-US/ds956-versal-prime/GTM-Transceiver-Performance
+limitations:
+  - The rate adapter is a required digital integration block and is not supplied by the analog model.
+  - Electrical compliance still requires the selected device, package, board channel, wizard setup, and AMD models.

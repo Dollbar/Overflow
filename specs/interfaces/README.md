@@ -8,3 +8,5 @@ and tests must not depend on behavior absent from these contracts.
 
 - [`npu_gemm_vector_core_v0.1.md`](npu_gemm_vector_core_v0.1.md) defines the post-transfer descriptor,
   local tensor-buffer, vector-operand, result-route, and SRAM replacement boundary for the GEMM/vector core.
+- [`hbm_transaction_v0.1.md`](hbm_transaction_v0.1.md) defines the vendor-neutral logical HBM transaction
+  and backpressure boundary used by the portable system model.
