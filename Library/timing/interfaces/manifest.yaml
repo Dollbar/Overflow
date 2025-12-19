@@ -1,0 +1,28 @@
+schema_version: 1
+asset_id: overflow-hbm-serdes-interface-liberty-v0.1
+version: 0.1
+license: Apache-2.0
+evidence_level: ANALYTICAL
+validation_status: PASS_opensta_fast_typical_slow
+boundary: synthetic_scalar_frontend_only
+consumers:
+  - technology/interfaces
+validation_commands:
+  - make sta-interfaces
+checksums:
+  Library/timing/interfaces/overflow_hbm_serdes_abstract_fast.lib: e6f62cf7a9209b258d6774330d39ca81e3379fe3507be7cc1e77fc27d62b3f5a
+  Library/timing/interfaces/overflow_hbm_serdes_abstract_typical.lib: 7ed342dbec1fee405ff06f474f214f6e87d37916532e2d7e282a4b3677552450
+  Library/timing/interfaces/overflow_hbm_serdes_abstract_slow.lib: 5684a54f540e88344c18d441bb09421cb5b15839763bbd049067a14a11b6a7b5
+  Library/timing/interfaces/profiles.yaml: cdc92e7300f20d45161b7f0eb23b65fd73fea88c9a4431799abda64edc404778
+  Library/timing/interfaces/verilog/overflow_interface_blackboxes.v: 76ae3411d15bf73bfae45f3f6c5b8353e865b66e29908eb6f5a5a1d10bcff200
+  Library/timing/interfaces/constraints/overflow_model_interfaces.sdc.template: ba89da5fa2e91956e6dffe9d48165b501fb83dd30593827326aa22b3fa9d3bea
+permitted_claims:
+  - liberty_parse
+  - explicit_blackbox_link
+  - setup_hold_and_clock_to_output_plumbing
+prohibited_claims:
+  - physical_pvt
+  - memory_array_timing
+  - serdes_analog_timing
+  - package_or_board_timing
+  - signoff
