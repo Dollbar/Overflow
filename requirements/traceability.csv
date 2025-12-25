@@ -22,5 +22,6 @@ KDL-004,KDLink,Provide versioned PCS encoding lane striping training deskew and 
 KDL-005,KDLink,Provide deadlock-free deterministic routing with a guaranteed escape path,rtl;simulator;verification,Channel-dependency analysis and congestion regression,FORMAL,PROPOSED
 KDL-006,KDLink,Represent eight card slots and a 32-node baseboard topology with card plane and slice isolation,simulator/kdlink;specs/kdlink,Baseboard permutation and fault-isolation RTL regression,RTL_SIM,BASELINED
 KDL-007,KDLink,Provide a vendor-neutral ten-lane digital SerDes channel model with latency skew training and deterministic fault injection,simulator/kdlink;specs/kdlink,PCS-to-SerDes full-duplex and fault-injection regression,RTL_SIM,BASELINED
+KDL-008,KDLink,Complete a representative packet CRC NACK replay and exact-once path across PCS and digital SerDes,rtl/kdlink;simulator/kdlink,Integrated multiboard E2E regression with injected CRC fault,RTL_SIM,BASELINED
 VER-001,Verification,Label every performance claim with an allowed evidence level,verification;docs,Release audit,ANALYTICAL,BASELINED
 REL-001,Release,Exclude model weights credentials private datasets and non-redistributable binaries,third_party;LICENSES;ci,License and secret scan,ANALYTICAL,BASELINED
