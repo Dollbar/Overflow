@@ -25,5 +25,6 @@ KDL-007,KDLink,Provide a vendor-neutral ten-lane digital SerDes channel model wi
 KDL-008,KDLink,Complete a representative packet CRC NACK replay and exact-once path across PCS and digital SerDes,rtl/kdlink;simulator/kdlink,Integrated multiboard E2E regression with injected CRC fault,RTL_SIM,BASELINED
 KDL-009,KDLink,Recover forward progress after VC credit exhaustion without a combinational reverse ready path,rtl/kdlink;simulator/kdlink,Asynchronous two-endpoint credit exhaustion and cumulative recovery regression,RTL_SIM,BASELINED
 KDL-010,KDLink,Sustain 64 GB/s payload per direction and 128 GB/s aggregate on one 512-bit logical full-duplex port at 1 GHz,rtl/kdlink;simulator/kdlink,Four-node 1024-flit-per-rank zero-bubble bandwidth regression,RTL_SIM,BASELINED
+KDL-011,KDLink,Sustain initiation interval one for 512-bit SUM reduction across INT32 FP32 FP16 and BF16,rtl/kdlink;simulator/kdlink,Four-dtype 4096-flit mixed-stream bit-exact zero-bubble regression,RTL_SIM,BASELINED
 VER-001,Verification,Label every performance claim with an allowed evidence level,verification;docs,Release audit,ANALYTICAL,BASELINED
 REL-001,Release,Exclude model weights credentials private datasets and non-redistributable binaries,third_party;LICENSES;ci,License and secret scan,ANALYTICAL,BASELINED
