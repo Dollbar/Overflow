@@ -1,0 +1,7 @@
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_rx_commit.v
+read_verilog -formal -sv -Irtl/kdlink verification/kdlink/formal/formal_rx_exact_once.sv
+prep -top formal_rx_exact_once -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 22 -set-init-zero

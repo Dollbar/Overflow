@@ -1,0 +1,5 @@
+read_verilog -formal -sv verification/kdlink/formal/formal_escape_dependency.sv
+prep -top formal_escape_dependency -flatten
+chformal -lower
+formalff -clk2ff
+sat -verify -prove-asserts -set-init-zero

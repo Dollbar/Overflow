@@ -3,8 +3,8 @@
 This directory contains the synthesizable KDLink logical link, reliable endpoints, NICs, multi-port
 routers, KDSwitch, collectives, and AllToAllv data paths.
 
-KDLink-v2 is the canonical wire protocol. It uses a 640-bit forward flit, eight virtual channels, and a
-128-bit reverse-control word. `kdlink_v2_reliable_endpoint` is the canonical endpoint boundary. It
+KDLink is the canonical wire protocol. It uses a 640-bit forward flit, eight virtual channels, and a
+128-bit reverse-control word. `kdlink_reliable_endpoint` is the canonical endpoint boundary. It
 integrates:
 
 - asynchronous core-to-PHY and PHY-to-core FIFOs;
@@ -16,7 +16,7 @@ integrates:
 
 Files beginning with `coll_` implement the earlier four-rank Collective protocol. That protocol has four
 VCs and a 96-bit reverse word. It remains available for compatibility tests, but it is not wire-compatible
-with KDLink-v2 and must not be connected through an implicit width adapter.
+with KDLink and must not be connected through an implicit width adapter.
 
 The RTL boundary ends at logical PCS-facing streams. No process library, analog SerDes macro, PCB model,
 or physical implementation artifact is required by this directory.

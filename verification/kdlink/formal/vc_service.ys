@@ -1,0 +1,8 @@
+read_verilog -formal -sv rtl/kdlink/coll_async_fifo.v
+read_verilog -formal -sv rtl/kdlink/kdlink_vc_ingress8.v
+read_verilog -formal -sv verification/kdlink/formal/formal_vc_service.sv
+prep -top formal_vc_service -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -set-assumes -seq 24 -set-init-zero

@@ -1,4 +1,4 @@
-"""KDLink-v2 64b/66b data-block codec for one 640-bit logical flit."""
+"""KDLink 64b/66b data-block codec for one 640-bit logical flit."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ SCRAMBLER_INITIAL_STATE = SCRAMBLER_MASK
 
 def encode_flit_blocks(flit: int) -> tuple[int, ...]:
     if flit < 0 or flit >= (1 << FLIT_WIDTH):
-        raise ValueError("flit does not fit the KDLink-v2 logical width")
+        raise ValueError("flit does not fit the KDLink logical width")
     mask = (1 << PCS_BLOCK_DATA_WIDTH) - 1
     return tuple((((flit >> (index * PCS_BLOCK_DATA_WIDTH)) & mask) << 2) | DATA_SYNC_HEADER
                  for index in range(PCS_BLOCKS_PER_FLIT))

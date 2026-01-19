@@ -1,4 +1,4 @@
-"""Analytical payload and encoded-line performance contract for KDLink-v2."""
+"""Analytical payload and encoded-line performance contract for KDLink."""
 
 from __future__ import annotations
 

@@ -1,0 +1,29 @@
+requirement_id,owner_path,verification_method,evidence_level,current_evidence,status
+KDL-LINK-001,rtl/kdlink/kdlink_reliable_endpoint.v,Per-VC HOL isolation packet lock and priority/fairness,RTL_SIM+FORMAL,vc_ingress8;vc_service,PASS
+KDL-LINK-002,rtl/kdlink,Packet ownership strict roles and bounded data service,RTL_SIM+FORMAL,vc_ingress8;vc_service,PASS
+KDL-LINK-003,rtl/kdlink/kdlink_credit_bank8.v,Credit exhaustion cumulative recovery and conservation,RTL_SIM+FORMAL,credit_bank8;endpoint_credit_recovery;fifo_credit,PASS
+KDL-LINK-004,rtl/kdlink;simulator/kdlink,Structural CDC audit and delayed reverse-channel E2E,RTL_SIM+CDC,reliable_endpoint_e2e;cdc_summary,PASS
+KDL-LINK-005,rtl/kdlink,Autonomous init keepalive timeout reset and epoch recovery,RTL_SIM,link_manager;reliable_reset_recovery,PASS
+KDL-LINK-006,rtl/kdlink,NACK and timeout replay exact-data test,RTL_SIM+FORMAL,replay_timeout;reliable_endpoint_e2e;replay_progress,PASS
+KDL-LINK-007,rtl/kdlink/kdlink_rx_commit.v,Atomic commit duplicate malformed and wrap stress,RTL_SIM+FORMAL,rx_commit_stress;reliable_endpoint_e2e;rx_exact_once,PASS
+KDL-LINK-008,rtl/kdlink,Independent-clock regression and structural audit,RTL_SIM+CDC,nic8_cdc;endpoint_credit_recovery;reliable_endpoint_e2e;cdc_summary,PASS
+KDL-BOND-001,rtl/kdlink/kdlink_bonded_port.v,Two-slice continuous full-rate RTL test,RTL_SIM,bonded_port,PASS
+KDL-BOND-002,rtl/kdlink,Multi-flit packet ownership reorder and exact commit,RTL_SIM,bonded_reorder;reliable_bonded_endpoint,PASS
+KDL-BOND-003,rtl/kdlink,Active-packet slice loss replay migration and recovery,RTL_SIM,reliable_bonded_endpoint,PASS
+KDL-FAB-001,rtl/kdlink,Canonical reliable endpoint through NIC and fabric,RTL_SIM,reliable_nic8_fabric,PASS
+KDL-FAB-002,rtl/kdlink,Route identity hop decrement and zero-hop rejection,RTL_SIM,reliable_nic8_fabric;reliable_endpoint_e2e;switch32_permutation,PASS
+KDL-FAB-003,rtl/kdlink,Congestion across eight VCs with bounded service,RTL_SIM+FORMAL,switch32_congestion;vc_service,PASS
+KDL-FAB-004,rtl/kdlink;verification/kdlink,Escape-channel dependency property,FORMAL,escape_dependency,PASS
+KDL-FAB-005,simulator/kdlink;specs/kdlink,32-node topology and card plane slice isolation,RTL_SIM,baseboard32,PASS
+KDL-COLL-001,rtl/kdlink,Descriptor validation allocation issue and completion,RTL_SIM,context_scheduler16;collective_datapath16,PASS
+KDL-COLL-002,rtl/kdlink,32-node six-operation result and schedule matrix,RTL_SIM,collective32_int32;direct32,PASS
+KDL-COLL-003,rtl/kdlink,Integrated 512-bit four-dtype exact-result regression,RTL_SIM,collective_datapath16;reduction_dtype_ii1;reduction_random,PASS
+KDL-COLL-004,rtl/kdlink,4096-flit zero-bubble reduction stream,RTL_SIM,reduction_dtype_ii1,PASS
+KDL-COLL-005,rtl/kdlink,Interleaved 16-context progress block isolation exact completion and epoch restoration,RTL_SIM,collective_datapath16;reliable_reset_recovery,PASS
+KDL-VER-001,simulator/kdlink,Complete portable model and RTL regression,FUNCTIONAL_SIM+RTL_SIM,26_model_tests;41_rtl_tests,PASS
+KDL-VER-002,simulator/kdlink,Fault congestion reset degradation and concurrent-context matrix,RTL_SIM,credit_bank8;replay_timeout;rx_commit_stress;serdes_full_lane;switch32_congestion;reliable_endpoint_e2e;reliable_reset_recovery;reliable_bonded_endpoint;collective_datapath16,PASS
+KDL-VER-003,verification/kdlink/coverage,Coverage collection source-point aggregation and thresholds,COVERAGE,line_97.4;toggle_95.5;branch_96.0;expr_95.0,PASS
+KDL-VER-004,verification/kdlink/formal,Five-property bounded formal suite,FORMAL,fifo_credit;rx_exact_once;replay_progress;vc_service;escape_dependency,PASS
+KDL-VER-005,rtl/kdlink;verification/kdlink,Static lint and structural CDC audit,LINT+CDC,6_lint_tops;7_cdc_contracts,PASS
+KDL-VER-006,verification/kdlink/sta,Ten-partition OpenSTA run at 1.000 ns with external Liberty,STA,10_of_10_pass;minimum_slack_0.0020_ns,PASS
+KDL-REL-001,docs/releases;requirements,Release notes traceability tools results limitations and source audit,RELEASE_AUDIT,RELEASE_NOTES.md;UPLOAD_MANIFEST.md,PASS

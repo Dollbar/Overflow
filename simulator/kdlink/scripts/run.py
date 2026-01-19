@@ -109,7 +109,7 @@ def run_rtl_test(name: str, config: dict[str, Any], verilator: str, jobs: int, t
 
 
 def run_model_tests(timeout: int) -> None:
-    tests = sorted((PACKAGE_ROOT / "model" / "tests").glob("test_kdlink_v2_*.py"))
+    tests = sorted((PACKAGE_ROOT / "model" / "tests").glob("test_kdlink_*.py"))
     if not tests:
         raise SystemExit("no KDLink model tests found")
     env = os.environ.copy()

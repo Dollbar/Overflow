@@ -1,4 +1,4 @@
-"""Versioned eight-card KDLink-v2 chassis topology and digital fault state."""
+"""Versioned eight-card KDLink chassis topology and digital fault state."""
 
 from __future__ import annotations
 

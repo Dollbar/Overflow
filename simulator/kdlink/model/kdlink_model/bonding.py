@@ -17,7 +17,7 @@ class BondedPortDistributor:
 
     def assign(self, packet_seq: int) -> int:
         if not 0 <= packet_seq < PACKET_SEQUENCE_MODULUS:
-            raise ValueError("packet sequence is outside the KDLink-v2 sequence space")
+            raise ValueError("packet sequence is outside the KDLink sequence space")
         active = self.active_slices()
         if not active:
             raise RuntimeError("bonded port has no active slice")
@@ -39,7 +39,7 @@ class BondedPortReorder:
 
     def accept(self, packet_seq: int, payload: bytes) -> list[tuple[int, bytes]]:
         if not 0 <= packet_seq < PACKET_SEQUENCE_MODULUS:
-            raise ValueError("packet sequence is outside the KDLink-v2 sequence space")
+            raise ValueError("packet sequence is outside the KDLink sequence space")
         if packet_seq in self.pending:
             raise RuntimeError("duplicate packet in reorder window")
         distance = (packet_seq - self.expected_seq) % PACKET_SEQUENCE_MODULUS
