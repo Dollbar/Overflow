@@ -1,0 +1,35 @@
+[*]
+[*] GTKWave Analyzer save file
+[dumpfile] "build/waves/tile_mx_gemm_path.vcd"
+[savefile] "waves/tile_mx_gemm_path.gtkw"
+[timestart] 0
+[size] 1600 900
+[pos] -1 -1
+@28
+tb_tile_mx_gemm_path.clk_i
+tb_tile_mx_gemm_path.rst_i
+tb_tile_mx_gemm_path.clear_i
+tb_tile_mx_gemm_path.scenario_id[3:0]
+tb_tile_mx_gemm_path.a_valid_i[15:0]
+tb_tile_mx_gemm_path.a_data_i[127:0]
+tb_tile_mx_gemm_path.a_format_i[31:0]
+tb_tile_mx_gemm_path.a_scale_i[127:0]
+tb_tile_mx_gemm_path.a_block_first_i[15:0]
+tb_tile_mx_gemm_path.a_block_last_i[15:0]
+tb_tile_mx_gemm_path.a_matrix_first_i[15:0]
+tb_tile_mx_gemm_path.a_matrix_last_i[15:0]
+tb_tile_mx_gemm_path.b_valid_i[15:0]
+tb_tile_mx_gemm_path.b_data_i[127:0]
+tb_tile_mx_gemm_path.result_ready_i
+tb_tile_mx_gemm_path.result_valid_o
+tb_tile_mx_gemm_path.result_data_o[511:0]
+tb_tile_mx_gemm_path.result_tag_o[7:0]
+tb_tile_mx_gemm_path.result_row_o[3:0]
+tb_tile_mx_gemm_path.u_dut.u_tile.compute_active_q
+tb_tile_mx_gemm_path.u_dut.u_tile.compute_issue
+tb_tile_mx_gemm_path.u_dut.u_tile.compute_row_q[3:0]
+tb_tile_mx_gemm_path.u_dut.u_tile.load_bank_q
+tb_tile_mx_gemm_path.u_dut.u_tile.compute_bank_q
+tb_tile_mx_gemm_path.u_dut.u_tile.column_exact_valid[15:0]
+tb_tile_mx_gemm_path.u_dut.u_tile.accumulator_result_valid
+tb_tile_mx_gemm_path.observed_rows

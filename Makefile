@@ -1,4 +1,5 @@
-.PHONY: help check hbm-model kd28-sram-fifo sta-interfaces sta-kd28 npu-gemm-vector-lint \
+.PHONY: help check hbm-model kd28-sram-fifo sta-interfaces sta-kd28 npu-compute-lint \
+	npu-compute-sim npu-compute-test npu-compute-waves npu-gemm-vector-lint \
 	npu-gemm-vector-sim npu-gemm-vector-test npu-gemm-vector-waves
 
 PYTHON ?= python3
@@ -10,10 +11,10 @@ help:
 	@echo "  make kd28-sram-fifo         - generate and validate KD28 SRAM/FIFO models"
 	@echo "  make sta-interfaces         - validate HBM/SerDes interface Liberty scenarios"
 	@echo "  make sta-kd28               - validate KD28 SRAM synthetic Liberty scenarios"
-	@echo "  make npu-gemm-vector-lint   - lint the GEMM/vector verification scope"
-	@echo "  make npu-gemm-vector-sim    - run GEMM/vector self-checking RTL tests"
-	@echo "  make npu-gemm-vector-test   - run all GEMM/vector verification gates"
-	@echo "  make npu-gemm-vector-waves  - generate GEMM/vector directed VCD files"
+	@echo "  make npu-compute-lint       - lint the split NPU compute RTL scope"
+	@echo "  make npu-compute-sim        - run NPU compute self-checking RTL tests"
+	@echo "  make npu-compute-test       - run all NPU compute verification gates"
+	@echo "  make npu-compute-waves      - generate NPU compute directed VCD files"
 
 check:
 	$(PYTHON) scripts/check_repository.py
@@ -31,14 +32,21 @@ sta-interfaces:
 sta-kd28:
 	$(MAKE) -C technology PYTHON=$(PYTHON) sta-kd28
 
-npu-gemm-vector-lint:
-	$(MAKE) -C verification/npu/gemm_vector lint
+npu-compute-lint:
+	$(MAKE) -C verification/npu/compute lint
 
-npu-gemm-vector-sim:
-	$(MAKE) -C verification/npu/gemm_vector sim
+npu-compute-sim:
+	$(MAKE) -C verification/npu/compute sim
 
-npu-gemm-vector-test:
-	$(MAKE) -C verification/npu/gemm_vector test
+npu-compute-test:
+	$(MAKE) -C verification/npu/compute test
 
-npu-gemm-vector-waves:
-	$(MAKE) -C verification/npu/gemm_vector waves
+npu-compute-waves:
+	$(MAKE) -C verification/npu/compute waves
+
+# Compatibility aliases for existing automation. New integrations should use
+# the npu-compute-* names above, which match the split source hierarchy.
+npu-gemm-vector-lint: npu-compute-lint
+npu-gemm-vector-sim: npu-compute-sim
+npu-gemm-vector-test: npu-compute-test
+npu-gemm-vector-waves: npu-compute-waves

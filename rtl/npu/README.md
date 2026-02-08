@@ -8,12 +8,13 @@ The authoritative system context remains in `docs/architecture/`; cross-subsyste
 
 | Path | Responsibility |
 | --- | --- |
-| `common/` | NPU-local parameters, types, counters, and reusable control |
+| `common/` | NPU-local numeric packages and reusable arithmetic/control primitives |
 | `command/` | KD-ISA command intake, validation, dispatch, and completion |
 | `scheduler/` | Dependency tracking, pod selection, and tile issue |
-| `tensor/` | 256 x 256 tensor array and tile wrapper |
-| `vector/` | Vector ALU, reductions, mask handling, and special functions |
-| `sram/` | Tile-private and pod-shared scratchpad integration |
+| `tensor/` | MX processing element, Tile reduction/accumulation, and 256 x 256 GEMM array |
+| `vector/` | Vector ALU, reductions, special functions, and vector-engine groups |
+| `sram/` | Local Tensor/Vector buffers, FIFO wrappers, and physical SRAM boundary |
+| `compute/` | Tensor/Vector integration, result routing, feedback, and system top levels |
 | `noc/` | Pod-local and inter-pod on-chip network |
 | `dma/` | NPU-side DMA descriptor and data-movement front end |
 

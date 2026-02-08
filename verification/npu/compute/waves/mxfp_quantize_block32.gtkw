@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_mxfp_quantize_block32.clk_i
+tb_mxfp_quantize_block32.rst_i
+tb_mxfp_quantize_block32.clear_i
+tb_mxfp_quantize_block32.scenario_id[3:0]
+tb_mxfp_quantize_block32.input_valid_i
+tb_mxfp_quantize_block32.input_ready_o
+tb_mxfp_quantize_block32.output_valid_o
+tb_mxfp_quantize_block32.output_ready_i
+tb_mxfp_quantize_block32.output_scale_o[7:0]
+tb_mxfp_quantize_block32.output_last_o
+tb_mxfp_quantize_block32.output_data_o[255:0]
+tb_mxfp_quantize_block32.output_invalid_o[31:0]

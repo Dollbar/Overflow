@@ -1,0 +1,14 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2024 BSI
+[dumpfile] "build/waves/gemm_boundary_skew.vcd"
+[savefile] "waves/gemm_boundary_skew.gtkw"
+[timestart] 0
+@28
+TOP.tb_gemm_boundary_skew.clk_i
+TOP.tb_gemm_boundary_skew.rst_i
+TOP.tb_gemm_boundary_skew.clear_i
+TOP.tb_gemm_boundary_skew.scenario_id[3:0]
+TOP.tb_gemm_boundary_skew.valid_i[3:0]
+TOP.tb_gemm_boundary_skew.payload_i[31:0]
+TOP.tb_gemm_boundary_skew.valid_o[3:0]
+TOP.tb_gemm_boundary_skew.payload_o[31:0]
