@@ -32,6 +32,8 @@ clock, the peak is 2.097152 PFLOPS-equivalent (`ANALYTICAL`).
 | --- | --- | --- |
 | Tensor array geometry: 256 x 256 | BASELINED | ADR-0001 |
 | Tensor logical clock: 1 GHz | BASELINED assumption | ADR-0001 |
+| One MX-only square-GEMM array and sixteen Vector channels | VERIFIED in v0.2 scope | NPU core contract; NPU-007..015 |
+| Local Tensor/Vector registered SRAM replacement boundary | VERIFIED in v0.2 scope | NPU core contract; NPU-009 and NPU-014 |
 | 16 tensor tiles and 8 pods | PROPOSED | NPU P0 sizing proposal |
 | MXFP4 x MXFP8 peak: 2.097152 PFLOPS-equivalent | ANALYTICAL | checked calculator |
 | 2 x 4 inter-pod mesh | PROPOSED | NPU P0 sizing proposal |
@@ -42,6 +44,11 @@ clock, the peak is 2.097152 PFLOPS-equivalent (`ANALYTICAL`).
 
 `BASELINED assumption` means downstream analytical work may rely on the value. It does not claim
 `RTL_SIM`, `GENERIC_SYNTH`, or implementation timing closure.
+
+The verified v0.2 compute boundary accepts descriptors and data already resident in local SRAM. It does
+not promote the proposed pod count, shared-SRAM organization, DMA, NoC, or external command fields to an
+implementation contract. Follow the gated sequence in
+[`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).
 
 ## 3. Dataflow
 

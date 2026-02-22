@@ -13,3 +13,5 @@ before implementation; subsystems may not silently select different baselines.
 
 The [NPU Subsystem Architecture Proposal](architecture/npu_subsystem_proposal.md) derives an explicitly
 `ANALYTICAL`, not-yet-frozen compute, SRAM, NoC, and DMA sizing point from the system baseline.
+The [NPU System Closure Plan](architecture/npu_system_closure_plan.md) records the authority order,
+current verified compute boundary, specification holds, and gated implementation sequence.
