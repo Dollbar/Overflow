@@ -15,7 +15,7 @@ The target first checks every `profiles.yaml` setup, hold, and clock-to-output v
 Liberty cell and pin. It then parses, links, constrains, and reports fast, typical, and slow scenarios with
 OpenSTA. KD28 additionally verifies all fixed macro names, generated source views, and controlled
 checksums. Expected signatures include `[PROFILE_LIBERTY PASS]`, `[KD28_PROFILE PASS]`,
-`[STA_INTERFACE PASS]`, and `[STA_KD28 PASS]`.
+`[STA_INTERFACE PASS]`, `[STA_KD28 PASS]`, and `[STA_NPU_KD28_SRAM PASS]`.
 
 Generated reports are:
 
@@ -30,6 +30,9 @@ Generated reports are:
 | `technology/work/kd28_sta/opensta_fifo_fast.log` | FIFO-mapped SDP macros with independent write/read clocks at fast corner |
 | `technology/work/kd28_sta/opensta_fifo_typical.log` | FIFO-mapped SDP macros with independent write/read clocks at typical corner |
 | `technology/work/kd28_sta/opensta_fifo_slow.log` | FIFO-mapped SDP macros with independent write/read clocks at slow corner |
+| `technology/work/kd28_sta/opensta_npu_sram_fast.log` | Representative NPU local SRAM mapping at the fast corner |
+| `technology/work/kd28_sta/opensta_npu_sram_typical.log` | Representative NPU local SRAM mapping at the typical corner |
+| `technology/work/kd28_sta/opensta_npu_sram_slow.log` | Representative NPU local SRAM mapping at the slow corner |
 
 The next integration step is to replace these abstractions with legally obtained controller, PHY,
 transceiver, or SRAM compiler Liberty and a design-specific SDC. A pass here is front-end plumbing
