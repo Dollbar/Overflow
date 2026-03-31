@@ -10,9 +10,9 @@ A task is complete only after its listed documentation, tests, and traceability 
 | --- | --- | --- | --- | --- | --- |
 | NPU-COM-001 | `common/` | MX numeric packages and arithmetic primitives | NPU core v0.2 contract | VERIFIED: current compute scope | bit-exact RTL_SIM |
 | NPU-COM-002 | `common/`, top-level | Performance, fault, clock, and reset types | system management contracts | HOLD: specs | lint + counter/reset tests |
-| NPU-CMD-001 | `command/` | Command intake, validation, dispatch, completion | KD-ISA and queue fields | HOLD: specs | FUNCTIONAL_SIM then RTL_SIM |
+| NPU-CMD-001 | `command/` | Already-decoded internal command sink and NPU event source; no KD-ISA decode or software queue RTL | external decoded-command contract | HOLD: external spec | RTL_SIM backpressure, malformed-internal-record, and reset tests |
 | NPU-SCH-001 | `scheduler/` | Local square-GEMM descriptor, dependency, and post issue | NPU core v0.2 contract | VERIFIED: NPU-007 | RTL_SIM + assertions |
-| NPU-SCH-002 | `scheduler/` | Pod/global resource scoreboard and independent issue | command and pod contracts | HOLD: specs | RTL_SIM + starvation assertions |
+| NPU-SCH-002 | `scheduler/` | Pod/global resource scoreboard and independent issue | decoded internal issue and pod contracts | HOLD: specs | RTL_SIM + starvation assertions |
 | NPU-TNS-001 | `tensor/` | MXFP4 x MXFP8 PE and exact Tile accumulation | NPU core v0.2 contract | VERIFIED: NPU-010 | bit-exact RTL_SIM |
 | NPU-TNS-002 | `tensor/` | 256 x 256 array transport and accumulation | NPU-TNS-001 | VERIFIED: NPU-011 | RTL_SIM continuous issue |
 | NPU-TNS-003 | `tensor/`, `compute/` | Local-buffer stream and square-GEMM control | NPU-TNS-002 + local SRAM contract | VERIFIED: NPU-014 | RTL_SIM saturation |
@@ -25,18 +25,21 @@ A task is complete only after its listed documentation, tests, and traceability 
 | NPU-NOC-001 | `noc/` | Credit-based router with deterministic escape VC | routing/packet fields | HOLD: interface spec | FORMAL deadlock obligations |
 | NPU-NOC-002 | `noc/` | Proposed 2 x 4 pod mesh integration | NPU-NOC-001 | HOLD: NPU-NOC-001 | RTL_SIM congestion regression |
 | NPU-DMA-001 | `dma/` | Descriptor scheduler and scratchpad mover | descriptor fields | HOLD: interface spec | RTL_SIM backpressure |
-| NPU-DMA-002 | `dma/`, `../memory/` | Finite RTL HBM transaction adapter | HBM RTL contract | HOLD: functional-preview spec is insufficient | FUNCTIONAL_SIM equivalence + RTL_SIM |
-| NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | command, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |
+| NPU-DMA-002 | `dma/` | NPU-side finite RTL HBM transaction adapter; no HBM controller or PHY | HBM RTL contract | HOLD: functional-preview spec is insufficient | FUNCTIONAL_SIM equivalence + RTL_SIM |
+| NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | decoded-command sink, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |
 | NPU-TOP-002 | `rtl/npu/` | Eight-pod NPU top-level integration | topology ADR + NPU-NOC-002 | HOLD: proposed topology | RTL_SIM + CDC/RDC integration |
 
 ## 2. Ordered Assignment
 
 1. Reconcile specifications and traceability with the verified v0.2 compute boundary.
-2. Define the single-pod command, DMA, scratchpad, completion, error, and clock/reset contracts.
+2. Record external KD-ISA/ABI dependencies and define only the NPU-owned decoded-command sink, DMA/HBM,
+   scratchpad, internal event, and clock/reset contracts.
 3. Complete NPU-SRM-003 without changing the current logical SRAM behavior.
-4. Implement command, DMA, pod scoreboard, and independent issue only against approved contracts.
-5. Integrate and saturate one pod before approving the multi-pod topology and NoC contracts.
-6. Implement the router, prove the escape path, then integrate the eight-pod top level.
+4. Implement DMA/HBM movement and pod-shared SRAM arbitration/ECC against approved NPU contracts.
+5. Implement the decoded-command sink, pod scoreboard, independent issue, RAS/performance, and CDC/RDC;
+   do not implement KD-ISA decode or software queues in this workstream.
+6. Integrate and saturate one pod before approving the multi-pod topology and NoC contracts.
+7. Implement the router, prove the escape path, then integrate the eight-pod top level.
 
 The controlling authority and stop conditions are recorded in
 [`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).

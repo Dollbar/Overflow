@@ -23,9 +23,10 @@ accepts versioned local descriptors and data already placed in local SRAM. Requi
 NPU-015 record the verified MX-only square-GEMM, Vector, feedback, local-buffer, and mapped-PE timing
 evidence. The authoritative compute contract is `specs/interfaces/npu_gemm_vector_core.md`.
 
-The following system functions remain outside that verified boundary:
+The following system functions remain outside that verified boundary. KD-ISA and the software ABI are
+external dependencies of this NPU RTL workstream, not NPU RTL deliverables:
 
-- KD-ISA command intake, runtime queues, completion ABI, interrupts, and cancellation;
+- externally owned KD-ISA encoding/decoding, runtime queues, completion ABI, interrupts, and cancellation;
 - DMA descriptors, finite RTL HBM transactions, address protection, and error recovery;
 - pod-shared SRAM, multi-client arbitration, ECC policy, and software ownership transitions;
 - independent Vector dispatch and general M/N/K or block-matrix scheduling;
@@ -38,7 +39,7 @@ The following system functions remain outside that verified boundary:
 | --- | --- | --- | --- | --- |
 | MX Tensor/Vector compute | NPU core v0.2 contract; NPU-007..015 | `VERIFIED` in declared scope | Preserve behavior and extend only through a versioned contract | Existing bit-exact and continuous-flow regressions |
 | KD28 SRAM/FIFO models | KD28 SRAM/FIFO v0.1 contract | `RTL_SIM`; synthetic technology collateral | Bind logical NPU 1W/1R banks through explicit adapters | Macro-count, no residual inferred memory, three-corner synthetic STA |
-| Command and completion | System context assigns KD-ISA and ABI ownership | `HOLD` | Define KD-ISA command and queue/completion ABI first | Encode/decode compatibility plus malformed/backpressure RTL tests |
+| KD-ISA and software ABI | External ISA, compiler, runtime, driver, and firmware owners | `EXTERNAL / HOLD` | External owners publish versioned command and queue/completion contracts; NPU consumes an already-decoded internal command | External encode/decode and software compatibility evidence; NPU sink backpressure tests |
 | DMA and HBM RTL | HBM transaction v0.1 is a functional-preview model boundary | `HOLD` for finite RTL fields | Freeze request/response widths, ordering, cancellation, and faults | Functional-model equivalence plus RTL backpressure/saturation |
 | Scratchpad system | Capacity targets are proposed; local compute stores are verified | Mixed | Specify clients, arbitration, ownership, ECC, and reset before pod-shared RTL | Collision, starvation, ECC injection, capacity, and bandwidth tests |
 | Independent Vector/general Tensor issue | Existing ABI supports square GEMM with optional Vector post-processing | `HOLD` outside v0.2 | Version compiler/operator and descriptor contracts | Bit-exact, edge-mask, arbitrary M/N/K, and independent issue tests |
@@ -51,12 +52,15 @@ The following system functions remain outside that verified boundary:
 ### Phase A: Specification closure
 
 1. Keep the current compute contract unchanged and reconcile implementation status documents.
-2. Define a versioned single-pod boundary covering command, completion, DMA, scratchpad clients, errors,
-   and clocks/resets. Proposed values remain explicitly marked until approved through an ADR.
-3. Add requirement IDs and compatibility tests before externally visible RTL is written.
+2. Record KD-ISA and queue/completion ABI documents as external inputs. The NPU workstream does not
+   define their encoding or implement their frontend.
+3. Define the NPU-owned side of a versioned single-pod boundary covering an already-decoded command
+   sink, DMA/HBM transactions, scratchpad clients, internal completion/error events, and clocks/resets.
+   Proposed values remain explicitly marked until approved through an ADR.
+4. Add requirement IDs and compatibility tests before externally visible RTL is written.
 
 The unresolved cross-owner choices and recommended approval order are maintained in
-[`NPU Command and DMA Approval Packet`](npu_command_dma_approval_packet.md).
+[`NPU External Command Dependencies and DMA Approval Packet`](npu_command_dma_approval_packet.md).
 
 ### Phase B: Storage closure
 
@@ -67,8 +71,9 @@ The unresolved cross-owner choices and recommended approval order are maintained
 
 ### Phase C: One-pod closure
 
-1. Implement the finite RTL HBM adapter and DMA mover against the approved pod contract.
-2. Implement command intake, completion, resource scoreboard, and independent compute issue.
+1. Implement the NPU-side finite RTL HBM adapter and DMA mover against the approved memory contract.
+2. Implement the decoded-command sink, internal completion aggregation, resource scoreboard, and
+   independent compute issue. Do not implement KD-ISA decode or runtime queue logic in this workstream.
 3. Integrate one pod and prove reset, backpressure, faults, and sustained local data flow.
 
 ### Phase D: Multi-pod closure
