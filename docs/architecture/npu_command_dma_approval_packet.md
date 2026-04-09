@@ -42,19 +42,23 @@ authorization for this workstream to define KD-ISA or ABI behavior.
 | Completion/error | Local compute status is not a runtime ABI | Define success, malformed command, access, DMA, poison, ECC, timeout, cancelled, and reset outcomes with retryability | Versioned completion record and error table |
 | Privilege/protection | System proposal mentions future IOVA/protection domains | Keep protection-domain and address-translation fields versioned; do not expose raw local SRAM macro addresses | ISA/ABI and memory-interface ownership agreement |
 
-## 3. Decisions Required Before DMA/HBM RTL
+## 3. DMA/HBM Decisions and Remaining Inputs
+
+ADR-0002 and `specs/interfaces/npu_hbm_rtl.md` now close the NPU-side five-lane beat geometry, 35-bit
+partition-local address, twelve-bit tag, status, ordering, and four-class age-promoted request arbitration.
+They do not close the upstream DMA descriptor, IOVA translation, cancellation, or runtime fault ABI.
 
 | Decision | Existing constraint | Recommended v0.1 direction | Required owner output |
 | --- | --- | --- | --- |
 | External address | 192 GB per logical NPU is baselined; 52-bit IOVA is proposed | Use a parameterized IOVA field in DMA descriptors and freeze its v0.1 width only through the ADR; translate to partition plus partition-local byte address before the HBM boundary | ADR plus DMA descriptor spec |
 | HBM partition | Functional-preview contract uses partitions 0 through 7 | Retain an explicit partition field if the eight-partition organization is approved; otherwise keep partition selection behind the memory adapter | Topology/memory ADR |
-| Data beat | Functional-preview contract requires 128-byte alignment | Use one 1024-bit payload beat and 128 byte enables at the RTL memory-service boundary | `specs/interfaces/npu_hbm_rtl_v0.1.md` |
-| Transaction length | Functional-preview maximum is 4096 bytes | Encode 1 through 32 aligned beats and define whether data is atomic with the request or transferred on a separate ready/valid channel | RTL HBM contract |
-| Outstanding identity | Tags are caller-owned but unbounded in the model; 4096 beats per engine is proposed | Size the finite tag namespace from the approved outstanding limit and require no tag reuse before completion | DMA/HBM ADR and RTL contract |
-| Completion ordering | Functional model completes in issue order per partition | Preserve per-partition request order for v0.1 unless a reorder buffer and visible ordering rule are specified | RTL HBM contract and equivalence tests |
-| Status | Model has OK, corrected ECC, uncorrectable ECC, and data error | Preserve these outcomes and add access, timeout, and cancellation only if their producer semantics are defined | RTL HBM and completion ABI error tables |
+| Data beat | Functional-preview contract requires 128-byte alignment | Closed: five parallel 1024-bit lanes with 128 byte enables per pod | ADR-0002 and `specs/interfaces/npu_hbm_rtl.md` |
+| Transaction length | Functional-preview maximum is 4096 bytes | Closed at the HBM boundary as tagged single beats; a DMA operation emits a sequence of beats | NPU HBM RTL beat contract; DMA descriptor remains open |
+| Outstanding identity | Tags are caller-owned but unbounded in the model; 4096 beats per engine is proposed | Closed: twelve-bit tag composed from four-bit channel and eight-bit local identity; no reuse before retirement | ADR-0002 and NPU HBM RTL beat contract |
+| Completion ordering | Functional model completes in issue order per partition | Closed: preserve per-partition request order; response lane number carries no identity | NPU HBM RTL beat contract and future equivalence tests |
+| Status | Model has OK, corrected ECC, uncorrectable ECC, and data error | Closed at beat boundary with two-bit status; runtime retryability remains external | NPU HBM RTL beat contract and external completion ABI |
 | DMA operations | P0 proposes linear, strided, gather/scatter, multicast, and zero-fill | Stage v0.1 as linear plus strided transfer first; admit gather/scatter and multicast only with compiler/runtime descriptors and bounds rules | DMA descriptor and compiler contracts |
-| QoS/starvation | Four classes and age promotion are proposed | Freeze class meaning and maximum promotion interval before RTL arbitration | DMA/client contract plus starvation assertions |
+| QoS/starvation | Four classes and age promotion are proposed | Closed for NPU request egress: class priority, round-robin ties, and 256-cycle promotion interval | NPU HBM RTL beat contract plus NPU-017 regression |
 
 ## 4. External Inputs Required Before General Compute Issue
 

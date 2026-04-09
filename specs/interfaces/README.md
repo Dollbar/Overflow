@@ -14,6 +14,8 @@ and tests must not depend on behavior absent from these contracts.
   clock/reset fields.
 - [`hbm_transaction.md`](hbm_transaction.md) defines the vendor-neutral logical HBM transaction and
   backpressure boundary used by the portable system model.
+- [`npu_hbm_rtl.md`](npu_hbm_rtl.md) freezes the finite five-lane per-pod NPU HBM beat interface and its
+  NPU-local DMA arbitration contract.
 - [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 
