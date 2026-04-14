@@ -66,6 +66,17 @@ only on `valid && ready`.
 Responses preserve request order within one partition. Different partitions progress independently. The
 NPU uses the tag for channel routing and must not infer completion identity from a response lane number.
 
+The NPU response router contains one elastic register per HBM lane and one elastic register per logical
+DMA channel. The upper tag bits select the DMA channel and the lower tag bits are delivered unchanged as
+the channel-local tag. If several lanes target one channel, the oldest buffered response is delivered
+first; lane zero is oldest for responses accepted in the same cycle. Unrelated channels may retire
+independently.
+
+A response carrying a partition other than the owning pod's configured partition is accepted and
+dropped, increments the dropped-response counter, and sets the sticky local `protocol_error_o` diagnostic.
+This diagnostic is not a runtime ABI status. Tag lifetime remains owned by the future DMA transaction
+tracker, which is outside this leaf router.
+
 ## 5. NPU Request Arbitration
 
 One pod has sixteen logical DMA channels. The NPU request egress accepts at most one beat per channel per
@@ -78,6 +89,12 @@ cycles, saturating at class three. Acceptance clears its age.
 
 QoS and age do not cross the HBM beat boundary. They select which request occupies an egress lane. Once a
 request is buffered in a lane, later priority changes cannot replace it.
+
+The implementation may pipeline request observation, pairwise priority comparison, rank counting, and
+grant selection. The channel producer must therefore obey the ready/valid rule and keep valid plus every
+payload/QoS field stable until `request_ready_o` completes the transfer. `request_ready_o` means that the
+request was loaded into one physical HBM lane; speculative queue admission is prohibited at this boundary.
+Pipelining may delay an eligible request but must not reduce the five-beat-per-cycle saturated issue rate.
 
 ## 6. Ordering, Faults, and Exclusions
 
@@ -100,3 +117,17 @@ The NPU request egress requires:
 - no-loss/no-duplication tag and data scoreboarding;
 - bounded starvation evidence for age promotion; and
 - an explicit `ANALYTICAL` label on 640 GB/s raw and 625 GB/s accepted-bandwidth calculations.
+
+The NPU response router additionally requires:
+
+- five simultaneous responses targeting one channel to retire in contract order;
+- five-lane-per-cycle acceptance with independent channel-output backpressure;
+- stable output payload while a destination channel is stalled;
+- no-loss, no-duplication, per-channel ordering, malformed-partition drop, and sticky-error checks; and
+- accepted, delivered, dropped, and backpressure counter checks after pipeline drain.
+
+Both leaves require an automated mapped pre-layout STA gate at the logical 1 GHz target. The generic gate
+uses a 1.000 ns period, 0.030 ns clock uncertainty, 0.050 ns input/output delays, and 0.005 pF output load,
+and fails on negative setup slack or any max slew, capacitance, or fanout violation. Generic-cell evidence
+does not constitute KD28 signoff; selected KD28 standard-cell Liberty views, RC corners, clock-tree
+assumptions, and post-route parasitics are required for that claim.

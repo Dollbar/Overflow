@@ -1,7 +1,7 @@
 .PHONY: help check hbm-model kd28-sram-fifo sta-interfaces sta-kd28 npu-compute-lint \
 	npu-compute-sim npu-compute-test npu-compute-waves npu-gemm-vector-lint \
 	npu-gemm-vector-sim npu-gemm-vector-test npu-gemm-vector-waves \
-	npu-system-lint npu-system-synth npu-system-sim npu-system-test
+	npu-system-lint npu-system-synth npu-system-sim npu-system-sta npu-system-test
 
 PYTHON ?= python3
 
@@ -16,7 +16,8 @@ help:
 	@echo "  make npu-compute-sim        - run NPU compute self-checking RTL tests"
 	@echo "  make npu-compute-test       - run all NPU compute verification gates"
 	@echo "  make npu-compute-waves      - generate NPU compute directed VCD files"
-	@echo "  make npu-system-test        - run NPU integration RTL lint and simulation"
+	@echo "  make npu-system-test        - run NPU integration lint, synth checks, and simulation"
+	@echo "  make npu-system-sta         - run NPU DMA 1 GHz generic STA with LIBERTY=<path>"
 
 check:
 	$(PYTHON) scripts/check_repository.py
@@ -54,6 +55,9 @@ npu-system-synth:
 
 npu-system-sim:
 	$(MAKE) -C verification/npu/system sim
+
+npu-system-sta:
+	$(MAKE) -C verification/npu/system sta-generic LIBERTY="$(LIBERTY)"
 
 npu-system-test:
 	$(MAKE) -C verification/npu/system test

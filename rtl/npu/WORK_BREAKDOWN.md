@@ -27,6 +27,7 @@ A task is complete only after its listed documentation, tests, and traceability 
 | NPU-DMA-001 | `dma/` | Descriptor scheduler and scratchpad mover | descriptor fields | HOLD: interface spec | RTL_SIM backpressure |
 | NPU-DMA-002 | `dma/` | NPU-side HBM response retirement and finite DMA mover; no HBM controller or PHY | NPU HBM RTL beat and DMA descriptor contracts | HOLD: DMA descriptor/translation contract | FUNCTIONAL_SIM equivalence + RTL_SIM |
 | NPU-DMA-003 | `dma/` | Sixteen-channel QoS/age arbiter and five-lane elastic HBM request egress | ADR-0002 and NPU HBM RTL beat contract | VERIFIED: NPU-017 | zero-warning lint + no-loss saturation/backpressure RTL_SIM |
+| NPU-DMA-004 | `dma/` | Five-lane HBM response buffering, ordered tag routing, and sixteen-channel elastic retirement | ADR-0002 and NPU HBM RTL beat contract | VERIFIED: NPU-018 | zero-warning lint + no-loss/order/error RTL_SIM + generic 1 GHz STA |
 | NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | decoded-command sink, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |
 | NPU-TOP-002 | `rtl/npu/` | Eight-pod NPU top-level integration | topology ADR + NPU-NOC-002 | HOLD: proposed topology | RTL_SIM + CDC/RDC integration |
 
