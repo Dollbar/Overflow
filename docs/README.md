@@ -18,3 +18,5 @@ current verified compute boundary, specification holds, and gated implementation
 The [NPU External Command Dependencies and DMA Approval Packet](architecture/npu_command_dma_approval_packet.md)
 records the cross-owner decisions required before the NPU decoded-command sink, DMA, general compute
 issue, or multi-clock pod RTL begins.
+The [HBM Physical Mapping Proposal](architecture/hbm_physical_mapping_proposal.md) distinguishes the
+accepted logical bandwidth/capacity target from the proposed eight-stack physical planning profile.

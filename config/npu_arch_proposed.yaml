@@ -63,6 +63,14 @@ hbm:
   target_aggregate_tbyte_per_second: 5.0
   target_payload_gbyte_per_second_per_partition: 625
   bandwidth_definition: aggregate_read_plus_write_payload
+  physical_mapping:
+    status: proposed_not_frozen
+    profile: public-hbm3e-24gb-reference-v0.1
+    stacks_per_npu: 8
+    stack_height: 8-high
+    capacity_gbyte_per_stack: 24
+    advertised_bandwidth_floor_tbyte_per_second_per_stack: 1.2
+    package_adr_required: true
 
 noc:
   topology: hierarchical_pod_mesh_2x4

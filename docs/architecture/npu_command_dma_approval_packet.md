@@ -60,10 +60,12 @@ They do not close the upstream DMA descriptor, IOVA translation, cancellation, o
 | DMA operations | P0 proposes linear, strided, gather/scatter, multicast, and zero-fill | Stage v0.1 as linear plus strided transfer first; admit gather/scatter and multicast only with compiler/runtime descriptors and bounds rules | DMA descriptor and compiler contracts |
 | QoS/starvation | Four classes and age promotion are proposed | Closed for NPU request egress: class priority, round-robin ties, and 256-cycle promotion interval | NPU HBM RTL beat contract plus NPU-017 regression |
 
-The beat-interface leaves are now implemented and verified. The remaining DMA approval gate still covers
-descriptor fields, IOVA translation, outstanding-tag allocation/release, scratchpad movement, cancellation,
-and conversion of beat status into an externally owned completion ABI. NPU-017 and NPU-018 do not approve
-or infer those contracts.
+The beat-interface leaves and the independent outstanding-tag lifetime tracker are now implemented and
+verified. The tracker detects duplicate allocation and unknown retirement across all 4,096 beat identities;
+it does not allocate local tag numbers. The remaining DMA approval gate still covers descriptor fields,
+IOVA translation, local-tag allocation policy, scratchpad movement, cancellation, and conversion of beat
+status into an externally owned completion ABI. NPU-017 through NPU-019 do not approve or infer those
+contracts.
 
 ## 4. External Inputs Required Before General Compute Issue
 
