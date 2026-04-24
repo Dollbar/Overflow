@@ -56,7 +56,8 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | Runtime completion queue/interrupt | external ABI adapter | firmware/runtime | `EXTERNAL / HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior are externally owned and require `specs/abi/` |
 | Internal DMA descriptor | decoded-command sink/scheduler | DMA frontend | `HOLD` | Transfer type, finite widths, chaining, protection, cancellation, and fault fields are not frozen |
 | HBM RTL request lanes | DMA frontend | memory attachment | `BASELINED` | ADR-0002 and `npu_hbm_rtl.md` freeze five 128-byte lanes, finite address/tag fields, stable backpressure, ordering, and reset |
-| HBM RTL response retirement | memory attachment | DMA frontend | `BASELINED / VERIFIED LEAF` | Five-lane elastic capture, ordered tag routing, malformed-partition drop, and sixteen channel outputs are verified by NPU-018; outstanding-tag lifetime and runtime fault propagation remain part of the held DMA mover contract |
+| HBM RTL response retirement | memory attachment | DMA frontend | `BASELINED / VERIFIED LEAF` | Five-lane elastic capture, ordered tag routing, malformed-partition drop, and sixteen channel outputs are verified by NPU-018 |
+| DMA local-tag allocation and lifetime | DMA beat buffers and response consumers | HBM egress and DMA scheduler | `BASELINED / VERIFIED LEAF` | ADR-0002 tag geometry plus NPU DMA data-path contract; allocator and tracker are verified by NPU-019..020; cancellation reclamation remains held |
 | Pod-shared SRAM client request | DMA/compute/NoC | shared SRAM | `HOLD` | Arbitration, ownership, ECC, byte enables, ordering, and starvation policy are not frozen |
 | NoC packet/credit link | pod clients | pod router | `HOLD` | Flit, VC, routing, credit, ordering, fault, and reset fields require a NoC contract |
 | KDLink injection/ejection | pod | KDLink adapter | `HOLD` | Must use a versioned logical packet adapter; implicit width conversion is prohibited |
@@ -118,6 +119,7 @@ The following work is admitted now:
 - assertions and counters that do not escape the current compute contract;
 - the frozen HBM request egress and response-routing leaves, without descriptor, translation, or ABI
   semantics; and
+- local-tag allocation and outstanding-lifetime leaves using only the frozen ADR-0002 tag geometry; and
 - NPU consuming-specification and functional-model work for the decoded-command sink, DMA,
   shared-SRAM, and NoC channels.
 
@@ -125,7 +127,7 @@ The following work is blocked:
 
 - production KD-ISA decode, host command queue, or runtime completion-queue RTL, which is outside this
   NPU workstream;
-- DMA descriptors, address translation, outstanding-tag allocation/release, runtime fault conversion, and
+- DMA descriptors, address translation, cancellation reclamation, runtime fault conversion, and
   scratchpad movement beyond the frozen HBM beat interface;
 - pod-shared SRAM arbitration or ECC response fields exposed to clients;
 - independent Vector or general M/N/K descriptor encodings;

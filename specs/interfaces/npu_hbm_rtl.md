@@ -96,7 +96,14 @@ payload/QoS field stable until `request_ready_o` completes the transfer. `reques
 request was loaded into one physical HBM lane; speculative queue admission is prohibited at this boundary.
 Pipelining may delay an eligible request but must not reduce the five-beat-per-cycle saturated issue rate.
 
-## 6. Outstanding-Tag Tracker
+## 6. Local-Tag Allocation and Outstanding Tracking
+
+The local-tag allocator reserves one of 256 identities owned by each logical DMA channel before a beat is
+placed in a channel beat buffer. The allocator accepts one claim and one release opportunity per channel
+per cycle. A tag is released only after its response is consumed. Released tags become visible to the
+allocator on the following cycle, avoiding a combinational response-to-allocation priority path while
+preserving one claim and one release per channel per cycle after initial turnover. Detailed claim/release
+semantics are defined in `npu_dma_data_path_v0.1.md`.
 
 The NPU DMA tag tracker implements the ADR-0002 identity space as sixteen independent sets of 256
 channel-local tags. An allocation is committed only after the corresponding request is accepted by the
@@ -158,3 +165,6 @@ The outstanding-tag tracker additionally requires exhaustive fill and drain of a
 duplicate-allocation and unknown-retirement injection, same-cycle retirement and reuse, randomized
 bitmap scoreboarding, telemetry-pipeline checks, zero-warning lint and synthesis-readiness, and the same
 mapped 1 GHz generic STA gate.
+
+The local-tag allocator requires the corresponding exhaustive claim/drain, full-pool failure,
+release/reclaim turnover, unknown-release, randomized free-bitmap, and mapped 1 GHz generic STA evidence.

@@ -31,6 +31,13 @@ reinterpretation. A wrong-partition response is consumed and dropped with a stic
 generic buffer only in the supplied generic STA techmap. The selected KD28 flow must replace that mapping
 with cells from its approved standard-cell library.
 
-Descriptor address generation, outstanding-tag allocation/release, scratchpad movement, translation,
-fault conversion into the external completion ABI, and CDC remain separate work packages. These modules
-do not implement an HBM controller or PHY.
+`npu_dma_local_tag_allocator` reserves and releases the 256 local identities owned by each of the sixteen
+DMA channels. It uses a two-level free-bitmap priority selection, supports one claim and one release per
+channel per cycle, detects full-pool claims and unknown releases, and feeds the independently verified
+outstanding tracker. A released tag becomes allocatable on the following cycle so the response path does
+not cross the free-tag priority tree in one timing stage.
+
+The default HBM-to-compute path stages through SRAM inside the owning pod and does not traverse the global
+NoC. Cross-pod DMA and multicast require the future NoC injection/ejection path. Descriptor address
+generation, scratchpad movement, translation, NoC packets, fault conversion into the external completion
+ABI, and CDC remain separate work packages. These modules do not implement an HBM controller or PHY.
