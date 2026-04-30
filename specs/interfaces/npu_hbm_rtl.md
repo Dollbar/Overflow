@@ -96,6 +96,11 @@ payload/QoS field stable until `request_ready_o` completes the transfer. `reques
 request was loaded into one physical HBM lane; speculative queue admission is prohibited at this boundary.
 Pipelining may delay an eligible request but must not reduce the five-beat-per-cycle saturated issue rate.
 
+The integrated boundary places one non-fall-through beat buffer in front of each logical channel. A
+dequeued channel becomes available to its producer on the following cycle. Because sixteen independently
+refillable buffers feed five physical lanes, this per-channel turnover rule does not reduce the aggregate
+five-beat-per-cycle saturation requirement.
+
 ## 6. Local-Tag Allocation and Outstanding Tracking
 
 The local-tag allocator reserves one of 256 identities owned by each logical DMA channel before a beat is
@@ -168,3 +173,7 @@ mapped 1 GHz generic STA gate.
 
 The local-tag allocator requires the corresponding exhaustive claim/drain, full-pool failure,
 release/reclaim turnover, unknown-release, randomized free-bitmap, and mapped 1 GHz generic STA evidence.
+
+The integrated boundary requires end-to-end mixed read/write request and response scoreboarding across all
+sixteen channels, independently randomized request and consumer backpressure, complete tag reclamation,
+counter drain, zero-warning lint, synthesis-readiness, and mapped 1 GHz generic STA.

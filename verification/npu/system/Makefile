@@ -43,6 +43,20 @@ ALLOCATOR_TB := $(THIS_DIR)/tb/tb_npu_dma_local_tag_allocator.sv
 ALLOCATOR_TOP := tb_npu_dma_local_tag_allocator
 ALLOCATOR_SIM_DIR := $(BUILD_DIR)/verilator/$(ALLOCATOR_TOP)
 ALLOCATOR_SIM_BIN := $(ALLOCATOR_SIM_DIR)/V$(ALLOCATOR_TOP)
+BOUNDARY_RTL := \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_control_buffer.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_rank_count16.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_request_slot.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_response_channel.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_local_tag_allocator.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_egress.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_response_router.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_tag_tracker.sv \
+	$(REPO_ROOT)/rtl/npu/dma/npu_dma_hbm_boundary.sv
+BOUNDARY_TB := $(THIS_DIR)/tb/tb_npu_dma_hbm_boundary.sv
+BOUNDARY_TOP := tb_npu_dma_hbm_boundary
+BOUNDARY_SIM_DIR := $(BUILD_DIR)/verilator/$(BOUNDARY_TOP)
+BOUNDARY_SIM_BIN := $(BOUNDARY_SIM_DIR)/V$(BOUNDARY_TOP)
 STA_DIR := $(THIS_DIR)/STA
 STA_BUILD_DIR := $(BUILD_DIR)/sta
 STA_SCRIPT := $(STA_DIR)/scripts/sta_generic.tcl
@@ -60,15 +74,19 @@ TRACKER_SDC := $(STA_DIR)/sdc/npu_dma_hbm_tag_tracker_1ghz.sdc
 ALLOCATOR_NETLIST := $(STA_BUILD_DIR)/npu_dma_local_tag_allocator_mapped.v
 ALLOCATOR_JSON := $(STA_BUILD_DIR)/npu_dma_local_tag_allocator_mapped.json
 ALLOCATOR_SDC := $(STA_DIR)/sdc/npu_dma_local_tag_allocator_1ghz.sdc
+BOUNDARY_NETLIST := $(STA_BUILD_DIR)/npu_dma_hbm_boundary_mapped.v
+BOUNDARY_JSON := $(STA_BUILD_DIR)/npu_dma_hbm_boundary_mapped.json
+BOUNDARY_SDC := $(STA_DIR)/sdc/npu_dma_hbm_boundary_1ghz.sdc
 FLAGS := --language 1800-2017 -Wall --timing
 
-.PHONY: lint lint-egress lint-response lint-tracker lint-allocator \
+.PHONY: lint lint-egress lint-response lint-tracker lint-allocator lint-boundary \
 	synth-readiness synth-egress synth-response synth-tracker synth-allocator \
-	sim sim-egress sim-response sim-tracker sim-allocator \
-	sta-generic sta-egress sta-response sta-tracker sta-allocator \
+	synth-boundary sim sim-egress sim-response sim-tracker sim-allocator \
+	sim-boundary sta-generic sta-egress sta-response sta-tracker sta-allocator \
+	sta-boundary \
 	check-liberty test clean
 
-lint: lint-egress lint-response lint-tracker lint-allocator
+lint: lint-egress lint-response lint-tracker lint-allocator lint-boundary
 
 lint-egress:
 	$(VERILATOR) $(FLAGS) --lint-only --top-module $(EGRESS_TOP) \
@@ -86,7 +104,12 @@ lint-allocator:
 	$(VERILATOR) $(FLAGS) --lint-only --top-module $(ALLOCATOR_TOP) \
 		$(ALLOCATOR_RTL) $(ALLOCATOR_TB)
 
-synth-readiness: synth-egress synth-response synth-tracker synth-allocator
+lint-boundary:
+	$(VERILATOR) $(FLAGS) --lint-only --top-module $(BOUNDARY_TOP) \
+		$(BOUNDARY_RTL) $(BOUNDARY_TB)
+
+synth-readiness: synth-egress synth-response synth-tracker synth-allocator \
+	synth-boundary
 
 synth-egress:
 	$(YOSYS) -q -p 'read_verilog -sv $(EGRESS_RTL); hierarchy -top npu_dma_hbm_egress; proc; opt; check; stat'
@@ -99,6 +122,9 @@ synth-tracker:
 
 synth-allocator:
 	$(YOSYS) -q -p 'read_verilog -sv $(ALLOCATOR_RTL); hierarchy -top npu_dma_local_tag_allocator; proc; opt; check; stat'
+
+synth-boundary:
+	$(YOSYS) -q -p 'read_verilog -sv $(BOUNDARY_RTL); hierarchy -top npu_dma_hbm_boundary; proc; opt; check; stat'
 
 $(EGRESS_SIM_BIN): $(EGRESS_RTL) $(EGRESS_TB)
 	@mkdir -p $(EGRESS_SIM_DIR)
@@ -120,7 +146,12 @@ $(ALLOCATOR_SIM_BIN): $(ALLOCATOR_RTL) $(ALLOCATOR_TB)
 	$(VERILATOR) $(FLAGS) --binary --top-module $(ALLOCATOR_TOP) \
 		--Mdir $(ALLOCATOR_SIM_DIR) $(ALLOCATOR_RTL) $(ALLOCATOR_TB)
 
-sim: sim-egress sim-response sim-tracker sim-allocator
+$(BOUNDARY_SIM_BIN): $(BOUNDARY_RTL) $(BOUNDARY_TB)
+	@mkdir -p $(BOUNDARY_SIM_DIR)
+	$(VERILATOR) $(FLAGS) --binary --top-module $(BOUNDARY_TOP) \
+		--Mdir $(BOUNDARY_SIM_DIR) $(BOUNDARY_RTL) $(BOUNDARY_TB)
+
+sim: sim-egress sim-response sim-tracker sim-allocator sim-boundary
 
 sim-egress: $(EGRESS_SIM_BIN)
 	$(EGRESS_SIM_BIN)
@@ -133,6 +164,9 @@ sim-tracker: $(TRACKER_SIM_BIN)
 
 sim-allocator: $(ALLOCATOR_SIM_BIN)
 	$(ALLOCATOR_SIM_BIN)
+
+sim-boundary: $(BOUNDARY_SIM_BIN)
+	$(BOUNDARY_SIM_BIN)
 
 check-liberty:
 	@test -n "$(LIBERTY)" || { echo "LIBERTY must name a readable standard-cell Liberty file"; exit 2; }
@@ -166,7 +200,14 @@ $(ALLOCATOR_NETLIST): $(ALLOCATOR_RTL) $(SYNTH_SCRIPT) $(CELL_MAP) | check-liber
 		NETLIST="$(ALLOCATOR_NETLIST)" \
 		JSON="$(ALLOCATOR_JSON)" $(YOSYS) -q -c $(SYNTH_SCRIPT)
 
-sta-generic: sta-egress sta-response sta-tracker sta-allocator
+$(BOUNDARY_NETLIST): $(BOUNDARY_RTL) $(SYNTH_SCRIPT) $(CELL_MAP) | check-liberty
+	@mkdir -p $(STA_BUILD_DIR)
+	LIBERTY="$(abspath $(LIBERTY))" RTL="$(BOUNDARY_RTL)" \
+		TOP=npu_dma_hbm_boundary CELL_MAP="$(CELL_MAP)" \
+		NETLIST="$(BOUNDARY_NETLIST)" \
+		JSON="$(BOUNDARY_JSON)" $(YOSYS) -q -c $(SYNTH_SCRIPT)
+
+sta-generic: sta-egress sta-response sta-tracker sta-allocator sta-boundary
 
 sta-egress: $(EGRESS_NETLIST)
 	LIBERTY="$(abspath $(LIBERTY))" NETLIST="$(EGRESS_NETLIST)" \
@@ -195,6 +236,14 @@ sta-tracker: $(TRACKER_NETLIST)
 sta-allocator: $(ALLOCATOR_NETLIST)
 	LIBERTY="$(abspath $(LIBERTY))" NETLIST="$(ALLOCATOR_NETLIST)" \
 		TOP=npu_dma_local_tag_allocator SDC="$(ALLOCATOR_SDC)" \
+		CLOCK_PERIOD_NS=$(CLOCK_PERIOD_NS) \
+		CLOCK_UNCERTAINTY_NS=$(CLOCK_UNCERTAINTY_NS) \
+		INPUT_DELAY_NS=$(INPUT_DELAY_NS) OUTPUT_DELAY_NS=$(OUTPUT_DELAY_NS) \
+		OUTPUT_LOAD_PF=$(OUTPUT_LOAD_PF) $(OPENSTA) $(STA_SCRIPT)
+
+sta-boundary: $(BOUNDARY_NETLIST)
+	LIBERTY="$(abspath $(LIBERTY))" NETLIST="$(BOUNDARY_NETLIST)" \
+		TOP=npu_dma_hbm_boundary SDC="$(BOUNDARY_SDC)" \
 		CLOCK_PERIOD_NS=$(CLOCK_PERIOD_NS) \
 		CLOCK_UNCERTAINTY_NS=$(CLOCK_UNCERTAINTY_NS) \
 		INPUT_DELAY_NS=$(INPUT_DELAY_NS) OUTPUT_DELAY_NS=$(OUTPUT_DELAY_NS) \

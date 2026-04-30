@@ -37,6 +37,12 @@ channel per cycle, detects full-pool claims and unknown releases, and feeds the 
 outstanding tracker. A released tag becomes allocatable on the following cycle so the response path does
 not cross the free-tag priority tree in one timing stage.
 
+`npu_dma_hbm_boundary` integrates the request egress, response router, allocator, tracker, and one complete
+beat buffer per logical channel. A source handshake reserves and returns a tag; egress acceptance records
+it as outstanding; response consumption retires it and releases only a tracker-known identity. Channel
+buffers use a one-cycle non-fall-through turnover and replicated 32-bit capture enables so the combined
+top closes the logical 1 GHz generic-cell gate without a high-fanout ready-to-capture path.
+
 The default HBM-to-compute path stages through SRAM inside the owning pod and does not traverse the global
 NoC. Cross-pod DMA and multicast require the future NoC injection/ejection path. Descriptor address
 generation, scratchpad movement, translation, NoC packets, fault conversion into the external completion
