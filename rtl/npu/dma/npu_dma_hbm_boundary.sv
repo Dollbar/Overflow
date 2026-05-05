@@ -66,7 +66,14 @@ module npu_dma_hbm_boundary #(
     output logic [63:0] accepted_responses_o,
     output logic [63:0] delivered_responses_o,
     output logic [63:0] dropped_responses_o,
-    output logic [63:0] response_backpressure_cycles_o
+    output logic [63:0] response_backpressure_cycles_o,
+    output logic [63:0] ok_responses_o,
+    output logic [63:0] corrected_responses_o,
+    output logic [63:0] uncorrectable_responses_o,
+    output logic [63:0] data_error_responses_o,
+    output logic corrected_seen_o,
+    output logic uncorrectable_seen_o,
+    output logic data_error_seen_o
 );
     localparam int unsigned DATA_WIDTH = DATA_BYTES * 8;
     localparam int unsigned CAPTURE_GROUP_BITS = 32;
@@ -335,6 +342,22 @@ module npu_dma_hbm_boundary #(
         .empty_o(tracker_empty),
         .full_o(tracker_full),
         .outstanding_count_o
+    );
+
+    npu_dma_hbm_status_monitor #(
+        .CHANNELS(CHANNELS)
+    ) u_status_monitor (
+        .clk_i,
+        .rst_i,
+        .response_commit_i(response_delivered),
+        .response_status_i(channel_response_status_o),
+        .ok_responses_o,
+        .corrected_responses_o,
+        .uncorrectable_responses_o,
+        .data_error_responses_o,
+        .corrected_seen_o,
+        .uncorrectable_seen_o,
+        .data_error_seen_o
     );
 
     assign busy_o = (|buffer_valid_q) || egress_busy || response_busy ||

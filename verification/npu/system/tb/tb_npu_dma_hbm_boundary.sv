@@ -59,6 +59,13 @@ module tb_npu_dma_hbm_boundary;
     logic [63:0] delivered_responses_o;
     logic [63:0] dropped_responses_o;
     logic [63:0] response_backpressure_cycles_o;
+    logic [63:0] ok_responses_o;
+    logic [63:0] corrected_responses_o;
+    logic [63:0] uncorrectable_responses_o;
+    logic [63:0] data_error_responses_o;
+    logic corrected_seen_o;
+    logic uncorrectable_seen_o;
+    logic data_error_seen_o;
 
     logic [TOTAL_TAGS-1:0] reserved_tag;
     logic [TOTAL_TAGS-1:0] issued_tag;
@@ -87,6 +94,7 @@ module tb_npu_dma_hbm_boundary;
     integer response_tail;
     integer delivered_count;
     integer five_lane_issue_cycles;
+    integer status_response_count [0:3];
 
     npu_dma_hbm_boundary #(
         .PARTITION_ID(PARTITION_ID)
@@ -132,7 +140,14 @@ module tb_npu_dma_hbm_boundary;
         .accepted_responses_o,
         .delivered_responses_o,
         .dropped_responses_o,
-        .response_backpressure_cycles_o
+        .response_backpressure_cycles_o,
+        .ok_responses_o,
+        .corrected_responses_o,
+        .uncorrectable_responses_o,
+        .data_error_responses_o,
+        .corrected_seen_o,
+        .uncorrectable_seen_o,
+        .data_error_seen_o
     );
 
     always #0.5 clk_i = ~clk_i;
@@ -244,7 +259,7 @@ module tb_npu_dma_hbm_boundary;
                     response_data = hbm_request_write_o[lane_index] ?
                         '0 : hbm_request_write_data_o[
                             lane_index*DATA_WIDTH +: DATA_WIDTH];
-                    response_status = (hbm_tag[5:0] == 6'h15) ? 2'd1 : 2'd0;
+                    response_status = hbm_tag[1:0];
                     expected_response_data[full_tag_index] = response_data;
                     expected_response_status[full_tag_index] = response_status;
                     response_tag_queue[tail_next] = hbm_tag;
@@ -290,6 +305,10 @@ module tb_npu_dma_hbm_boundary;
                     reserved_tag[full_tag_index] = 1'b0;
                     issued_tag[full_tag_index] = 1'b0;
                     delivered_count = delivered_count + 1;
+                    status_response_count[int'(channel_response_status_o[
+                        channel_index*2 +: 2])] =
+                        status_response_count[int'(channel_response_status_o[
+                            channel_index*2 +: 2])] + 1;
                     channel_response_count[channel_index] =
                         channel_response_count[channel_index] + 1;
                 end
@@ -379,6 +398,10 @@ module tb_npu_dma_hbm_boundary;
         response_tail = 0;
         delivered_count = 0;
         five_lane_issue_cycles = 0;
+        status_response_count[0] = 0;
+        status_response_count[1] = 0;
+        status_response_count[2] = 0;
+        status_response_count[3] = 0;
         for (channel_index = 0; channel_index < CHANNELS;
              channel_index = channel_index + 1) begin
             next_sequence[channel_index] = 0;
@@ -416,7 +439,14 @@ module tb_npu_dma_hbm_boundary;
             (delivered_responses_o != 64'(TOTAL_REQUESTS)) ||
             (dropped_responses_o != 64'd0) ||
             (request_backpressure_cycles_o == 64'd0) ||
-            (response_backpressure_cycles_o == 64'd0)) begin
+            (response_backpressure_cycles_o == 64'd0) ||
+            (ok_responses_o != 64'(status_response_count[0])) ||
+            (corrected_responses_o != 64'(status_response_count[1])) ||
+            (uncorrectable_responses_o !=
+             64'(status_response_count[2])) ||
+            (data_error_responses_o != 64'(status_response_count[3])) ||
+            !corrected_seen_o || !uncorrectable_seen_o ||
+            !data_error_seen_o) begin
             $fatal(1, "boundary drain or telemetry mismatch");
         end
 
@@ -431,8 +461,10 @@ module tb_npu_dma_hbm_boundary;
             end
         end
 
-        $display("[RTL_SIM PASS] npu_dma_hbm_boundary accepted=%0d issued=%0d delivered=%0d five_lane_cycles=%0d request_bp=%0d response_bp=%0d",
+        $display("[RTL_SIM PASS] npu_dma_hbm_boundary accepted=%0d issued=%0d delivered=%0d status=%0d/%0d/%0d/%0d five_lane_cycles=%0d request_bp=%0d response_bp=%0d",
                  source_accepted_count, hbm_issued_count, delivered_count,
+                 status_response_count[0], status_response_count[1],
+                 status_response_count[2], status_response_count[3],
                  five_lane_issue_cycles,
                  request_backpressure_cycles_o,
                  response_backpressure_cycles_o);

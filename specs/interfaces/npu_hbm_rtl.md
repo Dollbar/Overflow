@@ -130,7 +130,19 @@ minimum 256-by-32 KD28 true-dual-port macro would waste 31 of 32 bits per entry 
 read-modify-write schedule that cannot preserve the required per-channel allocation-plus-retirement
 throughput.
 
-## 7. Ordering, Faults, and Exclusions
+## 7. Response Status Telemetry
+
+The NPU status monitor samples `status` only when the routed response is consumed by its destination DMA
+channel. It maintains independent 64-bit modulo counters for `OK`, `ECC_CORRECTED`, `ECC_UNCORRECTABLE`,
+and `DATA_ERROR`, plus reset-cleared sticky seen bits for the three non-OK classes. The aggregate counters
+lag consumption by two service-clock cycles; sticky observations lag the first matching consumption by one
+cycle. Software-visible register mapping and clear behavior other than reset are outside this contract.
+
+Status observation does not gate response retirement, outstanding-tag removal, or local-tag release. The
+monitor does not define replay, retryability, poison propagation, interrupts, a completion record, or an
+ABI error encoding.
+
+## 8. Ordering, Faults, and Exclusions
 
 Reads and writes share request lanes and the 625-byte/cycle long-run service budget. No implicit coherence,
 barrier, atomic operation, retry, cancellation, or address translation exists at this boundary. A status
@@ -141,7 +153,7 @@ This revision excludes burst headers, gather/scatter descriptors, protection dom
 completion ABI, HBM controller timing, and PHY behavior. Multi-beat DMA operations are sequences of tagged
 single-beat transfers.
 
-## 8. Required Evidence
+## 9. Required Evidence
 
 The NPU request egress requires:
 
@@ -176,4 +188,6 @@ release/reclaim turnover, unknown-release, randomized free-bitmap, and mapped 1 
 
 The integrated boundary requires end-to-end mixed read/write request and response scoreboarding across all
 sixteen channels, independently randomized request and consumer backpressure, complete tag reclamation,
-counter drain, zero-warning lint, synthesis-readiness, and mapped 1 GHz generic STA.
+counter drain, all four response-status classes, zero-warning lint, synthesis-readiness, and mapped 1 GHz
+generic STA. The status monitor additionally requires exact per-class accumulation under sixteen-channel
+simultaneous and randomized commits, sticky observation and reset clearing, and telemetry-pipeline drain.
