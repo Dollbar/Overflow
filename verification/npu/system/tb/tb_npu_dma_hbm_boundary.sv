@@ -19,6 +19,7 @@ module tb_npu_dma_hbm_boundary;
 
     logic clk_i;
     logic rst_i;
+    logic quiesce_i;
     logic [CHANNELS-1:0] channel_request_valid_i;
     logic [CHANNELS-1:0] channel_request_ready_o;
     logic [CHANNELS-1:0] channel_request_write_i;
@@ -49,9 +50,11 @@ module tb_npu_dma_hbm_boundary;
     logic [CHANNELS*DATA_WIDTH-1:0] channel_response_read_data_o;
     logic [CHANNELS*2-1:0] channel_response_status_o;
     logic busy_o;
+    logic quiesced_o;
     logic protocol_error_o;
     logic outstanding_full_o;
     logic [12:0] outstanding_count_o;
+    logic [12:0] outstanding_high_watermark_o;
     logic [63:0] accepted_beats_o;
     logic [63:0] issued_beats_o;
     logic [63:0] request_backpressure_cycles_o;
@@ -95,12 +98,15 @@ module tb_npu_dma_hbm_boundary;
     integer delivered_count;
     integer five_lane_issue_cycles;
     integer status_response_count [0:3];
+    integer observed_outstanding_high_watermark;
+    integer paused_accept_count;
 
     npu_dma_hbm_boundary #(
         .PARTITION_ID(PARTITION_ID)
     ) dut (
         .clk_i,
         .rst_i,
+        .quiesce_i,
         .channel_request_valid_i,
         .channel_request_ready_o,
         .channel_request_write_i,
@@ -131,9 +137,11 @@ module tb_npu_dma_hbm_boundary;
         .channel_response_read_data_o,
         .channel_response_status_o,
         .busy_o,
+        .quiesced_o,
         .protocol_error_o,
         .outstanding_full_o,
         .outstanding_count_o,
+        .outstanding_high_watermark_o,
         .accepted_beats_o,
         .issued_beats_o,
         .request_backpressure_cycles_o,
@@ -189,7 +197,16 @@ module tb_npu_dma_hbm_boundary;
         if (rst_i) begin
             response_head = 0;
             response_tail = 0;
+            observed_outstanding_high_watermark = 0;
         end else begin
+            if (quiesce_i && (channel_request_ready_o != '0)) begin
+                $fatal(1, "boundary admitted a request while quiescing");
+            end
+            if (int'(outstanding_count_o) >
+                observed_outstanding_high_watermark) begin
+                observed_outstanding_high_watermark =
+                    int'(outstanding_count_o);
+            end
             if ((^hbm_response_ready_o) === 1'bx) begin
                 $fatal(1, "boundary response ready contains unknown state");
             end
@@ -378,6 +395,7 @@ module tb_npu_dma_hbm_boundary;
 
         clk_i = 1'b0;
         rst_i = 1'b1;
+        quiesce_i = 1'b0;
         channel_request_valid_i = '0;
         channel_request_write_i = '0;
         channel_request_address_i = '0;
@@ -398,6 +416,8 @@ module tb_npu_dma_hbm_boundary;
         response_tail = 0;
         delivered_count = 0;
         five_lane_issue_cycles = 0;
+        observed_outstanding_high_watermark = 0;
+        paused_accept_count = 0;
         status_response_count[0] = 0;
         status_response_count[1] = 0;
         status_response_count[2] = 0;
@@ -416,6 +436,26 @@ module tb_npu_dma_hbm_boundary;
         rst_i = 1'b0;
         drive_enable = 1'b1;
 
+        wait (source_accepted_count >= TOTAL_REQUESTS/4);
+        @(negedge clk_i);
+        quiesce_i = 1'b1;
+        paused_accept_count = source_accepted_count;
+
+        wait (quiesced_o);
+        repeat (4) @(posedge clk_i);
+        #0.01;
+        if ((source_accepted_count != paused_accept_count) || busy_o ||
+            (outstanding_count_o != 13'd0)) begin
+            $fatal(1, "boundary quiesce did not drain without admission");
+        end
+
+        @(negedge clk_i);
+        quiesce_i = 1'b0;
+        #0.01;
+        if (quiesced_o) begin
+            $fatal(1, "boundary quiesced indication did not clear");
+        end
+
         wait (source_accepted_count == TOTAL_REQUESTS);
         @(negedge clk_i);
         drive_enable = 1'b0;
@@ -432,7 +472,11 @@ module tb_npu_dma_hbm_boundary;
             (five_lane_issue_cycles == 0) ||
             (reserved_tag != '0) || (issued_tag != '0) ||
             protocol_error_o || outstanding_full_o ||
+            quiesced_o ||
             (outstanding_count_o != 13'd0) ||
+            (outstanding_high_watermark_o !=
+             13'(observed_outstanding_high_watermark)) ||
+            (outstanding_high_watermark_o == 13'd0) ||
             (accepted_beats_o != 64'(TOTAL_REQUESTS)) ||
             (issued_beats_o != 64'(TOTAL_REQUESTS)) ||
             (accepted_responses_o != 64'(TOTAL_REQUESTS)) ||
@@ -461,10 +505,11 @@ module tb_npu_dma_hbm_boundary;
             end
         end
 
-        $display("[RTL_SIM PASS] npu_dma_hbm_boundary accepted=%0d issued=%0d delivered=%0d status=%0d/%0d/%0d/%0d five_lane_cycles=%0d request_bp=%0d response_bp=%0d",
+        $display("[RTL_SIM PASS] npu_dma_hbm_boundary accepted=%0d issued=%0d delivered=%0d status=%0d/%0d/%0d/%0d high_watermark=%0d five_lane_cycles=%0d request_bp=%0d response_bp=%0d",
                  source_accepted_count, hbm_issued_count, delivered_count,
                  status_response_count[0], status_response_count[1],
                  status_response_count[2], status_response_count[3],
+                 outstanding_high_watermark_o,
                  five_lane_issue_cycles,
                  request_backpressure_cycles_o,
                  response_backpressure_cycles_o);

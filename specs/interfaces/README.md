@@ -16,7 +16,7 @@ and tests must not depend on behavior absent from these contracts.
   backpressure boundary used by the portable system model.
 - [`npu_hbm_rtl.md`](npu_hbm_rtl.md) freezes the finite five-lane per-pod NPU HBM beat interface, its
   NPU-local DMA arbitration contract, the 4,096-identity tag-lifetime tracker behavior, and delivered-beat
-  status telemetry.
+  status telemetry plus lossless local quiesce.
 - [`npu_dma_data_path_v0.1.md`](npu_dma_data_path_v0.1.md) defines the admitted local-tag allocator and
   integrated beat boundary, and separates the pod-local HBM/SRAM path from the held cross-pod NoC mover
   path.

@@ -142,7 +142,25 @@ Status observation does not gate response retirement, outstanding-tag removal, o
 monitor does not define replay, retryability, poison propagation, interrupts, a completion record, or an
 ABI error encoding.
 
-## 8. Ordering, Faults, and Exclusions
+## 8. Lossless Quiesce and Occupancy Telemetry
+
+`quiesce_i` is a synchronous NPU-local level control. While asserted, the integrated boundary drives all
+channel request-ready outputs low and creates no new beat-buffer or local-tag claims. Channel producers
+must retain any pending ready/valid request unchanged. Requests already accepted before assertion continue
+through the channel buffers, HBM egress, response router, tag retirement, and status telemetry without
+cancellation or loss.
+
+`quiesced_o` asserts only while `quiesce_i` remains high and the boundary has observed three consecutive
+service-clock cycles with no buffered, issued, response-buffered, or outstanding transaction. The three
+idle cycles cover the existing two-cycle aggregate telemetry pipelines. A lossless reset sequence may
+assert reset after `quiesced_o`; abrupt reset, discard, timeout, and reset-abort reclamation remain outside
+this contract. Deasserting `quiesce_i` clears `quiesced_o` and restores normal admission eligibility.
+
+`outstanding_high_watermark_o` records the greatest aggregate outstanding-count telemetry observed since
+reset. It inherits the count telemetry's two-cycle lag, clears only on reset, and is diagnostic rather than
+an admission threshold. Quiesce and high-watermark telemetry do not define a runtime register mapping.
+
+## 9. Ordering, Faults, and Exclusions
 
 Reads and writes share request lanes and the 625-byte/cycle long-run service budget. No implicit coherence,
 barrier, atomic operation, retry, cancellation, or address translation exists at this boundary. A status
@@ -153,7 +171,7 @@ This revision excludes burst headers, gather/scatter descriptors, protection dom
 completion ABI, HBM controller timing, and PHY behavior. Multi-beat DMA operations are sequences of tagged
 single-beat transfers.
 
-## 9. Required Evidence
+## 10. Required Evidence
 
 The NPU request egress requires:
 
@@ -191,3 +209,7 @@ sixteen channels, independently randomized request and consumer backpressure, co
 counter drain, all four response-status classes, zero-warning lint, synthesis-readiness, and mapped 1 GHz
 generic STA. The status monitor additionally requires exact per-class accumulation under sixteen-channel
 simultaneous and randomized commits, sticky observation and reset clearing, and telemetry-pipeline drain.
+
+Lossless-quiesce evidence additionally requires assertion during active mixed traffic, immediate admission
+closure, complete drain of accepted work, three-cycle settled indication, no tag or payload loss, resumed
+admission after deassertion, exact high-watermark comparison, and timing constraints on the control input.
