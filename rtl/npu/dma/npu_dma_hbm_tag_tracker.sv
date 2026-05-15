@@ -52,6 +52,10 @@ module npu_dma_hbm_tag_tracker #(
             logic [15:0] allocation_high_decode;
             logic [15:0] retirement_low_decode;
             logic [15:0] retirement_high_decode;
+            logic [15:0] allocation_low_decode_buffered;
+            logic [15:0] allocation_high_decode_buffered;
+            logic [15:0] retirement_low_decode_buffered;
+            logic [15:0] retirement_high_decode_buffered;
 
             for (genvar nibble_value = 0; nibble_value < 16;
                  nibble_value = nibble_value + 1) begin : g_nibble_decode
@@ -69,18 +73,34 @@ module npu_dma_hbm_tag_tracker #(
                     retirement_local_tag_i[
                         channel_index*LOCAL_TAG_WIDTH + 4 +: 4] ==
                     4'(nibble_value);
+                npu_dma_hbm_control_buffer u_allocation_low_buffer (
+                    .data_i(allocation_low_decode[nibble_value]),
+                    .data_o(allocation_low_decode_buffered[nibble_value])
+                );
+                npu_dma_hbm_control_buffer u_allocation_high_buffer (
+                    .data_i(allocation_high_decode[nibble_value]),
+                    .data_o(allocation_high_decode_buffered[nibble_value])
+                );
+                npu_dma_hbm_control_buffer u_retirement_low_buffer (
+                    .data_i(retirement_low_decode[nibble_value]),
+                    .data_o(retirement_low_decode_buffered[nibble_value])
+                );
+                npu_dma_hbm_control_buffer u_retirement_high_buffer (
+                    .data_i(retirement_high_decode[nibble_value]),
+                    .data_o(retirement_high_decode_buffered[nibble_value])
+                );
             end
 
             for (genvar tag_index = 0; tag_index < TAGS_PER_CHANNEL;
                  tag_index = tag_index + 1) begin : g_tag_decode
                 assign allocation_onehot[
                     channel_index*TAGS_PER_CHANNEL + tag_index] =
-                    allocation_high_decode[tag_index/16] &&
-                    allocation_low_decode[tag_index%16];
+                    allocation_high_decode_buffered[tag_index/16] &&
+                    allocation_low_decode_buffered[tag_index%16];
                 assign retirement_onehot[
                     channel_index*TAGS_PER_CHANNEL + tag_index] =
-                    retirement_high_decode[tag_index/16] &&
-                    retirement_low_decode[tag_index%16];
+                    retirement_high_decode_buffered[tag_index/16] &&
+                    retirement_low_decode_buffered[tag_index%16];
             end
 
             assign retirement_known_o[channel_index] =

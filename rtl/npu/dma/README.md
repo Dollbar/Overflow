@@ -4,7 +4,7 @@ Owns the NPU-side descriptor scheduler, address generation, scratchpad mover, co
 and data credits. `rtl/memory/` owns the abstract HBM transaction machinery and external-memory behavior.
 The boundary between these directories must be versioned in `specs/interfaces/`.
 
-The P0 proposal provisions one engine per pod, 16 logical channels, 64 active descriptors, and 4096 x
+The v0.1 implementation provisions one engine per pod, 16 logical channels, 64 total command contexts, and 4096 x
 128-byte in-flight data beats. At 625 GB/s this 512 KiB window covers the declared 800 ns stress latency
 (`ANALYTICAL`). Descriptor/address widths, ordering, cancellation, protection, and errors remain `HOLD`.
 Acceptance requires stride, gather/scatter, alignment, backpressure, fault, QoS, and saturation RTL tests.
@@ -46,15 +46,28 @@ change tag retirement, or define a runtime completion status.
 beat buffer per logical channel. A source handshake reserves and returns a tag; egress acceptance records
 it as outstanding; response consumption retires it, records its frozen two-bit status, and releases only a
 tracker-known identity. Channel buffers use a one-cycle non-fall-through turnover and replicated 32-bit
-capture enables so the combined
-top closes the logical 1 GHz generic-cell gate without a high-fanout ready-to-capture path.
+capture enables. A registered per-channel tag-credit mirror drives admission, egress acceptance is
+registered before outstanding allocation, and consumed response tags use a one-cycle retirement pipeline.
+These stages preserve five-lane throughput while closing the logical 1 GHz generic-cell gate.
 
 The integrated boundary also provides synchronous lossless quiesce. Quiesce closes new channel admission
 while all accepted work drains normally, then reports a settled state after three idle cycles so delayed
 telemetry is complete. A reset-cleared outstanding high-watermark records observed pressure. These local
 mechanisms do not cancel, replay, time out, or discard a transaction.
 
+`npu_dma_pkg.sv` defines the NPU-owned, already-decoded and translated DMA v0.1 command and internal
+completion records. `npu_dma_address_generator.sv` expands their aligned X/Y/Z counts and independent HBM
+and SRAM row/plane strides into stable full-beat address pairs. It checks version, operation, count,
+alignment, capacity, generated-address overflow, and the 16 MiB command limit without interpreting KD-ISA
+or an IOVA.
+
+`npu_dma_channel_mover` implements one bidirectional channel with tag-indexed HBM-read metadata, finite
+request/response skid buffers, SRAM backpressure, drain-on-error completion, and stable ready/valid
+payloads. `npu_dma_engine` combines sixteen movers, four total command contexts per channel, and the
+five-lane HBM boundary. `npu_dma_pod` connects that engine directly to the 16 MiB pod-shared SRAM; this
+pod-local path does not consume NoC bandwidth.
+
 The default HBM-to-compute path stages through SRAM inside the owning pod and does not traverse the global
-NoC. Cross-pod DMA and multicast require the future NoC injection/ejection path. Descriptor address
-generation, scratchpad movement, translation, NoC packets, fault conversion into the external completion
-ABI, and CDC remain separate work packages. These modules do not implement an HBM controller or PHY.
+NoC. Cross-pod DMA and multicast require the future NoC injection/ejection path. Translation, NoC packets,
+fault conversion into the external completion ABI, and CDC remain separate work packages. These modules
+do not implement an HBM controller or PHY.

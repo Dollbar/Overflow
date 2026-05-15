@@ -20,6 +20,10 @@ and tests must not depend on behavior absent from these contracts.
 - [`npu_dma_data_path_v0.1.md`](npu_dma_data_path_v0.1.md) defines the admitted local-tag allocator and
   integrated beat boundary, and separates the pod-local HBM/SRAM path from the held cross-pod NoC mover
   path.
+- [`npu_dma_command_v0.1.md`](npu_dma_command_v0.1.md) freezes the already-decoded and translated local DMA
+  command, 1D/2D/3D address generation, HBM-to-SRAM movement, and internal completion contract.
+- [`npu_pod_shared_sram_v0.1.md`](npu_pod_shared_sram_v0.1.md) defines the 16 MiB, eight-bank, sixteen-client
+  pod-local DMA scratchpad and its fixed KD28 SDP macro mapping.
 - [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 

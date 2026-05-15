@@ -15,6 +15,6 @@ set synchronous_inputs [get_ports {
     channel_response_ready_i*
 }]
 set_input_delay $input_delay -clock clk_i $synchronous_inputs
-set_driving_cell -lib_cell BUFX1 -pin Y $synchronous_inputs
+set_driving_cell -lib_cell $::env(DRIVING_CELL) -pin $::env(DRIVING_PIN) $synchronous_inputs
 set_output_delay $output_delay -clock clk_i [all_outputs]
 set_load $output_load [all_outputs]

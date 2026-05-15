@@ -35,6 +35,10 @@ module npu_dma_hbm_status_monitor #(
     logic [4:0] corrected_increment_q;
     logic [4:0] uncorrectable_increment_q;
     logic [4:0] data_error_increment_q;
+    logic [COUNTER_WIDTH-1:0] ok_responses_next;
+    logic [COUNTER_WIDTH-1:0] corrected_responses_next;
+    logic [COUNTER_WIDTH-1:0] uncorrectable_responses_next;
+    logic [COUNTER_WIDTH-1:0] data_error_responses_next;
 
     generate
         for (genvar channel_index = 0; channel_index < CHANNELS;
@@ -74,6 +78,43 @@ module npu_dma_hbm_status_monitor #(
         .count_o(data_error_increment)
     );
 
+    npu_dma_carry_select_adder #(
+        .WIDTH(COUNTER_WIDTH),
+        .BLOCK_WIDTH(10)
+    ) u_ok_responses_adder (
+        .a_i(ok_responses_o),
+        .b_i(COUNTER_WIDTH'(ok_increment_q)),
+        .cin_i(1'b0),
+        .sum_o(ok_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(COUNTER_WIDTH),
+        .BLOCK_WIDTH(10)
+    ) u_corrected_responses_adder (
+        .a_i(corrected_responses_o),
+        .b_i(COUNTER_WIDTH'(corrected_increment_q)),
+        .cin_i(1'b0),
+        .sum_o(corrected_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(COUNTER_WIDTH),
+        .BLOCK_WIDTH(10)
+    ) u_uncorrectable_responses_adder (
+        .a_i(uncorrectable_responses_o),
+        .b_i(COUNTER_WIDTH'(uncorrectable_increment_q)),
+        .cin_i(1'b0),
+        .sum_o(uncorrectable_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(COUNTER_WIDTH),
+        .BLOCK_WIDTH(10)
+    ) u_data_error_responses_adder (
+        .a_i(data_error_responses_o),
+        .b_i(COUNTER_WIDTH'(data_error_increment_q)),
+        .cin_i(1'b0),
+        .sum_o(data_error_responses_next)
+    );
+
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             ok_match_q <= '0;
@@ -100,16 +141,10 @@ module npu_dma_hbm_status_monitor #(
             corrected_increment_q <= corrected_increment;
             uncorrectable_increment_q <= uncorrectable_increment;
             data_error_increment_q <= data_error_increment;
-            ok_responses_o <= ok_responses_o +
-                              COUNTER_WIDTH'(ok_increment_q);
-            corrected_responses_o <= corrected_responses_o +
-                                     COUNTER_WIDTH'(corrected_increment_q);
-            uncorrectable_responses_o <= uncorrectable_responses_o +
-                                         COUNTER_WIDTH'(
-                                             uncorrectable_increment_q);
-            data_error_responses_o <= data_error_responses_o +
-                                      COUNTER_WIDTH'(
-                                          data_error_increment_q);
+            ok_responses_o <= ok_responses_next;
+            corrected_responses_o <= corrected_responses_next;
+            uncorrectable_responses_o <= uncorrectable_responses_next;
+            data_error_responses_o <= data_error_responses_next;
             corrected_seen_o <= corrected_seen_o ||
                                 (|corrected_match_q);
             uncorrectable_seen_o <= uncorrectable_seen_o ||

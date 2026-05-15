@@ -1,7 +1,7 @@
 # NPU DMA Internal Data Path v0.1
 
-Status: controlled NPU-internal leaf contract. Descriptor, shared-SRAM client, address-translation, and
-NoC packet fields remain `HOLD` until their producing specifications are approved.
+Status: controlled NPU-internal contract. The already-translated local DMA command, mover, and pod-shared
+SRAM client are baselined; address-translation and NoC packet fields remain `HOLD`.
 
 ## 1. Scope
 
@@ -11,7 +11,8 @@ It does not decode KD-ISA, read host submission queues, write runtime completion
 error encodings.
 
 The currently admitted RTL scope is the finite HBM beat boundary, local-tag allocation, outstanding-tag
-lifetime checking, and their production integration without held descriptor or memory-client fields.
+lifetime checking, the already-translated DMA v0.1 command, X/Y/Z address generation, sixteen channel
+movers, and their pod-local integration with the fixed KD28-backed shared SRAM.
 
 ## 2. Local and NoC Paths
 
@@ -89,8 +90,8 @@ Capture enables are replicated in 32-bit groups for timing and capacitance contr
 The boundary connects the lifetime stages as follows:
 
 - channel input acceptance reserves a tag and captures the beat;
-- egress acceptance registers that tag in the independent outstanding tracker;
-- HBM response delivery retires the tracker entry; and
+- egress acceptance is registered for one cycle before the independent outstanding tracker claim;
+- HBM response delivery captures its tag into a one-cycle retirement pipeline before tracker retirement;
 - only a tracker-known retirement releases the allocator entry.
 
 An unknown response is still consumed through the finite response boundary and raises the sticky local
@@ -114,17 +115,17 @@ cancels work, frees an unretired tag, imposes a timeout, or defines reset-abort 
 
 ## 5. Remaining Holds
 
-The following are not defined by this revision:
+The following are not defined by this revision or the referenced DMA command contract:
 
-- DMA descriptor packing, IOVA width, protection domain, chaining, and completion identity;
-- local/shared SRAM client address, bank, byte-enable, arbitration, ECC, and ownership fields;
-- linear/strided address-generator RTL fields beyond the frozen 128-byte HBM beat;
+- KD-ISA descriptor packing, IOVA width, protection domain, chaining, and runtime completion identity;
+- compute and NoC shared-SRAM client arbitration, ECC, and ownership-transition fields;
+- partial-beat, scatter/gather, indexed, multicast, and zero-fill address-generator fields;
 - scatter-gather, indexed gather/scatter, multicast, and zero-fill command encodings;
 - NoC packet, virtual-channel, credit, ordering, retry, and reset behavior; and
 - runtime status, cancellation, interrupt, timeout, and recovery semantics.
 
 These fields require their producing contract, this consuming contract, compatibility tests, and updated
-traceability before production mover or remote-path RTL is admitted.
+traceability before a command extension, compute adapter, or remote-path RTL is admitted.
 
 ## 6. Required Evidence
 
