@@ -1,6 +1,6 @@
 # NPU Single-Pod Digital Boundary v0.1
 
-Status: controlled pre-RTL boundary. Only items marked `BASELINED` or `INHERITED` are implementation
+Status: controlled integration boundary. Only items marked `BASELINED` or `INHERITED` are implementation
 contracts. Items marked `PROPOSED` or `HOLD` are not admissible as externally visible RTL fields.
 
 ## 1. Scope and Authority
@@ -31,9 +31,9 @@ npu_pod
   pod_scheduler               # local policy after command validation
   compute_cluster[]           # one verified cluster; replication is PROPOSED
   tile_private_sram[]         # current local compute stores are INHERITED
-  pod_shared_sram             # HOLD: client and ownership contract
-  dma_frontend                # HOLD: finite descriptor and transaction fields
-  memory_attachment           # HOLD: RTL HBM request/response contract
+  pod_shared_sram             # BASELINED: DMA-only client contract
+  dma_frontend                # BASELINED: NPU-internal command and data path
+  memory_attachment           # BASELINED: logical RTL HBM request/response
   noc_attachment              # HOLD: packet and credit contract
   completion_ras              # HOLD: NPU events; runtime ABI externally owned
 ```
@@ -54,14 +54,14 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | Decoded internal command | external KD-ISA frontend | NPU decoded-command sink | `HOLD` | Version, opcode class, resource intent, payload reference, ordering token, and error handoff require a jointly consumed interface contract |
 | NPU internal completion event | compute/scheduler/DMA | external ABI adapter | `HOLD` | Event identity, outcome, retryability, ordering token, and reset handoff require a jointly consumed interface contract |
 | Runtime completion queue/interrupt | external ABI adapter | firmware/runtime | `EXTERNAL / HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior are externally owned and require `specs/abi/` |
-| Internal DMA descriptor | decoded-command sink/scheduler | DMA frontend | `HOLD` | Transfer type, finite widths, chaining, protection, cancellation, and fault fields are not frozen |
+| Internal DMA descriptor | NPU-local scheduler/adapter | DMA frontend | `BASELINED / VERIFIED` | `npu_dma_command_v0.1.md` freezes the internal linear/strided command used by the mover; KD-ISA packing, IOVA, protection, chaining, and cancellation remain external or held |
 | HBM RTL request lanes | DMA frontend | memory attachment | `BASELINED` | ADR-0002 and `npu_hbm_rtl.md` freeze five 128-byte lanes, finite address/tag fields, stable backpressure, ordering, and reset |
 | HBM RTL response retirement | memory attachment | DMA frontend | `BASELINED / VERIFIED LEAF` | Five-lane elastic capture, ordered tag routing, malformed-partition drop, and sixteen channel outputs are verified by NPU-018 |
 | HBM response status telemetry | DMA response consumers | local diagnostics | `BASELINED / VERIFIED LEAF` | Four frozen beat-status counters and three non-OK sticky observations are verified by NPU-022; retry and runtime ABI conversion remain held |
 | DMA lossless quiesce | local reset/maintenance sequencing | DMA beat admission | `BASELINED / VERIFIED LEAF` | NPU-023 closes new admission and drains accepted beats before a settled indication; cancellation, timeout, abrupt reset, and ABI behavior remain held |
 | DMA local-tag allocation and lifetime | DMA beat buffers and response consumers | HBM egress and DMA scheduler | `BASELINED / VERIFIED LEAF` | ADR-0002 tag geometry plus NPU DMA data-path contract; allocator and tracker are verified by NPU-019..020; cancellation reclamation remains held |
 | Integrated DMA HBM beat boundary | decoded beat producers | memory attachment and decoded response consumers | `BASELINED / VERIFIED LEAF` | Sixteen channel buffers integrate allocation, egress, routing, retirement, and tag reclamation under NPU-021; descriptor and SRAM-client semantics remain held |
-| Pod-shared SRAM client request | DMA/compute/NoC | shared SRAM | `HOLD` | Arbitration, ownership, ECC, byte enables, ordering, and starvation policy are not frozen |
+| Pod-shared SRAM DMA client request | DMA | shared SRAM | `BASELINED / VERIFIED` | `npu_pod_shared_sram_v0.1.md` freezes sixteen DMA clients, eight banks, full-beat writes, independent round-robin read/write arbitration, and ready-valid backpressure; compute/NoC clients and ECC remain held |
 | NoC packet/credit link | pod clients | pod router | `HOLD` | Flit, VC, routing, credit, ordering, fault, and reset fields require a NoC contract |
 | KDLink injection/ejection | pod | KDLink adapter | `HOLD` | Must use a versioned logical packet adapter; implicit width conversion is prohibited |
 
@@ -125,15 +125,17 @@ The following work is admitted now:
 - local-tag allocation, outstanding-lifetime, status telemetry, lossless quiesce, and integrated
   beat-boundary leaves using only the frozen ADR-0002 geometry and HBM beat fields; and
 - NPU consuming-specification and functional-model work for the decoded-command sink, DMA,
-  shared-SRAM, and NoC channels.
+  and NoC channels;
+- the versioned NPU-internal linear/strided DMA mover and DMA-only Pod-shared SRAM client; and
+- the single-clock DMA Pod integration without KD-ISA decode, IOVA translation, or runtime queues.
 
 The following work is blocked:
 
 - production KD-ISA decode, host command queue, or runtime completion-queue RTL, which is outside this
   NPU workstream;
-- DMA descriptors, address translation, cancellation reclamation, runtime fault conversion, and
-  scratchpad movement beyond the frozen HBM beat interface;
-- pod-shared SRAM arbitration or ECC response fields exposed to clients;
+- host-visible DMA descriptors, address translation, protection, cancellation reclamation, and runtime
+  fault conversion;
+- additional compute/NoC pod-shared SRAM clients or ECC response fields;
 - independent Vector or general M/N/K descriptor encodings;
 - multi-clock pod integration, NoC links, or eight-pod replication.
 

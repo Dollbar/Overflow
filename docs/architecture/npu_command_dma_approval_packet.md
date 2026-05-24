@@ -20,18 +20,19 @@ This packet records dependencies; it does not assign all of them to the NPU RTL 
 
 ## 1. Audit Result
 
-The repository currently has no KD-ISA encoding, runtime command/completion queue ABI, finite RTL HBM
-transaction contract, DMA descriptor contract, or clock/reset interface contract. The owning `isa/`,
-`specs/isa/`, `specs/abi/`, `runtime/`, `drivers/`, `firmware/`, and `rtl/memory/` paths contain scope
-READMEs only.
+The repository currently has no KD-ISA encoding or runtime command/completion queue ABI. It now has an
+NPU-internal DMA command contract, finite RTL HBM transaction contract, DMA mover, and DMA-to-Pod-SRAM
+integration. The owning `isa/`, `specs/isa/`, `specs/abi/`, `runtime/`, `drivers/`, `firmware/`, and
+`rtl/memory/` paths still contain scope READMEs only.
 
 The portable HBM model and beat BFM provide verification behavior, not production field authority. Their
 testbench address, tag, queue-depth, and latency parameters must not be copied into RTL interfaces.
 
-## 2. External Inputs Required from KD-ISA and ABI Owners
+## 2. External Inputs Reserved for Host-Visible Integration
 
-The recommendations below describe properties the NPU integration boundary needs. They are not an
-authorization for this workstream to define KD-ISA or ABI behavior.
+The recommendations below describe properties the future host-visible integration boundary needs. They are
+not prerequisites for the current post-DMA compute ISA or NPU-internal DMA implementation, and they are not
+an authorization for this workstream to define KD-ISA or ABI behavior.
 
 | Decision | Existing constraint | Requested v0.1 direction | Required external-owner output |
 | --- | --- | --- | --- |
@@ -60,16 +61,14 @@ They do not close the upstream DMA descriptor, IOVA translation, cancellation, o
 | DMA operations | P0 proposes linear, strided, gather/scatter, multicast, and zero-fill | Stage v0.1 as linear plus strided transfer first; admit gather/scatter and multicast only with compiler/runtime descriptors and bounds rules | DMA descriptor and compiler contracts |
 | QoS/starvation | Four classes and age promotion are proposed | Closed for NPU request egress: class priority, round-robin ties, and 256-cycle promotion interval | NPU HBM RTL beat contract plus NPU-017 regression |
 
-The beat-interface leaves, local-tag allocator, independent outstanding-tag lifetime tracker, and their
-sixteen-channel integrated boundary are now implemented and verified. The allocator reserves and releases
-all 4,096 beat identities; the tracker independently detects duplicate HBM allocation and unknown
-retirement; the boundary enforces the reserve/egress/retire/release commit sequence; and the local status
-monitor counts only consumed responses across all four frozen status classes. The remaining DMA
-approval gate still covers descriptor fields, IOVA translation, scratchpad movement, cancellation
-reclamation, and conversion of beat status into an externally owned completion ABI. NPU-017 through
-NPU-023 do not approve or infer those contracts. The verified quiesce path stops new beat admission and
-drains accepted work, but it deliberately does not define cancellation, timeout, abrupt-reset reclamation,
-or replay.
+The beat-interface leaves, local-tag allocator, outstanding-tag lifetime tracker, sixteen-channel mover,
+address generator, Pod-shared SRAM, and integrated Pod boundary are implemented and verified. The allocator
+reserves and releases all 4,096 beat identities; the tracker detects duplicate allocation and unknown
+retirement; and the local monitor counts consumed responses across all four frozen status classes. The
+remaining external integration gate covers IOVA translation, protection, cancellation reclamation, and
+conversion of internal completion events into the externally owned ABI. The verified quiesce path stops new
+admission and drains accepted work, but deliberately does not define cancellation, timeout, abrupt-reset
+reclamation, or replay.
 
 ## 4. External Inputs Required Before General Compute Issue
 
@@ -104,15 +103,18 @@ Before a single-pod top crosses domains, an interface specification shall define
 
 ## 6. Recommended Approval Order
 
-1. External owners publish and approve the KD-ISA and queue/completion ABI specifications.
-2. Memory and NPU owners jointly approve the finite RTL HBM request/response contract and address
-   translation boundary.
-3. NPU owners approve the DMA v0.1 operation subset, internal descriptor fields, QoS, and fault behavior.
-4. NPU owners approve scratchpad clients, ownership, ECC, and arbitration.
+1. NPU owners may implement and verify the internal DMA command, mover, HBM beat, and DMA-only shared-SRAM
+   contracts independently of host-visible KD-ISA and queue ABI work.
+2. Memory and NPU owners jointly approve any future address translation, protection, and physical HBM
+   attachment fields before those fields enter RTL.
+3. External owners publish KD-ISA and queue/completion ABI specifications in parallel; integration adds an
+   adapter only after both sides are versioned.
+4. NPU owners approve additional compute/NoC shared-SRAM clients and ECC behavior before exposing them.
 5. External compiler/ISA owners approve general Tensor and independent Vector payloads; the NPU then
    defines only their decoded internal issue records.
 6. Affected owners approve clock/reset relationships before constructing `npu_pod`.
 
 Each approval updates its owner-controlled ADR or specification, the NPU consuming specification,
-compatibility tests, and traceability rows in the same change. Only then may the corresponding NPU-owned
-RTL work package move from `HOLD` to `READY`. No KD-ISA frontend RTL is part of that transition.
+compatibility tests, and traceability rows in the same change. These gates apply to the corresponding
+externally visible adapter or new client; they do not retroactively block the versioned NPU-internal DMA
+datapath. No KD-ISA frontend RTL is part of this workstream.
