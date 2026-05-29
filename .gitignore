@@ -32,6 +32,9 @@ simv*
 formal/output/
 reports/generated/
 
+# Repository-local open-source dependencies
+/third_party/OpenROAD-flow-scripts/
+
 # Model artifacts and datasets
 *.safetensors
 *.gguf

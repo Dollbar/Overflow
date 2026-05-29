@@ -9,18 +9,39 @@ front-end scenarios. The flow validates their checksums and timing arcs, runs th
 and reads the matching interface view during each KDLink partition analysis. These interface views are not
 vendor macro characterization.
 
-Standard-cell Liberty files remain external and must not be uploaded. Supply all three PVT corners at
-runtime; each corner is mapped independently rather than reusing a netlist from another corner:
+Standard-cell Liberty files remain external and must not be uploaded. For an open-source single-corner
+diagnostic, check out OpenROAD-flow-scripts below the repository root and use its Nangate45 library:
 
 ```bash
+git clone https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git \
+  third_party/OpenROAD-flow-scripts
+git -C third_party/OpenROAD-flow-scripts checkout \
+  7ff3adf8eda37712a40591dbd8ec3bef449e6fee
+OPENROAD_FLOW_ROOT="${OPENROAD_FLOW_ROOT:-third_party/OpenROAD-flow-scripts}"
 python3 verification/kdlink/scripts/run_sta.py \
   --period-ns 1.000 \
   --setup-uncertainty-ns 0.100 \
   --hold-uncertainty-ns 0.020 \
-  --driving-cell <buffer-cell-name> \
-  --corner fast=/absolute/path/to/fast.lib \
-  --corner typical=/absolute/path/to/typical.lib \
-  --corner slow=/absolute/path/to/slow.lib
+  --driving-cell BUF_X1 \
+  --liberty \
+  "$OPENROAD_FLOW_ROOT/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib"
+```
+
+For multi-corner closure, provide three characterized libraries through environment variables. Each corner
+is mapped independently rather than reusing a netlist from another corner:
+
+```bash
+: "${KDLINK_FAST_LIBERTY:?set KDLINK_FAST_LIBERTY}"
+: "${KDLINK_TYPICAL_LIBERTY:?set KDLINK_TYPICAL_LIBERTY}"
+: "${KDLINK_SLOW_LIBERTY:?set KDLINK_SLOW_LIBERTY}"
+python3 verification/kdlink/scripts/run_sta.py \
+  --period-ns 1.000 \
+  --setup-uncertainty-ns 0.100 \
+  --hold-uncertainty-ns 0.020 \
+  --driving-cell "${KDLINK_DRIVING_CELL:?set KDLINK_DRIVING_CELL}" \
+  --corner "fast=$KDLINK_FAST_LIBERTY" \
+  --corner "typical=$KDLINK_TYPICAL_LIBERTY" \
+  --corner "slow=$KDLINK_SLOW_LIBERTY"
 ```
 
 The driving cell must be a valid non-inverting buffer in every supplied standard-cell library. The flow
