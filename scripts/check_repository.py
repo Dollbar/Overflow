@@ -19,6 +19,7 @@ TEXT_SUFFIXES = {"", ".csv", ".md", ".py", ".tcl", ".txt", ".xdc", ".yaml", ".ym
 HOST_BINDING_SUFFIXES = {
     ".bash",
     ".json",
+    ".md",
     ".mk",
     ".py",
     ".sdc",
@@ -42,6 +43,8 @@ ABSOLUTE_HOST_PATH_RE = re.compile(
     r"/(?:home|Users|opt|usr/local|mnt|workspace|data|tools|eda|proj|scratch)/"
 )
 WINDOWS_HOST_PATH_RE = re.compile(r"[A-Za-z]:[\\/](?:Users|tools|eda|workspace)[\\/]", re.I)
+LOCAL_ENV_EXECUTABLE_RE = re.compile(r"(?:^|[\s=])\.venv/(?:bin|Scripts)/")
+PLACEHOLDER_HOST_PATH_RE = re.compile(r"/absolute/" r"path(?:/|\b)", re.I)
 FIXED_HOST_ENDPOINT_RE = re.compile(
     r"\b(?:local" r"host|127\.0\.0\.1|0\.0\.0\.0)\b|"
     r"(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?![\w.])",
@@ -149,7 +152,12 @@ def check_host_bindings(errors: list[str]) -> int:
             continue
         checked += 1
         for line_number, line in enumerate(content.splitlines(), start=1):
-            if ABSOLUTE_HOST_PATH_RE.search(line) or WINDOWS_HOST_PATH_RE.search(line):
+            if (
+                ABSOLUTE_HOST_PATH_RE.search(line)
+                or WINDOWS_HOST_PATH_RE.search(line)
+                or LOCAL_ENV_EXECUTABLE_RE.search(line)
+                or PLACEHOLDER_HOST_PATH_RE.search(line)
+            ):
                 errors.append(
                     f"Host-bound absolute path: {relative}:{line_number}"
                 )
@@ -238,6 +246,54 @@ def check_baseline(errors: list[str]) -> None:
         errors.append("Configured evidence levels do not match the repository policy")
 
 
+def check_npu_proposal(errors: list[str]) -> None:
+    proposal_path = ROOT / "config" / "npu_arch_proposed.yaml"
+    proposal = yaml.safe_load(proposal_path.read_text(encoding="utf-8"))
+    organization = proposal["organization"]
+    sram = proposal["sram"]
+    hbm = proposal["hbm"]
+    dma = proposal["dma"]
+
+    pods = organization["pods_per_npu"]
+    if pods != organization["pod_rows"] * organization["pod_columns"]:
+        errors.append("NPU pod geometry is inconsistent in npu_arch_proposed.yaml")
+    if organization["tensor_tiles_per_npu"] != pods * organization["tensor_tiles_per_pod"]:
+        errors.append("NPU tensor-tile count is inconsistent in npu_arch_proposed.yaml")
+    if organization["hbm_partitions_per_npu"] != pods or dma["engines_per_npu"] != pods:
+        errors.append("NPU pod, HBM partition, and DMA engine counts must match")
+
+    aggregate_gbyte_per_second = (
+        organization["hbm_partitions_per_npu"]
+        * hbm["target_payload_gbyte_per_second_per_partition"]
+    )
+    if aggregate_gbyte_per_second != hbm["target_aggregate_tbyte_per_second"] * 1000:
+        errors.append("NPU aggregate HBM bandwidth is inconsistent in npu_arch_proposed.yaml")
+
+    expected_dma_geometry = {
+        "logical_channels_per_engine": 16,
+        "active_descriptors_per_engine": 64,
+        "data_beat_bytes": 128,
+        "outstanding_data_beats_per_engine": 4096,
+        "maximum_descriptor_bytes": 16777216,
+        "qos_classes": 4,
+    }
+    for field, expected in expected_dma_geometry.items():
+        if dma[field] != expected:
+            errors.append(f"NPU DMA v0.1 geometry mismatch for {field}: expected {expected}")
+
+    expected_sram_geometry = {
+        "pod_shared_mib": 16,
+        "pod_shared_bank_count": 8,
+        "pod_shared_bank_width_bits": 1024,
+        "pod_shared_physical_macro_count": 256,
+    }
+    for field, expected in expected_sram_geometry.items():
+        if sram[field] != expected:
+            errors.append(f"NPU Pod SRAM v0.1 geometry mismatch for {field}: expected {expected}")
+    if sram["pod_shared_geometry_contract"] != "specs/interfaces/npu_pod_shared_sram_v0.1.md":
+        errors.append("NPU Pod SRAM geometry contract path is inconsistent")
+
+
 def main() -> int:
     errors: list[str] = []
     check_repository_scope(errors)
@@ -246,6 +302,7 @@ def main() -> int:
     readme_count, markdown_count = check_readmes(errors)
     requirement_count = check_traceability(errors)
     check_baseline(errors)
+    check_npu_proposal(errors)
 
     print(
         f"READMES={readme_count} MARKDOWN={markdown_count} HOST_FILES={host_binding_count} "

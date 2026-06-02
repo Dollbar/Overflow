@@ -21,6 +21,9 @@ make npu-system-sta-nangate45
 editing a tracked path. The reproducibility baseline is OpenROAD Flow Scripts revision
 `7ff3adf8eda37712a40591dbd8ec3bef449e6fee`. Generated output remains below `verification/npu/system/build/`,
 `verification/kd28/work/`, and `technology/work/`; these paths are ignored and must not enter a commit.
+`make check` scans tracked and unignored text, including Markdown, for workstation paths, local virtual-
+environment executables, and absolute-path placeholders. It also checks the baselined DMA and Pod-SRAM
+geometry against `config/npu_arch_proposed.yaml`.
 
 ## 2. RTL Module Coverage
 
@@ -48,8 +51,9 @@ elaborated by `make kd28-sram-fifo`; compiling both lists together is prohibited
 The mapped Nangate45 pre-layout gate constrains these production tops at 1.000 ns: request egress, response
 router, tag tracker, tag allocator, status monitor, integrated HBM boundary, address generator, and channel
 mover. Every top must report non-negative setup slack and zero max-slew, max-capacitance, and max-fanout
-violations. The KD28 synthetic gate separately covers SRAM, FIFO-mapped SRAM, and the NPU SRAM adapter at
-fast, typical, and slow corners.
+violations. Every invocation remaps the netlists with the selected Liberty, cell map, and ABC constraints;
+cached netlists from another library are not admissible. The KD28 synthetic gate separately covers SRAM,
+FIFO-mapped SRAM, and the NPU SRAM adapter at fast, typical, and slow corners.
 
 These results are `GENERIC_SYNTH` or synthetic-model evidence. They are not physical KD28 standard-cell,
 licensed SRAM compiler, clock-tree, routing, IR-drop, or post-layout signoff evidence.

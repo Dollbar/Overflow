@@ -136,8 +136,8 @@ capacitance, or fanout violation. Generic-cell evidence is not KD28 signoff.
 
 The integrated boundary additionally requires a sixteen-channel mixed read/write regression with five
 independently backpressured request lanes, ordered HBM response generation, independently stalled channel
-consumers, full tag/address/data/byte-enable/status scoreboarding, telemetry checks, complete drain, and
-mapped 1 GHz generic STA. The regression must demonstrate aggregate request issue without relying on
+consumers, full tag, address, data, byte-enable, and status scoreboarding, telemetry checks, complete drain,
+and mapped 1 GHz generic STA. The regression must demonstrate aggregate request issue without relying on
 same-cycle channel-buffer dequeue/refill.
 
 The response-status monitor additionally requires all four status classes in directed and randomized

@@ -55,8 +55,10 @@ sram:
   target_read_bytes_per_tile_cycle: 512
   target_write_bytes_per_tile_cycle: 256
   pod_shared_mib: 16
-  pod_shared_bank_count: 64
-  pod_shared_bank_width_bits: 256
+  pod_shared_bank_count: 8
+  pod_shared_bank_width_bits: 1024
+  pod_shared_physical_macro_count: 256
+  pod_shared_geometry_contract: specs/interfaces/npu_pod_shared_sram_v0.1.md
 
 hbm:
   capacity_gbyte_per_partition: 24

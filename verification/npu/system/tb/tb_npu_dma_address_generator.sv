@@ -257,6 +257,14 @@ module tb_npu_dma_address_generator;
     endtask
 
     initial begin
+        integer trial;
+        logic [17:0] trial_x_count;
+        logic [15:0] trial_y_count;
+        logic [15:0] trial_z_count;
+        logic [34:0] trial_hbm_y_stride;
+        logic [34:0] trial_hbm_z_stride;
+        logic [23:0] trial_sram_y_stride;
+        logic [23:0] trial_sram_z_stride;
         clk_i = 1'b0;
         rst_i = 1'b1;
         clear_i = 1'b0;
@@ -284,10 +292,60 @@ module tb_npu_dma_address_generator;
             35'h0004_0000, 24'h100000, 18'd1, 16'd2, 16'd2,
             35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
 
+        for (trial = 0; trial < 8; trial++) begin
+            trial_x_count = 18'((trial % 4) + 1);
+            trial_y_count = 16'((trial % 3) + 1);
+            trial_z_count = 16'((trial % 2) + 1);
+            trial_hbm_y_stride =
+                (35'(trial_x_count) + 35'd1) * 35'd128;
+            trial_hbm_z_stride =
+                trial_hbm_y_stride * 35'(trial_y_count) + 35'd256;
+            trial_sram_y_stride =
+                (24'(trial_x_count) + 24'd2) * 24'd128;
+            trial_sram_z_stride =
+                trial_sram_y_stride * 24'(trial_y_count) + 24'd384;
+            run_sequence(2'(trial & 1), 16'(16'h1100 + trial),
+                35'(35'h0010_0000 + trial*35'h0001_0000),
+                24'(24'h200000 + trial*24'h010000),
+                trial_x_count, trial_y_count, trial_z_count,
+                trial_hbm_y_stride, trial_hbm_z_stride,
+                trial_sram_y_stride, trial_sram_z_stride, 2'(trial));
+        end
+
         submit_command(4'd0, npu_dma_pkg::NPU_DMA_HBM_TO_SRAM,
             16'h2001, 35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
             35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
         consume_done(16'h2001, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
+
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION, 2'd2,
+            16'h2002, 35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2002, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2003,
+            35'h1000, 24'h2000, 18'd0, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2003, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2004,
+            35'h1000, 24'h2000, 18'd1, 16'd0, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2004, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2005,
+            35'h1000, 24'h2000, 18'd1, 16'd1, 16'd0,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2005, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2006,
+            35'h1000, 24'h2000, 18'd131073, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2006, 1'b1,
             npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd0);
 
         @(negedge clk_i);
@@ -300,10 +358,47 @@ module tb_npu_dma_address_generator;
         end
 
         submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
-            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2002,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2101,
             35'h1081, 24'h2000, 18'd1, 16'd1, 16'd1,
             35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
-        consume_done(16'h2002, 1'b1,
+        consume_done(16'h2101, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2102,
+            35'h1000, 24'h2001, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2102, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2103,
+            35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd129, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2103, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2104,
+            35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd129, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2104, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2105,
+            35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd129, 24'd0, 2'd0);
+        consume_done(16'h2105, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2106,
+            35'h1000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd129, 2'd0);
+        consume_done(16'h2106, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2107,
+            35'd24000000000, 24'h2000, 18'd1, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        consume_done(16'h2107, 1'b1,
             npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd0);
 
         @(negedge clk_i);
@@ -313,7 +408,7 @@ module tb_npu_dma_address_generator;
         clear_i = 1'b0;
 
         submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
-            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2003,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2201,
             35'd23999999872, 24'h000000, 18'd2, 16'd1, 16'd1,
             35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
         @(negedge clk_i);
@@ -325,8 +420,59 @@ module tb_npu_dma_address_generator;
         @(negedge clk_i);
         beat_ready_i = 1'b0;
         checked_beats = checked_beats + 1;
-        consume_done(16'h2003, 1'b1,
+        consume_done(16'h2201, 1'b1,
             npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd1);
+
+        @(negedge clk_i);
+        clear_i = 1'b1;
+        @(posedge clk_i);
+        @(negedge clk_i);
+        clear_i = 1'b0;
+
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2202,
+            35'h0000_0000, 24'hffff80, 18'd2, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        @(negedge clk_i);
+        beat_ready_i = 1'b1;
+        if (!beat_valid_o || beat_last_o) begin
+            $fatal(1, "SRAM capacity test first-beat state is invalid");
+        end
+        @(posedge clk_i);
+        @(negedge clk_i);
+        beat_ready_i = 1'b0;
+        checked_beats = checked_beats + 1;
+        consume_done(16'h2202, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_ADDRESS, 18'd1);
+
+        @(negedge clk_i);
+        clear_i = 1'b1;
+        @(posedge clk_i);
+        @(negedge clk_i);
+        clear_i = 1'b0;
+
+        submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
+            npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2203,
+            35'h0000_0000, 24'h000000, 18'd65536, 16'd3, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
+        @(negedge clk_i);
+        beat_ready_i = 1'b1;
+        wait (sequence_done_valid_o);
+        @(negedge clk_i);
+        beat_ready_i = 1'b0;
+        checked_beats = checked_beats + 131072;
+        consume_done(16'h2203, 1'b1,
+            npu_dma_pkg::NPU_DMA_ERROR_DESCRIPTOR, 18'd131072);
+
+        @(negedge clk_i);
+        clear_i = 1'b1;
+        @(posedge clk_i);
+        @(negedge clk_i);
+        clear_i = 1'b0;
+
+        run_sequence(npu_dma_pkg::NPU_DMA_HBM_TO_SRAM, 16'h2204,
+            35'h0000_0000, 24'h000000, 18'd131072, 16'd1, 16'd1,
+            35'd0, 35'd0, 24'd0, 24'd0, 2'd0);
 
         submit_command(npu_dma_pkg::NPU_DMA_COMMAND_VERSION,
             npu_dma_pkg::NPU_DMA_SRAM_TO_HBM, 16'h3001,
@@ -345,7 +491,7 @@ module tb_npu_dma_address_generator;
             $fatal(1, "clear did not remove an active sequence");
         end
 
-        if (checked_commands != 7 || checked_beats != 36) begin
+        if (checked_commands != 29 || checked_beats != 262240) begin
             $fatal(1, "test accounting mismatch commands=%0d beats=%0d",
                    checked_commands, checked_beats);
         end
@@ -355,7 +501,7 @@ module tb_npu_dma_address_generator;
     end
 
     initial begin
-        #200000;
+        #500000;
         $fatal(1, "npu_dma_address_generator timeout");
     end
 
