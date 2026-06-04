@@ -127,6 +127,69 @@
           "critical_period_ns": 0.4747,
           "estimated_fmax_mhz": 2106.6,
           "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5363,
+          "hold_slack_ns": 0.018,
+          "critical_period_ns": 0.4637,
+          "estimated_fmax_mhz": 2156.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4571,
+          "hold_slack_ns": 0.0267,
+          "critical_period_ns": 0.5429,
+          "estimated_fmax_mhz": 1842.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4589,
+          "hold_slack_ns": 0.0186,
+          "critical_period_ns": 0.5411,
+          "estimated_fmax_mhz": 1848.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5077,
+          "hold_slack_ns": 0.0126,
+          "critical_period_ns": 0.4923,
+          "estimated_fmax_mhz": 2031.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4241,
+          "hold_slack_ns": 0.0245,
+          "critical_period_ns": 0.5759,
+          "estimated_fmax_mhz": 1736.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4372,
+          "hold_slack_ns": 0.0147,
+          "critical_period_ns": 0.5628,
+          "estimated_fmax_mhz": 1776.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.498,
+          "hold_slack_ns": 0.0243,
+          "critical_period_ns": 0.502,
+          "estimated_fmax_mhz": 1992.0,
+          "status": "PASS"
         }
       ],
       "status": "PASS"
@@ -227,13 +290,76 @@
           "critical_period_ns": 0.632,
           "estimated_fmax_mhz": 1582.3,
           "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4688,
+          "hold_slack_ns": 0.0355,
+          "critical_period_ns": 0.5312,
+          "estimated_fmax_mhz": 1882.5,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3151,
+          "hold_slack_ns": 0.0497,
+          "critical_period_ns": 0.6849,
+          "estimated_fmax_mhz": 1460.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3369,
+          "hold_slack_ns": 0.036,
+          "critical_period_ns": 0.6631,
+          "estimated_fmax_mhz": 1508.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3894,
+          "hold_slack_ns": 0.0269,
+          "critical_period_ns": 0.6106,
+          "estimated_fmax_mhz": 1637.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.2911,
+          "hold_slack_ns": 0.0418,
+          "critical_period_ns": 0.7089,
+          "estimated_fmax_mhz": 1410.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3096,
+          "hold_slack_ns": 0.0297,
+          "critical_period_ns": 0.6904,
+          "estimated_fmax_mhz": 1448.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3519,
+          "hold_slack_ns": 0.0448,
+          "critical_period_ns": 0.6481,
+          "estimated_fmax_mhz": 1543.0,
+          "status": "PASS"
         }
       ],
       "status": "PASS"
     },
     {
       "corner": "slow",
-      "standard_cell_library_label": "tcbn28hpcplusbwp40p140ssg0p72v125c.lib",
+      "standard_cell_library_label": "tcbn28hpcplusbwp40p140ssg0p81v125c.lib",
       "standard_cell_library_distributed": false,
       "interface_library_label": "overflow_hbm_serdes_abstract_slow.lib",
       "interface_library_distributed": true,
@@ -241,91 +367,154 @@
         {
           "module": "coll_sync_fifo",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.4181,
-          "hold_slack_ns": 0.0745,
-          "critical_period_ns": 0.5819,
-          "estimated_fmax_mhz": 1718.5,
+          "setup_slack_ns": 0.4799,
+          "hold_slack_ns": 0.0506,
+          "critical_period_ns": 0.5201,
+          "estimated_fmax_mhz": 1922.7,
           "status": "PASS"
         },
         {
           "module": "coll_crc32_flit_pipeline",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.3799,
-          "hold_slack_ns": 0.0613,
-          "critical_period_ns": 0.6201,
-          "estimated_fmax_mhz": 1612.6,
+          "setup_slack_ns": 0.5426,
+          "hold_slack_ns": 0.044,
+          "critical_period_ns": 0.4574,
+          "estimated_fmax_mhz": 2186.3,
           "status": "PASS"
         },
         {
           "module": "coll_reduction_engine",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.002,
-          "hold_slack_ns": 0.0504,
-          "critical_period_ns": 0.998,
-          "estimated_fmax_mhz": 1002.0,
+          "setup_slack_ns": 0.2506,
+          "hold_slack_ns": 0.0363,
+          "critical_period_ns": 0.7494,
+          "estimated_fmax_mhz": 1334.4,
           "status": "PASS"
         },
         {
           "module": "kdlink_context_scheduler16",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.1017,
-          "hold_slack_ns": 0.0837,
-          "critical_period_ns": 0.8983,
-          "estimated_fmax_mhz": 1113.2,
+          "setup_slack_ns": 0.1988,
+          "hold_slack_ns": 0.0642,
+          "critical_period_ns": 0.8012,
+          "estimated_fmax_mhz": 1248.1,
           "status": "PASS"
         },
         {
           "module": "kdlink_credit_bank8",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.0667,
-          "hold_slack_ns": 0.0608,
-          "critical_period_ns": 0.9333,
-          "estimated_fmax_mhz": 1071.5,
+          "setup_slack_ns": 0.2431,
+          "hold_slack_ns": 0.0436,
+          "critical_period_ns": 0.7569,
+          "estimated_fmax_mhz": 1321.2,
           "status": "PASS"
         },
         {
           "module": "kdlink_link_manager",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.35,
-          "hold_slack_ns": 0.0886,
-          "critical_period_ns": 0.65,
-          "estimated_fmax_mhz": 1538.5,
+          "setup_slack_ns": 0.4361,
+          "hold_slack_ns": 0.0655,
+          "critical_period_ns": 0.5639,
+          "estimated_fmax_mhz": 1773.4,
           "status": "PASS"
         },
         {
           "module": "kdlink_reverse_ctrl",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.259,
-          "hold_slack_ns": 0.0563,
-          "critical_period_ns": 0.741,
-          "estimated_fmax_mhz": 1349.5,
+          "setup_slack_ns": 0.3917,
+          "hold_slack_ns": 0.0405,
+          "critical_period_ns": 0.6083,
+          "estimated_fmax_mhz": 1643.9,
           "status": "PASS"
         },
         {
           "module": "kdlink_pcs_deskew10",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.2069,
-          "hold_slack_ns": 0.0621,
-          "critical_period_ns": 0.7931,
-          "estimated_fmax_mhz": 1260.9,
+          "setup_slack_ns": 0.3108,
+          "hold_slack_ns": 0.0446,
+          "critical_period_ns": 0.6892,
+          "estimated_fmax_mhz": 1451.0,
           "status": "PASS"
         },
         {
           "module": "kdlink_bonded_tx_register",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.539,
-          "hold_slack_ns": 0.0918,
-          "critical_period_ns": 0.461,
-          "estimated_fmax_mhz": 2169.2,
+          "setup_slack_ns": 0.5577,
+          "hold_slack_ns": 0.0884,
+          "critical_period_ns": 0.4423,
+          "estimated_fmax_mhz": 2260.9,
           "status": "PASS"
         },
         {
           "module": "kdlink_switch_rr_arbiter32",
           "period_ns": 1.0,
-          "setup_slack_ns": 0.0303,
-          "hold_slack_ns": 0.0979,
-          "critical_period_ns": 0.9697,
-          "estimated_fmax_mhz": 1031.2,
+          "setup_slack_ns": 0.2346,
+          "hold_slack_ns": 0.0712,
+          "critical_period_ns": 0.7654,
+          "estimated_fmax_mhz": 1306.5,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3625,
+          "hold_slack_ns": 0.0565,
+          "critical_period_ns": 0.6375,
+          "estimated_fmax_mhz": 1568.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.2214,
+          "hold_slack_ns": 0.0734,
+          "critical_period_ns": 0.7786,
+          "estimated_fmax_mhz": 1284.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.2151,
+          "hold_slack_ns": 0.0537,
+          "critical_period_ns": 0.7849,
+          "estimated_fmax_mhz": 1274.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.218,
+          "hold_slack_ns": 0.0429,
+          "critical_period_ns": 0.782,
+          "estimated_fmax_mhz": 1278.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.1168,
+          "hold_slack_ns": 0.0649,
+          "critical_period_ns": 0.8832,
+          "estimated_fmax_mhz": 1132.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.1382,
+          "hold_slack_ns": 0.0434,
+          "critical_period_ns": 0.8618,
+          "estimated_fmax_mhz": 1160.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.1965,
+          "hold_slack_ns": 0.0663,
+          "critical_period_ns": 0.8035,
+          "estimated_fmax_mhz": 1244.6,
           "status": "PASS"
         }
       ],

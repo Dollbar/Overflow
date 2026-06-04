@@ -19,6 +19,11 @@ PROOFS = {
     "replay_progress": "replay_progress.ys",
     "vc_service": "vc_service.ys",
     "escape_dependency": "escape_dependency.ys",
+    "route_pair_order": "route_pair_order.ys",
+    "spine_escape": "spine_escape.ys",
+    "global_commit_exact_once": "global_commit_exact_once.ys",
+    "route_stage_scale": "route_stage_scale.ys",
+    "hierarchical_membership": "hierarchical_membership.ys",
 }
 
 

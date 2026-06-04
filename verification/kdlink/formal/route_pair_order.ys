@@ -1,0 +1,8 @@
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_route_context_encoder.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_route_pair_tx.v
+read_verilog -formal -sv -Irtl/kdlink verification/kdlink/formal/formal_route_pair_order.sv
+prep -top formal_route_pair_order -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 14 -set-init-zero

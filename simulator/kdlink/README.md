@@ -14,7 +14,6 @@ simulator/kdlink/
 ├── model/                 # Bit-exact protocol and analytical fabric reference
 │   ├── collective_model/  # Shared bit-field and CRC primitives
 │   ├── kdlink_model/      # KDLink protocol, PCS, topology, and bonding model
-│   ├── serdes/            # Digital PCS/PMA channel and full-duplex link models
 │   ├── system/             # Card-slot and baseboard behavioral wrappers
 │   └── tests/             # Functional-model tests
 ├── config/                # Stable chassis and channel configurations
@@ -25,6 +24,9 @@ simulator/kdlink/
     ├── subsystem/         # Bonded port, PCS, NIC, CDC, switch, and reverse control
     └── system/            # 32-node fabric, baseboard, direct traffic, and collective tests
 ```
+
+Reusable digital SerDes sources are repository dependencies under
+`Library/models/kdlink/serdes/`; the test manifest references them by repository-relative path.
 
 All generated files are written to the git-ignored `simulator/kdlink/work/` directory. No waveform, log, binary, timing library,
 process design kit, or local tool path is part of this package.
@@ -44,6 +46,8 @@ python3 -m pip install -r requirements-dev.txt
 
 The runner discovers `verilator` from `PATH`. It does not require Vivado, a technology library, OpenSTA,
 or an analog SerDes model because the tested boundary is the digital PCS/PMA streaming interface.
+`config/kdlink_toolchain.json` records the supported and validated open-tool versions, and
+`make kdlink-preflight` validates tools, repository dependencies, path containment, and host-path hygiene.
 
 The SerDes model is intentionally vendor-neutral. It models ten 66-bit lanes, deterministic propagation
 latency, lane skew, training state, lane availability, corruption/drop injection, and repeatable BER
@@ -62,6 +66,9 @@ make -C simulator/kdlink system
 make -C simulator/kdlink all
 ```
 
+The complete manifest contains 54 RTL tests. `JOBS` and `TIMEOUT` are portable Make variables rather than
+host-specific settings, for example `make -C simulator/kdlink rtl JOBS=2 TIMEOUT=1800`.
+
 Run one RTL test by its manifest name:
 
 ```bash
@@ -77,7 +84,8 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
 ## Evidence Boundary
 
 - Model tests produce `FUNCTIONAL_SIM` evidence for packet fields, CRC, PCS transforms, bonding order,
-  topology routing, chassis mapping, link state, and analytical capacity calculations.
+  topology routing, chassis mapping, link state, multidomain route contexts, and analytical capacity
+  calculations.
 - SystemVerilog testbenches produce `RTL_SIM` evidence only after the compiled RTL emits the exact pass
   signature recorded in `manifest.json`. The added `serdes_pcs_link` test covers full-duplex PCS traffic
   through a skewed channel; `baseboard32` covers eight cards, 32 nodes, card removal, plane isolation,
@@ -89,6 +97,32 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
   bubbles, 64 GB/s in each direction, and 128 GB/s aggregate at a 1 GHz logical simulation clock.
   `reduction_dtype_ii1` drives a 4,096-flit mixed INT32/FP32/FP16/BF16 stream through the 512-bit SUM
   pipeline and requires bit-exact lane results, aligned metadata, and zero output bubbles.
+  `route_context_codec` toggles every mutable Route Context field, checks bit-exact round trips, and rejects
+  unsupported policy, length, logical-VC, and reserved-bit encodings. `route_pair_tx` directly checks the
+  synthesizable ACK barrier with complementary identities, unrelated ACKs, multi-flit ordering, hop-local
+  retry/VC normalization, and reset recovery. `domain_adapter` checks local schema-2 bypass, schema-3
+  Route Context forwarding and destination consumption, packet ownership under backpressure, and malformed
+  context/packet rejection for the direct two-domain profile.
+  `route_context_reliable` connects two optional-schema reliable endpoints through two PCS instances,
+  ten lanes of the repository-provided digital SerDes link model, and the independent reverse channel. It
+  injects CRC faults into both the Route Context and its following data packet, requires NACK-driven VC6
+  replay, exercises the synthesizable Route Context ACK barrier, checks exactly-once local delivery using
+  the preserved logical VC, and returns a schema-2 message-type-9 commit through the opposite endpoint,
+  PCS, and ten-lane SerDes link to release the source transaction. `multidomain_bonded` extends the forward
+  transport to two route-pair controllers, two
+  logical slices, four PCS instances, two repository-provided SerDes links totaling 20 lanes, independent
+  reverse channels, context and data fault injection, and one exact commit per slice. `spine_router`
+  exhaustively covers all destinations in the four-domain and eight-domain profiles, including hop
+  decrement, packet lock, backpressure stability, and exhausted-route rejection.
+  `route_stage_scale` exhaustively checks all 256 destination domains across a real top/middle/leaf cascade,
+  packet lengths 1 through 16, VC6 replay, and end-to-end backpressure. `route_stage_profiles` adds the one-
+  and two-stage profiles plus malformed-packet recovery. `global_commit_window`, `global_commit_codec`, and
+  `global_transaction_stress` cover back-to-back duplicates, protected direct-map collisions, legal and
+  reserved status encoding, and all sixteen slots. `global_recovery` drops the first destination commit ACK,
+  applies a route soft reset, retransmits under a new topology epoch, and requires exactly one destination
+  delivery plus source release. `hierarchical_collective` checks all six operations, 128 randomized valid
+  configurations, invalid count/root/key/index cases, invalidation, command stability under backpressure,
+  and illegal-state recovery.
   `reliable_endpoint_e2e` is the canonical KDLink reliability closure: two autonomous 8-VC endpoints
   run on independent core clocks, cross registered CDC FIFOs, exchange forward traffic through two PCS
   instances and the full-duplex digital SerDes model, and return 128-bit ACK/NACK/credit traffic through
