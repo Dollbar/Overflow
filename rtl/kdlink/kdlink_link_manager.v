@@ -185,13 +185,18 @@ module kdlink_link_manager #( // Declare the autonomous reverse-channel link man
                             reinitialize_o <= 1'b1; // Clear all link-local reliability state.
                         end // Complete reset-event acceptance handling.
                     end // Complete reset state handling.
+                    /* verilator coverage_off */ // FORMAL: state_q remains in the six-state reachable set after reset.
                     default: begin // Recover from an illegal state encoding.
                         state_q <= STATE_DOWN; // Return to the safe disabled state.
                         link_up_o <= 1'b0; // Block payload after state corruption.
                         reinitialize_o <= 1'b1; // Clear reliability state before reuse.
                     end // Complete illegal-state recovery.
+                    /* verilator coverage_on */
                 endcase // Complete state-machine selection.
             end // Complete management priority selection.
         end // Complete active management processing.
     end // Complete the sequential management process.
+`ifdef FORMAL
+    always @(*) assert (state_q <= STATE_RESET); // Prove the defensive illegal-state branch unreachable from the reset state.
+`endif
 endmodule // Complete the autonomous link manager.

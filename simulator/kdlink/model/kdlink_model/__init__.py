@@ -1,10 +1,73 @@
 """Executable KDLink protocol, bonding, topology, PCS, and performance model."""
 
 from .bonding import BondedPortDistributor, BondedPortReorder
+from .bandwidth import (
+    BALANCED_OVERSUBSCRIPTION,
+    NONBLOCKING_OVERSUBSCRIPTION,
+    REFERENCE_RTT_CYCLES,
+    BandwidthTierPolicy,
+    BandwidthTierResult,
+    BandwidthTrafficDemand,
+    HierarchicalBandwidthPlan,
+    maximum_supported_population,
+    plan_hierarchical_bandwidth,
+    reference_tier_policies,
+)
 from .performance import FabricPerformance, fabric_performance
+from .parallel_mapping import (
+    AxisCrossing,
+    AxisResourceLoads,
+    ParallelCoordinate,
+    ParallelPlacement,
+)
+from .inference_workload import (
+    CommunicationSpec,
+    InferenceStageSpec,
+    InferenceWorkload,
+    compile_inference_stages,
+)
+from .traffic_graph import (
+    InferenceTrafficGraph,
+    TrafficDemand,
+    TrafficStage,
+    compile_traffic_graph,
+)
+from .network_resources import (
+    HierarchyResource,
+    NetworkSimulationPolicy,
+    build_hierarchy_resources,
+)
+from .cluster_simulator import (
+    ClusterSimulationResult,
+    DemandSimulation,
+    DemandTierTiming,
+    ResourceKey,
+    ResourceScheduler,
+    ServingEvaluationResult,
+    ServingRequestResult,
+    ServingTierMetric,
+    StageSimulation,
+    TierSimulationMetric,
+    evaluate_serving,
+    simulate_inference,
+    simulate_traffic_graph,
+)
+from .simulation_metrics import (
+    render_serving_summary,
+    render_simulation_summary,
+    serving_result_dict,
+    simulation_result_dict,
+)
 from .protocol import KDLinkFlit, KDLinkHeader, KDLinkReverseWord
 from .topology import FabricRoute, route_direct
 from .chassis import ChassisTopology, EndpointLocation, LinkState, SliceLink
+from .card_topology import (
+    CardDescriptor,
+    CardDirectory,
+    CardNodeLocation,
+    compact_card_layout,
+    homogeneous_card_layout,
+)
 from .multidomain import (
     CollectiveCommand,
     CollectiveOpcode,
@@ -29,10 +92,67 @@ from .multidomain import (
     schedule_hierarchical_collective,
     select_uplink,
 )
+from .scale import (
+    DistributedGroupDirectory,
+    DistributedGroupNode,
+    SCALE_MAX_DOMAINS,
+    SCALE_MAX_ENDPOINTS,
+    ScaleDeploymentTopology,
+    ScaleEndpoint,
+    ScaleGlobalCommit,
+    ScaleRouteContext,
+    ScaleStageForward,
+    forward_scale_route_stage,
+    scale_route_digits,
+    scale_route_stage_count,
+    select_scale_plane,
+)
 
 __all__ = [
     "BondedPortDistributor",
     "BondedPortReorder",
+    "BALANCED_OVERSUBSCRIPTION",
+    "NONBLOCKING_OVERSUBSCRIPTION",
+    "REFERENCE_RTT_CYCLES",
+    "BandwidthTierPolicy",
+    "BandwidthTierResult",
+    "BandwidthTrafficDemand",
+    "HierarchicalBandwidthPlan",
+    "maximum_supported_population",
+    "plan_hierarchical_bandwidth",
+    "reference_tier_policies",
+    "AxisCrossing",
+    "AxisResourceLoads",
+    "ParallelCoordinate",
+    "ParallelPlacement",
+    "CommunicationSpec",
+    "InferenceStageSpec",
+    "InferenceWorkload",
+    "compile_inference_stages",
+    "InferenceTrafficGraph",
+    "TrafficDemand",
+    "TrafficStage",
+    "compile_traffic_graph",
+    "HierarchyResource",
+    "NetworkSimulationPolicy",
+    "build_hierarchy_resources",
+    "ClusterSimulationResult",
+    "DemandSimulation",
+    "DemandTierTiming",
+    "ResourceKey",
+    "ResourceScheduler",
+    "ServingEvaluationResult",
+    "ServingRequestResult",
+    "ServingTierMetric",
+    "StageSimulation",
+    "TierSimulationMetric",
+    "evaluate_serving",
+    "simulate_inference",
+    "simulate_traffic_graph",
+    "render_simulation_summary",
+    "render_serving_summary",
+    "serving_result_dict",
+    "simulation_result_dict",
     "FabricPerformance",
     "FabricRoute",
     "KDLinkFlit",
@@ -62,4 +182,22 @@ __all__ = [
     "route_multidomain",
     "schedule_hierarchical_collective",
     "select_uplink",
+    "CardDescriptor",
+    "CardDirectory",
+    "CardNodeLocation",
+    "compact_card_layout",
+    "homogeneous_card_layout",
+    "DistributedGroupDirectory",
+    "DistributedGroupNode",
+    "SCALE_MAX_DOMAINS",
+    "SCALE_MAX_ENDPOINTS",
+    "ScaleDeploymentTopology",
+    "ScaleEndpoint",
+    "ScaleGlobalCommit",
+    "ScaleRouteContext",
+    "ScaleStageForward",
+    "forward_scale_route_stage",
+    "scale_route_digits",
+    "scale_route_stage_count",
+    "select_scale_plane",
 ]

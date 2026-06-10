@@ -1,0 +1,6 @@
+read_verilog -formal -sv rtl/kdlink/kdlink_route_digit_selector.v
+read_verilog -formal -sv rtl/kdlink/kdlink_deadlock_guard.v
+read_verilog -formal -sv verification/kdlink/formal/formal_scale_route_control.sv
+prep -top formal_scale_route_control -flatten
+chformal -lower
+sat -verify -prove-asserts

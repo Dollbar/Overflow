@@ -24,6 +24,9 @@ PROOFS = {
     "global_commit_exact_once": "global_commit_exact_once.ys",
     "route_stage_scale": "route_stage_scale.ys",
     "hierarchical_membership": "hierarchical_membership.ys",
+    "scale_route_control": "scale_route_control.ys",
+    "card_directory": "card_directory.ys",
+    "coverage_reachability": "coverage_reachability.ys",
 }
 
 

@@ -20,6 +20,7 @@ git -C third_party/OpenROAD-flow-scripts checkout \
 OPENROAD_FLOW_ROOT="${OPENROAD_FLOW_ROOT:-third_party/OpenROAD-flow-scripts}"
 python3 verification/kdlink/scripts/run_sta.py \
   --period-ns 1.000 \
+  --mapping-delay-ns 0.100 \
   --setup-uncertainty-ns 0.100 \
   --hold-uncertainty-ns 0.020 \
   --driving-cell BUF_X1 \
@@ -45,14 +46,16 @@ python3 verification/kdlink/scripts/run_sta.py \
 ```
 
 The driving cell must be a valid non-inverting buffer in every supplied standard-cell library. The flow
-uses Yosys for timing-driven mapping and OpenSTA with separate 0.100 ns setup and 0.020 ns hold clock
+uses Yosys/ABC with an explicit 0.100 ns timing-driven mapping target; that implementation target does not
+replace or relax the final OpenSTA clock constraint. OpenSTA uses separate 0.100 ns setup and 0.020 ns hold clock
 uncertainty, 0.100 ns input/output delay, and 0.005 pF output load. The legacy single-library `--liberty`
 form remains available for diagnostics but does not constitute multi-corner closure.
 
 Expected outputs are `verification/kdlink/sta/summary.json`, per-corner mapped netlists and reports below
 `verification/kdlink/sta/work/`, and interface reports below `technology/work/interface_sta/`. Work
 directories are ignored by Git. The summary records setup and hold slack for every corner and partition,
-the external standard-cell library labels, and the repository-distributed interface Liberty labels.
+the external standard-cell library labels and SHA-256 digests, and the repository-distributed interface
+Liberty labels and SHA-256 digests. It never records the caller's absolute external-library path.
 
 A 1 GHz PASS means every reported partition has nonnegative setup and hold slack in every supplied corner,
 and all three interface-Liberty checks pass. It is pre-layout cell-delay and synthetic-interface evidence,

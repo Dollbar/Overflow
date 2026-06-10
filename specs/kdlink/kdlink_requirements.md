@@ -136,8 +136,37 @@ reference topology.
 
 ### KDL-FAB-005: Reference topology
 
-The portable environment shall represent 8 cards, 4 NPU nodes per card, 8 switch planes, 2 slices per
-bonded port, and 32 total nodes, with card, plane, and slice fault isolation.
+The portable environment shall represent a fixed 32-node leaf domain, up to 32 physical card slots,
+8 switch planes, and 2 slices per bonded port, with card, plane, and slice fault isolation. Reset shall
+retain the legacy 8-card by 4-NPU layout.
+
+### KDL-CARD-001: Supported card profiles
+
+Each configured card shall contain exactly 1, 2, 4, 8, 16, or 32 NPU nodes. One leaf domain may mix these
+profiles while retaining a fixed maximum of 32 mapped NPU nodes.
+
+### KDL-CARD-002: Stable and unique node ownership
+
+Each card descriptor shall contain a physical slot, base node, and NPU-count code. The active directory
+shall reject duplicate slots, overlapping node ranges, reserved count codes, and ranges beyond node 31.
+Unconfigured nodes are legal but shall remain inactive; removing a card shall not renumber other nodes.
+
+### KDL-CARD-003: Atomic directory update
+
+Card configuration shall use separate shadow prepare, descriptor-write, and commit phases. Commit shall
+require a quiescent leaf and a newer 16-bit topology epoch. Readers shall observe the complete old or new
+directory, never a partial mixture; simultaneous configuration and commit controls shall be rejected.
+
+### KDL-CARD-004: Card-level fault isolation
+
+A mapped node shall be active only when its owning physical slot is present and has completed reset.
+Changing one slot state shall affect exactly the nodes owned by that slot and shall preserve plane and
+slice isolation below every remaining active node.
+
+### KDL-CARD-005: Legacy layout compatibility
+
+Without a committed directory update, node `n` shall map to slot `n / 4` and local NPU `n % 4`. The node,
+plane, slice, PCS, flit, and global endpoint encodings shall not change when another card profile is used.
 
 ## 6. Collective Requirements
 
@@ -205,6 +234,16 @@ time. The report shall state the actual achieved period for each partition. A 1 
 nonnegative setup slack at a 1.000 ns period for every claimed partition; no flat physical-top claim is
 permitted without implementation parasitics.
 
+### KDL-VER-007: Reusable verification package and VIP
+
+The repository-owned SystemVerilog verification package shall provide bit-exact encode, decode, and
+legality helpers for the supported schema-2, schema-3, and schema-4 headers and control payloads. The
+stream VIP shall independently check CRC, capability gating, header and control-payload legality,
+valid/ready transfer accounting, packet ownership, flit sequence, and Route Context pairing with the
+declared following-packet identity and length. The environment package shall cover all six supported card
+profiles and exhaustively round-trip the frozen 512-slice legacy endpoint map. The serial interface shall
+remain a vendor-neutral typed digital boundary and shall be compiled and self-checked separately.
+
 ### KDL-REL-001: Release evidence
 
 The release shall contain a requirements traceability report, exact tool versions, test results, coverage
@@ -264,7 +303,92 @@ VC0 shall follow an acyclic deterministic `leaf-up -> spine -> leaf-down` route 
 and failover profile. Adaptive traffic shall not create a dependency from a later escape stage to an earlier
 stage.
 
-## 9. Release Decision
+## 9. Million-Scale Extension Requirements
+
+These requirements define the isolated scale extension. They do not modify the frozen schema-3 contract.
+
+### KDL-SCL-001: Twenty-bit global endpoint address
+
+Schema 4 shall encode a 15-bit leaf-domain identifier and 5-bit local-node identifier, covering 32,768
+leaf domains and 1,048,576 global endpoints while rejecting identifiers outside the active topology.
+
+### KDL-SCL-002: Five-stage radix-8 route
+
+The reference model and RTL shall consume one destination-domain radix-8 digit at each of up to five
+monotonically ranked stages. Every stage shall validate profile range, active egress, hop budget, packet
+ownership, and deterministic escape policy.
+
+### KDL-SCL-003: Schema compatibility
+
+Schema-2 local and schema-3 multidomain traffic shall retain their released layouts and behavior. Schema-4
+Route Context and global commit traffic shall be accepted only after capability negotiation and shall not
+alias a schema-3 replay or commit identity.
+
+### KDL-SCL-004: Bounded distributed group state
+
+No routing-node interface shall expose a global 32,768-domain bitmap. Each internal group-directory entry
+shall expose only an eight-child subtree mask, and each leaf entry only a 32-node mask, together with a
+16-bit topology epoch, 21-bit subtree member count, and 20-bit root endpoint.
+
+### KDL-SCL-005: Tree-executed collectives
+
+ReduceScatter, AllGather, AllReduce, AllToAll, AllToAllv, and point-to-point shall execute through bounded
+per-node child commands. No controller may require a combinational or sequential scan over every domain in
+the global topology before making local progress.
+
+### KDL-SCL-006: Scaled exact-once state
+
+Source transaction and destination commit windows shall be parameterized for five-stage round-trip latency,
+preserve exact-once state across route soft reset, reject stale topology epochs, and support SRAM-oriented
+implementation without changing the 64-bit global transaction identity.
+
+### KDL-SCL-007: Million-scale evidence
+
+Release evidence shall include exhaustive 20-bit endpoint round trips, exhaustive 32,768-domain route digit
+selection, compositional five-stage formal proofs, representative maximum-profile RTL simulation, legacy
+regression, critical-module coverage, and three-corner pre-layout STA.
+
+### KDL-SCL-008: Arbitrary active population
+
+The scale deployment shall support every total NPU population from 1 through 1,048,576 using dense global
+endpoint ordinals. A one-leaf deployment shall require no inter-domain route. For larger deployments, all
+leaves except the last shall contain 32 active nodes; the final leaf shall contain 1 through 32 active nodes.
+Unconfigured local nodes and leaf domains shall be rejected by routing and excluded from distributed groups.
+Release evidence shall explicitly include totals 2, 3, 33, 78, and 15,132 and adjacent capacity boundaries.
+
+### KDL-SCL-009: Per-tier bandwidth dimensioning
+
+Every active hierarchy tier shall have a machine-readable analytical bandwidth contract covering active
+slices, active planes, cross-tier traffic fraction, reduction factor, oversubscription ratio, parallel
+bonded-link equivalents, one-equivalent-link failure headroom, reference RTT, and bandwidth-delay-product
+storage. Worst-case cross-child traffic without reduction shall be the mandatory dimensioning matrix.
+One slice shall represent 64 GB/s per plane per direction and the default two-slice bonded port 128 GB/s.
+The 1:1 profile shall preserve offered bandwidth at every tier; any lower-capacity profile shall expose its
+oversubscription explicitly. Reference digital RTT values shall not be used as physical signoff latency.
+
+### KDL-SCL-010: Compressed cluster-inference traffic simulation
+
+The functional model shall compile declared prefill and decode workloads into TP, EP, PP, and DP
+communication cohorts without creating one object per endpoint, token, or packet. It shall calculate exact
+dense-rank crossings for the 32-node leaf and every active radix-8 tier; represent AllReduce, ReduceScatter,
+AllGather, AllToAllv, and point-to-point traffic; and consume the selected single- or dual-slice,
+active-plane, RTT, and oversubscription capacity contract. The parallel-axis physical order, MoE imbalance,
+remote-KV fraction, and compute-network overlap shall remain explicit inputs. Results shall report
+per-tier bytes, capacity, mean and peak physical-resource utilization, bottleneck tier, TTFT, decode time
+per token, and generated-token throughput while labelling capacity assumptions `ANALYTICAL`. Full-scale functional results
+shall not be represented as packet-accurate, RTL-cycle-accurate, or physical-network measurements.
+
+### KDL-SCL-011: Contention, throughput scope, and serving evaluation
+
+The cluster-inference model shall schedule capacity independently by hierarchy tier, group, plane, and
+full-duplex direction; preserve logical-VC byte attribution while applying shared physical capacity; and
+accept independent per-tier plane, slice, and oversubscription vectors. Utilization shall not be clamped,
+and overload shall remain observable. Generated-token throughput shall be reported separately per data-
+parallel replica and for the complete cluster. A deterministic multi-request evaluation shall report
+latency, TTFT, and queue P50/P95/P99 plus per-tier offered load. Its scheduling approximation and the lack
+of packet arbitration, VC priority, measured arrival traces, and physical calibration shall remain explicit.
+
+## 10. Release Decision
 
 KDLink is releasable only when every mandatory row in the traceability matrix is `PASS`, or has a
 reviewed waiver that states the affected claim. `PROPOSED`, `PARTIAL`, `NOT_RUN`, and undocumented

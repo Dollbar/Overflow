@@ -38,7 +38,7 @@ module tb_kdlink_reduction_dtype_ii1;
             4'd12: fp32_operand_a = 32'h0000_0000;
             4'd13: fp32_operand_a = 32'h3f80_0000;
             4'd14: fp32_operand_a = 32'hbf80_0000;
-            default: fp32_operand_a = 32'h4050_0000;
+            default: fp32_operand_a = 32'h3f80_0080;
         endcase
         end
     endfunction
@@ -64,7 +64,7 @@ module tb_kdlink_reduction_dtype_ii1;
             4'd12: fp32_operand_b = 32'hbf80_0000;
             4'd13: fp32_operand_b = 32'h7f80_0000;
             4'd14: fp32_operand_b = 32'hc000_0000;
-            default: fp32_operand_b = 32'hbfa0_0000;
+            default: fp32_operand_b = 32'hbf80_0000;
         endcase
         end
     endfunction
@@ -88,7 +88,7 @@ module tb_kdlink_reduction_dtype_ii1;
             4'd12: fp32_expected = 32'hbf80_0000;
             4'd13: fp32_expected = 32'h7f80_0000;
             4'd14: fp32_expected = 32'hc040_0000;
-            default: fp32_expected = 32'h4000_0000;
+            default: fp32_expected = 32'h3780_0000;
         endcase
         end
     endfunction
@@ -169,7 +169,7 @@ module tb_kdlink_reduction_dtype_ii1;
     function automatic [15:0] bf16_operand_a(input [4:0] pattern);
         reg [31:0] expanded;
         begin
-            expanded = fp32_operand_a(pattern);
+            expanded = (pattern[4:0] == 5'd15) ? 32'h4050_0000 : fp32_operand_a(pattern);
             bf16_operand_a = expanded[31:16];
         end
     endfunction
@@ -177,7 +177,7 @@ module tb_kdlink_reduction_dtype_ii1;
     function automatic [15:0] bf16_operand_b(input [4:0] pattern);
         reg [31:0] expanded;
         begin
-            expanded = fp32_operand_b(pattern);
+            expanded = (pattern[4:0] == 5'd15) ? 32'hbfa0_0000 : fp32_operand_b(pattern);
             bf16_operand_b = expanded[31:16];
         end
     endfunction
@@ -185,7 +185,7 @@ module tb_kdlink_reduction_dtype_ii1;
     function automatic [15:0] bf16_expected(input [4:0] pattern);
         reg [31:0] expanded;
         begin
-            expanded = fp32_expected(pattern);
+            expanded = (pattern[4:0] == 5'd15) ? 32'h4000_0000 : fp32_expected(pattern);
             bf16_expected = expanded[31:16];
         end
     endfunction

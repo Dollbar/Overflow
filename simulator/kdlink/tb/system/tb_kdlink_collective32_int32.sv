@@ -45,6 +45,7 @@ module tb_kdlink_collective32_int32; // 定义四 MiB 每节点 RS AG AR 端到�
     integer ar_cycles; // 保存 AllReduce 实测完整周期
     integer alltoall_cycles; // 保存 AllToAll 实测完整周期
     integer alltoallv_cycles; // 保存 AllToAllv 实测完整周期
+    integer empty_alltoallv_cycles; // 保存空 AllToAllv 边界场景完整周期
     integer p2p_cycles; // 保存 PointToPoint 实测完整周期
     integer direct_src_index; // 提供 AllToAllv source 配置循环索引
     integer direct_dst_index; // 提供 AllToAllv destination 配置循环索引
@@ -84,6 +85,7 @@ module tb_kdlink_collective32_int32; // 定义四 MiB 每节点 RS AG AR 端到�
         ar_cycles = 0; // 清零 AR 周期记录
         alltoall_cycles = 0; // 清零 AllToAll 周期记录
         alltoallv_cycles = 0; // 清零 AllToAllv 周期记录
+        empty_alltoallv_cycles = 0; // 清零空 AllToAllv 周期记录
         p2p_cycles = 0; // 清零 PointToPoint 周期记录
         ar_effective_gbps = 0.0; // 清零 AR 带宽记录
         repeat (4) @(posedge clk); // 等待复位稳定
@@ -218,6 +220,21 @@ module tb_kdlink_collective32_int32; // 定义四 MiB 每节点 RS AG AR 端到�
                 if (result_data_o[(31*16 + bank_index)*512 + lane_index*32 +: 32] != expected_value[31:0]) $fatal(1, "AllToAllv result mismatch bank=%0d lane=%0d", bank_index, lane_index); // 要求 variable direct memory bit-exact
             end // 结束当前 payload lane 检查
         end // 结束 destination 31 bank 检查
+        for (direct_src_index = 0; direct_src_index < 32; direct_src_index = direct_src_index + 1) begin // 清零全部 AllToAllv source-destination pair
+            for (direct_dst_index = 0; direct_dst_index < 32; direct_dst_index = direct_dst_index + 1) begin // 遍历当前 source 全部 destination
+                @(negedge clk); // 在下降沿建立零长度 pair 配置
+                if (!direct_cfg_ready_o) $fatal(1, "empty AllToAllv configuration unexpectedly blocked src=%0d dst=%0d", direct_src_index, direct_dst_index); // 要求 idle 配置无停顿
+                direct_cfg_valid_i = 1'b1; // 提交当前零长度 pair
+                direct_cfg_src_i = direct_src_index[4:0]; // 设置 source identity
+                direct_cfg_dst_i = direct_dst_index[4:0]; // 设置 destination identity
+                direct_cfg_flits_i = 8'd0; // 清空当前 pair 的发送长度
+            end // 结束 destination 清零
+        end // 结束 source 清零
+        @(negedge clk); direct_cfg_valid_i = 1'b0; opcode_i = 3'd4; collective_id_i = 12'h004; link_epoch_i = 8'h04; start_i = 1'b1; // 启动全零长度 AllToAllv
+        @(negedge clk); start_i = 1'b0; // 清除空 AllToAllv 启动脉冲
+        wait (done_o); #0.01; // 等待空 AllToAllv 经完整三十二步调度后排空
+        empty_alltoallv_cycles = operation_cycles_o; // 保存空操作周期用于回归可见性
+        if (operation_error_o || lane_alignment_error_o || fabric_protocol_error_o != 16'd0) $fatal(1, "empty AllToAllv status failure op=%b align=%b fabric=%h", operation_error_o, lane_alignment_error_o, fabric_protocol_error_o); // 要求空操作无错误
         @(negedge clk); opcode_i = 3'd5; collective_id_i = 12'hf0f; link_epoch_i = 8'hc3; p2p_src_node_i = 5'd29; p2p_dst_node_i = 5'd2; p2p_flits_i = 8'd127; start_i = 1'b1; // 启动非相邻节点 PointToPoint
         @(negedge clk); start_i = 1'b0; // 清除 PointToPoint 启动脉冲
         wait (done_o); #0.01; // 等待 PointToPoint 完成
@@ -231,7 +248,7 @@ module tb_kdlink_collective32_int32; // 定义四 MiB 每节点 RS AG AR 端到�
                 if (result_data_o[(2*16 + bank_index)*512 + lane_index*32 +: 32] != expected_value[31:0]) $fatal(1, "PointToPoint result mismatch bank=%0d lane=%0d", bank_index, lane_index); // 要求 PointToPoint direct memory bit-exact
             end // 结束当前 payload lane 检查
         end // 结束 destination 2 bank 检查
-        $display("TB_KDLINK_COLLECTIVE32_INT32_PASS tensor_bytes_per_node=%0d rs_cycles=%0d ag_cycles=%0d ar_cycles=%0d alltoall_cycles=%0d alltoallv_cycles=%0d p2p_cycles=%0d ar_effective_GBps=%0.3f threshold_GBps=500.000 nodes=32 banks=16 bubbles=0", TENSOR_BYTES_PER_NODE, rs_cycles, ag_cycles, ar_cycles, alltoall_cycles, alltoallv_cycles, p2p_cycles, ar_effective_gbps); // 报告完整 32-node RTL collective 性能
+        $display("TB_KDLINK_COLLECTIVE32_INT32_PASS tensor_bytes_per_node=%0d rs_cycles=%0d ag_cycles=%0d ar_cycles=%0d alltoall_cycles=%0d alltoallv_cycles=%0d empty_alltoallv_cycles=%0d p2p_cycles=%0d ar_effective_GBps=%0.3f threshold_GBps=500.000 nodes=32 banks=16 bubbles=0", TENSOR_BYTES_PER_NODE, rs_cycles, ag_cycles, ar_cycles, alltoall_cycles, alltoallv_cycles, empty_alltoallv_cycles, p2p_cycles, ar_effective_gbps); // 报告完整 32-node RTL collective 性能
         $finish; // 结束测试
     end // 结束主测试流程
     initial begin // 设置仿真超时

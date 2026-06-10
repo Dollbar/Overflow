@@ -45,30 +45,36 @@
     "global_recovery",
     "global_transaction_stress",
     "hierarchical_collective",
+    "scale_route_codec",
+    "scale_route_stage",
+    "scale_transaction",
+    "distributed_collective",
+    "route_control",
+    "card_directory",
     "reliable_reset_recovery",
     "reliable_bonded_endpoint",
     "reliable_nic8_fabric"
   ],
   "metrics": {
     "line": {
-      "percent": 96.0,
-      "hit": 430,
-      "total": 448
+      "percent": 100.0,
+      "hit": 538,
+      "total": 538
     },
     "toggle": {
-      "percent": 95.4,
-      "hit": 55704,
-      "total": 58406
+      "percent": 95.3,
+      "hit": 64753,
+      "total": 67958
     },
     "branch": {
-      "percent": 94.8,
-      "hit": 760,
-      "total": 802
+      "percent": 95.7,
+      "hit": 923,
+      "total": 964
     },
     "expr": {
-      "percent": 93.6,
-      "hit": 5043,
-      "total": 5388
+      "percent": 93.1,
+      "hit": 6442,
+      "total": 6922
     }
   },
   "thresholds_percent": {
@@ -80,9 +86,9 @@
     "kdlink_route_stage.v": {
       "metrics": {
         "line": {
-          "percent": 93.8,
+          "percent": 100.0,
           "hit": 15,
-          "total": 16
+          "total": 15
         },
         "toggle": {
           "percent": 95.0,
@@ -145,9 +151,9 @@
           "total": 4
         },
         "toggle": {
-          "percent": 96.5,
-          "hit": 602,
-          "total": 624
+          "percent": 97.3,
+          "hit": 794,
+          "total": 816
         },
         "branch": {
           "percent": 100.0,
@@ -155,9 +161,9 @@
           "total": 10
         },
         "expr": {
-          "percent": 78.9,
-          "hit": 60,
-          "total": 76
+          "percent": 95.6,
+          "hit": 346,
+          "total": 362
         }
       },
       "thresholds_percent": {
@@ -205,19 +211,19 @@
           "total": 10
         },
         "toggle": {
-          "percent": 97.9,
-          "hit": 793,
-          "total": 810
+          "percent": 98.1,
+          "hit": 893,
+          "total": 910
         },
         "branch": {
           "percent": 100.0,
-          "hit": 14,
-          "total": 14
+          "hit": 10,
+          "total": 10
         },
         "expr": {
-          "percent": 91.4,
+          "percent": 97.0,
           "hit": 32,
-          "total": 35
+          "total": 33
         }
       },
       "thresholds_percent": {
@@ -230,8 +236,8 @@
     "kdlink_hierarchical_collective_ctrl.v": {
       "metrics": {
         "line": {
-          "percent": 94.4,
-          "hit": 17,
+          "percent": 100.0,
+          "hit": 18,
           "total": 18
         },
         "toggle": {
@@ -256,13 +262,285 @@
         "toggle": 80.0
       },
       "pass": true
+    },
+    "kdlink_scale_route_stage.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 8,
+          "total": 8
+        },
+        "toggle": {
+          "percent": 84.1,
+          "hit": 641,
+          "total": 762
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 14,
+          "total": 14
+        },
+        "expr": {
+          "percent": 90.7,
+          "hit": 68,
+          "total": 75
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_transaction_window.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 14,
+          "total": 14
+        },
+        "toggle": {
+          "percent": 94.6,
+          "hit": 1872,
+          "total": 1978
+        },
+        "branch": {
+          "percent": 94.0,
+          "hit": 47,
+          "total": 50
+        },
+        "expr": {
+          "percent": 90.1,
+          "hit": 548,
+          "total": 608
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_commit_window.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 5,
+          "total": 5
+        },
+        "toggle": {
+          "percent": 88.2,
+          "hit": 817,
+          "total": 926
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 26,
+          "total": 26
+        },
+        "expr": {
+          "percent": 81.3,
+          "hit": 161,
+          "total": 198
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_group_directory.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 8,
+          "total": 8
+        },
+        "toggle": {
+          "percent": 94.6,
+          "hit": 1426,
+          "total": 1508
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 16,
+          "total": 16
+        },
+        "expr": {
+          "percent": 82.9,
+          "hit": 87,
+          "total": 105
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_collective_tree_ctrl.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 22,
+          "total": 22
+        },
+        "toggle": {
+          "percent": 95.6,
+          "hit": 1218,
+          "total": 1274
+        },
+        "branch": {
+          "percent": 81.8,
+          "hit": 18,
+          "total": 22
+        },
+        "expr": {
+          "percent": 65.1,
+          "hit": 41,
+          "total": 63
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_plane_selector.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 3,
+          "total": 3
+        },
+        "toggle": {
+          "percent": 99.5,
+          "hit": 199,
+          "total": 200
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 6,
+          "total": 6
+        },
+        "expr": {
+          "percent": 88.9,
+          "hit": 8,
+          "total": 9
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_route_epoch_manager.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 1,
+          "total": 1
+        },
+        "toggle": {
+          "percent": 94.8,
+          "hit": 218,
+          "total": 230
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 12,
+          "total": 12
+        },
+        "expr": {
+          "percent": 94.1,
+          "hit": 16,
+          "total": 17
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_deadlock_guard.v": {
+      "metrics": {
+        "line": {
+          "percent": 0.0,
+          "hit": 0,
+          "total": 0
+        },
+        "toggle": {
+          "percent": 100.0,
+          "hit": 28,
+          "total": 28
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 2,
+          "total": 2
+        },
+        "expr": {
+          "percent": 100.0,
+          "hit": 2,
+          "total": 2
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_card_directory.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 19,
+          "total": 19
+        },
+        "toggle": {
+          "percent": 99.5,
+          "hit": 1021,
+          "total": 1026
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 18,
+          "total": 18
+        },
+        "expr": {
+          "percent": 98.1,
+          "hit": 158,
+          "total": 161
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
     }
   },
   "exclusions": [
     "testbench and behavioral-model source paths",
     "signals and memories wider than 64 bits for toggle coverage",
     "Route Context reserved bits [511:166], which the protocol requires to remain zero",
-    "tool-generated underscore-prefixed implementation signals"
+    "tool-generated underscore-prefixed implementation signals",
+    "the defensive default of the fully enumerated one-bit scale route state",
+    "deterministic timing-decomposition query nets in group table and group directory; externally visible lookup behavior remains covered by directed, bulk, random, and irregular-membership tests"
   ],
   "pass": true
 }

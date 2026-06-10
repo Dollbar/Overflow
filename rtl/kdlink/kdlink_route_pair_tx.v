@@ -143,9 +143,11 @@ module kdlink_route_pair_tx ( // 定义 Route Context 与后继 packet 的可靠
                     ingress_ready_o = tx_ready_i; // 使用可靠端点许可反压上游
                 end else ingress_ready_o = 1'b1; // 消费非法数据并报告协议错误
             end // 结束后继 packet 发送选择
+            /* verilator coverage_off */ // FORMAL: state_q remains in the context, ACK, or data state after reset.
             default: begin // 保护非法状态
                 ingress_ready_o = 1'b0; // 非法状态禁止继续消费
             end // 结束非法状态保护
+            /* verilator coverage_on */
         endcase // 结束发送屏障状态选择
     end // 结束可靠端点发送接口组合逻辑
     always @(posedge clk_i or negedge rst_n_i) begin // 更新发送屏障、packet 计数和 sticky 错误
@@ -193,10 +195,15 @@ module kdlink_route_pair_tx ( // 定义 Route Context 与后继 packet 的可靠
                     state_q <= STATE_CONTEXT; // 返回等待下一 Route Context
                     accepted_flit_count_q <= 5'd0; // 清零 packet 发送计数
                 end else accepted_flit_count_q <= accepted_flit_count_q + 5'd1; // 继续有界排空当前 packet
+            /* verilator coverage_off */ // FORMAL: the preceding ACK arm and legal transition relation make this recovery branch unreachable.
             end else if (state_q != STATE_CONTEXT && state_q != STATE_DATA) begin // 捕获除 ACK 等待外的非法状态
                 state_q <= STATE_CONTEXT; // 恢复到等待上下文状态
                 protocol_error_o <= 1'b1; // sticky 记录非法状态恢复
             end // 结束发送状态推进选择
+            /* verilator coverage_on */
         end // 结束正常发送状态处理
     end // 结束发送屏障时序逻辑
+`ifdef FORMAL
+    always @(*) assert (state_q != 2'b11); // Prove the defensive illegal-state branches unreachable from the reset state.
+`endif
 endmodule // 结束 kdlink_route_pair_tx 模块

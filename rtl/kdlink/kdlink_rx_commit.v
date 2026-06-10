@@ -378,7 +378,9 @@ module kdlink_rx_commit #(
                     response_read_q <= response_read_q + 1'b1;
                     response_count_q <= response_count_q + 1'b1;
                 end
+                /* verilator coverage_off */ // FORMAL: two Boolean producers and one Boolean pop only encode 000 through 101.
                 default: response_count_q <= response_count_q;
+                /* verilator coverage_on */
             endcase
             if (response_push_count != 0) begin
                 if (input_event_valid) begin
@@ -393,4 +395,7 @@ module kdlink_rx_commit #(
             end
         end
     end
+`ifdef FORMAL
+    always @(*) assert ({response_push_count, response_pop} <= 3'b101); // Prove reserved response queue event combinations unreachable.
+`endif
 endmodule

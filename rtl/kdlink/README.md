@@ -54,3 +54,19 @@ an exact nonzero bitmap popcount, a root contained in the bitmap, and a unique `
 key. `kdlink_hierarchical_collective_ctrl` emits explicit leaf-prepare, inter-domain, leaf-finish, and
 complete phases for all six operations. Its `command_ready_i` is completion-qualified: the connected leaf
 engine or per-destination global transaction engine asserts it only after that phase is complete.
+
+The schema-4 scale extension is separate from those frozen schema-2 and schema-3 paths. It widens the leaf
+domain identifier to 15 bits and composes five radix-8 stages for up to 32,768 leaf domains and 1,048,576
+global endpoints. `kdlink_scale_route_context`, `kdlink_route_digit_selector`, and
+`kdlink_scale_route_stage` implement the scaled context, destination-digit selection, hop validation, and
+packet lock. `kdlink_scale_global_commit` carries the corresponding full-width exact-once identity.
+
+The scaled control plane keeps its hardware state bounded. `kdlink_card_directory` maps the fixed 32-node
+leaf onto homogeneous or mixed 1/2/4/8/16/32-NPU cards with atomic shadow updates and card-health isolation.
+`kdlink_group_directory` and `kdlink_collective_tree_ctrl` store only local child and leaf membership state.
+`kdlink_transaction_window` and `kdlink_commit_window` provide associative source retention and destination
+duplicate suppression beyond the legacy 16-slot direct map. `kdlink_route_epoch_manager`,
+`kdlink_plane_selector`, and `kdlink_deadlock_guard` provide two-generation route updates, failure-aware
+eight-plane selection, and the monotonic adaptive-to-escape transition. These modules establish digital RTL
+and compositional routing capacity; they do not instantiate a monolithic million-endpoint fabric or claim
+analog SerDes, package, board, or post-layout timing closure.

@@ -1,5 +1,70 @@
 # Overflow Release Notes
 
+## KDLink v0.4 million-scale release candidate
+
+- Prepared: 2026-08-27
+- State: `ENGINEERING_SIGNOFF_PASS_APPROVED_FOR_NEW_PR`
+- Review gate: the user approved staging, committing, pushing, and opening a new PR; merge and tagging remain
+  separately gated
+- Candidate base: `origin/main` at `ac71fe8fca39130c6b0e22bc44ea3106c3175af8`
+- Development isolation: `feat/kdlink-million-scale`
+- Inherited branch head: `4bd201f54e7b1fa133b56af01be776432f57918e`, containing the rebased previously
+  committed KDLink v0.3 base
+
+This candidate extends KDLink without renaming engineering sources or changing the released schema-2 and
+schema-3 formats. Schema 4 provides 20-bit endpoint addressing, 15-bit leaf-domain identifiers, and up to
+five radix-8 inter-domain stages. The compositional architecture accepts every active population from one
+through 1,048,576 NPU endpoints across up to 32,768 32-NPU leaf domains. A leaf may use homogeneous or mixed
+physical card profiles containing 1, 2, 4, 8, 16, or 32 NPUs per card; card packing does not alter global
+routing. Directed irregular-population coverage includes 2, 3, 33, 78, and 15,132 endpoints plus adjacent
+leaf, radix, and maximum-population boundaries.
+
+The implementation adds bounded five-stage route selection, distributed group-directory and tree control,
+route-epoch and plane selection, deadlock guarding, a card directory with atomic reconfiguration, and
+pipelineable source transaction and destination commit windows. Analytical per-tier bandwidth planning and
+a compressed cluster-inference simulator cover leaf plus five hierarchy tiers, independently keyed group,
+plane, and direction resources, shared physical VC capacity, TP/EP/PP/DP traffic, overload, throughput, and
+deterministic serving-tail metrics. These performance inputs and rates remain explicitly analytical rather
+than measured.
+
+The repository-owned verification package and reusable stream VIP now cover the complete supported wire
+format set. Schema-2 baseline traffic, schema-3 and schema-4 Route Context, schema-2 and schema-4 Global
+Commit, explicit capability rejection, control-payload reserved fields, CRC corruption, valid/ready
+backpressure, packet ownership, multi-flit sequence, declared Route Context packet length, and recovery
+after a malformed sequence are self-checked. The environment package exhaustively round-trips the frozen
+512-slice legacy endpoint map and all six supported card-profile codes; the serial-interface test preserves
+the vendor-neutral digital SerDes boundary. These are verification-only additions and do not change the
+production wire encoding or RTL datapath.
+
+Executed release evidence:
+
+| Gate | Command | Result |
+| --- | --- | --- |
+| Portable release suite | `make kdlink-release-check` | preflight, 216/216 model tests, 61/61 RTL tests, 27 lint tops, 7 CDC contracts, 13/13 bounded formal proofs, coverage, and repository consistency PASS |
+| RTL coverage | `python3 verification/kdlink/scripts/run_coverage.py --jobs 4` | cold 48/48 tests and 15/15 critical modules PASS; line 100.0%, toggle 95.3%, branch 95.7%, expression 93.1% |
+| Multi-corner partition STA | `python3 verification/kdlink/scripts/run_sta.py` with the recorded 1.000 ns constraint and three external libraries | 72/72 partition-corners and all three synthetic interface views PASS |
+| Reusable package and VIP | `python3 simulator/kdlink/scripts/run.py --test env_pkg`, `--test vip_stream`, and `--test serial_if` | schema 2/3/4 codecs, capability gates, CRC, control payloads, packet sequence/pairing, all card codes, exhaustive legacy endpoint mapping, and typed serial boundary PASS |
+| Hierarchy bandwidth plans | `report_bandwidth.py 1048576 --profile nonblocking` and `--profile balanced` | 32,768 leaves, five active route tiers, and declared one-link-equivalent failure headroom at every tier PASS; `FUNCTIONAL_SIM` with `ANALYTICAL` inputs |
+| Cluster inference scenarios | `run_cluster_inference.py` with dense, MoE, failure, and serving configs | million-endpoint dense and MoE, irregular 15,132-endpoint failure, plus 16-request FCFS serving latency/queue/throughput reports PASS; `FUNCTIONAL_SIM` with `ANALYTICAL` inputs |
+
+The STA run maps 24 registered partitions independently at fast, typical, and slow TSMC28 corners. It uses
+a 1.000 ns clock, 0.100 ns setup uncertainty, 0.020 ns hold uncertainty, and a 0.100 ns mapping target. The
+minimum setup slack is +0.0020 ns at the slow `coll_reduction_engine`; the minimum hold slack is +0.0098 ns
+at the fast `coll_reduction_engine`. Library labels and SHA-256 digests, but no host paths or proprietary
+library contents, are recorded in `KDLINK_ACCEPTANCE.json` and the STA summary.
+
+This is RTL release-candidate engineering signoff. Million-scale support is a compositional address,
+routing, directory, functional-traffic, and analytical-capacity claim; it does not instantiate one million
+RTL endpoints. The STA evidence is mapped-cell and pre-layout. Analog SerDes, HBM PHY, vendor macro timing,
+clock-tree and extracted-parasitic timing, package/PCB analysis, place-and-route, hardware interoperability,
+and tapeout signoff remain outside this result. SerDes behavioral-model sources and HBM/SerDes Liberty
+sources are unchanged from `origin/main` and are not part of this candidate delta.
+
+The machine-readable acceptance result is `docs/releases/KDLINK_ACCEPTANCE.json`. The v0.4 increment is
+committed locally following user approval and awaits push and creation of a new PR; it is not merged or
+tagged. The exact final-tree candidate relative to `origin/main` intentionally also includes the inherited
+v0.3 branch commits.
+
 ## KDLink v0.3 multidomain release candidate
 
 - Prepared: 2026-08-24

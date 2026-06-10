@@ -30,6 +30,15 @@
       ],
       "pass_signature": "TB_KDLINK_VC_INGRESS8_PASS"
     },
+    "card_directory": {
+      "group": "unit",
+      "top": "tb_kdlink_card_directory",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_card_directory.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_card_directory.v"
+      ],
+      "pass_signature": "TB_KDLINK_CARD_DIRECTORY_PASS"
+    },
     "route_context_codec": {
       "group": "unit",
       "top": "tb_kdlink_route_context_codec",
@@ -38,6 +47,27 @@
         "rtl/kdlink/kdlink_route_context_encoder.v"
       ],
       "pass_signature": "TB_KDLINK_ROUTE_CONTEXT_CODEC_PASS"
+    },
+    "scale_route_codec": {
+      "group": "unit",
+      "top": "tb_kdlink_scale_route_codec",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_scale_route_codec.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_scale_route_context.v",
+        "rtl/kdlink/kdlink_route_digit_selector.v"
+      ],
+      "pass_signature": "TB_KDLINK_SCALE_ROUTE_CODEC_PASS"
+    },
+    "scale_route_stage": {
+      "group": "unit",
+      "top": "tb_kdlink_scale_route_stage",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_scale_route_stage.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_scale_route_context.v",
+        "rtl/kdlink/kdlink_route_digit_selector.v",
+        "rtl/kdlink/kdlink_scale_route_stage.v"
+      ],
+      "pass_signature": "TB_KDLINK_SCALE_ROUTE_STAGE_PASS"
     },
     "route_pair_tx": {
       "group": "unit",
@@ -100,6 +130,17 @@
       ],
       "pass_signature": "TB_KDLINK_GLOBAL_RECOVERY_PASS"
     },
+    "scale_transaction": {
+      "group": "system",
+      "top": "tb_kdlink_scale_transaction",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_scale_transaction.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_scale_global_commit.v",
+        "rtl/kdlink/kdlink_transaction_window.v",
+        "rtl/kdlink/kdlink_commit_window.v"
+      ],
+      "pass_signature": "TB_KDLINK_SCALE_TRANSACTION_PASS"
+    },
     "global_commit_window": {
       "group": "unit",
       "top": "tb_kdlink_global_commit_window",
@@ -138,6 +179,16 @@
       ],
       "pass_signature": "TB_KDLINK_HIERARCHICAL_COLLECTIVE_PASS"
     },
+    "distributed_collective": {
+      "group": "system",
+      "top": "tb_kdlink_distributed_collective",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_distributed_collective.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_group_directory.v",
+        "rtl/kdlink/kdlink_collective_tree_ctrl.v"
+      ],
+      "pass_signature": "TB_KDLINK_DISTRIBUTED_COLLECTIVE_PASS"
+    },
     "link_manager": {
       "group": "unit",
       "top": "tb_kdlink_link_manager",
@@ -146,6 +197,17 @@
         "rtl/kdlink/kdlink_link_manager.v"
       ],
       "pass_signature": "TB_KDLINK_LINK_MANAGER_PASS"
+    },
+    "route_control": {
+      "group": "unit",
+      "top": "tb_kdlink_route_control",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_route_control.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_plane_selector.v",
+        "rtl/kdlink/kdlink_route_epoch_manager.v",
+        "rtl/kdlink/kdlink_deadlock_guard.v"
+      ],
+      "pass_signature": "TB_KDLINK_ROUTE_CONTROL_PASS"
     },
     "replay_timeout": {
       "group": "unit",
@@ -524,6 +586,19 @@
         "simulator/kdlink/model/system/kdlink_baseboard32_model.sv"
       ],
       "pass_signature": "TB_KDLINK_BASEBOARD32_PASS"
+    },
+    "card_profiles": {
+      "group": "system",
+      "top": "tb_kdlink_card_profiles",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_card_profiles.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_card_directory.v",
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v",
+        "rtl/kdlink/kdlink_fabric32.v",
+        "simulator/kdlink/model/system/kdlink_leaf_domain_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_CARD_PROFILES_PASS"
     },
     "reliable_endpoint_e2e": {
       "group": "system",

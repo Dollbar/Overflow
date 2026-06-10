@@ -31,6 +31,7 @@ module tb_kdlink_route_pair_tx; // 定义互补身份、ACK 屏障、packet 顺�
     logic [63:0] global_transaction_id; // 配置上下文事务标识
     logic [31:0] group_id; // 配置上下文通信组
     logic [2:0] logical_vc; // 配置后继 packet 逻辑 VC
+    logic [639:0] invalid_data_flit; // 保存用于错误排空测试的后继数据 flit
     wire [511:0] route_payload; // 观察编码后的上下文 payload
     kdlink_route_context_encoder u_encoder ( // 实例化位级冻结的 Route Context 编码器
         .source_domain_i(source_domain), .destination_domain_i(destination_domain), // 连接源域和目标域配置
@@ -143,6 +144,22 @@ module tb_kdlink_route_pair_tx; // 定义互补身份、ACK 屏障、packet 顺�
         topology_epoch = 8'h55; domain_hop_limit = 8'hAA; logical_plane = 3'h2; slice_mask = 2'h1; // 翻转全部路由字段位
         packet_flit_count = 5'd15; expected_packet_sequence = 12'h555; global_transaction_id = 64'h5555_5555_5555_5555; group_id = 32'hAAAA_AAAA; logical_vc = 3'h2; // 翻转全部 packet 和事务身份位
         run_pair(1'b0, 12'h555, 12'h555, 1'b1, 7'h15, 512'h5555_5555_5555_5555, {512{1'b0}}); // 运行上游 replay 输入并检查新跳归一化
+        packet_flit_count = 5'd2; expected_packet_sequence = 12'h123; route_policy = 3'h0; #0.1; // 配置两拍 packet 以覆盖错误数据有界排空
+        send_flit(make_context_flit(1'b1, 12'h321, 12'h123)); // 发送合法上下文并建立 ACK 屏障
+        pulse_ack(1'b1, 12'h321, 12'h123); // 释放两拍错误数据排空场景
+        invalid_data_flit = make_data_flit(6'd0, 1'b0, 7'd64, 512'hdead_beef); // 构造首拍但破坏 packet 身份
+        invalid_data_flit[593:582] = 12'h124; // 使用错误 packet 序号使首拍不可提交
+        @(negedge clk); ingress_flit = invalid_data_flit; ingress_valid = 1'b1; // 驱动非末拍错误数据
+        @(posedge clk); if (!ingress_ready || tx_valid) $fatal(1, "invalid non-final data handling mismatch"); // 要求消费但不向链路提交
+        @(negedge clk); ingress_valid = 1'b0; ingress_flit = 640'd0; // 撤销首拍错误数据
+        invalid_data_flit = make_data_flit(6'd1, 1'b0, 7'd32, 512'hcafe_f00d); // 构造声明长度的末拍
+        invalid_data_flit[593:582] = 12'h124; // 保持错误 packet 身份以覆盖错误末拍恢复
+        @(negedge clk); ingress_flit = invalid_data_flit; ingress_valid = 1'b1; // 驱动末拍错误数据
+        @(posedge clk); if (!ingress_ready || tx_valid) $fatal(1, "invalid final data handling mismatch"); // 要求错误末拍被有界排空
+        @(negedge clk); ingress_valid = 1'b0; ingress_flit = 640'd0; // 撤销末拍错误数据
+        @(posedge clk); if (!protocol_error || pair_complete) $fatal(1, "invalid data did not set sticky error without false completion"); // 要求报告错误且不伪造完成
+        packet_flit_count = 5'd1; expected_packet_sequence = 12'h234; #0.1; // 配置下一合法单拍配对以证明边界恢复
+        run_pair(1'b0, 12'h432, 12'h234, 1'b0, 7'd64, 512'h0123, 512'h4567); // 错误排空后必须可继续处理新配对
         route_policy = 3'h7; #0.1; // 注入不支持的路由策略以覆盖非法上下文恢复
         @(negedge clk); ingress_flit = make_context_flit(1'b1, 12'hFFF, 12'hFFF); ingress_valid = 1'b1; // 驱动非法 Route Context
         @(posedge clk); if (!ingress_ready || tx_valid) $fatal(1, "invalid Route Context handling mismatch"); // 要求消费非法输入但不提交可靠端点

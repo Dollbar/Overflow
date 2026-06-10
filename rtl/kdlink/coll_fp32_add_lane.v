@@ -348,9 +348,17 @@ module coll_fp32_add_lane ( // 定义十六级 IEEE FP32 RNE 加法流水 lane
             if (special_round_q) result_s5_q <= special_result_round_q; // 输出特殊快速路径结果
             else if (zero_round_q) result_s5_q <= 32'd0; // cancellation 输出正零
             else if ((exp_round_q + mant_round_q[24]) >= 9'd255) result_s5_q <= {sign_round_q, 8'hFF, 23'd0}; // overflow 输出 infinity
+            /* verilator coverage_off */ // FORMAL: binary FP32 addition cannot round a subnormal exact lattice result across this boundary.
             else if (exp_round_q == 9'd0 && mant_round_q[23]) result_s5_q <= {sign_round_q, 8'd1, mant_round_q[22:0]}; // subnormal 舍入成为最小 normal
+            /* verilator coverage_on */
             else if (mant_round_q[24]) result_s5_q <= {sign_round_q, exp_round_q[7:0] + 1'b1, mant_round_q[23:1]}; // 尾数 carry 后右移一位
             else result_s5_q <= {sign_round_q, exp_round_q[7:0], mant_round_q[22:0]}; // 输出普通 normal 或 subnormal 结果
         end // 结束 FP32 加法流水复位选择
     end // 结束 FP32 加法流水时序逻辑
+`ifdef FORMAL
+    always @(*) begin
+        if (valid_round_q && !special_round_q && !zero_round_q && ((exp_round_q + mant_round_q[24]) < 9'd255))
+            assert (!(exp_round_q == 9'd0 && mant_round_q[23])); // Prove the guarded minimum-normal promotion branch unreachable for binary FP32 operands.
+    end
+`endif
 endmodule // 结束十六级 IEEE FP32 加法 lane

@@ -155,7 +155,9 @@ module kdlink_route_stage #( // 定义可组合为二百五十六域拓扑的固
                     ingress_ready_o = egress_ready_i[selected_egress_q]; // 使用锁定出口许可反压输入
                 end else ingress_ready_o = 1'b1; // 消费非法数据并报告协议错误
             end // 结束后继 packet 输出选择
+            /* verilator coverage_off */ // STRUCTURAL: the one-bit state exhaustively encodes context and packet.
             default: ingress_ready_o = 1'b0; // 非法状态禁止继续消费输入
+            /* verilator coverage_on */
         endcase // 结束路由级状态输出选择
     end // 结束可扩展路由级组合输出逻辑
     always @(posedge clk_i or negedge rst_n_i) begin // 更新 packet 锁定、计数和 sticky 错误
