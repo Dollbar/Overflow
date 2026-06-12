@@ -15,6 +15,11 @@ input wire i_fc_send,output wire o_fc_valid,o_fc_taken,o_fc_complete, // 只有�
 output wire [511:0] o_fc_flit,output wire [1:0] o_fc_msg, // 由发布快照构造合法Control或MSG1
 output wire o_active,o_done,output wire [20*(WIDTH+1)-1:0] o_pending, // 发布器初始化与未发归还状态
 output wire [COUNT_WIDTH-1:0] o_count,output wire o_release_taken // 独立核对消费者和信用发布接纳事件
+,output wire [79:0] o_rx_demands,output wire [663:0] o_epoch_context,output wire [89:0] o_epoch_validation, // I真实需求和未完成上下文。
+output wire [48+20*(WIDTH+1):0] o_epoch_publish,output wire [20*(COUNT_WIDTH+4)-1:0] o_epoch_stored_releases, // 实际publisher与保存字释放聚合。
+output wire [139:0] o_epoch_context_releases,output wire o_epoch_owner_error // 已预扣而尚未形成保存字释放的责任，不生成恢复许可。
+
+,output wire o_epoch_store_taken // 原始600位保存字真实写入事件，不是候选valid。
 ); // 结束外部接口
 wire budget_ok,pub_start_ready,pub_config_error,storage_valid,release_ready; // 预算及真实子模块握手
 wire pub_valid,pub_taken,pub_complete,pub_shared;wire [31:0] pub_word; // 发布器寄存的待发消息
@@ -35,4 +40,24 @@ assign o_read_valid=storage_valid&&release_ready; // 应用观察到的握手与
 assign o_fc_valid=pub_valid&&!o_fatal;assign o_fc_taken=pub_taken;assign o_fc_complete=o_fc_valid&&pub_complete; // fatal禁止发出旧信用
 assign o_fc_flit=!o_fc_valid?512'd0:(pub_complete?{247'd0,pub_shared,8'd1,256'd0}:{480'd0,pub_word}); // 完成消息payload最低位表示共享Data Pool
 assign o_fc_msg=o_fc_complete?2'd2:2'd0; // FC位于下半Control，MSG1位于上半消息
+wire stored_owner_error; // 观察账本自身故障，不修改旧收发握手。
+assign o_epoch_store_taken=o_taken&&unused_store; // 与原FIFO同沿，证书不能猜测分类。
+assign o_rx_demands=unused_demands;assign o_epoch_context=unused_context;assign o_epoch_validation=unused_validation;assign o_epoch_publish=unused_publish_state; // 全部来自唯一原始状态所有者。
+tl_receive_obligation_tracker #(.WIDTH(COUNT_WIDTH+4)) Epoch_Stored_Inst(.i_clk(i_clk),.i_rstn(i_rstn),.i_store(o_taken&&unused_store),.i_stored_releases(unused_proposed),.i_retire(o_retired),.i_retired_releases(o_read_releases),.o_pending(o_epoch_stored_releases),.o_error(stored_owner_error)); // 与真实600位字写入及实际退休保持同沿。
+reg [139:0] context_releases;reg context_error;integer token,account; // 只归约实际注册token，不用I减C恒等式伪造责任。
+always @*begin // 有界73个半Flit责任槽。
+ context_releases=140'd0;context_error=1'b0;account=0; // 全赋值组合提议。
+ if(unused_context[663:657]>7'd73)context_error=1'b1; // 无效窗口不能声称零责任。
+ for(token=0;token<73;token=token+1)begin // 每个CMD末token至多归还一个CMD。
+  if(token<{25'd0,unused_context[663:657]})begin // 只消费有效窗口，不把未来无效位当当前所有权。
+   account={27'd0,unused_context[token*8+:5]}; // 真实Data类原账户。
+   if((account<10)||(account>19))context_error=1'b1; // 所有有效Data/BE元数据须有原始CMD/Data归属。
+   else begin // 容量范围已验证才做动态索引。
+    if(unused_context[token*8+7])context_releases[(account-10)*7+:7]=context_releases[(account-10)*7+:7]+7'd1; // 所有剩余CMD均已在其Header真实预扣。
+    if((token==0)&&unused_context[6])context_releases[account*7+:7]=context_releases[account*7+:7]+7'd1; // 只有队首第二半表示已接首半的Data责任，后续未来Data不得提前计入。
+   end // 当前有效token归约结束。
+  end // 有效窗口结束。
+ end // 固定token扫描结束。
+end // 只读组合归约结束。
+assign o_epoch_context_releases=context_releases;assign o_epoch_owner_error=o_fatal||stored_owner_error||context_error; // 原状态错误与观察错误均阻止可信核账，上层承担停止策略。
 endmodule // 结束实际存储消费与信用发布集成

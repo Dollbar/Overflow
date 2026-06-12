@@ -13,7 +13,8 @@ module endpoint_response_assembler(
  output wire [9:0] o_response_dst,output wire [3:0] o_response_status,
  output wire [1:0] o_response_offset,output wire o_response_last,
  output wire [1:0] o_response_num_beats,output reg [511:0] o_response_data,
- output wire o_response_data_error,output reg o_error
+ output wire o_response_data_error,output reg o_error,
+ output wire o_idle // 完整队列、半Beat和已完成输出均无所有权才为空。
 );
 reg [31:0] headers[0:7]; // 描述符从入队到第二半Data接纳一直保持所有权。
 reg [2:0] r_head,r_tail;
@@ -21,6 +22,7 @@ reg [3:0] r_count;
 reg r_half,r_output_valid;
 reg [255:0] r_first;
 reg [31:0] r_output_header;
+assign o_idle=i_rstn&&!o_error&&(r_count==4'd0)&&!r_half&&!r_output_valid; // 实际寄存器所有权只读归约。
 wire [31:0] head_header=headers[r_head];
 wire enqueue=i_header_valid&&o_header_ready;
 wire consume=i_data_valid&&o_data_ready;

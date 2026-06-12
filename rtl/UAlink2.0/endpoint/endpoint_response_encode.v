@@ -1,6 +1,7 @@
+`timescale 1ns/1ps // 与本地事务接收和完成链一致。
 // single64B Read Response 编码；规范位段见 Common 2.0 Table 5-30，局部子集见 endpoint_transaction_contract.json。
 `default_nettype none // 禁止隐式网络掩盖端口拼写错误
-module endpoint_response_encode #(parameter FULL_READ_ENABLE=0) ( // Response 编码模块仅生成 Control，完整响应仍必须具备两个 Data 半 Flit
+module endpoint_response_encode #(parameter FULL_READ_ENABLE=0,NATIVE_FIELDS_ENABLE=0) ( // Response 编码模块仅生成 Control，完整响应仍必须具备两个 Data 半 Flit
     input wire i_valid, // 调用方提供待编码的响应描述符
     input wire [10:0] i_tag, // 调用方负责关联原请求的完整 Tag
     input wire [9:0] i_src, // 响应源标识由调用方提供，仅用于调试语义
@@ -19,7 +20,7 @@ wire profile_legal; // 检查本地单响应约束
 wire [63:0] response_field; // 普通未压缩 Read 响应字段
 assign profile_legal = ((i_status == 4'd0) || (i_status == 4'd3) || (FULL_READ_ENABLE && ((i_status == 4'd2) || (i_status == 4'd6) || (i_status == 4'd8)))) && // 错误响应同样保留正常 Read 的 Data tenure
                        (i_num_beats == 2'd0) && (FULL_READ_ENABLE || ((i_offset == 2'd0) && i_last)) && // 六十四字节一次完整响应
-                       (i_vc == 2'd0) && !i_pool; // 第一版 TL VC 与 pool 选择
+                       ((NATIVE_FIELDS_ENABLE!=0)||((i_vc == 2'd0) && !i_pool)); // 第一版 TL VC 与 pool 选择
 assign response_field = {4'd2, i_vc, i_tag, i_pool, i_num_beats, i_offset, // FTYPE 至 OFFSET 对应 Table 5-30
                          i_status, 1'b1, i_last, i_src, i_dst, 2'd0, 14'd0}; // RD_WR 为 Read，普通单播 RSPTYPE 与 SPARE 发零
 assign o_valid = i_valid && profile_legal; // 输出有效不证明 Data 可用或 Tag 已完成

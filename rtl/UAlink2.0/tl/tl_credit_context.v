@@ -142,7 +142,7 @@ wire [5:0] w_token_7_8=(7'd8<w_length7)?{(4'd8<w_counts[28+:4]),w_slots[35+:5]}:
 wire [437:0] w_append7={384'd0,w_token_7_8,w_token_7_7,w_token_7_6,w_token_7_5,w_token_7_4,w_token_7_3,w_token_7_2,w_token_7_1,w_token_7_0}<<({3'd0,w_prefix7}*10'd6); // 并行移动字段片段
 wire [437:0] w_append_all=w_append0|w_append1|w_append2|w_append3|w_append4|w_append5|w_append6|w_append7; // 八字段合并
 always @* begin // 元数据与需求原子提议
-n_metadata=r_metadata;o_demands=80'd0;target=0; // 完整初值
+n_metadata=r_metadata;o_demands=80'd0;i=0;target=0; // 循环索引和目标索引也在所有组合路径赋值，禁止工具把process临时量推断成锁存器
 if(o_allowed) begin // 非法及复位不输出部分需求
  if(o_lower==3'd0) begin // 真正Control才解释新字段
   n_metadata=r_metadata|(o_pending[0]?(w_append_all<<6):w_append_all); // 旧尾最多一项，统一偏移

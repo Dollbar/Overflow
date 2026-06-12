@@ -12,7 +12,7 @@ assign o_nop[1]=o_valid&&i_msg[1]&&(i_upper[7:0]==8'd0); // 实际信用事件�
 assign o_init[1]=o_valid&&i_msg[1]&&(i_upper[7:0]==8'd1); // 实际信用事件解码
 assign o_shared[1]=o_init[1]&&i_upper[8]; // 共享数据池标志为payload最低位
 assign o_poison[1]=o_valid&&i_msg[1]&&(i_upper[7:0]==8'd32); // 实际信用事件解码
-assign o_valid=legal0&&legal1&&(!i_control||(!i_msg[0]&&structure_valid)); // 任一非法清除全部事件
+assign o_valid=!duplicate_fc&&legal0&&legal1&&(!i_control||(!i_msg[0]&&structure_valid)); // 任一非法清除全部事件
 wire fc0=i_control&&starts[0]&&!request_starts[0]&&!response_starts[0]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
 wire fc1=i_control&&starts[1]&&!request_starts[1]&&!response_starts[1]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
 wire fc2=i_control&&starts[2]&&!request_starts[2]&&!response_starts[2]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
@@ -21,6 +21,31 @@ wire fc4=i_control&&starts[4]&&!request_starts[4]&&!response_starts[4]; // FC起
 wire fc5=i_control&&starts[5]&&!request_starts[5]&&!response_starts[5]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
 wire fc6=i_control&&starts[6]&&!request_starts[6]&&!response_starts[6]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
 wire fc7=i_control&&starts[7]&&!request_starts[7]&&!response_starts[7]; // FC起点排除整字段请求响应，不能读取起点payload当FTYPE
+// 同Control每类/账户最多一个非零FC；无效时全事件归零，原credit owner原子拒绝。
+wire [7:0] fc_mask={fc7,fc6,fc5,fc4,fc3,fc2,fc1,fc0};
+reg duplicate_fc;reg [19:0] fc_seen;reg [31:0] fc_word;
+reg [2:0] fc_account;integer sector_index,credit_class;reg [4:0] credit_slot;
+reg [4:0] fc_count;
+wire [3:0] unused_fc_type=fc_word[31:28];
+always @*begin
+ duplicate_fc=1'b0;fc_seen=20'd0;fc_word=32'd0;fc_account=3'd0;fc_count=5'd0;credit_slot=0;
+ for(sector_index=0;sector_index<8;sector_index=sector_index+1)begin
+  fc_word=i_lower[sector_index*32+:32];
+  for(credit_class=0;credit_class<4;credit_class=credit_class+1)begin
+   case(credit_class)
+    0:begin fc_account=fc_word[27]?({1'b0,fc_word[26:25]}+3'd1):3'd0;fc_count={2'd0,fc_word[24:22]};end
+    1:begin fc_account=fc_word[21]?({1'b0,fc_word[20:19]}+3'd1):3'd0;fc_count={2'd0,fc_word[18:16]};end
+    2:begin fc_account=fc_word[15]?({1'b0,fc_word[14:13]}+3'd1):3'd0;fc_count=fc_word[12:8];end
+    default:begin fc_account=fc_word[7]?({1'b0,fc_word[6:5]}+3'd1):3'd0;fc_count=fc_word[4:0];end
+   endcase
+   credit_slot=credit_class[4:0]*5'd5+{2'd0,fc_account};
+   if(fc_mask[sector_index]&&fc_count!=5'd0)begin
+    if(fc_seen[credit_slot])duplicate_fc=1'b1;
+    fc_seen[credit_slot]=1'b1;
+   end
+  end
+ end
+end
 assign o_grants[0 +: 8]=o_valid?(((((fc0&&!i_lower[27])?{5'd0,i_lower[24:22]}:8'd0)+((fc1&&!i_lower[59])?{5'd0,i_lower[56:54]}:8'd0))+(((fc2&&!i_lower[91])?{5'd0,i_lower[88:86]}:8'd0)+((fc3&&!i_lower[123])?{5'd0,i_lower[120:118]}:8'd0)))+((((fc4&&!i_lower[155])?{5'd0,i_lower[152:150]}:8'd0)+((fc5&&!i_lower[187])?{5'd0,i_lower[184:182]}:8'd0))+(((fc6&&!i_lower[219])?{5'd0,i_lower[216:214]}:8'd0)+((fc7&&!i_lower[251])?{5'd0,i_lower[248:246]}:8'd0)))):8'd0; // 四类各五池，单Flit累加最大248
 assign o_grants[8 +: 8]=o_valid?(((((fc0&&i_lower[27]&&(i_lower[26:25]==2'd0))?{5'd0,i_lower[24:22]}:8'd0)+((fc1&&i_lower[59]&&(i_lower[58:57]==2'd0))?{5'd0,i_lower[56:54]}:8'd0))+(((fc2&&i_lower[91]&&(i_lower[90:89]==2'd0))?{5'd0,i_lower[88:86]}:8'd0)+((fc3&&i_lower[123]&&(i_lower[122:121]==2'd0))?{5'd0,i_lower[120:118]}:8'd0)))+((((fc4&&i_lower[155]&&(i_lower[154:153]==2'd0))?{5'd0,i_lower[152:150]}:8'd0)+((fc5&&i_lower[187]&&(i_lower[186:185]==2'd0))?{5'd0,i_lower[184:182]}:8'd0))+(((fc6&&i_lower[219]&&(i_lower[218:217]==2'd0))?{5'd0,i_lower[216:214]}:8'd0)+((fc7&&i_lower[251]&&(i_lower[250:249]==2'd0))?{5'd0,i_lower[248:246]}:8'd0)))):8'd0; // 四类各五池，单Flit累加最大248
 assign o_grants[16 +: 8]=o_valid?(((((fc0&&i_lower[27]&&(i_lower[26:25]==2'd1))?{5'd0,i_lower[24:22]}:8'd0)+((fc1&&i_lower[59]&&(i_lower[58:57]==2'd1))?{5'd0,i_lower[56:54]}:8'd0))+(((fc2&&i_lower[91]&&(i_lower[90:89]==2'd1))?{5'd0,i_lower[88:86]}:8'd0)+((fc3&&i_lower[123]&&(i_lower[122:121]==2'd1))?{5'd0,i_lower[120:118]}:8'd0)))+((((fc4&&i_lower[155]&&(i_lower[154:153]==2'd1))?{5'd0,i_lower[152:150]}:8'd0)+((fc5&&i_lower[187]&&(i_lower[186:185]==2'd1))?{5'd0,i_lower[184:182]}:8'd0))+(((fc6&&i_lower[219]&&(i_lower[218:217]==2'd1))?{5'd0,i_lower[216:214]}:8'd0)+((fc7&&i_lower[251]&&(i_lower[250:249]==2'd1))?{5'd0,i_lower[248:246]}:8'd0)))):8'd0; // 四类各五池，单Flit累加最大248

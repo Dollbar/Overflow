@@ -1,0 +1,4 @@
+Library/models/serdes/serdes_212g5_pam4_profile_pkg.sv
+Library/models/serdes/serdes_lane_model.sv
+Library/models/serdes/serdes_channel_model.sv
+Library/models/serdes/serdes_full_duplex_link_model.sv

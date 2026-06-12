@@ -264,7 +264,7 @@ assign w_append7={512'd0,w_token_7_8,w_token_7_7,w_token_7_6,w_token_7_5,w_token
 wire [583:0] w_append_all; // 显式组合网络声明
 assign w_append_all=w_append0|w_append1|w_append2|w_append3|w_append4|w_append5|w_append6|w_append7; // 八字段合并
 always @* begin // 元数据与需求原子提议
-n_metadata=r_metadata;o_demands=80'd0;o_releases=80'd0;target=0; // 完整初值
+n_metadata=r_metadata;o_demands=80'd0;o_releases=80'd0;i=0;target=0; // 循环索引和目标索引也在所有组合路径赋值，禁止工具把process临时量推断成锁存器
 if(o_allowed) begin // 非法及复位不输出部分需求
  if(o_lower==3'd0) begin // 真正Control才解释新字段
   n_metadata=r_metadata|(o_pending[0]?(w_append_all<<4'd8):w_append_all); // 旧尾最多一项，统一偏移

@@ -6,6 +6,8 @@ output wire [6:0] o_rx_pending,output wire [72:0] o_rx_be,output wire [2:0] o_re
 output wire o_fatal,o_pair_open,o_pair_poison,output wire [20*(WIDTH+1)-1:0] o_capacity,o_available,output wire o_done,o_shared,o_init_repeat,o_init_conflict, // Rx联合状态及共享ledger
 output wire [6:0] o_tx_pending,output wire [72:0] o_tx_be,output wire [437:0] o_metadata,output wire [89:0] o_tx_validation_state, // Tx完整验证观察
 output wire o_admission_wait,o_capacity_shortfall,output wire [119:0] o_requirements // 等待及容量不足本地诊断
+,output wire [159:0] o_rx_grants,output wire [1:0] o_rx_init,output wire o_rx_runtime // 真实R提议及沿前初始化资格，必须与o_rx_taken共同采样。
+
 ); // 模块端口声明结束
 wire core_allowed,core_error,admission_allow,admission_wait,capacity_shortfall; // 相互无反馈的候选与最终许可
  tl_credit_admission #(.WIDTH(WIDTH)) u_admission( // 只在实际Control位置检查所有后续信用
@@ -14,6 +16,7 @@ wire core_allowed,core_error,admission_allow,admission_wait,capacity_shortfall; 
  .o_requirements(o_requirements),.o_allow(admission_allow),.o_wait(admission_wait),.o_shortfall(capacity_shortfall) // 组合诊断
  ); // 完成整段信用准入实例端口连接
  tl_credit_port #(.WIDTH(WIDTH)) u_port( // 既有真实收发及逐对信用扣除
+ .o_rx_grants(o_rx_grants),.o_rx_init(o_rx_init),.o_rx_runtime(o_rx_runtime), // 原样透传实际R字段与phase。
  .i_clk(i_clk), // 唯一输入时钟
  .i_rstn(i_rstn), // 同步低有效复位
  .i_receive(i_receive), // 实际收到Flit事件

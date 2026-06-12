@@ -60,7 +60,7 @@ wire [3:0] dec_ignore; // 按事件先递减并饱和
 wire [9:0] dec_ack_sum; // 前向十位差，最高位表示借位
 wire [9:0] dec_tail_sum; // 尾部到目标的十位差，最高位表示借位
 wire [9:0] dec_ack_mod; // 借位时低九位减一，非借位保留五百一十一边界
-wire [9:0] dec_tail_mod; // 尾部差的借位修正，零及五百一十一边界保持
+wire [9:0] unused_dec_tail_mod; // 尾部差的借位修正，零及五百一十一边界保持
 wire [8:0] dec_distance; // 前向距离
 wire flag_in_buffer; // 非零目标及实际数量下溢保护
 wire flag_ack; // 两端ACK窗口包含目标
@@ -92,7 +92,10 @@ wire flag_tail_ack; // 晚到目标直接比较ACK尾窗口
 wire flag_tail_request; // 晚到目标直接比较Request尾窗口
 assign dec_window_sum = {1'b0, reg_last_ack} + {2'b00, cnt_unacked}; // 十位无溢出状态端点
 assign flag_window_wrap = dec_window_sum[9]; // 总和大于五百一十一才跨越非零环
-assign dec_window_end = flag_window_wrap ? dec_window_sum - 10'd511 : dec_window_sum[8:0]; // 环回下界由状态提前计算
+wire [9:0] dec_window_full; // 保持原条件表达式十位运算语义。
+assign dec_window_full = flag_window_wrap ? dec_window_sum - 10'd511 : {1'b0,dec_window_sum[8:0]}; // 两分支显式同宽。
+assign dec_window_end = dec_window_full[8:0]; // 与原赋值相同的九位窗口截取。
+wire unused_window_high = dec_window_full[9]; // 原赋值显式丢弃的高位。 // 环回下界由状态提前计算
 assign dec_tail_anchor = (reg_last_sequence == 9'd0) ? 9'd511 : reg_last_sequence; // 任意当前状态仍保留零尾距离语义
 assign dec_ack_lower = (dec_tail_anchor <= 9'd255) ? dec_tail_anchor + 9'd256 : dec_tail_anchor - 9'd255; // 包含尾距离二百五十五的环回端点
 assign dec_request_lower = (dec_tail_anchor <= 9'd254) ? dec_tail_anchor + 9'd257 : dec_tail_anchor - 9'd254; // Request尾距离最多二百五十四
@@ -104,7 +107,7 @@ assign dec_ignore = (i_ingress_event && (cnt_ignore != 4'd0)) ? cnt_ignore - 4'd
 assign dec_ack_sum = {1'b0, i_command_target} - {1'b0, reg_last_ack}; // 前向十位差，最高位表示借位
 assign dec_tail_sum = {1'b0, reg_last_sequence} - {1'b0, i_command_target}; // 尾部到目标的十位差，最高位表示借位
 assign dec_ack_mod = {1'b0, dec_ack_sum[8:0]} - {9'd0, dec_ack_sum[9]}; // 借位时低九位减一，非借位保留五百一十一边界
-assign dec_tail_mod = {1'b0, dec_tail_sum[8:0]} - {9'd0, dec_tail_sum[9]}; // 尾部差的借位修正，零及五百一十一边界保持
+assign unused_dec_tail_mod = {1'b0, dec_tail_sum[8:0]} - {9'd0, dec_tail_sum[9]}; // 尾部差的借位修正，零及五百一十一边界保持
 assign dec_distance = dec_ack_mod[8:0]; // 前向距离
 assign flag_in_buffer = (i_command_target != 9'd0) && ((i_command_target >= reg_last_ack) ? (flag_window_wrap || (i_command_target <= dec_window_end)) : (flag_window_wrap && (i_command_target <= dec_window_end))); // 提前状态端点与晚到目标直接比较，包含重复ACK
 assign flag_ack = flag_command && !i_command_request && flag_in_buffer && flag_tail_ack; // 八位数量窗口已保证前向距离不超过二百五十五
@@ -256,4 +259,5 @@ always @(posedge i_clk) begin // reg_first独立时钟寄存
   reg_first <= 1'b1; // 本沿提交新状态
  end // 结束状态更新分支，其余保持
 end // 结束reg_first寄存块
+wire [25:0] unused_arithmetic_high = {dec_ack_mod[9],dec_request_count[8],dec_head_mod[12:C_ADDR_WIDTH],dec_request_mod[12:C_ADDR_WIDTH],{(2*C_ADDR_WIDTH-2){1'b0}}}; // 显式记录未进入物理环地址的高位，零扩展仅供未用观察。
 endmodule // 结束dl_replay_tx_control模块

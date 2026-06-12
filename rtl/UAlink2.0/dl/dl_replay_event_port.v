@@ -51,6 +51,7 @@ dl_replay_receiver u_receiver ( // 实例化u_receiver，共享唯一时钟和�
     .i_clk(i_clk), // 原生接口直接连接
     .i_rstn(i_rstn), // 原生接口直接连接
     .i_link_reset(i_link_reset), // 原生接口直接连接
+    .i_epoch_cleanup(1'b0), // 本通用event port不拥有managed epoch窗口
     .i_event_valid(i_rx_event_valid), // 原生接口直接连接
     .i_event_discard(i_rx_event_discard), // 原生接口直接连接
     .i_crc_ok(i_rx_crc_ok), // 原生接口直接连接

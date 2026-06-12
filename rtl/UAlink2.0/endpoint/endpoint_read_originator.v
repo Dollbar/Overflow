@@ -12,7 +12,7 @@ module endpoint_read_originator #(parameter integer CAPACITY=4, NUM_PORTS=1)( //
  input wire [5:0] i_request_length, // 当前必须为十五个DWORD增量
  input wire [7:0] i_request_attr, // 当前首末DWORD全部字节使能
  output wire o_source_valid, // 仅尚未被TL捕获的待发字段有效
- output wire [255:0] o_source_control, // 真实Read编码器生成的低位字段加NOP
+ output wire [255:0] o_source_control,output wire [1:0] o_source_port, // 真实Read编码器及稳定的发送端口
  input wire i_source_captured, // TL源组捕获，不等于实际Header发送
  input wire i_header_taken, // 对应Request Header已在实际发送边界被消费
  input wire i_response_valid, // 完整两个Data半Flit已经由上游组装保存
@@ -53,10 +53,13 @@ assign o_request_ready=i_rstn&&encoded_valid&&port_legal&&!r_pending&&table_read
 assign request_fire=i_request_valid&&o_request_ready; // 一次应用握手原子预约表项和待发描述符
 assign o_source_valid=i_rstn&&r_pending&&!r_captured; // 源组捕获后禁止重复提交同一Header
 assign o_source_control=o_source_valid?r_control:256'd0; // 背压前保持整个Control，捕获后撤下输出
+assign o_source_port=r_pending?r_port:2'd0; // 捕获后仍保持到真实Header发送，供per-port tl_port归属。
 assign sent_event=i_header_taken&&r_pending&&(r_captured||i_source_captured); // 实际Header消费才将Tag标记为已发送
 assign o_error=i_rstn&&(table_error||(i_request_valid&&(encoded_error||!port_legal))|| // 非法profile和Tag事件由各所有者报告
  (i_source_captured&&(!r_pending||r_captured))||(i_header_taken&&(!r_pending||(!r_captured&&!i_source_captured)))); // 非法捕获/发送反馈不释放未发送描述符
+wire unused_tag_message;wire[2:0] unused_tag_message_beats;wire[3:0] unused_tag_message_poison; // 旧模式明确关闭Message能力，原有所有权路径不变。
 endpoint_tag_table #(.CAPACITY(CAPACITY),.NUM_PORTS(NUM_PORTS)) Tags_Inst( // 实际实例化完整Tag和结果预约表
+ .i_allocate_is_message(1'b0),.o_complete_is_message(unused_tag_message),.o_complete_response_beats(unused_tag_message_beats),.o_complete_raw_poison(unused_tag_message_poison),
  .i_clk(i_clk),.i_rstn(i_rstn),.i_local_id(i_local_id), // 同一同步复位时期与本地ID
  .i_allocate_read_num_beats(2'd0),.i_allocate_read_mask({192'd0,64'hffffffffffffffff}),.o_complete_data_full(),.o_complete_mask(),
  .i_allocate_is_write(1'b0),.i_response_is_write(1'b0),.o_complete_is_write(), // 旧Read调用方明确固定kind零并忽略新增完成kind

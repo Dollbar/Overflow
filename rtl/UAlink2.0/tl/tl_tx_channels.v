@@ -1,4 +1,4 @@
-module tl_tx_channels #(parameter WIDTH=16,parameter integer RAW_HEADERS=0)( // tl_tx_channels模块：独立Request与Response候选及Data所有权选择
+module tl_tx_channels #(parameter WIDTH=16,parameter integer RAW_HEADERS=0,STOP_ENABLE=0,POISON_ENABLE=0,PACKET_BOUNDARY_ENABLE=0)( // tl_tx_channels模块：独立Request与Response候选及Data所有权选择
  input wire i_clk,i_rstn,i_taken, // 唯一输入时钟、同步低有效复位及真实端口发送事件
  input wire [6:0] i_pending,input wire i_auth,i_done,i_shared, // 同一真实端口的序列、认证及初始信用状态
  input wire [20*(WIDTH+1)-1:0] i_available,i_capacity, // 两类共同观察唯一物理信用账本
@@ -9,20 +9,27 @@ module tl_tx_channels #(parameter WIDTH=16,parameter integer RAW_HEADERS=0)( // 
  input wire i_fc_valid,input wire [511:0] i_fc_flit,input wire [1:0] i_fc_msg, // 真实FC发布器的独立来源
  output wire o_valid,output wire [511:0] o_flit,output wire [1:0] o_msg, // 发给同一真实信用端口的完整候选
  output wire [1:0] o_header_taken,o_tags_taken,output wire [3:0] o_data_taken,output wire o_fc_taken, // 分别确认被实际消费的类与来源
- output wire [1:0] o_header_error,o_capacity_shortfall // 分类错误和各队首超容量的独立本地诊断
+ output wire [1:0] o_header_error,o_capacity_shortfall,output wire o_packet_sop,o_packet_eop // 分类错误及与候选同行的内部包边界。
+,input wire i_stop_request // 局部隔离仅阻止Request类的尚未交付提议。
+,input wire [1:0] i_poison0,i_poison1 // 两类Data标记与同索引数据共用握手。
 ); // 结束模块端口声明
 generate if((RAW_HEADERS!=0)&&(RAW_HEADERS!=1))begin:gen_invalid_profile // 内部可见性模式只允许零或一
  tl_tx_channels_parameters_invalid Invalid_Inst(); // 非法覆盖在展开时失败
 end endgenerate // 结束参数检查
 reg r_preferred,r_owner,r_hold_class,r_hold_valid; // 下一头部偏好、旧Data所有者和停顿中的头部类
 reg selected_class; // 本拍准备好的Control来源，不决定旧尾部的数据源
+wire stop_request,cancel_offer,held_header;wire [1:0] live_headers;wire [3:0] live_data; // 显式Request停止提议及保留Response资格。
+assign stop_request=(STOP_ENABLE!=0)&&i_stop_request; // 默认接口忽略追加输入。
+assign live_headers={i_header_valid[1],i_header_valid[0]&&!stop_request}; // Response独立保持可发。
+assign live_data={i_data_valid[3:2],stop_request?2'd0:i_data_valid[1:0]}; // 旧Request Data留在真实队列，不伪造消费。
+assign cancel_offer=stop_request&&(((i_pending!=7'd0)&&!r_owner)||(r_hold_valid&&!r_hold_class&&held_header)); // 只取消未交付Request候选。
 wire data_class;wire [1:0] format_ok,credit_ok,budget_ok,ready,nop_ready,candidate; // 两条独立候选资格
 wire [1:0] credit_shortfall;wire [1:0] old_data_valid; // 两类超容量诊断及旧Data队首可用数量
 wire header_taken,tags_taken;wire [1:0] data_taken; // 内层packer按真实发送确认
-wire [1:0] has_data; // 两类原始tenure标记也在仲裁前计算
+wire [1:0] has_data;wire [15:0] header_tenure; // 两类原始tenure标记及总半Flit数在仲裁前计算。
 wire payload_visible;wire [255:0] selected_header,selected_tags; // 原始内部字只供资格解码，对外组包保持原无效零值
 wire position_ready; // 当前Control位置是否允许新头部
-assign old_data_valid=r_owner?i_data_valid[3:2]:i_data_valid[1:0]; // 旧tenure只观察已接纳头部的数据类
+assign old_data_valid=r_owner?live_data[3:2]:live_data[1:0]; // 旧tenure只观察已接纳头部的数据类
 assign position_ready=(i_pending<=7'd1)&&!(i_auth&&(i_pending==7'd1))&&!((i_pending==7'd1)&&i_fc_valid&&(i_fc_msg!=2'd0)); // 保留Auth尾部及完成消息规则
 genvar lane;generate for(lane=0;lane<2;lane=lane+1)begin:gen_class // Request和Response资格并行计算
  wire valid;wire [2:0] requests;wire [3:0] responses,fields; // 当前类实际字段计数
@@ -36,10 +43,11 @@ genvar lane;generate for(lane=0;lane<2;lane=lane+1)begin:gen_class // Request和
  .o_requirements(unused_requirements),.o_allow(credit_ok[lane]),.o_wait(unused_wait),.o_shortfall(credit_shortfall[lane]) // 保留独立的总容量不足判断
  ); // 结束每类信用准入实例端口连接
  assign format_ok[lane]=valid&&(status==2'd0)&&(fields!=4'd0)&&(!i_auth||(fields<=4'd4))&&((lane==0)?(responses==4'd0):(requests==3'd0)); // 只准许本队列对应的请求或响应字段
- assign candidate[lane]=i_header_valid[lane]&&format_ok[lane]; // 错类队首不能伪装成另一类发出
+ assign candidate[lane]=live_headers[lane]&&format_ok[lane]; // 错类队首不能伪装成另一类发出
  assign budget_ok[lane]=(requests<=i_request_budget)&&(responses<=i_response_budget); // 两类catch条件分别核对
  assign has_data[lane]=((RAW_HEADERS==0)||i_header_valid[lane])&&((|counts)||(|be)); // Data或额外BE都来自本类有序负载源
- assign payload_ready=(i_pending!=7'd0)?(old_data_valid>=2'd1):(i_auth?i_tags_valid[lane]:(!has_data[lane]||(i_data_valid[lane*2+:2]>=2'd1))); // 有旧尾时保留旧类，新tenure才选择新类数据
+ assign header_tenure[lane*8+:8]={4'd0,counts[3:0]}+{4'd0,counts[7:4]}+{4'd0,counts[11:8]}+{4'd0,counts[15:12]}+{4'd0,counts[19:16]}+{4'd0,counts[23:20]}+{4'd0,counts[27:24]}+{4'd0,counts[31:28]}+{7'd0,be[0]}+{7'd0,be[1]}+{7'd0,be[2]}+{7'd0,be[3]}+{7'd0,be[4]}+{7'd0,be[5]}+{7'd0,be[6]}+{7'd0,be[7]}; // 复用同一已验证tenure结果，不解析未确认输出字。
+ assign payload_ready=(i_pending!=7'd0)?(old_data_valid>=2'd1):(i_auth?i_tags_valid[lane]:(!has_data[lane]||(live_data[lane*2+:2]>=2'd1))); // 有旧尾时保留旧类，新tenure才选择新类数据
  assign ready[lane]=candidate[lane]&&credit_ok[lane]&&budget_ok[lane]&&payload_ready&&position_ready; // 全部资格独立满足才参与优先仲裁
  assign nop_ready[lane]=candidate[lane]&&credit_ok[lane]&&!budget_ok[lane]; // 没有可发头部时选择需要catch NOP的候选
  assign o_header_error[lane]=i_rstn&&i_header_valid[lane]&&!format_ok[lane]; // 本地错类或格式错误不消费输入
@@ -47,7 +55,7 @@ genvar lane;generate for(lane=0;lane<2;lane=lane+1)begin:gen_class // Request和
 end endgenerate // 结束两类独立资格生成
 always @* begin // 按就绪程度优先，再在同等级的两类间轮换
  selected_class=r_preferred; // 默认偏好仅在两类资格相同时使用
- if(r_hold_valid)selected_class=r_hold_class; // 输出停顿期间固定已提出的头部来源
+ if(r_hold_valid&&!(stop_request&&!r_hold_class))selected_class=r_hold_class; // 输出停顿期间固定已提出的头部来源
  else if(|ready)selected_class=ready[r_preferred]?r_preferred:!r_preferred; // 可发另一类优先于任意阻塞队首
  else if(|nop_ready)selected_class=nop_ready[r_preferred]?r_preferred:!r_preferred; // catch恢复不能被缺信用队首挡住
  else if(|candidate)selected_class=candidate[r_preferred]?r_preferred:!r_preferred; // 保留可诊断的未获资格队首供内层等待或FC选择
@@ -56,13 +64,14 @@ assign data_class=(i_pending!=7'd0)?r_owner:selected_class; // 混合旧尾和�
 assign payload_visible=(RAW_HEADERS==0)||i_header_valid[selected_class]; // 兼容外部默认接口及内部空队首，包括任意停顿状态
 assign selected_header=payload_visible?(selected_class?i_headers[511:256]:i_headers[255:0]):256'd0; // 仅在最终负载边界恢复原头部屏蔽
 assign selected_tags=payload_visible?(selected_class?i_tags[511:256]:i_tags[255:0]):256'd0; // 标签与头部来自同一个原子存储字
- tl_tx_packer_core Packer_Inst( // 直接复用两类已完成的资格，避免选择头部后重复解码和信用比较
- .i_clk(i_clk),.i_rstn(i_rstn),.i_taken(i_taken),.i_pending(i_pending),.i_auth(i_auth), // 状态与真实端口同步
- .i_header_ready(ready[selected_class]),.i_nop_ready(nop_ready[selected_class]),.i_has_data(has_data[selected_class]), // 包括原位置、负载、信用及catch规则
+ tl_tx_packer_core #(.CANCEL_ENABLE(STOP_ENABLE),.POISON_ENABLE(POISON_ENABLE),.PACKET_BOUNDARY_ENABLE(PACKET_BOUNDARY_ENABLE)) Packer_Inst( // 直接复用两类已完成的资格，避免选择头部后重复解码和信用比较
+ .i_clk(i_clk),.i_rstn(i_rstn),.i_taken(i_taken),.i_pending(i_pending),.i_auth(i_auth),.i_cancel_offer(cancel_offer),.o_held_header(held_header), // 状态与真实端口同步
+ .i_header_ready(ready[selected_class]),.i_nop_ready(nop_ready[selected_class]),.i_has_data(has_data[selected_class]),.i_header_tenure(selected_class?header_tenure[15:8]:header_tenure[7:0]), // 包括原位置、负载、信用及catch规则
  .i_header(selected_header),.i_tags(selected_tags), // 当前原始头部及标签保持至真实确认
- .i_data_valid(data_class?i_data_valid[3:2]:i_data_valid[1:0]),.i_data0(data_class?i_data0[511:256]:i_data0[255:0]),.i_data1(data_class?i_data1[511:256]:i_data1[255:0]), // Data仍跟随实际tenure所有者
+ .i_poison0(i_poison0[data_class]),.i_poison1(i_poison1[data_class]), // 原所有者同时选择标记。
+ .i_data_valid(data_class?live_data[3:2]:live_data[1:0]),.i_data0(data_class?i_data0[511:256]:i_data0[255:0]),.i_data1(data_class?i_data1[511:256]:i_data1[255:0]), // Data仍跟随实际tenure所有者
  .i_fc_valid(i_fc_valid),.i_fc_flit(i_fc_flit),.i_fc_msg(i_fc_msg), // FC来源独立于头部资格
- .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_header_taken(header_taken),.o_tags_taken(tags_taken),.o_data_taken(data_taken),.o_fc_taken(o_fc_taken) // 同一真实发送事件确认各输入
+ .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_packet_sop(o_packet_sop),.o_packet_eop(o_packet_eop),.o_header_taken(header_taken),.o_tags_taken(tags_taken),.o_data_taken(data_taken),.o_fc_taken(o_fc_taken) // 同一真实发送事件确认各输入
  ); // 结束复用资格的packer实例
 assign o_header_taken=header_taken?(selected_class?2'b10:2'b01):2'b00; // 新头部只确认被选类别
 assign o_tags_taken=tags_taken?(selected_class?2'b10:2'b01):2'b00; // AuthTags与新头部在同一类别确认

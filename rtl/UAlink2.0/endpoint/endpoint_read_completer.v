@@ -3,11 +3,12 @@
 module endpoint_read_completer #( // 真实请求经内存完成后生成单Beat响应。
  parameter CAPACITY=4, // 每个槽同时预留描述符和完整512位结果，本轮冻结并验证1至4槽。
  parameter SLOT_WIDTH=(CAPACITY<=2)?1:(CAPACITY<=4)?2:(CAPACITY<=8)?3:(CAPACITY<=16)?4:(CAPACITY<=32)?5:(CAPACITY<=64)?6:(CAPACITY<=128)?7:8, // 单槽避免零宽度，非二次幂保留尾索引检查。
- parameter FULL_READ_ENABLE=0 // 默认保持既有单64B行为，开启后处理完整普通Read。
+ parameter FULL_READ_ENABLE=0, // 默认保持既有单64B行为，开启后处理完整普通Read。
+ parameter NATIVE_FIELDS_ENABLE=0 // 原生普通字段模式；默认保留旧VC/pool约束。
 )( // 开始冻结的本地执行接口。
  input wire i_clk,i_rstn, // 共用时钟上升沿和同步低有效复位。
  input wire [9:0] i_local_id, // 运行期间稳定的完整本地ID。
- input wire i_request_valid,output wire o_request_ready, // 接纳真实收到的完整请求。
+ input wire i_request_valid,output wire o_request_ready,input wire [1:0] i_request_port, // 接纳真实收到的完整请求及其Station-local入口。
  input wire [10:0] i_request_tag, // 完整Tag而非低位槽索引。
  input wire [9:0] i_request_src,i_request_dst, // 保留完整双方身份供响应反向路由。
  input wire [56:0] i_request_address, // 不截断57位请求地址。
@@ -23,11 +24,12 @@ module endpoint_read_completer #( // 真实请求经内存完成后生成单Beat
  input wire i_mem_result_valid,output wire o_mem_result_ready, // 已预留空间接收真实执行结果，非法返回消费诊断。
  input wire [SLOT_WIDTH-1:0] i_mem_result_slot, // 允许已发slot乱序返回。
  input wire [511:0] i_mem_result_data,input wire [3:0] i_mem_result_status, // 完整数据和同一完成状态。
- output wire o_source_valid,output wire [255:0] o_source_control,input wire i_source_captured, // 真实Control组所有权转移。
+ output wire o_source_valid,output wire [255:0] o_source_control,output wire [1:0] o_source_port,input wire i_source_captured, // 真实Control组及回源端口所有权转移。
  output wire [1:0] o_data_valid,output wire [511:0] o_data,input wire [1:0] i_data_accepted, // 零至两个半Flit提议和实际接纳数。
  output wire o_error,output wire [7:0] o_count, // 非法事件组合诊断和完整生命周期槽占用。
  input wire [2047:0] i_mem_result_data_full, // 完整模式一次接收相对首Beat起的四个自然64B数据块。
- output wire [255:0] o_mem_be // 内存字节使能始终按整个256B区域定位。
+ output wire [255:0] o_mem_be, // 内存字节使能始终按整个256B区域定位。
+ input wire i_response_tl_pool // 本地响应TL账户选择，只在真实请求接纳时保存。
 ); // 结束Completer外部接口。
 generate if(FULL_READ_ENABLE==0) begin:legacy_read
 
@@ -39,7 +41,7 @@ generate if(FULL_READ_ENABLE==0) begin:legacy_read
  reg [56:0] address_q[0:CAPACITY-1]; // 保存全部57位地址直到内存真实接纳。
  reg [5:0] length_q[0:CAPACITY-1]; // 保存请求长度。
  reg [7:0] attr_q[0:CAPACITY-1],metadata_q[0:CAPACITY-1]; // 保存请求访问属性。
- reg [1:0] asi_q[0:CAPACITY-1],data_sent_q[0:CAPACITY-1]; // 保存执行属性与已接纳Data数量。
+ reg [1:0] asi_q[0:CAPACITY-1],data_sent_q[0:CAPACITY-1],port_q[0:CAPACITY-1]; // 保存执行属性、回源端口与已接纳Data数量。
  reg [511:0] result_q[0:CAPACITY-1]; // 实际预留并保存每槽完整64字节结果。
  reg [3:0] status_q[0:CAPACITY-1]; // 保存结果对应的真实执行状态。
  wire request_legal,request_fire,memory_fire,result_fire,head_result,header_fire,data_feedback_legal,retire,encode_error; // 分离每个接口的实际推进条件。
@@ -48,17 +50,17 @@ generate if(FULL_READ_ENABLE==0) begin:legacy_read
  integer read_slot; // 静态有界读取只选择实际分配的槽，不推断不存在的RAM补齐行。
  reg [56:0] issue_address; // 内存命令组合选择保留完整57位地址。
  reg [5:0] issue_length; reg [7:0] issue_attr,issue_metadata; reg [1:0] issue_asi; // 保存当前内存命令的组合字段。
- reg [10:0] head_tag; reg [9:0] head_src,head_dst; // 保存真实队首描述符的组合字段。
+ reg [10:0] head_tag; reg [9:0] head_src,head_dst;reg [1:0] head_port; // 保存真实队首描述符与回源端口。
  reg [511:0] head_data; reg [3:0] head_status; reg [1:0] head_data_sent; // 选择队首完整结果、状态和实际接纳进度。
  always @(*) begin // 有界多路器为非二次幂容量的未用地址定义无效输出，不分配虚构槽。
   issue_address=57'd0;issue_length=6'd0;issue_attr=8'd0;issue_metadata=8'd0;issue_asi=2'd0; // 无匹配时不提供有效内存字段。
-  head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_data=512'd0;head_status=4'd0;head_data_sent=2'd0; // 无匹配时默认无有效队首内容。
+  head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_port=2'd0;head_data=512'd0;head_status=4'd0;head_data_sent=2'd0; // 无匹配时默认无有效队首内容。
   for(read_slot=0;read_slot<CAPACITY;read_slot=read_slot+1) begin // 综合展开为每个实际槽的固定索引读取。
    if(issue_q==read_slot) begin // 只选择当前内存命令所属的真实槽。
     issue_address=address_q[read_slot];issue_length=length_q[read_slot];issue_attr=attr_q[read_slot];issue_metadata=metadata_q[read_slot];issue_asi=asi_q[read_slot]; // 固定索引读取不会生成不存在的RAM读行。
    end // 结束内存命令字段选择。
    if(head_q==read_slot) begin // 只选择按请求顺序提交的真实队首。
-    head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot];head_data=result_q[read_slot];head_status=status_q[read_slot];head_data_sent=data_sent_q[read_slot]; // 保留完整Tag、ID、512位结果与接纳进度。
+    head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot];head_port=port_q[read_slot];head_data=result_q[read_slot];head_status=status_q[read_slot];head_data_sent=data_sent_q[read_slot]; // 保留完整Tag、ID、端口、512位结果与接纳进度。
    end // 结束队首响应字段选择。
   end // 结束对真实CAPACITY的有界选择。
  end // 组合默认值覆盖全部输出，无锁存器或未驱动补齐行。
@@ -89,6 +91,7 @@ generate if(FULL_READ_ENABLE==0) begin:legacy_read
   .o_valid(o_source_valid),.o_error(encode_error),.o_control(o_source_control) // 输出真实Control和编码诊断。
  ); // 结束Response字段编码实例。
  assign header_fire=i_source_captured&&o_source_valid; // 捕获Header不表示Data已全部入队。
+ assign o_source_port=head_result?head_port:2'd0; // Header捕获后Data仍沿同一Station-local端口完成。
  assign o_data_valid=head_result?(2'd2-head_data_sent):2'd0; // 只提议尚未被实际接纳的半字。
  assign o_data=!head_result?512'd0:(head_data_sent==0)?{head_data[511:256],head_data[255:0]}:(head_data_sent==1)?{256'd0,head_data[511:256]}:512'd0; // 部分接纳后把未接纳高半前移。
  assign data_feedback_legal=(i_data_accepted<=o_data_valid); // 超额或三项反馈不能推进Data所有权。
@@ -103,7 +106,7 @@ generate if(FULL_READ_ENABLE==0) begin:legacy_read
   end else begin // 不同槽可以并行接受请求、返回结果与发送响应。
    if(request_fire) begin // 捕获完整描述符并预留其结果空间。
     busy_q[allocate_q]<=1'b1;issued_q[allocate_q]<=1'b0;complete_q[allocate_q]<=1'b0;header_q[allocate_q]<=1'b0;data_sent_q[allocate_q]<=0; // 开始新事务的唯一生命周期。
-    tag_q[allocate_q]<=i_request_tag;src_q[allocate_q]<=i_request_src;dst_q[allocate_q]<=i_request_dst; // 保存完整Tag和双方ID。
+    tag_q[allocate_q]<=i_request_tag;src_q[allocate_q]<=i_request_src;dst_q[allocate_q]<=i_request_dst;port_q[allocate_q]<=i_request_port; // 保存完整Tag、双方ID和回源端口。
     address_q[allocate_q]<=i_request_address;length_q[allocate_q]<=i_request_length;attr_q[allocate_q]<=i_request_attr;asi_q[allocate_q]<=i_request_asi;metadata_q[allocate_q]<=i_request_metadata; // 之后不依赖上游实时描述符。
     if(allocate_q==CAPACITY-1) allocate_q<=0; else allocate_q<=allocate_q+1'b1; // 对非二次幂容量也正确循环。
    end // 结束真实请求接纳。
@@ -142,6 +145,8 @@ end else begin:full_read
  reg [SLOT_WIDTH-1:0] allocate_q,issue_q,head_q; // 接纳、执行和响应退休独立顺序指针。
  reg [7:0] count_q; // 直到最后Beat完整交付才减少占用。
  reg [SLOTS-1:0] busy_q,issued_q,complete_q,header_q; // 每槽独立生命周期和当前Beat Header所有权。
+ reg [1:0] vc_q[0:SLOTS-1],port_q[0:SLOTS-1];reg response_pool_q[0:SLOTS-1]; // 与既有slot绑定，不生成第二生命周期。
+ reg [1:0] head_vc,head_port;reg head_pool;
  reg [10:0] tag_q[0:SLOTS-1];reg [9:0] src_q[0:SLOTS-1],dst_q[0:SLOTS-1]; // 保存完整响应身份。
  reg [56:0] address_q[0:SLOTS-1];reg [5:0] length_q[0:SLOTS-1]; // 不截断地址，也不限制4KiB测试映射。
  reg [7:0] attr_q[0:SLOTS-1],metadata_q[0:SLOTS-1];reg [1:0] asi_q[0:SLOTS-1]; // 执行属性原样保留。
@@ -169,21 +174,21 @@ end else begin:full_read
    end // 结束当前自然byte位置判定。
   end // 结束完整区域使能重建。
  end // 全组合默认覆盖，不推断锁存器。
- assign request_legal=(i_request_dst==i_local_id)&&(i_request_address[1:0]==2'd0)&&(request_end<=9'd256)&&(i_request_vc==2'd0)&&!i_request_pool; // 当前集成VC零pool零；ASI与metadata全值透传。
+ assign request_legal=(i_request_dst==i_local_id)&&(i_request_address[1:0]==2'd0)&&(request_end<=9'd256)&&((NATIVE_FIELDS_ENABLE!=0)||((i_request_vc==2'd0)&&!i_request_pool)); // 当前集成VC零pool零；ASI与metadata全值透传。
  assign o_request_ready=active&&request_legal&&(count_q<COUNT_LIMIT); // 接纳时同时预留全部结果空间。
  assign request_fire=i_request_valid&&o_request_ready; // 有效非法请求只诊断不分配。
  assign status_legal=(i_mem_result_status==4'd0)||(i_mem_result_status==4'd2)||(i_mem_result_status==4'd3)||(i_mem_result_status==4'd6)||(i_mem_result_status==4'd8); // 普通单播Read五种真实完成状态。
  always @(*) begin // 固定索引读取消除非二次幂未使用RAM映射行。
   issue_address=57'd0;issue_length=6'd0;issue_attr=8'd0;issue_meta=8'd0;issue_asi=2'd0;issue_be=256'd0; // 无真实选择时无有效命令内容。
   issue_busy=1'b0;issue_issued=1'b0;head_busy=1'b0;head_complete=1'b0;head_header=1'b0;result_legal=1'b0; // 未使用slot不能别名到有效槽。
-  head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_status=4'd0;head_full=2048'd0;head_beat=2'd0;head_sent=2'd0;head_beats=3'd0; // 当前响应字段默认无效。
+  head_vc=2'd0;head_port=2'd0;head_pool=1'b0;head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_status=4'd0;head_full=2048'd0;head_beat=2'd0;head_sent=2'd0;head_beats=3'd0; // 当前响应字段默认无效。
   for(read_slot=0;read_slot<SLOTS;read_slot=read_slot+1)begin // 仅展开真实一至四槽。
    if(issue_q==read_slot[SLOT_WIDTH-1:0])begin // 最早未发内存命令保持请求顺序。
     issue_busy=busy_q[read_slot];issue_issued=issued_q[read_slot];issue_address=address_q[read_slot];issue_length=length_q[read_slot]; // 选择已保存地址与长度。
     issue_attr=attr_q[read_slot];issue_meta=metadata_q[read_slot];issue_asi=asi_q[read_slot];issue_be=be_q[read_slot]; // 保留属性和整个区域掩码。
    end // 结束执行描述符选择。
    if(head_q==read_slot[SLOT_WIDTH-1:0])begin // 响应保守按请求顺序串行化。
-    head_busy=busy_q[read_slot];head_complete=complete_q[read_slot];head_header=header_q[read_slot];head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot]; // 保存所有权与完整身份。
+    head_busy=busy_q[read_slot];head_complete=complete_q[read_slot];head_header=header_q[read_slot];head_vc=(NATIVE_FIELDS_ENABLE!=0)?vc_q[read_slot]:2'd0;head_port=port_q[read_slot];head_pool=(NATIVE_FIELDS_ENABLE!=0)&&response_pool_q[read_slot];head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot]; // 保存所有权与完整身份。
     head_status=status_q[read_slot];head_full=full_result_q[read_slot];head_beat=beat_q[read_slot];head_sent=sent_q[read_slot];head_beats=beats_q[read_slot]; // 一次完成的所有Beat共享同一状态。
    end // 结束当前响应选择。
    if(i_mem_result_slot==read_slot[SLOT_WIDTH-1:0])result_legal=busy_q[read_slot]&&issued_q[read_slot]&&!complete_q[read_slot]&&status_legal; // 未发、重复、未知与保留状态结果均不能覆盖有效槽。
@@ -204,11 +209,12 @@ end else begin:full_read
  assign result_fire=i_mem_result_valid&&o_mem_result_ready&&result_legal; // 真实完成只允许更新一次。
  assign head_result=active&&head_busy&&head_complete; // 未完成的执行绝不产生Header或Data。
  assign head_final=({1'b0,head_beat}+3'd1)==head_beats; // 本实现按OFFSET递增发送，最终发送Beat才LAST。
- endpoint_response_encode #(.FULL_READ_ENABLE(1)) u_response_encode( // 明确选择规范Single-Beat response模式。
+ endpoint_response_encode #(.FULL_READ_ENABLE(1),.NATIVE_FIELDS_ENABLE(NATIVE_FIELDS_ENABLE)) u_response_encode( // 明确选择规范Single-Beat response模式。
   .i_valid(head_result&&!head_header),.i_tag(head_tag),.i_src(head_dst),.i_dst(head_src),.i_status(head_status), // 反向路由完整请求身份。
-  .i_num_beats(2'd0),.i_offset(head_beat),.i_last(head_final),.i_vc(2'd0),.i_pool(1'b0), // 每Header恰好对应两Data半字。
+  .i_num_beats(2'd0),.i_offset(head_beat),.i_last(head_final),.i_vc(head_vc),.i_pool(head_pool), // 每Header恰好对应两Data半字。
   .o_valid(o_source_valid),.o_error(encode_error),.o_control(o_source_control)); // 真实低64位字段，其余NOP。
  assign header_fire=o_source_valid&&i_source_captured; // Header只捕获一次，但不提前释放当前Beat。
+ assign o_source_port=head_result?head_port:2'd0; // 整个响应Data tenure保持请求入口身份。
  assign o_data_valid=head_result?(2'd2-head_sent):2'd0; // 错误也保留全部N Beat的完整Data tenure。
  assign o_data=!head_result?512'd0:(head_sent==2'd0)?head_data:(head_sent==2'd1)?{256'd0,head_data[511:256]}:512'd0; // 部分接纳后未接纳高半字前移。
  assign data_legal=i_data_accepted<=o_data_valid; // 零至二项实际接纳不能超额。
@@ -237,7 +243,7 @@ end else begin:full_read
    else begin // 同一槽从接纳至最后响应保持唯一所有者。
     if(request_fire&&allocate_q==THIS_SLOT)begin // 原子保存完整请求与预留资源。
      busy_q[slot]<=1'b1;issued_q[slot]<=1'b0;complete_q[slot]<=1'b0;header_q[slot]<=1'b0;beat_q[slot]<=2'd0;sent_q[slot]<=2'd0; // 新事务从相对Beat零开始。
-     tag_q[slot]<=i_request_tag;src_q[slot]<=i_request_src;dst_q[slot]<=i_request_dst;address_q[slot]<=i_request_address;length_q[slot]<=i_request_length; // 保留57位地址和完整身份。
+     vc_q[slot]<=i_request_vc;port_q[slot]<=i_request_port;response_pool_q[slot]<=i_response_tl_pool;tag_q[slot]<=i_request_tag;src_q[slot]<=i_request_src;dst_q[slot]<=i_request_dst;address_q[slot]<=i_request_address;length_q[slot]<=i_request_length; // 保留57位地址和完整身份。
      attr_q[slot]<=i_request_attr;asi_q[slot]<=i_request_asi;metadata_q[slot]<=i_request_metadata;be_q[slot]<=request_be;beats_q[slot]<=request_beats; // BE全零也保留结构Beat数。
     end // 结束请求捕获。
     if(memory_fire&&issue_q==THIS_SLOT)issued_q[slot]<=1'b1; // 下一周期起允许真实结果关联。
@@ -255,6 +261,9 @@ end else begin:full_read
    end // 结束真实槽正常生命周期。
   end // 结束固定索引同步更新。
  end // 结束全部真实槽生成。
+end endgenerate
+generate if((NATIVE_FIELDS_ENABLE!=0)&&((NATIVE_FIELDS_ENABLE!=1)||(FULL_READ_ENABLE!=1)))begin:invalid_native_config
+ native_read_requires_full_read Invalid_Config();
 end endgenerate
 endmodule // 结束兼容旧子集与完整普通Read执行器。
 `default_nettype wire // 恢复外围编译单元默认网络规则。

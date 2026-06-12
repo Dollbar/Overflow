@@ -3,6 +3,7 @@ module tl_tx_prepared #(parameter WIDTH=16, // tl_tx_prepared模块：完整源�
  parameter integer HEADER_COUNT_WIDTH=(HEADER_DEPTH<2)?1:(HEADER_DEPTH<4)?2:(HEADER_DEPTH<8)?3:(HEADER_DEPTH<16)?4:(HEADER_DEPTH<32)?5:(HEADER_DEPTH<64)?6:(HEADER_DEPTH<128)?7:(HEADER_DEPTH<256)?8:(HEADER_DEPTH<512)?9:(HEADER_DEPTH<1024)?10:(HEADER_DEPTH<2048)?11:(HEADER_DEPTH<4096)?12:(HEADER_DEPTH<8192)?13:(HEADER_DEPTH<16384)?14:(HEADER_DEPTH<32768)?15:16, // 头部FIFO严格验证派生宽度
  parameter integer DATA_COUNT_WIDTH=(BANK_DEPTH<2)?1:(BANK_DEPTH<4)?2:(BANK_DEPTH<8)?3:(BANK_DEPTH<16)?4:(BANK_DEPTH<32)?5:(BANK_DEPTH<64)?6:(BANK_DEPTH<128)?7:(BANK_DEPTH<256)?8:(BANK_DEPTH<512)?9:(BANK_DEPTH<1024)?10:(BANK_DEPTH<2048)?11:(BANK_DEPTH<4096)?12:(BANK_DEPTH<8192)?13:(BANK_DEPTH<16384)?14:(BANK_DEPTH<32768)?15:16 // 单Data bank计数宽度，总数增加一位
 
+,parameter integer STOP_ENABLE=0,POISON_ENABLE=0,PACKET_BOUNDARY_ENABLE=0 // 默认关闭追加的Request隔离选择。
 )( // 结束参数列表并声明完整源组与实际发送端口
  input wire i_clk,i_rstn,i_taken, // 唯一输入时钟、同步复位和真实线上发送确认
  input wire [6:0] i_pending,input wire i_auth,i_done,i_shared, // 当前初始化时期的唯一端口状态
@@ -15,13 +16,17 @@ module tl_tx_prepared #(parameter WIDTH=16, // tl_tx_prepared模块：完整源�
  output wire [1:0] o_source_ready,o_source_captured,o_source_tags_taken, // 捕获即转移完整源组及有效认证标签的所有权
  output wire [1:0] o_group_queued,o_partition_taken, // 整组最终入队和单个分组入队分别报告
  output wire [1:0] o_prepare_error,o_prepare_shortfall, // 已捕获组的格式或总容量错误保留至复位
- output wire o_valid,output wire [511:0] o_flit,output wire [1:0] o_msg, // 唯一实际端口的完整发送候选
+ output wire o_valid,output wire [511:0] o_flit,output wire [1:0] o_msg,output wire o_packet_sop,o_packet_eop, // 唯一实际端口的完整发送候选
  output wire [1:0] o_header_taken,o_tags_taken,output wire [3:0] o_data_taken,output wire o_fc_taken, // 线上消费反馈独立于上游源组捕获
  output wire [1:0] o_header_error,o_capacity_shortfall, // 实际队首格式和容量诊断
  output wire [3:0] o_data_accepted,output wire [1:0] o_data_ready,o_input_error, // Data入队数量、反压及非法数量诊断
  output wire [2*HEADER_COUNT_WIDTH-1:0] o_header_count, // 实际尚未线上消费的分组数量
  output wire [2*(DATA_COUNT_WIDTH+1)-1:0] o_data_count // 实际Data缓存、在途读和SRAM总数量
+,output wire [1:0] o_prepare_busy // 追加实际源准备器持有状态，默认用户可不消费。
+,input wire i_stop_request // 只停止Request提议，保留真实队列与独立FC/Response。
+,input wire [1:0] i_poison0,i_poison1 // 两类Data标记与同索引数据共用握手。
 ); // 结束生产发送组合端口声明
+assign o_prepare_busy=partition_valid|o_prepare_error|o_prepare_shortfall; // 对二值状态精确等于两类i_rstn && r_owned，无新寄存所有者。
 wire [1:0] partition_valid,partition_ready;wire [511:0] partition_control,partition_tags; // 两个准备器只在实际头部FIFO接纳时推进
 wire [7:0] partition_fields,partition_end,partition_cursor; // 完整字段分组位置用于内部审计观察
 wire [23:0] unused_partition_observation; // 内部观察信号不影响实际消费或源释放
@@ -42,13 +47,14 @@ genvar lane;generate for(lane=0;lane<2;lane=lane+1)begin:gen_prepare // Request�
  .o_fields(partition_fields[lane*4+:4]),.o_end(partition_end[lane*4+:4]),.o_cursor(partition_cursor[lane*4+:4]) // 分组观察不参与源生产者索引
  ); // 结束每类完整源组准备器实例
 end endgenerate // 结束两个独立源所有者
-tl_tx_buffered #(.WIDTH(WIDTH),.HEADER_DEPTH(HEADER_DEPTH),.BANK_DEPTH(BANK_DEPTH),.HEADER_COUNT_WIDTH(HEADER_COUNT_WIDTH),.DATA_COUNT_WIDTH(DATA_COUNT_WIDTH)) Buffered_Inst( // 使用真实SRAM队列和原有双类原子打包
+tl_tx_buffered #(.WIDTH(WIDTH),.HEADER_DEPTH(HEADER_DEPTH),.BANK_DEPTH(BANK_DEPTH),.HEADER_COUNT_WIDTH(HEADER_COUNT_WIDTH),.DATA_COUNT_WIDTH(DATA_COUNT_WIDTH),.STOP_ENABLE(STOP_ENABLE),.POISON_ENABLE(POISON_ENABLE),.PACKET_BOUNDARY_ENABLE(PACKET_BOUNDARY_ENABLE)) Buffered_Inst( // 使用真实SRAM队列和原有双类原子打包
  .i_clk(i_clk),.i_rstn(i_rstn),.i_taken(i_taken),.i_pending(i_pending),.i_auth(i_auth),.i_done(i_done),.i_shared(i_shared), // 与准备器使用同一时钟和初始化时期
  .i_available(i_available),.i_capacity(i_capacity),.i_request_budget(i_request_budget),.i_response_budget(i_response_budget), // 可用信用仍在真实发送时检查
  .i_header_valid(partition_valid),.i_headers(partition_control),.i_tags_valid(partition_valid),.i_tags(partition_tags), // 准备器输出的分组和四个标签原子入队
+ .i_poison0(i_poison0),.i_poison1(i_poison1),
  .i_data_valid(i_data_valid),.i_data0(i_data0),.i_data1(i_data1), // Data或BE按原有接口独立有序保存
- .i_fc_valid(i_fc_valid),.i_fc_flit(i_fc_flit),.i_fc_msg(i_fc_msg), // 信用返回不经过源组准备器
- .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_header_taken(o_header_taken),.o_tags_taken(o_tags_taken),.o_data_taken(o_data_taken),.o_fc_taken(o_fc_taken), // 保留实际线上消费语义
+ .i_fc_valid(i_fc_valid),.i_fc_flit(i_fc_flit),.i_fc_msg(i_fc_msg),.i_stop_request(i_stop_request), // 信用返回不经过源组准备器
+ .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_packet_sop(o_packet_sop),.o_packet_eop(o_packet_eop),.o_header_taken(o_header_taken),.o_tags_taken(o_tags_taken),.o_data_taken(o_data_taken),.o_fc_taken(o_fc_taken), // 保留实际线上消费语义
  .o_header_error(o_header_error),.o_capacity_shortfall(o_capacity_shortfall),.o_data_accepted(o_data_accepted), // 实际队列错误及入队计数继续独立报告
  .o_header_ready(partition_ready),.o_data_ready(o_data_ready),.o_input_error(o_input_error),.o_header_count(o_header_count),.o_data_count(o_data_count) // 单个分组只有收到真实ready才能退休
 ); // 结束实际缓存及打包组合实例

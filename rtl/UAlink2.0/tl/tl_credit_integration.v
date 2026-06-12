@@ -8,6 +8,8 @@ output wire [2:0] o_requests_available,output wire [3:0] o_responses_available, 
 output wire o_fatal,o_pair_open,o_pair_poison, // 全局停止及Data配对
 output wire [20*(WIDTH+1)-1:0] o_capacity,o_available, // 全信用状态
 output wire o_done,o_shared,o_init_repeat,o_init_conflict // 初始化模式及本地重复诊断
+,output wire [159:0] o_rx_grants,output wire [1:0] o_rx_init,output wire o_rx_runtime // 真实R提议及沿前初始化资格，必须与o_rx_taken共同采样。
+
 ); // 接口结束
 reg r_fatal; // 联合错误锁存
 wire full_allowed,full_fatal,ledger_allowed,ledger_error,events_valid; // 各模块独立评估
@@ -41,4 +43,5 @@ always @(posedge i_clk)begin // 唯一同步时钟
  if(!i_rstn)r_fatal<=1'b0; // 复位清除联合停止
  else if(i_receive&&!o_rx_allowed)r_fatal<=1'b1; // 接收异常锁存
 end // 时序结束
+assign o_rx_grants=grants;assign o_rx_init=init;assign o_rx_runtime=o_done; // 原解码器与实际账本状态直接观察，不重建解析。
 endmodule // 集成顶层结束

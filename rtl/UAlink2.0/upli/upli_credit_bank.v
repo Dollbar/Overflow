@@ -21,6 +21,7 @@ module upli_credit_bank #( // 信用银行模块为一个 UPLI 通道提供所�
     input wire [7:0] i_credit_num, // 每端口两位编码，实际归还数量为编码加一。
     input wire [3:0] i_credit_init_done, // 接收侧初始信用发布完成的持续电平。
     input wire i_send_valid, // 本通道当前沿确实发送一拍的事件。
+    input wire [2:0] i_send_num, // 原子消耗一至四拍；仅在发送有效时解释，零或大于四拒绝整沿。
     input wire [1:0] i_send_port, // 已发一拍所消耗的端口账户。
     input wire [1:0] i_send_vc, // 已发一拍对应的 VC，池账户跨 VC 共享。
     input wire i_send_pool, // 已发一拍消耗共享池时置位。
@@ -63,7 +64,7 @@ module upli_credit_bank #( // 信用银行模块为一个 UPLI 通道提供所�
                 wire [4:0] flag_account_error; // 四个专用 VC 和单共享池的算术错误。
                 wire flag_control_error; // 连接方向或沿前初始化资格不满足。
                 assign o_init_confirmed[gen_port] = reg_init_o; // 未确认端口不能在确认同沿旁路发送。
-                assign flag_control_error = (i_credit_valid[gen_port] && !i_credit_connected) || (!reg_init_o && i_credit_init_done[gen_port] && !i_credit_connected) || (flag_send_port && (!i_beats_connected || !i_credit_connected || !reg_init_o)); // 已确认后忽略 done 后续电平变化。
+                assign flag_control_error = (i_credit_valid[gen_port] && !i_credit_connected) || (!reg_init_o && i_credit_init_done[gen_port] && !i_credit_connected) || (flag_send_port && (!i_beats_connected || !i_credit_connected || !reg_init_o || (i_send_num==3'd0) || (i_send_num>3'd4))); // 已确认后忽略 done 后续电平变化。
                 assign flag_port_error[gen_port] = flag_control_error || (|flag_account_error); // 汇总本端口控制和账户越界。
                 always @(posedge i_clk) begin // 连续初始化计数只在合法沿前进。
                     if (!i_rstn) cnt_init <= {C_INIT_BITS{1'b0}}; // 同步复位清除短脉冲历史。
@@ -82,35 +83,17 @@ module upli_credit_bank #( // 信用银行模块为一个 UPLI 通道提供所�
                     reg [C_CREDIT_WIDTH-1:0] cnt_balance_o; // 发送方持有的沿前可用信用数量。
                     wire flag_return_account, flag_send_account; // 本账户匹配的归还与消耗事件。
                     wire [2:0] return_count; // 三位表示实际一至四个信用，禁止两位加法回绕。
+                    wire [2:0] send_count; // 单次原子预约消耗一至四拍。
                     wire [C_CREDIT_WIDTH+2:0] next_balance; // 扩展算术同时容纳最大余额、四信用返回及下溢检测。
                     wire unused_balance_upper; // 上界已由并行比较证明，高位不参与状态存储。
-                    wire [4:0] flag_excess; // 预先比较增加零至四个信用是否超容量，避免错误路径串联加减器。
-                    reg [1:0] flag_return_excess; // 低位为不发送的返回越界，高位为同账户发送的返回越界。
-                    localparam [C_CREDIT_WIDTH:0] C_LIMIT_ONE = {1'b0, C_CAPACITY} - {{(C_CREDIT_WIDTH-2){1'b0}}, 3'd1}; // 容量减一的扩展常量，容量不足另行检测。
-                    localparam [C_CREDIT_WIDTH:0] C_LIMIT_TWO = {1'b0, C_CAPACITY} - {{(C_CREDIT_WIDTH-2){1'b0}}, 3'd2}; // 容量减二的扩展常量。
-                    localparam [C_CREDIT_WIDTH:0] C_LIMIT_THREE = {1'b0, C_CAPACITY} - {{(C_CREDIT_WIDTH-2){1'b0}}, 3'd3}; // 容量减三的扩展常量。
-                    localparam [C_CREDIT_WIDTH:0] C_LIMIT_FOUR = {1'b0, C_CAPACITY} - {{(C_CREDIT_WIDTH-2){1'b0}}, 3'd4}; // 容量减四的扩展常量。
                     assign flag_return_account = i_credit_valid[gen_port] && ((gen_account == 4) ? i_credit_pool[gen_port] : (!i_credit_pool[gen_port] && (i_credit_vc[gen_port*2 +: 2] == C_VC))); // 共享池不以 VC 再分账户。
                     assign flag_send_account = flag_send_port && ((gen_account == 4) ? i_send_pool : (!i_send_pool && (i_send_vc == C_VC))); // 每个发送事件仅消耗一个匹配账户。
                     assign return_count = flag_return_account ? ({1'b0, i_credit_num[gen_port*2 +: 2]} + 3'd1) : 3'd0; // 无效归还时忽略全部元信息。
-                    assign next_balance = {3'b000, cnt_balance_o} + {{C_CREDIT_WIDTH{1'b0}}, return_count} - {{(C_CREDIT_WIDTH+2){1'b0}}, flag_send_account}; // 同拍收发按净值更新，但另查沿前非空。
+                    assign send_count = flag_send_account ? i_send_num : 3'd0; // 未命中本账户时发送元信息不影响算术。
+                    assign next_balance = {3'b000, cnt_balance_o} + {{C_CREDIT_WIDTH{1'b0}}, return_count} - {{C_CREDIT_WIDTH{1'b0}}, send_count}; // 同拍收发按净值更新，但发送仍只观察沿前余额。
                     assign unused_balance_upper = |next_balance[C_CREDIT_WIDTH+2:C_CREDIT_WIDTH]; // 显式标记通过独立上界检查后丢弃的算术高位。
-                    assign flag_excess[0] = 1'b0; // 复位后余额不超过容量的不变式保证净增零无需上溢检查。
-                    assign flag_excess[1] = C_LIMIT_ONE[C_CREDIT_WIDTH] || ({1'b0, cnt_balance_o} > C_LIMIT_ONE); // 常量减法借位表示容量小于一。
-                    assign flag_excess[2] = C_LIMIT_TWO[C_CREDIT_WIDTH] || ({1'b0, cnt_balance_o} > C_LIMIT_TWO); // 常量减法借位表示容量小于二。
-                    assign flag_excess[3] = C_LIMIT_THREE[C_CREDIT_WIDTH] || ({1'b0, cnt_balance_o} > C_LIMIT_THREE); // 常量减法借位表示容量小于三。
-                    assign flag_excess[4] = C_LIMIT_FOUR[C_CREDIT_WIDTH] || ({1'b0, cnt_balance_o} > C_LIMIT_FOUR); // 常量减法借位表示容量小于四。
-                    always @(*) begin // 组合选择净增量的预计算上界，不依赖余额加减结果。
-                        flag_return_excess = 2'b00; // 两种假设均完整默认赋值，避免组合锁存器。
-                        case (i_credit_num[gen_port*2 +: 2]) // 返回编码只在本账户归还有效时参与最终检查。
-                            2'd0: flag_return_excess = {flag_excess[0], flag_excess[1]}; // 一信用归还的两种净增量为零和一。
-                            2'd1: flag_return_excess = {flag_excess[1], flag_excess[2]}; // 两信用归还的两种净增量为一和二。
-                            2'd2: flag_return_excess = {flag_excess[2], flag_excess[3]}; // 三信用归还的两种净增量为二和三。
-                            2'd3: flag_return_excess = {flag_excess[3], flag_excess[4]}; // 四信用归还的两种净增量为三和四。
-                            default: flag_return_excess = 2'b00; // 二进制输入已穷举，默认保持确定性组合输出。
-                        endcase // 结束信用编码对应净增量选择。
-                    end // 结束与算术数据路径并行的越界检查。
-                    assign flag_account_error[gen_account] = (flag_send_account && (cnt_balance_o == {C_CREDIT_WIDTH{1'b0}})) || (flag_return_account && (flag_send_account ? flag_return_excess[1] : flag_return_excess[0])); // 消耗只需非空检查，只有有效增加可能突破容量上界。
+                    assign flag_account_error[gen_account] = (flag_send_account && ({3'b000,cnt_balance_o}<{{C_CREDIT_WIDTH{1'b0}},i_send_num})) ||
+                        (flag_return_account && !((flag_send_account)&&({3'b000,cnt_balance_o}<{{C_CREDIT_WIDTH{1'b0}},i_send_num})) && (next_balance>{3'b000,C_CAPACITY})); // 发送不借用同沿返回；合法净值不得越过容量。
                     assign o_balances[(gen_port*5+gen_account)*C_CREDIT_WIDTH +: C_CREDIT_WIDTH] = cnt_balance_o; // 所有余额均来自当前寄存器状态。
                     always @(posedge i_clk) begin // 更新本账户信用，不引入额外流水延迟。
                         if (!i_rstn) cnt_balance_o <= {C_CREDIT_WIDTH{1'b0}}; // 复位后发送方没有任何信用。

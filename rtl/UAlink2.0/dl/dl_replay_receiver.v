@@ -5,6 +5,7 @@ module dl_replay_receiver ( // 声明独立接收状态模块。
     input wire i_clk, // 唯一接收状态时钟。
     input wire i_rstn, // 低有效同步复位；释放须满足本域时序。
     input wire i_link_reset, // 同步链路清除，优先于全部接收事件。
+    input wire i_epoch_cleanup, // 已排空epoch窗口的显式状态清理；不复用reset。
     input wire i_event_valid, // 当前沿存在一个已分类接收事件。
     input wire i_event_discard, // 该事件已由上游分类为存储丢弃，头和CRC不参与。
     input wire i_crc_ok, // 普通事件的外部CRC判决。
@@ -37,6 +38,7 @@ module dl_replay_receiver ( // 声明独立接收状态模块。
     reg [7:0] cnt_unexpected; // 八位饱和重放异常计数。
     reg reg_ambiguous; // 压缩序号是否不可置信。
     reg reg_replay; // 是否处于接收重放。
+    wire cleanup_event = (i_epoch_cleanup === 1'b1); // 未连接或X绝不触发破坏性清理。
     wire flag_event; // 复位资格检查后的真实接收事件。
     wire flag_explicit; // 显式格式选择，不单独表明op合法。
     wire flag_command; // 命令格式选择。
@@ -59,7 +61,7 @@ module dl_replay_receiver ( // 声明独立接收状态模块。
     wire [2:0] cnt_bad_next; // 错误计数的饱和增量。
     wire [7:0] cnt_unexpected_next; // 重放异常计数的饱和增量。
     wire flag_retry; // 增量达到配置阈值时重新赋值三份请求。
-    assign flag_event = i_rstn && !i_link_reset && i_event_valid; // 复位或无事件时所有提交脉冲为零。
+    assign flag_event = i_rstn && !i_link_reset && !cleanup_event && i_event_valid; // 清理或无事件时所有提交脉冲为零。
     assign flag_explicit = (i_header[23:21] == 3'd0) || (i_header[23:21] == 3'd1); // 显式格式。
     assign flag_command = (i_header[23:21] == 3'd2) || (i_header[23:21] == 3'd3); // ACK或Replay Request。
     assign flag_op_valid = (i_header[23:21] == 3'd0) || ((i_header[23:21] == 3'd1) && i_header[20]) || flag_command; // NOP不能使用Replay op。
@@ -76,37 +78,42 @@ module dl_replay_receiver ( // 声明独立接收状态模块。
     assign flag_accept = flag_valid && flag_trusted && (flag_explicit ? (i_header[16:8] == dec_expected) : (i_header[10:8] == dec_expected[2:0])); // 显式比较完整期望，压缩比较期望低位；完整序号仍由恢复路径给出。
     assign flag_unexpected = flag_valid && flag_trusted && !flag_accept; // 不改变最后已接纳序号。
     assign flag_untrusted = flag_valid && !flag_trusted; // 仍允许独立命令消费者处理命令。
-    assign flag_start_replay = flag_unexpected && !reg_replay; // 首次异常进入重放并请求三个副本。
-    assign flag_count_unexpected = reg_replay && (flag_storage || flag_invalid || (flag_valid && !flag_accept)); // 无事件和零字段日志不推进异常计数。
+    assign flag_start_replay = (flag_storage || flag_invalid || flag_zero_sequence || flag_unexpected) && !reg_replay; // 首次CRC/存储/序号异常立即请求期望序号，坏payload从不提交。
+    assign flag_count_unexpected = reg_replay && (flag_storage || flag_invalid || flag_zero_sequence || (flag_valid && !flag_accept)); // 重放期间的真实异常推进有限重试计数。
     assign cnt_bad_next = (cnt_bad_crc == 3'd7) ? 3'd7 : cnt_bad_crc + 3'd1; // 三位计数饱和不环回。
     assign cnt_unexpected_next = (cnt_unexpected == 8'd255) ? 8'd255 : cnt_unexpected + 8'd1; // 八位计数饱和不环回。
     assign flag_retry = flag_count_unexpected && (cnt_unexpected_next >= i_replay_limit); // 阈值零仍需真实异常事件才触发。
     always @(posedge i_clk) begin // 最后接纳序号独立寄存。
         if (!i_rstn) reg_last_sequence <= 9'd511; // 同步初始化为有效环末尾。
         else if (i_link_reset) reg_last_sequence <= 9'd511; // 同步链路清除使用相同初值。
+        else if (cleanup_event) reg_last_sequence <= 9'd511; // 已排空窗口重建新epoch基线。
         else if (flag_accept) reg_last_sequence <= dec_sequence; // 仅接纳更新，异常保持。
     end // 结束序号寄存。
     always @(posedge i_clk) begin // 坏CRC类计数独立寄存。
         if (!i_rstn) cnt_bad_crc <= 3'd0; // 同步复位。
         else if (i_link_reset) cnt_bad_crc <= 3'd0; // 同步链路清除使用相同初值。
+        else if (cleanup_event) cnt_bad_crc <= 3'd0;
         else if (flag_accept) cnt_bad_crc <= 3'd0; // 匹配payload或NOP恢复计数。
         else if (flag_storage || flag_invalid) cnt_bad_crc <= cnt_bad_next; // 已分类丢弃或无效事件增量。
     end // 结束错误计数。
     always @(posedge i_clk) begin // 重放异常计数独立寄存。
         if (!i_rstn) cnt_unexpected <= 8'd0; // 同步复位。
         else if (i_link_reset) cnt_unexpected <= 8'd0; // 同步链路清除使用相同初值。
+        else if (cleanup_event) cnt_unexpected <= 8'd0;
         else if (flag_accept || flag_start_replay || flag_retry) cnt_unexpected <= 8'd0; // 恢复或请求触发后清零。
         else if (flag_count_unexpected) cnt_unexpected <= cnt_unexpected_next; // 只按真实异常接收事件增加。
     end // 结束重放异常计数。
     always @(posedge i_clk) begin // 模糊状态独立寄存。
         if (!i_rstn) reg_ambiguous <= 1'b0; // 同步复位。
         else if (i_link_reset) reg_ambiguous <= 1'b0; // 同步链路清除使用相同初值。
+        else if (cleanup_event) reg_ambiguous <= 1'b0;
         else if (flag_accept) reg_ambiguous <= 1'b0; // 匹配可置信序号恢复。
         else if ((flag_storage || flag_invalid) && (cnt_bad_next == 3'd7)) reg_ambiguous <= 1'b1; // 第七个错误及之后置位。
     end // 结束模糊状态。
     always @(posedge i_clk) begin // 接收重放状态独立寄存。
         if (!i_rstn) reg_replay <= 1'b0; // 同步复位。
         else if (i_link_reset) reg_replay <= 1'b0; // 同步链路清除使用相同初值。
+        else if (cleanup_event) reg_replay <= 1'b0;
         else if (flag_accept) reg_replay <= 1'b0; // 匹配payload或NOP退出。
         else if (flag_start_replay) reg_replay <= 1'b1; // 首次可信异常进入。
     end // 结束重放状态。
@@ -131,4 +138,5 @@ module dl_replay_receiver ( // 声明独立接收状态模块。
     assign o_unexpected_count = cnt_unexpected; // 当前重放异常计数直接观察。
     assign o_ambiguous = reg_ambiguous; // 当前模糊状态直接观察。
     assign o_replay = reg_replay; // 当前接收重放状态直接观察。
+wire [7:0] unused_header_reserved = i_header[7:0]; // 当前接收状态机只消费高十六位协议字段，保持原保留字段边界。
 endmodule // 结束LLR接收事件有限状态模块。

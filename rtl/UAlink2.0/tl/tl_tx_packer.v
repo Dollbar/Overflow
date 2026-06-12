@@ -12,10 +12,11 @@ module tl_tx_packer #(parameter WIDTH=16)( // tl_tx_packer模块：准备好的C
  output wire o_header_taken,o_tags_taken,output wire [1:0] o_data_taken,output wire o_fc_taken, // 分别确认实际消耗的输入队首
  output wire o_header_wait,o_capacity_shortfall // 本地等待及仍需上层处理的总容量不足
 ); // 模块端口声明结束
+wire unused_held_header,unused_packet_sop,unused_packet_eop; // 默认packer不取消提议，明确消费可选寄存观察与legacy边界。
 wire credit_allow,unused_credit_wait,credit_shortfall;wire [119:0] unused_requirements; // 独立整段信用提议
 wire decode_valid;wire [2:0] request_count;wire [3:0] response_count,fields; // 实际字段个数
 wire [7:0] unused_starts,unused_request_starts,unused_response_starts,be; // 字段起点及额外BE
-wire [1:0] tenure_status;wire [31:0] data_counts; // 每个字段的已确认Data数量
+wire [1:0] tenure_status;wire [31:0] data_counts;wire [7:0] header_tenure; // 每个字段的已确认Data数量
 wire header_format,credit_ready,budget_ready,has_data,payload_ready,header_ready; // 独立就绪条件
  tl_credit_admission #(.WIDTH(WIDTH)) Credit_Inst( // 头部包含全部后续Data信用需求
  .i_rstn(i_rstn),.i_control(1'b1),.i_done(i_done),.i_shared(i_shared), // 只解码准备好的Control队首
@@ -28,14 +29,16 @@ assign header_format=decode_valid&&(tenure_status==2'd0)&&(fields!=4'd0)&&(!i_au
 assign credit_ready=header_format&&credit_allow; // 非法头部不能仅凭零需求放行
 assign budget_ready=(request_count<=i_request_budget)&&(response_count<=i_response_budget); // 不超过实际Tx catch预算
 assign has_data=(|data_counts)||(|be); // 任何后续Data或BE需要有序数据源
+assign header_tenure={4'd0,data_counts[3:0]}+{4'd0,data_counts[7:4]}+{4'd0,data_counts[11:8]}+{4'd0,data_counts[15:12]}+{4'd0,data_counts[19:16]}+{4'd0,data_counts[23:20]}+{4'd0,data_counts[27:24]}+{4'd0,data_counts[31:28]}+{7'd0,be[0]}+{7'd0,be[1]}+{7'd0,be[2]}+{7'd0,be[3]}+{7'd0,be[4]}+{7'd0,be[5]}+{7'd0,be[6]}+{7'd0,be[7]}; // 旧入口也完整连接core新增tenure接口。
 assign payload_ready=(i_pending==7'd1)?(i_data_valid>=2'd1):(i_auth?i_tags_valid:(!has_data||(i_data_valid>=2'd1))); // 尾部优先于新头部附带数据或认证标签
 assign header_ready=i_header_valid&&credit_ready&&budget_ready&&payload_ready&&(i_pending<=7'd1)&&!(i_auth&&(i_pending==7'd1))&&!((i_pending==7'd1)&&i_fc_valid&&(i_fc_msg!=2'd0)); // Auth尾部和等待中的完成消息均先排空旧尾
  tl_tx_packer_core Core_Inst( // 独立接口保留原资格计算，再进入不含解码的来源选择核心
  .i_clk(i_clk),.i_rstn(i_rstn),.i_taken(i_taken),.i_pending(i_pending),.i_auth(i_auth), // 保持原时钟、复位与序列
- .i_header_ready(header_ready),.i_nop_ready(i_header_valid&&credit_ready&&!budget_ready),.i_has_data(has_data), // NOP的位置限制仍由核心检查
+ .i_header_ready(header_ready),.i_nop_ready(i_header_valid&&credit_ready&&!budget_ready),.i_has_data(has_data),.i_header_tenure(header_tenure), // NOP的位置限制仍由核心检查
  .i_header(i_header),.i_tags(i_tags),.i_data_valid(i_data_valid),.i_data0(i_data0),.i_data1(i_data1), // 原始负载直接传递
  .i_fc_valid(i_fc_valid),.i_fc_flit(i_fc_flit),.i_fc_msg(i_fc_msg), // FC仲裁与旧尾部规则不变
- .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_header_taken(o_header_taken),.o_tags_taken(o_tags_taken),.o_data_taken(o_data_taken),.o_fc_taken(o_fc_taken) // 完整公开输出
+ .o_valid(o_valid),.o_flit(o_flit),.o_msg(o_msg),.o_packet_sop(unused_packet_sop),.o_packet_eop(unused_packet_eop),.o_header_taken(o_header_taken),.o_tags_taken(o_tags_taken),.o_data_taken(o_data_taken),.o_fc_taken(o_fc_taken),.i_cancel_offer(1'b0),.o_held_header(unused_held_header), // 旧入口明确保持legacy逐word边界。
+ .i_poison0(1'b0),.i_poison1(1'b0) // 旧packer入口不携带Poison；带Poison路径由tl_tx_buffered显式连接。
  ); // 结束独立packer核心实例
 assign o_header_wait=i_rstn&&i_header_valid&&!header_ready; // 数据供应、序列位置、预算或信用均可能引起本地等待
 assign o_capacity_shortfall=i_rstn&&i_header_valid&&header_format&&credit_shortfall; // 保留超容量事务诊断，不自动丢弃或改写

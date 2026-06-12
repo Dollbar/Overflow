@@ -1,6 +1,6 @@
 // 普通Read字段编码与完整几何/字节掩码；规范位段见 Common 2.0 Table 5-29，局部子集见 endpoint_transaction_contract.json。
 `default_nettype none // 禁止隐式网络掩盖端口拼写错误
-module endpoint_read_encode #(parameter integer FULL_READ_ENABLE=0) ( // Read 编码模块为纯组合字段服务，不承担事务接纳、信用或 Tag 生命周期
+module endpoint_read_encode #(parameter integer FULL_READ_ENABLE=0,NATIVE_FIELDS_ENABLE=0) ( // Read 编码模块为纯组合字段服务，不承担事务接纳、信用或 Tag 生命周期
     input wire i_valid, // 调用方提供一个待编码请求
     input wire [10:0] i_tag, // 保留完整十一位事务标识
     input wire [9:0] i_src, // 请求源加速器标识
@@ -25,7 +25,7 @@ assign legacy_legal = (i_address[5:0] == 6'd0) && (i_length == 6'd15) && // 六�
                        (i_attr == 8'hff) && (i_vc == 2'd0) && !i_pool && // 第一版仅实现全字节 VC0 与 pool0
                        (i_asi == 2'd0) && (i_metadata == 8'd0); // 局部地址空间和元数据选择
 wire [8:0] end_byte={1'b0,i_address[7:0]}+{1'b0,i_length,2'b00}+9'd4; // 长度扩宽，256不会溢出为零
-wire full_legal=(i_address[1:0]==2'd0)&&(end_byte<=9'd256)&&(i_vc==2'd0)&&!i_pool; // ASI/ATTR/META在完整Read中合法且原样转发
+wire full_legal=(i_address[1:0]==2'd0)&&(end_byte<=9'd256)&&((NATIVE_FIELDS_ENABLE!=0)||((i_vc==2'd0)&&!i_pool)); // ASI/ATTR/META在完整Read中合法且原样转发
 wire [8:0] beat_span={3'd0,i_address[5:0]}+{1'b0,i_length,2'b00}+9'd3; // ceil((偏移+字节数)/64)-1等于(偏移+字节数-1)>>6
 wire unused_beat_geometry=^{beat_span[8],beat_span[5:0]}; // 只需中间两位响应计数，余位不进入协议字段
 reg [255:0] byte_mask;integer lane; // 有界区域字节掩码，不要求线上无效lane数据为零

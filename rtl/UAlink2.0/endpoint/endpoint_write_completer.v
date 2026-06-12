@@ -2,11 +2,12 @@
 `default_nettype none // 禁止隐式网络掩盖完整事务字段接线错误。
 module endpoint_write_completer #( // Write Completer模块保存完整事务，等待真实后端完成后返回无Data响应。
  parameter integer CAPACITY=4, // 本轮支持一至四个完整请求和完成预约槽。
- parameter integer SLOT_WIDTH=(CAPACITY<=2)?1:2 // 单槽也保留至少一位；允许上层显式固定两位ABI。
+ parameter integer SLOT_WIDTH=(CAPACITY<=2)?1:2, // 单槽也保留至少一位；允许上层显式固定两位ABI。
+ parameter integer NATIVE_FIELDS_ENABLE=0 // 显式允许普通请求完整VC/TLpool。
 )( // 以下接口只接收已完整验证Data归属的组装后事务。
  input wire i_clk,i_rstn, // 单时钟、同步低有效复位；不代表撤销已发生的内存副作用。
  input wire [9:0] i_local_id, // 本地ID在运行期间保持稳定。
- input wire i_request_valid,output wire o_request_ready, // 一次握手预留整个请求和完成资源。
+ input wire i_request_valid,output wire o_request_ready,input wire [1:0] i_request_port, // 一次握手预留整个请求、入口身份和完成资源。
  input wire [10:0] i_request_tag,input wire [9:0] i_request_src,i_request_dst, // 保留完整Tag及源目的ID。
  input wire i_request_full,input wire [56:0] i_request_address,input wire [5:0] i_request_length, // Full种类、完整地址和DWORD长度减一。
  input wire [7:0] i_request_attr,input wire [1:0] i_request_vc,input wire i_request_pool, // 写属性不复用Read的字节使能含义。
@@ -18,8 +19,9 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
  output wire [2047:0] o_mem_data,output wire [255:0] o_mem_be, // Full重建区域BE，普通Write保留稀疏或全零BE。
  input wire i_mem_result_valid,output wire o_mem_result_ready,input wire [SLOT_WIDTH-1:0] i_mem_result_slot, // 命令接纳与实际完成是不同事件。
  input wire [3:0] i_mem_result_status, // 普通远端Write允许0、2、3、6、8五种完成状态。
- output wire o_source_valid,output wire [255:0] o_source_control,input wire i_source_captured, // Header低64位为WriteResponse，其余NOP，无Data输出。
- output wire o_error,output wire [7:0] o_count // 非法事件组合诊断与未完整退休槽占用。
+ output wire o_source_valid,output wire [255:0] o_source_control,output wire [1:0] o_source_port,input wire i_source_captured, // Header与回源端口稳定，无Data输出。
+ output wire o_error,output wire [7:0] o_count, // 非法事件组合诊断与未完整退休槽占用。
+ input wire i_response_tl_pool // 每请求响应TL账户由上层选择，并在接纳时保存。
 ); // 结束完整组装后Write执行接口。
  localparam integer SLOTS=(CAPACITY>=1&&CAPACITY<=4)?CAPACITY:1; // 非法容量也安全展开非空数组。
  localparam CONFIG_LEGAL=(CAPACITY>=1)&&(CAPACITY<=4)&&(SLOT_WIDTH>=1)&&(SLOT_WIDTH<=2)&&((1<<SLOT_WIDTH)>=CAPACITY); // 不允许静默截断槽号。
@@ -32,6 +34,8 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
  reg [SLOT_WIDTH-1:0] allocate_q,issue_q,head_q; // 独立请求接纳、内存命令和响应退休指针。
  reg [7:0] count_q; // 容量不在内存接纳时释放。
  reg [SLOTS-1:0] busy_q,issued_q,complete_q; // 每槽完整执行生命周期。
+ reg [1:0] vc_q[0:SLOTS-1],port_q[0:SLOTS-1];reg response_pool_q[0:SLOTS-1]; // 绑定既有slot唯一所有权。
+ reg [1:0] head_vc,head_port;reg head_pool;
  reg [10:0] tag_q[0:SLOTS-1];reg [9:0] src_q[0:SLOTS-1],dst_q[0:SLOTS-1]; // 保存完整响应身份。
  reg [56:0] address_q[0:SLOTS-1];reg [5:0] length_q[0:SLOTS-1]; // 保存完整访问几何。
  reg [7:0] attr_q[0:SLOTS-1],metadata_q[0:SLOTS-1];reg [1:0] asi_q[0:SLOTS-1]; // 保存后端定义属性。
@@ -51,21 +55,21 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
    if(byte_index[8:0]>={1'b0,i_request_address[7:0]}&&byte_index[8:0]<request_end)range_be[byte_index]=1'b1; // 相对Beat数据不改变区域BE位置。
   end // 结束固定256字节范围推导。
  end // 组合默认赋值覆盖全部BE位。
- assign request_legal=(i_request_dst==i_local_id)&&(i_request_vc==2'd0)&&!i_request_pool&&(i_request_address[1:0]==2'd0)&&(request_end<=9'd256)&&(!i_request_full||((i_request_address[5:0]==6'd0)&&(i_request_length[3:0]==4'd15)))&&(i_request_full||((i_request_be&~range_be)==256'd0)); // 属性不受无依据的Read限制；Full忽略输入BE。
+ assign request_legal=(i_request_dst==i_local_id)&&((NATIVE_FIELDS_ENABLE!=0)||((i_request_vc==2'd0)&&!i_request_pool))&&(i_request_address[1:0]==2'd0)&&(request_end<=9'd256)&&(!i_request_full||((i_request_address[5:0]==6'd0)&&(i_request_length[3:0]==4'd15)))&&(i_request_full||((i_request_be&~range_be)==256'd0)); // 属性不受无依据的Read限制；Full忽略输入BE。
  assign o_request_ready=active&&request_legal&&(count_q<COUNT_LIMIT); // 满槽仅背压，不把接纳当作执行完成。
  assign request_fire=i_request_valid&&o_request_ready; // 原子预留完整请求和后端完成空间。
  assign status_legal=(i_mem_result_status==4'd0)||(i_mem_result_status==4'd2)||(i_mem_result_status==4'd3)||(i_mem_result_status==4'd6)||(i_mem_result_status==4'd8); // 不接收保留状态或本地ISOLATE作为远端普通响应。
  always @(*) begin // 固定索引读取避免非二次幂memory_map生成不存在的补齐行。
   issue_address=57'd0;issue_length=6'd0;issue_attr=8'd0;issue_metadata=8'd0;issue_asi=2'd0;issue_data=2048'd0;issue_be=256'd0; // 默认无命令字段。
   issue_busy=1'b0;issue_issued=1'b0;head_busy=1'b0;head_complete=1'b0;result_legal=1'b0; // 未用slot既不有效也不别名。
-  head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_status=4'd0; // 默认无响应身份。
+  head_vc=2'd0;head_port=2'd0;head_pool=1'b0;head_tag=11'd0;head_src=10'd0;head_dst=10'd0;head_status=4'd0; // 默认无响应身份。
   for(read_slot=0;read_slot<SLOTS;read_slot=read_slot+1) begin // 展开成每个真实槽的显式选择。
    if(issue_q==read_slot[SLOT_WIDTH-1:0]) begin // 命令顺序与请求接纳顺序一致。
     issue_busy=busy_q[read_slot];issue_issued=issued_q[read_slot];issue_address=address_q[read_slot];issue_length=length_q[read_slot]; // 选择有效状态和完整地址长度。
     issue_attr=attr_q[read_slot];issue_metadata=metadata_q[read_slot];issue_asi=asi_q[read_slot];issue_data=data_q[read_slot];issue_be=be_q[read_slot]; // 选择完整数据和后端属性。
    end // 结束内存命令选择。
    if(head_q==read_slot[SLOT_WIDTH-1:0]) begin // 响应保守按请求顺序提交。
-    head_busy=busy_q[read_slot];head_complete=complete_q[read_slot];head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot];head_status=status_q[read_slot]; // 仅真实完成才能公开此身份。
+    head_busy=busy_q[read_slot];head_complete=complete_q[read_slot];head_vc=(NATIVE_FIELDS_ENABLE!=0)?vc_q[read_slot]:2'd0;head_port=port_q[read_slot];head_pool=(NATIVE_FIELDS_ENABLE!=0)&&response_pool_q[read_slot];head_tag=tag_q[read_slot];head_src=src_q[read_slot];head_dst=dst_q[read_slot];head_status=status_q[read_slot]; // 仅真实完成才能公开此身份。
    end // 结束队首响应选择。
    if(i_mem_result_slot==read_slot[SLOT_WIDTH-1:0])result_legal=busy_q[read_slot]&&issued_q[read_slot]&&!complete_q[read_slot]&&status_legal; // 空闲、未issued、重复或保留状态返回不能更新任何槽。
   end // 结束全部真实槽的有限组合译码。
@@ -80,7 +84,8 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
  assign o_mem_result_ready=active; // 合法请求已预约结果空间，非法返回也消费诊断。
  assign result_fire=i_mem_result_valid&&o_mem_result_ready&&result_legal; // 只有真实合法完成改变有效槽。
  assign o_source_valid=active&&head_busy&&head_complete; // 不把命令接纳或issued冒充完成。
- assign o_source_control=o_source_valid?{192'd0,4'd2,2'd0,head_tag,1'b0,2'd0,2'd0,head_status,1'b0,1'b0,head_dst,head_src,2'd0,14'd0}:256'd0; // 普通未压缩WriteResponse低64位，RD_WR/LAST/LEN/OFFSET均零，无Data。
+ assign o_source_port=o_source_valid?head_port:2'd0; // WriteResponse等待捕获期间保持入口端口。
+ assign o_source_control=o_source_valid?{192'd0,4'd2,head_vc,head_tag,head_pool,2'd0,2'd0,head_status,1'b0,1'b0,head_dst,head_src,2'd0,14'd0}:256'd0; // 普通未压缩WriteResponse低64位，RD_WR/LAST/LEN/OFFSET均零，无Data。
  assign retire=o_source_valid&&i_source_captured; // 无Data响应在Header所有权转移后释放槽。
  assign o_count=active?count_q:8'd0; // 非法配置和复位不公开旧占用。
  assign o_error=i_rstn&&(!CONFIG_LEGAL||(i_request_valid&&!request_legal)||(i_mem_result_valid&&!result_legal)||(i_source_captured&&!o_source_valid)); // 满槽等待不报错，非法事件不偷偷改变其他事务。
@@ -104,7 +109,7 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
    if(!active)begin busy_q[slot]<=1'b0;issued_q[slot]<=1'b0;complete_q[slot]<=1'b0;end // 清除有效状态即可阻止旧描述符重新执行。
    else begin // 大数据寄存器不需要复位填零。
     if(request_fire&&allocate_q==INDEX)begin // 接纳即预留全部描述符、数据、BE和结果状态。
-     busy_q[slot]<=1'b1;issued_q[slot]<=1'b0;complete_q[slot]<=1'b0;tag_q[slot]<=i_request_tag;src_q[slot]<=i_request_src;dst_q[slot]<=i_request_dst; // 完整身份只在新接纳时写入。
+     busy_q[slot]<=1'b1;issued_q[slot]<=1'b0;complete_q[slot]<=1'b0;vc_q[slot]<=i_request_vc;port_q[slot]<=i_request_port;response_pool_q[slot]<=i_response_tl_pool;tag_q[slot]<=i_request_tag;src_q[slot]<=i_request_src;dst_q[slot]<=i_request_dst; // 完整身份只在新接纳时写入。
      address_q[slot]<=i_request_address;length_q[slot]<=i_request_length;attr_q[slot]<=i_request_attr;asi_q[slot]<=i_request_asi;metadata_q[slot]<=i_request_metadata; // 保留完整后端访问语义。
      data_q[slot]<=i_request_data;be_q[slot]<=i_request_full?range_be:i_request_be; // 普通零BE不丢弃事务，Full重建有效范围。
     end // 结束完整请求保存。
@@ -114,5 +119,8 @@ module endpoint_write_completer #( // Write Completer模块保存完整事务，
    end // 结束槽正常执行分支。
   end // 结束槽寄存器过程。
  end endgenerate // 结束真实容量的静态槽阵列。
+generate if((NATIVE_FIELDS_ENABLE!=0)&&(NATIVE_FIELDS_ENABLE!=1))begin:invalid_native_config
+ native_write_fields_parameter_invalid Invalid_Config();
+end endgenerate
 endmodule // 结束组装后普通Write/WriteFull执行器。
 `default_nettype wire // 恢复外围编译单元默认网络规则。
