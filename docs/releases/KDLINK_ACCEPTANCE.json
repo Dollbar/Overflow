@@ -12,7 +12,7 @@
     "content": "rebased previously committed KDLink v0.3 base"
   },
   "engineering_signoff_status": "ENGINEERING_SIGNOFF_PASS",
-  "publication_status": "USER_APPROVED_COMMITTED_LOCALLY_PENDING_PUSH_AND_NEW_PR",
+  "publication_status": "PUSHED_AS_OPEN_PR_20_NOT_MERGED_NOT_TAGGED",
   "scope": {
     "minimum_active_npu_endpoints": 1,
     "maximum_active_npu_endpoints": 1048576,
@@ -170,5 +170,5 @@
     "Repository HBM and SerDes interface Liberty files are synthetic constraint-plumbing views, not vendor macro characterization.",
     "Analog SerDes, HBM PHY, package, PCB, place-and-route, hardware interoperability, and tapeout signoff remain outside this acceptance."
   ],
-  "release_manager_approval": "APPROVED_FOR_NEW_PR"
+  "release_manager_approval": "PR_20_OPEN_MERGE_PENDING"
 }
