@@ -27,19 +27,22 @@ The intended integration unit contains the following ownership regions:
 
 ```text
 npu_pod
-  decoded_command_sink        # HOLD: NPU sink; source contract externally owned
+  decoded_command_sink        # BASELINED: NPU-internal v0.1 sink
   pod_scheduler               # local policy after command validation
-  compute_cluster[]           # one verified cluster; replication is PROPOSED
+  compute_cluster[0..1]       # BASELINED organization; cluster block VERIFIED
   tile_private_sram[]         # current local compute stores are INHERITED
   pod_shared_sram             # BASELINED: DMA-only client contract
   dma_frontend                # BASELINED: NPU-internal command and data path
   memory_attachment           # BASELINED: logical RTL HBM request/response
-  noc_attachment              # HOLD: packet and credit contract
-  completion_ras              # HOLD: NPU events; runtime ABI externally owned
+  noc_attachment              # BASELINED: router-independent ready-valid handoff
+  completion_aggregator       # BASELINED: NPU-internal v0.1 completion
 ```
 
-One `npu_square_gemm_system` instance is the only currently verified compute cluster. A second cluster per
-pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded into an external ABI.
+One `npu_square_gemm_system` instance is the verified compute-cluster implementation. ADR-0004 baselines
+two identical instances per Pod and eight Pods in a 2 by 4 logical placement. The complete single-Pod
+wrapper is verified by NPU-031. The managed command wrapper is verified by NPU-034, and fixed eight-Pod
+structural replication is verified at leaf-integration level by NPU-035. These counts remain internal
+rather than ABI fields.
 
 ## 3. Channel Admission Matrix
 
@@ -51,8 +54,8 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | Compute event/status | compute cluster | integration logic | `INHERITED` | Local event/tag/status semantics only; not a runtime completion ABI |
 | Physical local SRAM cells | SRAM adapter | compute-local SRAM controller | `INHERITED` | Registered 1W/1R behavior; explicit adapter required; no inferred production storage |
 | KD-ISA command queue | firmware/runtime | external KD-ISA frontend | `EXTERNAL / HOLD` | Encoding, ordering, cancellation, privilege, and malformed-command behavior are not NPU RTL deliverables and require external `specs/isa/` and `specs/abi/` contracts |
-| Decoded internal command | external KD-ISA frontend | NPU decoded-command sink | `HOLD` | Version, opcode class, resource intent, payload reference, ordering token, and error handoff require a jointly consumed interface contract |
-| NPU internal completion event | compute/scheduler/DMA | external ABI adapter | `HOLD` | Event identity, outcome, retryability, ordering token, and reset handoff require a jointly consumed interface contract |
+| Decoded internal command | external KD-ISA frontend | NPU decoded-command sink | `BASELINED / VERIFIED` | ADR-0007 and `npu_decoded_command_v0.1.md` freeze the versioned 372-bit Task/local/DMA envelope; source-side KD-ISA decoding remains external |
+| NPU internal completion event | compute/scheduler/DMA | external ABI adapter | `BASELINED / VERIFIED` | ADR-0007 freezes the 66-bit request-correlated internal completion; runtime queue layout, interrupt and retry policy remain external |
 | Runtime completion queue/interrupt | external ABI adapter | firmware/runtime | `EXTERNAL / HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior are externally owned and require `specs/abi/` |
 | Internal DMA descriptor | NPU-local scheduler/adapter | DMA frontend | `BASELINED / VERIFIED` | `npu_dma_command_v0.1.md` freezes the internal linear/strided command used by the mover; KD-ISA packing, IOVA, protection, chaining, and cancellation remain external or held |
 | HBM RTL request lanes | DMA frontend | memory attachment | `BASELINED` | ADR-0002 and `npu_hbm_rtl.md` freeze five 128-byte lanes, finite address/tag fields, stable backpressure, ordering, and reset |
@@ -62,7 +65,11 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | DMA local-tag allocation and lifetime | DMA beat buffers and response consumers | HBM egress and DMA scheduler | `BASELINED / VERIFIED LEAF` | ADR-0002 tag geometry plus NPU DMA data-path contract; allocator and tracker are verified by NPU-019..020; cancellation reclamation remains held |
 | Integrated DMA HBM beat boundary | decoded beat producers | memory attachment and decoded response consumers | `BASELINED / VERIFIED LEAF` | Sixteen channel buffers integrate allocation, egress, routing, retirement, and tag reclamation under NPU-021; descriptor and SRAM-client semantics remain held |
 | Pod-shared SRAM DMA client request | DMA | shared SRAM | `BASELINED / VERIFIED` | `npu_pod_shared_sram_v0.1.md` freezes sixteen DMA clients, eight banks, full-beat writes, independent round-robin read/write arbitration, and ready-valid backpressure; compute/NoC clients and ECC remain held |
-| NoC packet/credit link | pod clients | pod router | `HOLD` | Flit, VC, routing, credit, ordering, fault, and reset fields require a NoC contract |
+| Pod shared-to-private transfer | Pod loader | compute-local SRAM writes | `BASELINED / VERIFIED LEAF` | `npu_pod_local_transfer_v0.1.md` freezes paired full-beat reads and one-to-eight 128-bit Tensor/Vector writes; wider production loading remains a later revision |
+| Complete two-cluster Pod | task/DMA/local-transfer producers | compute/result/HBM consumers | `BASELINED / VERIFIED` | `npu_compute_pod_v0.1.md` freezes the single-clock composition, task/status matching, DMA/loader SRAM sharing, result flattening, and lossless quiesce boundary |
+| Pod/NoC logical attachment | pod packet clients | pod router | `BASELINED / VERIFIED LEAF` | ADR-0005 and `npu_pod_noc_attachment_v0.1.md` freeze ready-valid, one 128-bit control lane, two 1,024-bit data lanes, endpoint metadata, quiesce, and diagnostics |
+| Fixed 2 by 4 Pod array | per-Pod command/HBM/packet lanes | NPU integration | `BASELINED / VERIFIED LEAF` | `npu_2x4_pod_array_v0.1.md` freezes eight managed Pods, same-ID HBM affinity, per-Pod clock/reset inputs, and eight router-independent attachments; it contains no router or CDC behavior |
+| NoC router/credit/VC implementation | pod attachment | inter-pod mesh | `EXTERNAL / HOLD` | NoC owner retains VC mapping, credits, routing, arbitration, ordering, faults, deadlock proof, telemetry, and CDC |
 | KDLink injection/ejection | pod | KDLink adapter | `HOLD` | Must use a versioned logical packet adapter; implicit width conversion is prohibited |
 
 ## 4. Baselined System Invariants
@@ -104,7 +111,8 @@ does not authorize a physical area, power, or signoff timing claim.
 The existing compute cluster has one synchronous `clk_i`, `rst_i`, and `clear_i` boundary. A wrapper may
 remain in that same domain without creating a new external clock contract.
 
-Any command, HBM, NoC, KDLink, or management clock crossing remains `HOLD`. Before such RTL is admitted,
+The admitted Pod/NoC attachment is synchronous to its supplied clock. Any command, HBM, NoC, KDLink, or
+management clock crossing remains `HOLD`. Before such RTL is admitted,
 the owning contract shall define clock relationships, synchronizer or FIFO ownership, reset assertion and
 deassertion, in-flight transaction handling, timeout behavior, and CDC/RDC evidence.
 
@@ -128,6 +136,12 @@ The following work is admitted now:
   and NoC channels;
 - the versioned NPU-internal linear/strided DMA mover and DMA-only Pod-shared SRAM client; and
 - the single-clock DMA Pod integration without KD-ISA decode, IOVA translation, or runtime queues.
+- the two-cluster Pod-local scoreboard and shared-to-private compatibility loaders under ADR-0004.
+- the synchronous router-independent Pod/NoC ready-valid attachment under ADR-0005.
+- cluster-local independent Vector descriptor version 3 under ADR-0006, with no host-visible or NoC fields.
+- the versioned NPU-internal decoded-command gateway and unified completion aggregator under ADR-0007;
+- the managed one-Pod wrapper joining command, DMA, shared SRAM, Tensor, Vector, and completion paths; and
+- fixed 2 by 4 structural replication with one HBM partition and one NoC attachment per Pod.
 
 The following work is blocked:
 
@@ -135,9 +149,10 @@ The following work is blocked:
   NPU workstream;
 - host-visible DMA descriptors, address translation, protection, cancellation reclamation, and runtime
   fault conversion;
-- additional compute/NoC pod-shared SRAM clients or ECC response fields;
-- independent Vector or general M/N/K descriptor encodings;
-- multi-clock pod integration, NoC links, or eight-pod replication.
+- NoC pod-shared SRAM clients or ECC response fields;
+- general M/N/K descriptor encodings and any host-visible independent-Vector encoding;
+- multi-clock Pod/NoC integration and router/mesh logic before the NoC owner closes VC, credit, routing,
+  CDC, reset, and deadlock contracts.
 
 Blocked work becomes admissible only after the producing specification, consuming specification,
 compatibility tests, and affected traceability entries are updated together.

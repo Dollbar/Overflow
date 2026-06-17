@@ -32,6 +32,7 @@ module npu_square_gemm_executor #(
                  result_command_i,
 
     output logic activation_read_enable_o,
+    input  logic activation_read_ready_i,
     output logic [npu_scheduler_pkg::NPU_BUFFER_ID_WIDTH-1:0]
                  activation_read_buffer_id_o,
     output logic [npu_scheduler_pkg::NPU_BUFFER_OFFSET_WIDTH-1:0]
@@ -131,7 +132,8 @@ module npu_square_gemm_executor #(
         feed_weight_base_offset_q;
     logic feed_last_read;
     logic read_credit;
-    logic read_issue;
+    logic read_request;
+    logic read_fire;
     logic [21:0] read_index;
     logic [21:0] incoming_read_count;
     logic [31:0] activation_read_byte_offset;
@@ -230,7 +232,8 @@ module npu_square_gemm_executor #(
             (context_level_q < CONTEXT_LEVEL_WIDTH'(CONTEXT_DEPTH)) || context_pop;
         incoming_start_credit = 1'b1;
         command_bundle_ready = context_credit && incoming_start_credit &&
-            (!feed_active_q || (read_credit && feed_last_read));
+            (!feed_active_q ||
+             (read_credit && feed_last_read && activation_read_ready_i));
         command_fire = command_bundle_valid && command_bundle_ready;
         gemm_command_ready_o = command_bundle_ready &&
             activation_command_valid_i && weight_command_valid_i &&
@@ -257,15 +260,18 @@ module npu_square_gemm_executor #(
                        (PAIR_LEVEL_WIDTH+1)'(PAIR_DEPTH)) || pair_pop;
         feed_last_read = feed_active_q &&
             ((feed_read_index_q + 22'd1) == feed_read_count_q);
-        read_issue = read_credit &&
-                     (feed_active_q || (!feed_active_q && command_fire));
+        read_request = read_credit &&
+                       (feed_active_q || (!feed_active_q && command_fire));
+        read_fire = read_request && activation_read_ready_i;
         read_index = feed_active_q ? feed_read_index_q : 22'd0;
         incoming_read_count = {1'b0, gemm_command.k_blocks, 5'd0};
         activation_read_byte_offset = {6'd0, read_index, 4'd0};
         weight_read_byte_offset = {6'd0, read_index, 4'd0};
 
-        activation_read_enable_o = read_issue;
-        weight_read_enable_o = read_issue;
+        activation_read_enable_o = read_request;
+        // A and W remain a logical pair. The uncontended Weight SRAM is
+        // launched only after the shared Activation SRAM accepts this wave.
+        weight_read_enable_o = read_fire;
         activation_read_buffer_id_o = feed_active_q ?
             feed_activation_buffer_id_q : activation_command.buffer_id;
         weight_read_buffer_id_o = feed_active_q ?
@@ -597,7 +603,7 @@ module npu_square_gemm_executor #(
                 feed_weight_buffer_id_q <= weight_command.buffer_id;
                 feed_weight_base_offset_q <= weight_command.base_offset;
             end
-            if (read_issue) begin
+            if (read_fire) begin
                 if (feed_active_q) begin
                     if (feed_last_read) begin
                         if (!command_fire) begin
@@ -612,8 +618,8 @@ module npu_square_gemm_executor #(
                 end
             end
 
-            read_meta_valid_q <= read_issue;
-            if (read_issue) begin
+            read_meta_valid_q <= read_fire;
+            if (read_fire) begin
                 read_meta_row_mask_q <= feed_active_q ?
                     feed_row_mask_q : incoming_row_mask;
                 read_meta_column_mask_q <= feed_active_q ?

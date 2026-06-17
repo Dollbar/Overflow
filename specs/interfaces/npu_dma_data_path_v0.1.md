@@ -36,8 +36,9 @@ source pod DMA/SRAM -> NoC injection -> pod mesh -> destination ejection -> dest
 
 The NoC owns routing, virtual-channel selection, credits, congestion backpressure, packet ordering, and
 deadlock avoidance after injection. The DMA owns beat generation, source/destination bounds, reservation
-of destination resources, and completion accounting before and after that boundary. No remote mover RTL
-may be implemented until the NoC flit, VC, credit, reset, and error contract is versioned.
+of destination resources, and completion accounting before and after that boundary. ADR-0005 freezes the
+opaque logical attachment, but no remote mover RTL may be implemented until its payload, reservation,
+completion, reset, and error contracts are versioned.
 
 The architecture proposal requires at least 80 percent pod-local HBM traffic because the proposed mesh
 cannot redistribute the complete 5 TB/s NPU HBM stream. That locality ratio remains `ANALYTICAL` and is
@@ -121,7 +122,7 @@ The following are not defined by this revision or the referenced DMA command con
 - compute and NoC shared-SRAM client arbitration, ECC, and ownership-transition fields;
 - partial-beat, scatter/gather, indexed, multicast, and zero-fill address-generator fields;
 - scatter-gather, indexed gather/scatter, multicast, and zero-fill command encodings;
-- NoC packet, virtual-channel, credit, ordering, retry, and reset behavior; and
+- remote-mover payload semantics plus NoC virtual-channel, credit, ordering, retry, and reset behavior; and
 - runtime status, cancellation, interrupt, timeout, and recovery semantics.
 
 These fields require their producing contract, this consuming contract, compatibility tests, and updated

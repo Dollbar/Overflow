@@ -84,19 +84,21 @@ This is pre-layout mapped-netlist evidence, not CTS/parasitic/physical signoff.
 | Test | Primary coverage | Evidence |
 | --- | --- | --- |
 | `tb_descriptor_path` | Slot write/submit atomicity, hold, reuse, protocol error, clear/reset | `RTL_SIM` |
-| `tb_npu_input_scheduler` | Dependencies, tag allocation, command fanout, no-bubble issue, completion | `RTL_SIM` |
+| `tb_npu_input_scheduler` | Dependencies, tag allocation, command fanout, no-bubble issue, completion, and independent-Vector descriptor propagation across 13 operations x 4 B-operand sources x 2 result routes (104 combinations) | `RTL_SIM` |
 | `tb_vector_engine16` | Seven pipelines, tag matching, mixed latency, collision FIFO, backpressure | `RTL_SIM` |
 | `tb_sram_macro_contract` | 32x32/64/128 dual-port registered-read replacement contract | `RTL_SIM` |
 | `tb_mxfp_numeric`, `tb_mxfp_block_convert`, `tb_mxfp_quantize_block32` | MXFP4 E2M1 and MXFP8 E4M3FN, boundary values, exact reduction, paired quantization | `RTL_SIM` |
 | `tb_npu_post_output_formatter16` | Both v0.2 MX formats, atomic scale/format metadata, full 16-lane 256-element/cycle no-bubble output | `RTL_SIM` |
 | `tb_npu_gemm_vector_coupler16_peak` | Full 16-channel Vector result transport, atomic MX scale, 256-element/cycle no-bubble output | `RTL_SIM` |
+| `tb_npu_independent_vector_path` | Version-3 Vector-only issue, Tile-K-major Activation SRAM reads, real Vector PASS arithmetic, per-lane backpressure, tail masks, and completion; combined with the scheduler matrix and all-operation Vector-engine numeric test for compositional closure | `RTL_SIM` |
+| `tb_npu_activation_read_fairness` | Continuous GEMM/Vector contention, alternating SRAM grants, response ownership, and uncontended GEMM throughput | `RTL_SIM` |
 | `tb_npu_gemm_feedback_writer16` | Full 16-channel E4M3/FP4 writes, direct and Vector feedback routes, no-bubble ingress and bank drain | `RTL_SIM` |
 | `tb_mxfp_k_accumulator` | 70-bit block input, 85-bit cross-K accumulation, final-only rounding, maximum `2^20` products | `RTL_SIM` |
 | `tb_pe_mx_exact` | MXFP4/MXFP8 exact-product payload, forwarding, clear, and one-product-per-cycle burst; confirms no PE-local accumulator | `RTL_SIM` |
 | `tb_tile_mx_gemm_path` | Real 16x16 PE Tile with double banks and Tile reduction: continuous/gapped traffic, backpressure, clear/reset recovery | `RTL_SIM` |
 | `tb_tile_mx_gemm_k4096` | Three complete `K=4096` Tile tasks and 768 FP32 checks | `RTL_SIM` |
 | `tb_gemm_array16_peak` | Fixed-origin full 256-Tile/65,536-PE array, 65,536 values, 256-FP32-per-cycle peak | `RTL_SIM` |
-| `tb_gemm_buffer_stream_peak` | 8 MiB A/B stores, real buffer-to-executor reads, K=256 fast and K=4096 long runs with 256 A plus 256 B elements every cycle, full-array numeric results | `RTL_SIM` |
+| `tb_gemm_buffer_stream_peak` | 8 MiB A/B stores, real buffer-to-executor reads, K=256 fast, every-other-cycle Activation-stall, and K=4096 long runs; A/W pairing and full-array numeric results | `RTL_SIM` |
 | `tb_npu_heterogeneous_k8192` | Parameterized K=8192 external/feedback stream: short 8 MiB run plus 256-task 1 GiB run with 2,097,152 dense cycles, 536,870,912 A/B lane pairs, and 524,288 beats on each result route; cycle- and lane-bubble assertions cover every active burst | `RTL_SIM` |
 | `tb_gemm_boundary_skew` | Continuous, gapped, and single input plus in-flight clear/reset and recovery with compact VCD | `RTL_SIM` |
 | `sta-pe-ssg` | TSMC28 SSG mapped PE pre-layout setup closure at 1.000 ns | `GENERIC_SYNTH` |

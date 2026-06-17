@@ -160,16 +160,14 @@ package vector_pkg;
         vector_engine_control_t     control;
     } vector_engine_descriptor_t;
 
-    // Fixed hierarchy-boundary widths.  Arrays of packed structs are flattened
-    // at top-level module ports because Yosys does not accept unpacked struct
-    // arrays as synthesizable ports.
+    // Fixed hierarchy-boundary widths.  Keep explicit ABI values because the
+    // repository Yosys frontend cannot evaluate $bits(type_name) in a package
+    // declaration. Verilator consumers still type-check every packed cast.
     // Some leaf targets use only one of these shared ABI constants; keep the
     // unused counterpart from failing an otherwise unrelated leaf lint target.
     /* verilator lint_off UNUSEDPARAM */
-    localparam int unsigned VECTOR_ENGINE_DESCRIPTOR_WIDTH =
-        $bits(vector_engine_descriptor_t);
-    localparam int unsigned VECTOR_ENGINE_REQUEST_WIDTH =
-        $bits(vector_engine_request_t);
+    localparam int unsigned VECTOR_ENGINE_DESCRIPTOR_WIDTH = 1130;
+    localparam int unsigned VECTOR_ENGINE_REQUEST_WIDTH = 1658;
     /* verilator lint_on UNUSEDPARAM */
 
     typedef struct packed {
@@ -202,8 +200,7 @@ package vector_pkg;
     } vector_engine_result_t;
 
     /* verilator lint_off UNUSEDPARAM */
-    localparam int unsigned VECTOR_ENGINE_RESULT_WIDTH =
-        $bits(vector_engine_result_t);
+    localparam int unsigned VECTOR_ENGINE_RESULT_WIDTH = 772;
     /* verilator lint_on UNUSEDPARAM */
 
 endpackage
