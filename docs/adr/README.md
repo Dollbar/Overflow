@@ -21,3 +21,6 @@ logical ports and PCS, compiler IR, and simulator timing model.
   reusing the Activation and Vector operand buffers plus the existing Vector backend, without changing NoC.
 - [`ADR-0007`](ADR-0007-npu-decoded-command-gateway.md) freezes the NPU-internal already-decoded
   Task/local/DMA envelope, validation rules, and unified completion gateway without defining KD-ISA.
+- [`ADR-0008`](ADR-0008-npu-noc-router-mesh.md) fixes the deterministic 2 by 4 Router baseline, internal
+  virtual-channel credit contract, bounded packets, CDC profile, and formal proof obligations while
+  leaving cross-Pod payload semantics opaque.
