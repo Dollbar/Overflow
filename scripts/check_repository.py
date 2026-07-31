@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check consistency and scope of the OwerFlow model-to-RTL repository."""
+"""Check consistency and scope of the Overflow model-to-RTL repository."""
 
 from __future__ import annotations
 
@@ -14,6 +14,20 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
+ALLOWED_HAN_NAMES = {
+    "刘键宇",
+    "李贇潇",
+    "高恩",
+    "王伟林",
+    "刘浩楠",
+    "刘京顺",
+    "秦一",
+    "付国恒",
+    "伍富",
+    "陈宏伟",
+    "李代庆",
+    "苏蒙",
+}
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 TEXT_SUFFIXES = {"", ".csv", ".md", ".py", ".tcl", ".txt", ".xdc", ".yaml", ".yml"}
 HOST_BINDING_SUFFIXES = {
@@ -61,7 +75,6 @@ REQUIRED_TRACE_COLUMNS = {
 }
 REQUIRED_TOP_LEVEL_READMES = {
     "Library",
-    "LICENSES",
     "ci",
     "compiler",
     "config",
@@ -81,7 +94,8 @@ REQUIRED_TOP_LEVEL_READMES = {
     "technology",
     "verification",
 }
-ALLOWED_TOP_LEVEL_DIRECTORIES = REQUIRED_TOP_LEVEL_READMES | {".git", ".github"}
+LICENSE_ONLY_DIRECTORIES = {"LICENSES"}
+ALLOWED_TOP_LEVEL_DIRECTORIES = REQUIRED_TOP_LEVEL_READMES | LICENSE_ONLY_DIRECTORIES | {".git", ".github"}
 ALLOWED_EVIDENCE_LEVELS = {
     "ANALYTICAL",
     "FUNCTIONAL_SIM",
@@ -134,7 +148,10 @@ def check_english_text(errors: list[str]) -> None:
             content = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
-        if HAN_RE.search(content):
+        content_without_names = content
+        for allowed_name in ALLOWED_HAN_NAMES:
+            content_without_names = content_without_names.replace(allowed_name, "")
+        if HAN_RE.search(content_without_names):
             errors.append(f"Non-English Han text found: {path.relative_to(ROOT)}")
 
 
@@ -290,7 +307,7 @@ def check_npu_proposal(errors: list[str]) -> None:
     for field, expected in expected_sram_geometry.items():
         if sram[field] != expected:
             errors.append(f"NPU Pod SRAM v0.1 geometry mismatch for {field}: expected {expected}")
-    if sram["pod_shared_geometry_contract"] != "specs/interfaces/npu_pod_shared_sram_v0.1.md":
+    if sram["pod_shared_geometry_contract"] != "specs/interfaces/npu_pod_shared_sram.md":
         errors.append("NPU Pod SRAM geometry contract path is inconsistent")
 
 

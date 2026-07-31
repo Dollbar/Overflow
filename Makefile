@@ -9,7 +9,8 @@
 	npu-command-sim npu-command-test npu-noc-lint npu-noc-synth \
 	npu-noc-formal npu-noc-formal-deep npu-noc-sim npu-noc-vip npu-noc-coverage npu-noc-test \
 	npu-noc-closure npu-pod-noc-system-lint npu-pod-noc-system-sim \
-	npu-pod-noc-system-closure npu-pod-noc-release npu-owned-rtl-test
+	npu-pod-noc-system-closure npu-pod-noc-release npu-owned-rtl-test \
+	release-preflight release-audit release-check release-regression release-candidate-check
 
 PYTHON ?= python3
 REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -18,10 +19,16 @@ NANGATE45_LIBERTY ?= $(OPENROAD_FLOW_ROOT)/flow/platforms/nangate45/lib/NangateO
 KDLINK_JOBS ?= 4
 KDLINK_TIMEOUT ?= 1200
 KDLINK_STA_ARGS ?=
+RELEASE_JOBS ?= 2
 
 help:
 	@echo "Repository targets:"
 	@echo "  make check                  - run repository consistency checks"
+	@echo "  make release-preflight      - fail fast on missing or mismatched release tools"
+	@echo "  make release-audit          - report release integrity errors and explicit HOLD items"
+	@echo "  make release-check          - require a clean, licensed, immutable GO candidate"
+	@echo "  make release-regression     - run all portable 1.0 engineering regressions"
+	@echo "  make release-candidate-check - run regression and the strict publication gate"
 	@echo "  make hbm-model              - run the HBM Python and RTL BFM regressions"
 	@echo "  make kd28-sram-fifo         - generate and validate KD28 SRAM/FIFO models"
 	@echo "  make sta-interfaces         - validate HBM/SerDes interface Liberty scenarios"
@@ -56,6 +63,31 @@ help:
 
 check:
 	$(PYTHON) scripts/check_repository.py
+
+release-preflight:
+	$(PYTHON) scripts/check_release_toolchain.py
+
+release-audit:
+	$(PYTHON) scripts/check_release.py
+
+release-check:
+	$(PYTHON) scripts/check_release.py --strict
+
+release-regression:
+	$(MAKE) release-preflight PYTHON=$(PYTHON)
+	$(MAKE) check PYTHON=$(PYTHON)
+	$(MAKE) hbm-model PYTHON=$(PYTHON)
+	$(MAKE) kd28-sram-fifo PYTHON=$(PYTHON)
+	$(MAKE) sta-interfaces PYTHON=$(PYTHON)
+	$(MAKE) sta-kd28 PYTHON=$(PYTHON)
+	$(MAKE) kdlink-release-check PYTHON=$(PYTHON) KDLINK_JOBS=$(RELEASE_JOBS)
+	$(MAKE) npu-owned-rtl-test PYTHON=$(PYTHON)
+	$(MAKE) npu-pod-noc-release PYTHON=$(PYTHON)
+	@echo "RELEASE_REGRESSION_PASS"
+
+release-candidate-check:
+	$(MAKE) release-regression PYTHON=$(PYTHON) RELEASE_JOBS=$(RELEASE_JOBS)
+	$(MAKE) release-check PYTHON=$(PYTHON)
 
 hbm-model:
 	$(MAKE) -C simulator/memory test

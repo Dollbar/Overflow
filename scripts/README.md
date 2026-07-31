@@ -29,3 +29,13 @@ These targets keep generated simulator code, numerical vectors, logs, and wavefo
 `verification/npu/compute/build/`. The test target resolves open-source tools
 from `PATH`; its SSG timing stage requires the caller to provide
 `LIBERTY_SSG` without recording a PDK installation path in the repository.
+
+`check_release.py` audits stable file names, tracked artifacts, common secret signatures, dependency
+manifest completeness, hashed Python release pins, explicit requirement non-claims, licensing metadata,
+acceptance status, and the two-commit payload/attestation relationship. Run `make release-audit` during
+preparation and `make release-check` before tagging. The former may report explicit holds; the latter is
+strict.
+
+`check_release_toolchain.py` verifies the Linux x86-64/CPython 3.12 release host, exact locked Python
+packages, required RTL/timing commands, declared versions, and executable evidence hashes before a long
+regression starts. Run it through `make release-preflight`.

@@ -1,0 +1,333 @@
+schema_version: 1
+validated_environment: ubuntu_24_04_x86_64_python_3_12
+
+dependencies:
+  - name: Python
+    version: 3.12.3
+    requirement: ">=3.10,<3.14"
+    source: https://www.python.org/downloads/source/
+    license: PSF-2.0
+    checksum: 1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118
+    checksum_subject: validated_python3_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: any compatible CPython satisfying the declared requirement
+
+  - name: pip
+    version: "24.0"
+    requirement: ">=23.2"
+    source: https://pypi.org/project/pip/24.0/
+    license: MIT
+    checksum: a009359c5a4b994552e4b9fb371bcda06527e55927e851908cf68d0dff10f299
+    checksum_subject: validated_pip_package_init_module
+    redistributed: false
+    acquisition_method: Python installation or virtual-environment bootstrap
+    replacement_strategy: compatible pip release supporting requirements files and hash checking
+
+  - name: attrs
+    version: 26.1.0
+    requirement: "==26.1.0"
+    source: https://pypi.org/project/attrs/26.1.0/
+    license: MIT
+    checksum: c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
+    checksum_subject: attrs-26.1.0-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: boolean.py
+    version: "5.0"
+    requirement: "==5.0"
+    source: https://pypi.org/project/boolean.py/5.0/
+    license: BSD-2-Clause
+    checksum: ef28a70bd43115208441b53a045d1549e2f0ec6e3d08a9d142cbc41c1938e8d9
+    checksum_subject: boolean_py-5.0-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: click
+    version: 8.5.0
+    requirement: "==8.5.0"
+    source: https://pypi.org/project/click/8.5.0/
+    license: BSD-3-Clause
+    checksum: 255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360
+    checksum_subject: click-8.5.0-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: Jinja2
+    version: 3.1.6
+    requirement: "==3.1.6"
+    source: https://pypi.org/project/Jinja2/3.1.6/
+    license: BSD-3-Clause
+    checksum: 85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
+    checksum_subject: jinja2-3.1.6-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: license-expression
+    version: 30.4.4
+    requirement: "==30.4.4"
+    source: https://pypi.org/project/license-expression/30.4.4/
+    license: Apache-2.0
+    checksum: 421788fdcadb41f049d2dc934ce666626265aeccefddd25e162a26f23bcbf8a4
+    checksum_subject: license_expression-30.4.4-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: MarkupSafe
+    version: 3.0.3
+    requirement: "==3.0.3"
+    source: https://pypi.org/project/MarkupSafe/3.0.3/
+    license: BSD-3-Clause
+    checksum: d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d
+    checksum_subject: markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: python-debian
+    version: 1.1.1
+    requirement: "==1.1.1"
+    source: https://pypi.org/project/python-debian/1.1.1/
+    license: GPL-2.0-or-later
+    checksum: f98ae013e8e5310e49041cc3860a7105df73af73d4ff1d8afb474770d328a6ad
+    checksum_subject: python_debian-1.1.1-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: python-magic
+    version: 0.4.27
+    requirement: "==0.4.27"
+    source: https://pypi.org/project/python-magic/0.4.27/
+    license: MIT
+    checksum: c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3
+    checksum_subject: python_magic-0.4.27-py2.py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: reuse
+    version: 6.2.0
+    requirement: "==6.2.0"
+    source: https://pypi.org/project/reuse/6.2.0/
+    license: Apache-2.0 AND CC0-1.0 AND CC-BY-SA-4.0 AND GPL-3.0-or-later
+    checksum: 4feae057a2334c9a513e6933cdb9be819d8b822f3b5b435a36138bd218897d23
+    checksum_subject: reuse-6.2.0.tar.gz
+    redistributed: false
+    acquisition_method: requirements-dev.lock with pip --require-hashes
+    replacement_strategy: compatible REUSE release after license regression
+
+  - name: tomlkit
+    version: 0.15.1
+    requirement: "==0.15.1"
+    source: https://pypi.org/project/tomlkit/0.15.1/
+    license: MIT
+    checksum: 177a05aece5a8ca5266fd3c448abb47b8d352f09d477d3ca8332db4d89b24304
+    checksum_subject: tomlkit-0.15.1-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed REUSE dependency
+    replacement_strategy: compatible REUSE dependency after license regression
+
+  - name: poetry-core
+    version: 2.4.1
+    requirement: "==2.4.1"
+    source: https://pypi.org/project/poetry-core/2.4.1/
+    license: MIT
+    checksum: acf06f9537cd2625bdaec926d95d90b557ba15353bc71d27a3a8a441042b5316
+    checksum_subject: poetry_core-2.4.1-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-build.lock and requirements-dev.lock with pip --require-hashes
+    replacement_strategy: compatible PEP 517 backend after rebuilding and validating the pinned REUSE source distribution
+
+  - name: PyYAML
+    version: 6.0.1
+    requirement: "==6.0.1"
+    source: https://pypi.org/project/PyYAML/6.0.1/
+    license: MIT
+    checksum: 6c22bec3fbe2524cde73d7ada88f6566758a8f7227bfbf93a408a9d86bcc12a0
+    checksum_subject: PyYAML-6.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock with pip --require-hashes on the validated release platform
+    replacement_strategy: compatible YAML loader after repository regression
+
+  - name: pytest
+    version: 9.1.1
+    requirement: "==9.1.1"
+    source: https://pypi.org/project/pytest/9.1.1/
+    license: MIT
+    checksum: 37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c
+    checksum_subject: pytest-9.1.1-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock with pip --require-hashes on the validated release platform
+    replacement_strategy: compatible pytest release after repository regression
+
+  - name: iniconfig
+    version: 2.3.0
+    requirement: "==2.3.0"
+    source: https://pypi.org/project/iniconfig/2.3.0/
+    license: MIT
+    checksum: f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12
+    checksum_subject: iniconfig-2.3.0-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed pytest dependency
+    replacement_strategy: compatible pytest dependency after repository regression
+
+  - name: packaging
+    version: 26.2
+    requirement: "==26.2"
+    source: https://pypi.org/project/packaging/26.2/
+    license: Apache-2.0 OR BSD-2-Clause
+    checksum: 5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e
+    checksum_subject: packaging-26.2-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed pytest dependency
+    replacement_strategy: compatible pytest dependency after repository regression
+
+  - name: pluggy
+    version: 1.6.0
+    requirement: "==1.6.0"
+    source: https://pypi.org/project/pluggy/1.6.0/
+    license: MIT
+    checksum: e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
+    checksum_subject: pluggy-1.6.0-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed pytest dependency
+    replacement_strategy: compatible pytest dependency after repository regression
+
+  - name: Pygments
+    version: 2.17.2
+    requirement: "==2.17.2"
+    source: https://pypi.org/project/Pygments/2.17.2/
+    license: BSD-2-Clause
+    checksum: b27c2826c47d0f3219f29554824c30c5e8945175d888647acd804ddd04af846c
+    checksum_subject: pygments-2.17.2-py3-none-any.whl
+    redistributed: false
+    acquisition_method: requirements-dev.lock as a hashed pytest dependency
+    replacement_strategy: compatible pytest dependency after repository regression
+
+  - name: Icarus Verilog
+    version: "12.0"
+    requirement: ">=12.0"
+    source: https://github.com/steveicarus/iverilog
+    license: GPL-2.0-or-later
+    checksum: b8d9f131225fb5051f9421eb5eeaf95177863d94bdd7fd453844f44ddc70f1fb
+    checksum_subject: validated_iverilog_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: compatible Verilog simulator/compiler after HBM and RTL regressions pass
+
+  - name: Icarus Verilog runtime
+    version: "12.0"
+    requirement: ">=12.0"
+    source: https://github.com/steveicarus/iverilog
+    license: GPL-2.0-or-later
+    checksum: 98d69f6808a447d0810b2ae2ded8f2a020a05bfddbf1f991a5b12879bb0072c4
+    checksum_subject: validated_vvp_executable
+    redistributed: false
+    acquisition_method: installed with Icarus Verilog and discovered from PATH
+    replacement_strategy: compatible Verilog runtime paired with the selected compiler
+
+  - name: Verilator
+    version: "5.050"
+    requirement: ">=5.0"
+    source: https://github.com/verilator/verilator
+    license: LGPL-3.0-or-later OR Artistic-2.0
+    checksum: fb2cc573b1055cf096c90e1efc9966fe56bdb4b265c83590cf2a49f7a0defcdf
+    checksum_subject: validated_verilator_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: compatible SystemVerilog simulator after all RTL regressions pass
+
+  - name: verilator_coverage
+    version: "5.050"
+    requirement: ">=5.0"
+    source: https://github.com/verilator/verilator
+    license: LGPL-3.0-or-later OR Artistic-2.0
+    checksum: 11d69c7bc1a99027a70fd544a22cb6e5e45caea026a85b5581b6530367fcddd5
+    checksum_subject: validated_verilator_coverage_executable
+    redistributed: false
+    acquisition_method: installed with Verilator and discovered from PATH
+    replacement_strategy: compatible coverage collector after all coverage gates pass
+
+  - name: Yosys
+    version: "0.67"
+    requirement: ">=0.40"
+    source: https://github.com/YosysHQ/yosys
+    license: ISC
+    checksum: 3a9c9bdf57d92b731a0715a62f04e60083d956187ac5aabb3bc32eda586f2531
+    checksum_subject: validated_yosys_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: compatible synthesis and SAT tool after all structural and formal gates pass
+
+  - name: OpenSTA
+    version: 3.1.0
+    requirement: ">=2.5"
+    source: https://github.com/The-OpenROAD-Project/OpenSTA
+    license: BSD-3-Clause
+    checksum: 7cc6023918e2fd095593841da71f3fa285d3ad3a1fdfa6305d65912c5fbb5d08
+    checksum_subject: validated_opensta_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: compatible STA tool after all portable timing-view gates pass
+
+  - name: Git
+    version: 2.43.0
+    requirement: ">=2.30"
+    source: https://git-scm.com/downloads
+    license: GPL-2.0-only
+    checksum: 2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668
+    checksum_subject: validated_git_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: compatible Git release supporting worktrees, archives, and signed tags
+
+  - name: GNU Make
+    version: "4.3"
+    requirement: ">=4.0"
+    source: https://www.gnu.org/software/make/
+    license: GPL-3.0-or-later
+    checksum: d78b8f1d099fbcfb6f2f49ab87223b9b68fb3956642f92d6ec6de812e8afa965
+    checksum_subject: validated_make_executable
+    redistributed: false
+    acquisition_method: system package or source build discovered from PATH
+    replacement_strategy: a compatible build orchestrator after all targets pass
+
+  - name: GCC C++ compiler
+    version: 13.3.0
+    requirement: C++17 compatible
+    source: https://gcc.gnu.org/
+    license: GPL-3.0-or-later WITH GCC-exception-3.1
+    checksum: 1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769
+    checksum_subject: validated_gpp_executable
+    redistributed: false
+    acquisition_method: system package or compatible compiler discovered from PATH
+    replacement_strategy: Clang or another compiler supported by Verilator after full regression
+
+optional_dependencies:
+  - name: OpenROAD Flow Scripts Nangate45 library
+    version: 7ff3adf8eda37712a40591dbd8ec3bef449e6fee
+    source: https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts
+    license: BSD-3-Clause
+    checksum: 7ff3adf8eda37712a40591dbd8ec3bef449e6fee
+    checksum_subject: upstream_git_commit
+    redistributed: false
+    acquisition_method: pinned Git checkout documented by the NPU and KDLink STA guides
+    replacement_strategy: any legally usable Liberty with explicit cell mapping and constraints
+
+external_nonredistributable_inputs:
+  - name: standard-cell multi-corner Liberty and SRAM compiler collateral
+    version: selected implementation release
+    source: selected foundry or standard-cell vendor
+    license: vendor-controlled and non-redistributable
+    checksum: recorded by the integrator outside Git
+    checksum_subject: exact licensed input files
+    redistributed: false
+    acquisition_method: licensed implementation environment
+    replacement_strategy: repository synthetic timing views for plumbing only, never physical signoff
