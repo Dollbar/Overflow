@@ -102,6 +102,37 @@ module npu_noc_async_fifo #(
         end
     end
 
+`ifdef FORMAL
+    logic formal_write_past_valid_q;
+    logic formal_read_past_valid_q;
+    initial formal_write_past_valid_q = 1'b0;
+    initial formal_read_past_valid_q = 1'b0;
+
+    always_ff @(posedge write_clk_i) begin
+        formal_write_past_valid_q <= 1'b1;
+        if (!write_rst_i) begin
+            assert (write_gray_q ==
+                    ((write_binary_q >> 1) ^ write_binary_q));
+            assert (write_ready_o == !write_full_o);
+            if (formal_write_past_valid_q && !$past(write_rst_i)) begin
+                assert ($onehot0(write_gray_q ^ $past(write_gray_q)));
+            end
+        end
+    end
+
+    always_ff @(posedge read_clk_i) begin
+        formal_read_past_valid_q <= 1'b1;
+        if (!read_rst_i) begin
+            assert (read_gray_q ==
+                    ((read_binary_q >> 1) ^ read_binary_q));
+            assert (read_valid_o == !read_empty_o);
+            if (formal_read_past_valid_q && !$past(read_rst_i)) begin
+                assert ($onehot0(read_gray_q ^ $past(read_gray_q)));
+            end
+        end
+    end
+`endif
+
     assign configuration_error_o = (WIDTH < 1) || (DEPTH < 4) ||
         ((1 << ADDRESS_WIDTH) != DEPTH) || (POINTER_WIDTH < 3);
 

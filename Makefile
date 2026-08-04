@@ -7,7 +7,7 @@
 	npu-pod-lint npu-pod-synth npu-pod-sim npu-pod-test npu-pod-noc-test \
 	npu-pod-array-lint npu-pod-closure npu-command-lint npu-command-synth \
 	npu-command-sim npu-command-test npu-noc-lint npu-noc-synth \
-	npu-noc-formal npu-noc-sim npu-noc-coverage npu-noc-test \
+	npu-noc-formal npu-noc-formal-deep npu-noc-sim npu-noc-vip npu-noc-coverage npu-noc-test \
 	npu-noc-closure npu-owned-rtl-test
 
 PYTHON ?= python3
@@ -46,6 +46,8 @@ help:
 	@echo "  make npu-pod-array-lint     - elaborate the complete 2x4 Pod/NoC shell"
 	@echo "  make npu-pod-closure        - run Pod tests, four-seed array stress, and coverage gates"
 	@echo "  make npu-noc-closure        - run the complete 2x4 NoC lint/synth/formal/sim/coverage gate"
+	@echo "  make npu-noc-vip            - run the reusable NoC source/sink/monitor/checker VIP smoke test"
+	@echo "  make npu-noc-formal-deep    - run the optional four-VC 10-step Router SAT proof"
 	@echo "  make npu-command-test       - verify decoded command routing and completion aggregation"
 	@echo "  make npu-owned-rtl-test     - run all NPU-owned RTL gates (excludes external NoC/system CDC and physical signoff)"
 
@@ -178,8 +180,14 @@ npu-noc-synth:
 npu-noc-formal:
 	$(MAKE) -C verification/npu/noc formal
 
+npu-noc-formal-deep:
+	$(MAKE) -C verification/npu/noc formal-deep
+
 npu-noc-sim:
 	$(MAKE) -C verification/npu/noc sim
+
+npu-noc-vip:
+	$(MAKE) -C verification/npu/noc sim-vip
 
 npu-noc-coverage:
 	$(MAKE) -C verification/npu/noc coverage

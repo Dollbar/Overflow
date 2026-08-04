@@ -7,6 +7,7 @@ module tb_npu_noc_cdc_mesh;
 
     localparam int unsigned PODS = npu_noc_pkg::NPU_NOC_PODS;
     localparam int unsigned LANES = npu_noc_pkg::NPU_NOC_DATA_LANES;
+    localparam int unsigned VCS = npu_noc_pkg::NPU_NOC_DATA_VCS;
 
     logic [PODS-1:0] pod_clk;
     logic noc_clk;
@@ -33,6 +34,10 @@ module tb_npu_noc_cdc_mesh;
     logic protocol_error;
     logic [PODS-1:0] pod_cdc_busy;
     logic [PODS-1:0] noc_cdc_busy;
+    integer checked_control_flits;
+    integer checked_data_flits;
+    logic [PODS*PODS-1:0] control_pair_seen;
+    logic [VCS*LANES*PODS*PODS-1:0] data_pair_vc_seen;
 
     /* The detailed per-Router telemetry ports are separately checked by the
        Mesh TB.  This smoke test owns the complete CDC+Mesh composition. */
@@ -86,7 +91,14 @@ module tb_npu_noc_cdc_mesh;
     );
     /* verilator lint_on PINCONNECTEMPTY */
 
-    always #1.0 pod_clk = ~pod_clk;
+    always #1.00 pod_clk[0] = ~pod_clk[0];
+    always #0.83 pod_clk[1] = ~pod_clk[1];
+    always #1.17 pod_clk[2] = ~pod_clk[2];
+    always #0.91 pod_clk[3] = ~pod_clk[3];
+    always #1.31 pod_clk[4] = ~pod_clk[4];
+    always #0.73 pod_clk[5] = ~pod_clk[5];
+    always #1.07 pod_clk[6] = ~pod_clk[6];
+    always #1.43 pod_clk[7] = ~pod_clk[7];
     always #0.5 noc_clk = ~noc_clk;
 
     task automatic send_control(
@@ -117,6 +129,7 @@ module tb_npu_noc_cdc_mesh;
                             CONTROL_FLIT_WIDTH] !== expected) begin
             $fatal(1, "CDC Mesh control delivery mismatch");
         end
+        checked_control_flits = checked_control_flits + 1;
     endtask
 
     task automatic send_data(
@@ -153,6 +166,7 @@ module tb_npu_noc_cdc_mesh;
             $fatal(1, "CDC Mesh data delivery mismatch endpoint=%0d",
                    endpoint);
         end
+        checked_data_flits = checked_data_flits + 1;
     endtask
 
     initial begin
@@ -174,6 +188,10 @@ module tb_npu_noc_cdc_mesh;
         data_tx_flit = '0;
         /* verilator lint_on WIDTHCONCAT */
         data_rx_ready = '1;
+        checked_control_flits = 0;
+        checked_data_flits = 0;
+        control_pair_seen = '0;
+        data_pair_vc_seen = '0;
 
         #7.3;
         async_rst = 1'b0;
@@ -202,6 +220,38 @@ module tb_npu_noc_cdc_mesh;
             expect_data(0, 1, data_reverse);
         join
 
+        // Traverse every Pod pair through both CDC directions, both physical
+        // data lanes, and all four VCs while all eight Pod clocks are distinct.
+        for (integer source = 0; source < PODS; source++) begin
+            for (integer destination = 0; destination < PODS;
+                 destination++) begin
+                control_forward = make_control_flit(
+                    1'b1, 1'b1, 3'(source), 3'(destination),
+                    2'((source + destination) % 4),
+                    {64'(source), 32'(destination), 32'hcdc0_cdc0});
+                fork
+                    send_control(source, control_forward);
+                    expect_control(destination, control_forward);
+                join
+                control_pair_seen[source*PODS + destination] = 1'b1;
+                for (integer lane = 0; lane < LANES; lane++) begin
+                    for (integer vc = 0; vc < VCS; vc++) begin
+                        data_forward = make_data_flit(
+                            1'b1, 1'b1, 3'(source), 3'(destination),
+                            2'(vc), 8'(source*32 + destination*4 +
+                                      lane*2 + (vc & 1)));
+                        fork
+                            send_data(source, lane, data_forward);
+                            expect_data(destination, lane, data_forward);
+                        join
+                        data_pair_vc_seen[
+                            ((vc*LANES + lane)*PODS + source)*PODS +
+                            destination] = 1'b1;
+                    end
+                end
+            end
+        end
+
         @(negedge pod_clk[0]);
         quiesce = 1'b1;
         timeout = 0;
@@ -213,8 +263,15 @@ module tb_npu_noc_cdc_mesh;
             (pod_quiesce !== '1) || (|pod_cdc_busy) || (|noc_cdc_busy)) begin
             $fatal(1, "CDC Mesh failed stable drain/quiesce");
         end
+        if (control_pair_seen !== '1 || data_pair_vc_seen !== '1 ||
+            checked_control_flits != 2 + PODS*PODS ||
+            checked_data_flits != 2 + VCS*LANES*PODS*PODS) begin
+            $fatal(1, "CDC Mesh functional coverage matrix incomplete");
+        end
 
-        $display("PASS tb_npu_noc_cdc_mesh bidirectional=4 quiesce=1");
+        $display("PASS tb_npu_noc_cdc_mesh control=%0d data=%0d matrix=%0d",
+                 checked_control_flits, checked_data_flits,
+                 PODS*PODS*(1 + LANES*VCS));
         $finish;
     end
 

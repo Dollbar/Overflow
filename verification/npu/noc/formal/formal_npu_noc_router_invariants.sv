@@ -4,8 +4,8 @@
 module formal_npu_noc_router_invariants;
 
     localparam int unsigned PORTS = 5;
-    localparam int unsigned VCS = 2;
-    localparam int unsigned VC_WIDTH = 1;
+    localparam int unsigned VCS = 4;
+    localparam int unsigned VC_WIDTH = 2;
     localparam int unsigned FLIT_WIDTH = 23;
 
     wire clk = $global_clock;

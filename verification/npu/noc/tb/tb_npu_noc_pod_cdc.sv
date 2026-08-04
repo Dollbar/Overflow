@@ -5,6 +5,8 @@ module tb_npu_noc_pod_cdc;
 
     import npu_noc_tb_pkg::*;
 
+    localparam int unsigned PHASE_CASES = 8;
+
     localparam int unsigned LANES = npu_noc_pkg::NPU_NOC_DATA_LANES;
 
     logic pod_clk;
@@ -117,14 +119,15 @@ module tb_npu_noc_pod_cdc;
 
     task automatic reset_phase(
         input real new_pod_half_period,
-        input real new_noc_half_period
+        input real new_noc_half_period,
+        input real release_offset
     );
         async_rst = 1'b1;
         repeat (3) @(posedge pod_clk);
         repeat (3) @(posedge noc_clk);
         pod_half_period = new_pod_half_period;
         noc_half_period = new_noc_half_period;
-        #0.17;
+        #(release_offset);
         async_rst = 1'b0;
         wait (!pod_rst && !noc_rst);
         repeat (3) @(posedge noc_clk);
@@ -271,9 +274,11 @@ module tb_npu_noc_pod_cdc;
     task automatic run_ratio_phase(
         input real new_pod_half_period,
         input real new_noc_half_period,
+        input real release_offset,
         input int unsigned phase_id
     );
-        reset_phase(new_pod_half_period, new_noc_half_period);
+        reset_phase(new_pod_half_period, new_noc_half_period,
+                    release_offset);
         fork
             send_pod_control(12);
             receive_noc_control(12, 24);
@@ -319,12 +324,17 @@ module tb_npu_noc_pod_cdc;
         checked_flits = 0;
         backpressure_seen = 1'b0;
 
-        run_ratio_phase(1.0, 1.0, 0);  // equal frequency, phase offset
-        run_ratio_phase(1.0, 0.5, 1);  // proposed Pod:NoC 1:2
-        run_ratio_phase(0.5, 1.0, 2);  // reverse 2:1 stress
-        run_ratio_phase(0.7, 1.1, 3);  // unrelated phase/rational ratio
+        run_ratio_phase(1.0, 1.0, 0.03, 0);  // equal, early release
+        run_ratio_phase(1.0, 1.0, 0.47, 1);  // equal, late release
+        run_ratio_phase(1.0, 0.5, 0.11, 2);  // proposed Pod:NoC 1:2
+        run_ratio_phase(1.0, 0.5, 0.39, 3);  // 1:2 alternate phase
+        run_ratio_phase(0.5, 1.0, 0.07, 4);  // reverse 2:1 stress
+        run_ratio_phase(0.5, 1.0, 0.31, 5);  // 2:1 alternate phase
+        run_ratio_phase(0.707, 1.113, 0.13, 6);  // unrelated clocks
+        run_ratio_phase(0.707, 1.113, 0.53, 7);  // unrelated phase sweep
 
-        if (!backpressure_seen || checked_flits != 4*(12 + 20 + 4*40)) begin
+        if (!backpressure_seen ||
+            checked_flits != PHASE_CASES*(12 + 20 + 4*40)) begin
             $fatal(1, "CDC coverage/count mismatch seen=%0b checked=%0d",
                    backpressure_seen, checked_flits);
         end
@@ -341,8 +351,8 @@ module tb_npu_noc_pod_cdc;
         async_rst = 1'b0;
         wait (!pod_rst && !noc_rst);
 
-        $display("PASS tb_npu_noc_pod_cdc checked_flits=%0d ratios=4",
-                 checked_flits);
+        $display("PASS tb_npu_noc_pod_cdc checked_flits=%0d phase_cases=%0d",
+                 checked_flits, PHASE_CASES);
         $finish;
     end
 

@@ -11,14 +11,14 @@ module formal_npu_noc_vc_fifo;
     logic push_ready;
     logic pop_valid;
     logic [7:0] pop_data;
-    logic [2:0] level;
+    logic [3:0] level;
     logic past_valid_q;
 
     initial past_valid_q = 1'b0;
 
     npu_noc_vc_fifo #(
         .WIDTH(8),
-        .DEPTH(4)
+        .DEPTH(8)
     ) dut (
         .clk_i(clk),
         .rst_i(rst),
@@ -39,7 +39,7 @@ module formal_npu_noc_vc_fifo;
         end else begin
             assume (!rst);
         end
-        assert (level <= 3'd4);
+        assert (level <= 4'd8);
         assert (pop_valid == (level != 0));
         if (past_valid_q && $past(push_valid && !push_ready)) begin
             assume (push_valid);

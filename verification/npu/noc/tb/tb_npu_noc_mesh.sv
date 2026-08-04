@@ -7,7 +7,9 @@ module tb_npu_noc_mesh;
 
     localparam int unsigned PODS = npu_noc_pkg::NPU_NOC_PODS;
     localparam int unsigned LANES = npu_noc_pkg::NPU_NOC_DATA_LANES;
+    localparam int unsigned VCS = npu_noc_pkg::NPU_NOC_DATA_VCS;
     localparam int unsigned PORTS = npu_noc_pkg::NPU_NOC_PORTS;
+    localparam int unsigned RANDOM_FLOWS = 128;
 
     logic clk;
     logic rst;
@@ -53,7 +55,7 @@ module tb_npu_noc_mesh;
     integer checked_control_flits;
     integer checked_data_flits;
     logic [PODS*PODS-1:0] control_pair_seen;
-    logic [LANES*PODS*PODS-1:0] data_pair_seen;
+    logic [VCS*LANES*PODS*PODS-1:0] data_pair_vc_seen;
     logic [63:0] cycle_count;
 
     npu_noc_mesh dut (
@@ -195,16 +197,72 @@ module tb_npu_noc_mesh;
     task automatic run_data_pair(
         input int unsigned source,
         input int unsigned destination,
-        input int unsigned lane
+        input int unsigned lane,
+        input int unsigned vc
     );
         logic [DATA_FLIT_WIDTH-1:0] flit;
         logic [7:0] marker;
-        marker = 8'(lane*8'h80 + source*8 + destination);
+        marker = 8'(vc*8'h40 + lane*8'h20 + source*8 + destination);
         flit = make_data_flit(1'b1, 1'b1, 3'(source), 3'(destination),
-            2'((source + destination + lane) % 4), marker);
+            2'(vc), marker);
         send_data_flit(source, lane, flit);
         expect_data_flit(destination, lane, flit);
-        data_pair_seen[(lane*PODS + source)*PODS + destination] = 1'b1;
+        data_pair_vc_seen[
+            ((vc*LANES + lane)*PODS + source)*PODS + destination] = 1'b1;
+    endtask
+
+    task automatic run_transpose_pattern;
+        logic [DATA_FLIT_WIDTH-1:0] flit;
+        integer destination;
+        for (integer source = 0; source < PODS; source++) begin
+            destination = source ^ (PODS - 1);
+            flit = make_data_flit(1'b1, 1'b1, 3'(source),
+                3'(destination), 2'(source % VCS), 8'he0 + 8'(source));
+            send_data_flit(source, source % LANES, flit);
+            expect_data_flit(destination, source % LANES, flit);
+        end
+    endtask
+
+    task automatic run_uniform_random(
+        input logic [31:0] seed,
+        input int unsigned flow_count
+    );
+        logic [31:0] state;
+        logic [DATA_FLIT_WIDTH-1:0] flit;
+        logic [2:0] source;
+        logic [2:0] destination;
+        logic lane;
+        logic [1:0] vc;
+        logic [3:0] endpoint;
+        state = (seed == 0) ? 32'h1 : seed;
+        for (integer flow = 0; flow < flow_count; flow++) begin
+            state = state ^ (state << 13);
+            state = state ^ (state >> 17);
+            state = state ^ (state << 5);
+            source = state[2:0];
+            destination = 3'(int'($unsigned(state[5:3])) % (PODS - 1));
+            if (destination >= source) begin
+                destination = destination + 1;
+            end
+            lane = state[6];
+            vc = state[8:7];
+            endpoint = {destination, lane};
+            flit = make_data_flit(1'b1, 1'b1, 3'(source),
+                3'(destination), 2'(vc), 8'(flow));
+            if (state[9]) begin
+                @(negedge clk);
+                data_rx_ready[endpoint] = 1'b0;
+            end
+            send_data_flit(int'($unsigned(source)),
+                           int'($unsigned(lane)), flit);
+            if (state[9]) begin
+                repeat (1 + int'($unsigned(state[11:10]))) @(posedge clk);
+                @(negedge clk);
+                data_rx_ready[endpoint] = 1'b1;
+            end
+            expect_data_flit(int'($unsigned(destination)),
+                             int'($unsigned(lane)), flit);
+        end
     endtask
 
     task automatic send_data_packet(
@@ -362,6 +420,7 @@ module tb_npu_noc_mesh;
         logic [63:0] bisect_first;
         logic [63:0] bisect_last;
         logic [63:0] bisect_active_cycles;
+        integer random_seed;
         clk = 1'b0;
         rst = 1'b1;
         clear = 1'b0;
@@ -377,7 +436,10 @@ module tb_npu_noc_mesh;
         checked_control_flits = 0;
         checked_data_flits = 0;
         control_pair_seen = '0;
-        data_pair_seen = '0;
+        data_pair_vc_seen = '0;
+        if (!$value$plusargs("NOC_SEED=%d", random_seed)) begin
+            random_seed = 32'h004e_4f43;
+        end
 
         repeat (4) @(posedge clk);
         @(negedge clk);
@@ -395,7 +457,9 @@ module tb_npu_noc_mesh;
                  destination++) begin
                 run_control_pair(source, destination);
                 for (integer lane = 0; lane < LANES; lane++) begin
-                    run_data_pair(source, destination, lane);
+                    for (integer vc = 0; vc < VCS; vc++) begin
+                        run_data_pair(source, destination, lane, vc);
+                    end
                 end
             end
         end
@@ -406,6 +470,11 @@ module tb_npu_noc_mesh;
             send_data_packet(0, 7, 0, 2'd1, 2, 8'h20);
             expect_data_packet(0, 7, 0, 2'd1, 2, 8'h20);
         join
+
+        // Exercise the fixed complement transpose at RTL and then execute a
+        // reproducible non-local uniform-random stream with endpoint stalls.
+        run_transpose_pattern();
+        run_uniform_random(32'(random_seed), RANDOM_FLOWS);
         fork
             send_data_packet(3, 4, 1, 2'd3, 31, 8'h40);
             expect_data_packet(3, 4, 1, 2'd3, 31, 8'h40);
@@ -527,8 +596,8 @@ module tb_npu_noc_mesh;
             $fatal(1, "Mesh failed clean quiesce");
         end
 
-        if (control_pair_seen !== '1 || data_pair_seen !== '1) begin
-            $fatal(1, "all-pairs coverage incomplete");
+        if (control_pair_seen !== '1 || data_pair_vc_seen !== '1) begin
+            $fatal(1, "all-pairs/lane/VC functional coverage incomplete");
         end
         if ((|control_invalid_route_events) ||
             (|data_invalid_route_events) ||
@@ -545,14 +614,15 @@ module tb_npu_noc_mesh;
         end
         if ((checked_control_flits != PODS*PODS) ||
             (checked_data_flits !=
-             LANES*PODS*PODS + 2 + 31 + 32 + 32 + 4*32 + 7 + 1)) begin
+             VCS*LANES*PODS*PODS + 2 + 31 + 32 + 32 + 4*32 + 7 +
+             PODS + RANDOM_FLOWS + 1)) begin
             $fatal(1, "Mesh checked-flit count mismatch control=%0d data=%0d",
                    checked_control_flits, checked_data_flits);
         end
 
         $display("PASS tb_npu_noc_mesh control=%0d data=%0d all_pairs=%0d",
                  checked_control_flits, checked_data_flits,
-                 PODS*PODS*(1+LANES));
+                 PODS*PODS*(1+LANES*VCS));
         $finish;
     end
 

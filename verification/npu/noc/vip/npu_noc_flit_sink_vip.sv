@@ -35,6 +35,10 @@ module npu_noc_flit_sink_vip #(
             stalled_q <= 1'b0;
             stalled_flit_q <= '0;
         end else begin
+            if (stalled_q &&
+                (!link_valid_i || link_flit_i !== stalled_flit_q)) begin
+                protocol_error_o <= 1'b1;
+            end
             if (link_valid_i && link_ready_o) begin
                 accepted_flits_o <= accepted_flits_o + 1'b1;
                 last_flit_o <= link_flit_i;
@@ -43,8 +47,6 @@ module npu_noc_flit_sink_vip #(
                 backpressure_seen_o <= 1'b1;
                 if (!stalled_q) begin
                     stalled_flit_q <= link_flit_i;
-                end else if (link_flit_i !== stalled_flit_q) begin
-                    protocol_error_o <= 1'b1;
                 end
                 stalled_q <= 1'b1;
             end else begin

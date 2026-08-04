@@ -9,4 +9,4 @@ formalff -clk2ff -ff2anyinit
 chformal -lower
 memory_map
 opt
-sat -verify -prove-asserts -set-assumes -seq 8 -set-init-zero
+sat -verify -prove-asserts -set-assumes -seq 10 -set-init-zero

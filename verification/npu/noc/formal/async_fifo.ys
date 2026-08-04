@@ -1,0 +1,9 @@
+read_verilog -formal -D FORMAL -D SYNTHESIS -sv rtl/npu/noc/npu_noc_async_fifo.sv
+read_verilog -formal -sv verification/npu/noc/formal/formal_npu_noc_async_fifo.sv
+prep -top formal_npu_noc_async_fifo -flatten
+async2sync
+formalff -clk2ff -ff2anyinit
+chformal -lower
+memory_map
+opt
+sat -verify -prove-asserts -set-assumes -seq 24 -set-init-zero
