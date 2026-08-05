@@ -8,7 +8,8 @@
 	npu-pod-array-lint npu-pod-closure npu-command-lint npu-command-synth \
 	npu-command-sim npu-command-test npu-noc-lint npu-noc-synth \
 	npu-noc-formal npu-noc-formal-deep npu-noc-sim npu-noc-vip npu-noc-coverage npu-noc-test \
-	npu-noc-closure npu-owned-rtl-test
+	npu-noc-closure npu-pod-noc-system-lint npu-pod-noc-system-sim \
+	npu-pod-noc-system-closure npu-pod-noc-release npu-owned-rtl-test
 
 PYTHON ?= python3
 REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -48,6 +49,8 @@ help:
 	@echo "  make npu-noc-closure        - run the complete 2x4 NoC lint/synth/formal/sim/coverage gate"
 	@echo "  make npu-noc-vip            - run the reusable NoC source/sink/monitor/checker VIP smoke test"
 	@echo "  make npu-noc-formal-deep    - run the optional four-VC 10-step Router SAT proof"
+	@echo "  make npu-pod-noc-system-closure - lint and simulate the real Pod/CDC/Mesh joint top"
+	@echo "  make npu-pod-noc-release    - run Pod, NoC, joint, and repository release gates"
 	@echo "  make npu-command-test       - verify decoded command routing and completion aggregation"
 	@echo "  make npu-owned-rtl-test     - run all NPU-owned RTL gates (excludes external NoC/system CDC and physical signoff)"
 
@@ -197,6 +200,21 @@ npu-noc-test:
 
 npu-noc-closure:
 	$(MAKE) -C verification/npu/noc closure
+
+npu-pod-noc-system-lint:
+	$(MAKE) -C verification/npu/pod_noc lint
+
+npu-pod-noc-system-sim:
+	$(MAKE) -C verification/npu/pod_noc sim
+
+npu-pod-noc-system-closure:
+	$(MAKE) -C verification/npu/pod_noc closure
+
+npu-pod-noc-release:
+	$(MAKE) npu-pod-closure
+	$(MAKE) npu-noc-closure
+	$(MAKE) npu-pod-noc-system-closure
+	$(MAKE) check
 
 # Complete reproducible gate for the RTL owned by the NPU workstream. Physical
 # STA and cross-owner NoC/system integration remain separate because they need

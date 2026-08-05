@@ -177,24 +177,24 @@ lint-tb:
 		$(MONITOR_VIP) $(CHECKER_VIP) $(VIP_TB)
 
 synth:
-	$(YOSYS) -Q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(FIFO_RTL) $(ROUTER_RTL); hierarchy -check -top npu_noc_lane_router; proc; opt; check'
-	$(YOSYS) -Q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(FIFO_RTL) $(ROUTER_RTL) $(FABRIC_RTL) $(MESH_RTL); hierarchy -check -top npu_noc_mesh; proc; opt; check'
-	$(YOSYS) -Q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(ASYNC_FIFO_RTL) $(POD_CDC_RTL); hierarchy -check -top npu_noc_pod_cdc; proc; opt; check'
+	$(YOSYS) -q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(FIFO_RTL) $(ROUTER_RTL); hierarchy -check -top npu_noc_lane_router; proc; opt; check'
+	$(YOSYS) -q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(FIFO_RTL) $(ROUTER_RTL) $(FABRIC_RTL) $(MESH_RTL); hierarchy -check -top npu_noc_mesh; proc; opt; check'
+	$(YOSYS) -q -p 'read_verilog -sv $(POD_NOC_PKG) $(NOC_PKG) $(ASYNC_FIFO_RTL) $(POD_CDC_RTL); hierarchy -check -top npu_noc_pod_cdc; proc; opt; check'
 
 formal:
-	cd $(REPO_ROOT) && $(YOSYS) -Q -s \
+	cd $(REPO_ROOT) && $(YOSYS) -q -s \
 		verification/npu/noc/formal/vc_fifo.ys
-	cd $(REPO_ROOT) && $(YOSYS) -Q -s \
+	cd $(REPO_ROOT) && $(YOSYS) -q -s \
 		verification/npu/noc/formal/async_fifo.ys
-	cd $(REPO_ROOT) && $(YOSYS) -Q -s \
+	cd $(REPO_ROOT) && $(YOSYS) -q -s \
 		verification/npu/noc/formal/router_invariants.ys
-	cd $(REPO_ROOT) && $(YOSYS) -Q -s \
+	cd $(REPO_ROOT) && $(YOSYS) -q -s \
 		verification/npu/noc/formal/escape_dependency.ys
 
 # Optional workstation/nightly extension. The portable release gate uses the
 # four-VC 8-step proof above so closure time remains bounded and reproducible.
 formal-deep:
-	cd $(REPO_ROOT) && $(YOSYS) -Q -s \
+	cd $(REPO_ROOT) && $(YOSYS) -q -s \
 		verification/npu/noc/formal/router_invariants_deep.ys
 
 $(FIFO_BIN): $(FIFO_RTL) $(FIFO_TB)
