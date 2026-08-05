@@ -1,4 +1,4 @@
-module kdlink_v2_serdes_channel_model #(
+module kdlink_serdes_channel_model #(
     parameter integer PROPAGATION_CYCLES = 3,
     parameter integer MAX_LANE_SKEW_CYCLES = 2,
     parameter integer TRAINING_CYCLES = 16

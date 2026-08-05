@@ -1,4 +1,4 @@
-module kdlink_v2_serdes_channel_full_model #(
+module kdlink_serdes_channel_full_model #(
     parameter integer LANES = 10,
     parameter integer PROPAGATION_CYCLES = 3,
     parameter integer MAX_LANE_SKEW_CYCLES = 2,
@@ -109,7 +109,7 @@ module kdlink_v2_serdes_channel_full_model #(
                 (lane % (MAX_LANE_SKEW_CYCLES + 1));
             wire [31:0] lane_error_period;
             assign lane_error_period = (error_lane_i == lane) ? error_period_blocks_i : 32'd0;
-            kdlink_v2_serdes_lane_full_model #(
+            kdlink_serdes_lane_full_model #(
                 .PROPAGATION_CYCLES(PROPAGATION_CYCLES),
                 .STATIC_SKEW_CYCLES(LANE_SKEW),
                 .CDR_LOCK_CYCLES(CDR_LOCK_CYCLES),

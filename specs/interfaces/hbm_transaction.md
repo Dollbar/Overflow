@@ -72,7 +72,7 @@ limited to 625 GB/s even if other partitions are idle.
 - 500-cycle nominal and 800-cycle stress round-trip latency.
 - 4,096 outstanding transactions per partition.
 
-The executable configuration is `../../Library/models/hbm/hbm_v0.1.yaml`. These are logical
+The executable configuration is `../../Library/models/hbm/hbm.yaml`. These are logical
 architecture parameters with `FUNCTIONAL_SIM` evidence, not physical HBM timing or PPA claims.
 
 ## Executable API

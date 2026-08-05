@@ -7,7 +7,7 @@ from hbm_model import HBMConfig, HBMModel
 
 
 ROOT = Path(__file__).resolve().parents[3]
-CONFIG_PATH = ROOT / "Library" / "models" / "hbm" / "hbm_v0.1.yaml"
+CONFIG_PATH = ROOT / "Library" / "models" / "hbm" / "hbm.yaml"
 
 
 def load_config(**overrides: int) -> HBMConfig:

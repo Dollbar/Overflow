@@ -1,4 +1,4 @@
-module kdlink_v2_serdes_lane_full_model #(
+module kdlink_serdes_lane_full_model #(
     parameter integer PROPAGATION_CYCLES = 3,
     parameter integer STATIC_SKEW_CYCLES = 0,
     parameter integer CDR_LOCK_CYCLES = 8,

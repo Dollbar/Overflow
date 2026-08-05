@@ -167,7 +167,7 @@ module tb_kdlink_multidomain_bonded;
                 .rx_block_lock_o(b_block_lock[logical_slice]), .rx_deskew_locked_o(b_deskew_lock[logical_slice]),
                 .rx_block_error_o(b_block_error[logical_slice]), .rx_deskew_overflow_o(b_deskew_overflow[logical_slice])
             );
-            kdlink_v2_serdes_link_model #(
+            kdlink_serdes_link_model #(
                 .PROPAGATION_CYCLES(4), .MAX_LANE_SKEW_CYCLES(2), .TRAINING_CYCLES(8)
             ) u_serdes_link (
                 .clk_i(phy_clk), .rst_n_i(rst_n), .admin_up_i(admin_up),

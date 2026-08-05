@@ -10,7 +10,7 @@ The baseline has eight independent 24 GB decimal partitions. Each partition tran
 read-plus-write budget of 625 payload bytes per 1 ns logical cycle, equivalent to 625 GB/s per partition
 and 5 TB/s aggregate under balanced traffic.
 The nominal latency is 500 cycles;
-[`hbm_v0.1.yaml`](../../Library/models/hbm/hbm_v0.1.yaml) also records the 800-cycle stress override.
+[`hbm.yaml`](../../Library/models/hbm/hbm.yaml) also records the 800-cycle stress override.
 
 Run the self-checking model regression from the repository root:
 

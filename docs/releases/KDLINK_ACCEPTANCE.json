@@ -12,7 +12,11 @@
     "content": "rebased previously committed KDLink v0.3 base"
   },
   "engineering_signoff_status": "ENGINEERING_SIGNOFF_PASS",
-  "publication_status": "PUSHED_AS_OPEN_PR_20_NOT_MERGED_NOT_TAGGED",
+  "publication_status": "MERGED_BY_PR_20_IN_MAIN_BC730CB_NOT_TAGGED",
+  "merge_record": {
+    "pull_request": 20,
+    "main_commit_containing_merge": "bc730cb"
+  },
   "scope": {
     "minimum_active_npu_endpoints": 1,
     "maximum_active_npu_endpoints": 1048576,

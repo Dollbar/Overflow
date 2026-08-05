@@ -314,7 +314,7 @@
       "top": "tb_kdlink_serdes_channel",
       "testbench": "simulator/kdlink/tb/unit/tb_kdlink_serdes_channel.sv",
       "rtl": [
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv"
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv"
       ],
       "pass_signature": "TB_KDLINK_SERDES_CHANNEL_PASS"
     },
@@ -323,7 +323,7 @@
       "top": "tb_kdlink_serdes_full_lane",
       "testbench": "simulator/kdlink/tb/unit/tb_kdlink_serdes_full_lane.sv",
       "rtl": [
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv"
+        "Library/models/kdlink/serdes/kdlink_serdes_lane_full_model.sv"
       ],
       "pass_signature": "TB_KDLINK_SERDES_FULL_LANE_PASS"
     },
@@ -393,8 +393,8 @@
         "rtl/kdlink/kdlink_pcs_tx.v",
         "rtl/kdlink/kdlink_pcs_rx.v",
         "rtl/kdlink/kdlink_pcs.v",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv"
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_model.sv"
       ],
       "pass_signature": "TB_KDLINK_SERDES_PCS_LINK_PASS"
     },
@@ -403,9 +403,9 @@
       "top": "tb_kdlink_serdes_full_link",
       "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_serdes_full_link.sv",
       "rtl": [
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_full_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_full_model.sv"
+        "Library/models/kdlink/serdes/kdlink_serdes_lane_full_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_full_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_full_model.sv"
       ],
       "pass_signature": "TB_KDLINK_SERDES_FULL_LINK_PASS"
     },
@@ -626,8 +626,8 @@
         "rtl/kdlink/kdlink_replay_window.v",
         "rtl/kdlink/kdlink_rx_commit.v",
         "rtl/kdlink/kdlink_reliable_endpoint.v",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_model.sv",
         "simulator/kdlink/model/link/kdlink_reverse_channel_model.sv"
       ],
       "pass_signature": "TB_KDLINK_RELIABLE_ENDPOINT_E2E_PASS"
@@ -663,8 +663,8 @@
         "rtl/kdlink/kdlink_domain_adapter.v",
         "rtl/kdlink/kdlink_global_commit_codec.v",
         "rtl/kdlink/kdlink_global_transaction_source.v",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_model.sv",
         "simulator/kdlink/model/link/kdlink_reverse_channel_model.sv"
       ],
       "pass_signature": "TB_KDLINK_ROUTE_CONTEXT_RELIABLE_PASS"
@@ -700,8 +700,8 @@
         "rtl/kdlink/kdlink_route_context_encoder.v",
         "rtl/kdlink/kdlink_route_pair_tx.v",
         "rtl/kdlink/kdlink_domain_adapter.v",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_model.sv",
         "simulator/kdlink/model/link/kdlink_reverse_channel_model.sv"
       ],
       "pass_signature": "TB_KDLINK_MULTIDOMAIN_BONDED_PASS"
@@ -744,8 +744,8 @@
         "rtl/kdlink/kdlink_pcs_deskew10.v",
         "rtl/kdlink/kdlink_pcs_tx.v",
         "rtl/kdlink/kdlink_pcs_rx.v",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
-        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv"
+        "Library/models/kdlink/serdes/kdlink_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_serdes_link_model.sv"
       ],
       "pass_signature": "TB_KDLINK_MULTIBOARD_E2E_PASS"
     },

@@ -35,7 +35,7 @@ module tb_kdlink_serdes_channel;
     logic lane_flush_window;
     logic started [0:9];
 
-    kdlink_v2_serdes_channel_model #(
+    kdlink_serdes_channel_model #(
         .PROPAGATION_CYCLES(PROPAGATION_CYCLES),
         .MAX_LANE_SKEW_CYCLES(MAX_LANE_SKEW_CYCLES),
         .TRAINING_CYCLES(TRAINING_CYCLES)

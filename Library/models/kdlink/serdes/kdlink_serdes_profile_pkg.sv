@@ -1,4 +1,4 @@
-package kdlink_v2_serdes_profile_pkg;
+package kdlink_serdes_profile_pkg;
     localparam integer SERDES_MODULATION_NRZ = 1;
     localparam integer SERDES_MODULATION_PAM4 = 2;
 

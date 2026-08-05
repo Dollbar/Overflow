@@ -1,4 +1,4 @@
-module kdlink_v2_serdes_link_full_model #(
+module kdlink_serdes_link_full_model #(
     parameter integer LANES = 10,
     parameter integer PROPAGATION_CYCLES = 3,
     parameter integer MAX_LANE_SKEW_CYCLES = 2,
@@ -82,7 +82,7 @@ module kdlink_v2_serdes_link_full_model #(
     assign overflow_blocks_o = a_to_b_overflow + b_to_a_overflow;
     assign retrain_events_o = a_to_b_retrain + b_to_a_retrain;
 
-    kdlink_v2_serdes_channel_full_model #(
+    kdlink_serdes_channel_full_model #(
         .LANES(LANES), .PROPAGATION_CYCLES(A_TO_B_PROPAGATION_CYCLES),
         .MAX_LANE_SKEW_CYCLES(A_TO_B_MAX_LANE_SKEW_CYCLES),
         .CDR_LOCK_CYCLES(CDR_LOCK_CYCLES), .BLOCK_LOCK_CYCLES(BLOCK_LOCK_CYCLES),
@@ -109,7 +109,7 @@ module kdlink_v2_serdes_link_full_model #(
         .overflow_blocks_o(a_to_b_overflow), .retrain_events_o(a_to_b_retrain)
     );
 
-    kdlink_v2_serdes_channel_full_model #(
+    kdlink_serdes_channel_full_model #(
         .LANES(LANES), .PROPAGATION_CYCLES(B_TO_A_PROPAGATION_CYCLES),
         .MAX_LANE_SKEW_CYCLES(B_TO_A_MAX_LANE_SKEW_CYCLES),
         .CDR_LOCK_CYCLES(CDR_LOCK_CYCLES), .BLOCK_LOCK_CYCLES(BLOCK_LOCK_CYCLES),

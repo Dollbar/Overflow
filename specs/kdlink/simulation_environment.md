@@ -72,7 +72,7 @@ NACK, and link-management words and never participates in a same-cycle forward a
 this digital contract.
 
 The versioned executable parameters are in
-`../../Library/models/kdlink/serdes/serdes_v0.1.yaml`. Defaults are a 1 GHz logical group clock, three
+`../../Library/models/kdlink/serdes/serdes.yaml`. Defaults are a 1 GHz logical group clock, three
 cycles of base propagation, up to two deterministic skew cycles, and 16 compatibility-model training
 cycles. The advanced model separates CDR and block lock, uses an order-preserving elastic queue for added
 delay, and reports overflow and retrain counters. Lane `n` in the compatibility model has

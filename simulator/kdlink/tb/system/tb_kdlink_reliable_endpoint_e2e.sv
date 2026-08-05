@@ -209,7 +209,7 @@ module tb_kdlink_reliable_endpoint_e2e;
         .rx_deskew_overflow_o(b_deskew_overflow)
     );
 
-    kdlink_v2_serdes_link_model #(
+    kdlink_serdes_link_model #(
         .PROPAGATION_CYCLES(4), .MAX_LANE_SKEW_CYCLES(2),
         .TRAINING_CYCLES(8)
     ) u_forward_link (

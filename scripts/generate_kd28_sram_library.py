@@ -386,7 +386,7 @@ def generate_manifest(liberty_paths: list[Path]) -> None:
         ROOT / "Library" / "models" / "kd28" / "fifo" / "kd28_fifo.f",
         ROOT / "Library" / "models" / "kd28" / "fifo" / "kd28_fifo_blackboxes.f",
         ROOT / "technology" / "kd28" / "constraints" / "kd28_async_fifo_cdc.sdc",
-        ROOT / "specs" / "interfaces" / "kd28_sram_fifo_v0.1.md",
+        ROOT / "specs" / "interfaces" / "kd28_sram_fifo.md",
         *liberty_paths,
     ]
     lines = [

@@ -7,12 +7,12 @@ All models are vendor-neutral and redistributable.
 
 | Source | Purpose |
 | --- | --- |
-| `kdlink_v2_serdes_channel_model.sv` | Stable compatibility model for existing KDLink tests |
-| `kdlink_v2_serdes_link_model.sv` | Stable two-direction compatibility wrapper |
-| `kdlink_v2_serdes_lane_full_model.sv` | Lane state, locks, elastic delay, deterministic jitter/errors, burst faults, overflow, counters |
-| `kdlink_v2_serdes_channel_full_model.sv` | Parameterized lane array, aggregate state and telemetry |
-| `kdlink_v2_serdes_link_full_model.sv` | Independently controlled full-duplex advanced link |
-| `kdlink_v2_serdes_profile_pkg.sv` | Compile-time rate and encoding constants |
+| `kdlink_serdes_channel_model.sv` | Stable compatibility model for existing KDLink tests |
+| `kdlink_serdes_link_model.sv` | Stable two-direction compatibility wrapper |
+| `kdlink_serdes_lane_full_model.sv` | Lane state, locks, elastic delay, deterministic jitter/errors, burst faults, overflow, counters |
+| `kdlink_serdes_channel_full_model.sv` | Parameterized lane array, aggregate state and telemetry |
+| `kdlink_serdes_link_full_model.sv` | Independently controlled full-duplex advanced link |
+| `kdlink_serdes_profile_pkg.sv` | Compile-time rate and encoding constants |
 
 The advanced lane state sequence is `DOWN -> CDR_LOCK -> BLOCK_LOCK -> READY`. Signal loss, receiver-not-
 ready, or forced lock loss flushes the lane's elastic queue and requires reacquisition. The channel reports
@@ -56,7 +56,7 @@ rate parameters are metadata and validation guards; the behavioral model clock r
 Compile the profile package before the advanced models, then instantiate either the channel or link:
 
 ```systemverilog
-kdlink_v2_serdes_channel_full_model #(
+kdlink_serdes_channel_full_model #(
     .LANES(10),
     .LINE_RATE_KBPS(106250000),
     .MODULATION_BITS_PER_SYMBOL(2),
@@ -67,7 +67,7 @@ kdlink_v2_serdes_channel_full_model #(
 ) u_serdes_channel (/* named ports */);
 ```
 
-The machine-readable logical baseline is [`serdes_v0.1.yaml`](serdes_v0.1.yaml). The profile YAML files
+The machine-readable logical baseline is [`serdes.yaml`](serdes.yaml). The profile YAML files
 contain the exact parameter values and primary-source URLs.
 
 Use `serdes_compat.f` for the stable existing channel/link pair or `serdes_full.f` for the advanced lane,

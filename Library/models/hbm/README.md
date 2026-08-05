@@ -16,10 +16,10 @@ integration and backpressure checking, not proof of the 625-byte/cycle partition
 
 | File or profile | Intended use | Evidence boundary |
 | --- | --- | --- |
-| `hbm_v0.1.yaml`, `nominal` | Overflow 8 x 24 GB, 5 TB/s logical baseline | `FUNCTIONAL_SIM` baseline |
-| `hbm_v0.1.yaml`, `stress` | Fixed 800-cycle response latency | Configured stress scenario |
-| `hbm_v0.1.yaml`, `banked_nominal` | FR-FCFS, bank/row timing, staggered refresh | Transaction-level timing abstraction |
-| `hbm_v0.1.yaml`, `banked_stress` | FIFO, one issue/cycle, longer refresh and latency | Contention stress abstraction |
+| `hbm.yaml`, `nominal` | Overflow 8 x 24 GB, 5 TB/s logical baseline | `FUNCTIONAL_SIM` baseline |
+| `hbm.yaml`, `stress` | Fixed 800-cycle response latency | Configured stress scenario |
+| `hbm.yaml`, `banked_nominal` | FR-FCFS, bank/row timing, staggered refresh | Transaction-level timing abstraction |
+| `hbm.yaml`, `banked_stress` | FIFO, one issue/cycle, longer refresh and latency | Contention stress abstraction |
 | `profiles/hbm3e_24gb_public_reference.yaml` | One public 24 GB HBM3E placement | Capacity/bandwidth `ANALYTICAL` floor |
 | `profiles/hbm3e_36gb_public_reference.yaml` | One public 36 GB HBM3E placement | Capacity/bandwidth `ANALYTICAL` floor |
 
@@ -55,7 +55,7 @@ PYTHONPATH=Library/models/hbm python3 - <<'PY'
 from hbm_model import HBMConfig, HBMModel
 
 cfg = HBMConfig.from_yaml(
-    "Library/models/hbm/hbm_v0.1.yaml",
+    "Library/models/hbm/hbm.yaml",
     profile="banked_nominal",
 )
 hbm = HBMModel(cfg)

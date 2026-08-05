@@ -14,5 +14,5 @@ Tests, testbenches, tool adapters, generated outputs, and scenario configuration
 consumer under `simulator/`, `verification/`, or `technology/`. Restricted foundry and vendor collateral
 must not be copied here.
 
-Asset licensing follows [`LICENSES/README.md`](../LICENSES/README.md). Third-party assets require
+Asset licensing follows [`docs/management/licensing.md`](../docs/management/licensing.md). Third-party assets require
 provenance, license, version, and checksum records before admission.

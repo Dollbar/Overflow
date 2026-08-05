@@ -36,7 +36,7 @@ module tb_kdlink_serdes_full_lane;
     logic nominal_window;
     logic overflow_started;
 
-    kdlink_v2_serdes_lane_full_model #(
+    kdlink_serdes_lane_full_model #(
         .PROPAGATION_CYCLES(2), .STATIC_SKEW_CYCLES(1),
         .CDR_LOCK_CYCLES(2), .BLOCK_LOCK_CYCLES(2),
         .JITTER_PERIOD_BLOCKS(4), .JITTER_EXTRA_CYCLES(4),
@@ -56,7 +56,7 @@ module tb_kdlink_serdes_full_lane;
         .retrain_events_o(normal_retrain)
     );
 
-    kdlink_v2_serdes_lane_full_model #(
+    kdlink_serdes_lane_full_model #(
         .PROPAGATION_CYCLES(2), .STATIC_SKEW_CYCLES(0),
         .CDR_LOCK_CYCLES(2), .BLOCK_LOCK_CYCLES(2),
         .JITTER_PERIOD_BLOCKS(4), .JITTER_EXTRA_CYCLES(4),

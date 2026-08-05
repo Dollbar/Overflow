@@ -1,4 +1,4 @@
-module kdlink_v2_serdes_link_model #(
+module kdlink_serdes_link_model #(
     parameter integer PROPAGATION_CYCLES = 3,
     parameter integer MAX_LANE_SKEW_CYCLES = 2,
     parameter integer TRAINING_CYCLES = 16
@@ -40,7 +40,7 @@ module kdlink_v2_serdes_link_model #(
     assign dropped_blocks_o = a_to_b_dropped + b_to_a_dropped;
     assign corrupted_blocks_o = a_to_b_corrupted + b_to_a_corrupted;
 
-    kdlink_v2_serdes_channel_model #(
+    kdlink_serdes_channel_model #(
         .PROPAGATION_CYCLES(PROPAGATION_CYCLES),
         .MAX_LANE_SKEW_CYCLES(MAX_LANE_SKEW_CYCLES),
         .TRAINING_CYCLES(TRAINING_CYCLES)
@@ -55,7 +55,7 @@ module kdlink_v2_serdes_link_model #(
         .corrupted_blocks_o(a_to_b_corrupted)
     );
 
-    kdlink_v2_serdes_channel_model #(
+    kdlink_serdes_channel_model #(
         .PROPAGATION_CYCLES(PROPAGATION_CYCLES),
         .MAX_LANE_SKEW_CYCLES(MAX_LANE_SKEW_CYCLES),
         .TRAINING_CYCLES(TRAINING_CYCLES)

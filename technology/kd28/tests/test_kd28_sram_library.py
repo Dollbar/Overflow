@@ -134,7 +134,7 @@ def test_npu_adapters_bind_only_fixed_kd28_cells() -> None:
         ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_blackboxes.f"
     ).read_text(encoding="ascii")
     pod_contract = (
-        ROOT / "specs" / "interfaces" / "npu_pod_boundary_v0.1.md"
+        ROOT / "specs" / "interfaces" / "npu_pod_boundary.md"
     ).read_text(encoding="ascii")
     for module_name in (
         "SRAM_32_32",

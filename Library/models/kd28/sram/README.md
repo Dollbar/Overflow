@@ -14,7 +14,7 @@ to those models for simulation; generated black boxes provide the mutually exclu
 
 Reads are registered. Write-mask bits are active high per byte. Memory contents are not reset. See
 [`macros.yaml`](macros.yaml) for the fixed mapping set and
-[`specs/interfaces/kd28_sram_fifo_v0.1.md`](../../../../specs/interfaces/kd28_sram_fifo_v0.1.md) for
+[`specs/interfaces/kd28_sram_fifo.md`](../../../../specs/interfaces/kd28_sram_fifo.md) for
 collision and replacement semantics.
 
 ## Source Selection

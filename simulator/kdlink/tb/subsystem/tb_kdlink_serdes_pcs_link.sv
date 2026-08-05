@@ -78,7 +78,7 @@ module tb_kdlink_serdes_pcs_link;
         .rx_block_error_o(b_block_error), .rx_deskew_overflow_o(b_deskew_overflow)
     );
 
-    kdlink_v2_serdes_link_model #(
+    kdlink_serdes_link_model #(
         .PROPAGATION_CYCLES(4),
         .MAX_LANE_SKEW_CYCLES(2),
         .TRAINING_CYCLES(8)

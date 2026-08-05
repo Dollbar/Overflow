@@ -50,7 +50,7 @@ module tb_kdlink_serdes_full_link;
     integer b_seen [0:9];
     logic nominal_window;
 
-    kdlink_v2_serdes_link_full_model #(
+    kdlink_serdes_link_full_model #(
         .LANES(10), .A_TO_B_PROPAGATION_CYCLES(2), .B_TO_A_PROPAGATION_CYCLES(4),
         .A_TO_B_MAX_LANE_SKEW_CYCLES(2), .B_TO_A_MAX_LANE_SKEW_CYCLES(1),
         .CDR_LOCK_CYCLES(2), .BLOCK_LOCK_CYCLES(2),

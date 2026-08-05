@@ -257,7 +257,7 @@ module tb_kdlink_route_context_reliable; // 定义 Route Context 经可靠端点
         .rx_block_error_o(b_block_error), .rx_deskew_overflow_o(b_deskew_overflow) // 观察目标 PCS 错误
     ); // 结束目标 PCS 实例
 
-    kdlink_v2_serdes_link_model #( // 复用上游已存在的数字全双工 SerDes link model
+    kdlink_serdes_link_model #( // 复用上游已存在的数字全双工 SerDes link model
         .PROPAGATION_CYCLES(4), // 配置每方向四周期传播延迟
         .MAX_LANE_SKEW_CYCLES(2), // 配置十 lane 最大两周期 skew
         .TRAINING_CYCLES(8) // 配置八周期数字训练时间

@@ -7,13 +7,13 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[4]
-SERDES_CONFIG = ROOT / "Library" / "models" / "kdlink" / "serdes" / "serdes_v0.1.yaml"
-SERDES_RTL = ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_v2_serdes_channel_model.sv"
+SERDES_CONFIG = ROOT / "Library" / "models" / "kdlink" / "serdes" / "serdes.yaml"
+SERDES_RTL = ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_serdes_channel_model.sv"
 SERDES_FULL_RTL = (
-    ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_v2_serdes_channel_full_model.sv"
+    ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_serdes_channel_full_model.sv"
 )
 SERDES_LANE_RTL = (
-    ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_v2_serdes_lane_full_model.sv"
+    ROOT / "Library" / "models" / "kdlink" / "serdes" / "kdlink_serdes_lane_full_model.sv"
 )
 SERDES_PROFILES = ROOT / "Library" / "models" / "kdlink" / "serdes" / "profiles"
 

@@ -113,7 +113,7 @@ module tb_kdlink_multiboard_e2e;
         .blocks_valid_o(pcs_a_blocks_valid), .blocks_o(pcs_a_blocks)
     );
 
-    kdlink_v2_serdes_link_model #(.PROPAGATION_CYCLES(4), .MAX_LANE_SKEW_CYCLES(2), .TRAINING_CYCLES(8)) u_link (
+    kdlink_serdes_link_model #(.PROPAGATION_CYCLES(4), .MAX_LANE_SKEW_CYCLES(2), .TRAINING_CYCLES(8)) u_link (
         .clk_i(clk), .rst_n_i(rst_n), .admin_up_i(admin_up),
         .a_to_b_lane_up_i(10'h3ff), .b_to_a_lane_up_i(10'h3ff),
         .a_tx_group_valid_i(pcs_a_blocks_valid), .a_tx_group_blocks_i(pcs_a_blocks),

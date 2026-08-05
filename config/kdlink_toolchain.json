@@ -20,7 +20,7 @@
       "checksum_subject": "installed distribution RECORD",
       "source": "https://github.com/pytest-dev/pytest",
       "license": "MIT",
-      "acquisition_method": "requirements-dev.txt through the selected Python package installer"
+      "acquisition_method": "requirements-dev.lock with pip --require-hashes on the validated release platform"
     },
     {
       "name": "Verilator",

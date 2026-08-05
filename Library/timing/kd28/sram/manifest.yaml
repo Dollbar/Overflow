@@ -24,7 +24,7 @@ checksums:
   Library/models/kd28/fifo/kd28_fifo.f: 527d8cb3e2c2fea50f621f867cb8fe2c1e986adb208b573ee82f8dddb8993636
   Library/models/kd28/fifo/kd28_fifo_blackboxes.f: 88428ebb448870ca18f395f8e440b5d4731e02c037874d8b4816d778107f9a0c
   technology/kd28/constraints/kd28_async_fifo_cdc.sdc: e4faa97487bfd5cbd5283bd6fd55b0f47d2463b2289cdf57b3aca9e41c2a161a
-  specs/interfaces/kd28_sram_fifo_v0.1.md: c80606c661cf086a5452ddfc536415dbd508c683ae531b3049b1b5bb8817597d
+  specs/interfaces/kd28_sram_fifo.md: c80606c661cf086a5452ddfc536415dbd508c683ae531b3049b1b5bb8817597d
   Library/timing/kd28/sram/kd28_sram_fast.lib: 4ade5f896ed7250364a6cca5f6d5b4379e55355f46ce549d432a40283d5fe8b2
   Library/timing/kd28/sram/kd28_sram_typical.lib: 2e9acb8aece58d1012f2c85d1021e11dc9dc14760ff04849e49f351c9e230340
   Library/timing/kd28/sram/kd28_sram_slow.lib: 4a1624c676bd92c9bbd899ab8c02e286cbdf6015c0f9dee5eb54bab300b78740
