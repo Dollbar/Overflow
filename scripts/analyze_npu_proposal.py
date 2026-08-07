@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproduce ANALYTICAL sizing results for the proposed OwerFlow NPU."""
+"""Reproduce ANALYTICAL sizing results for the proposed Overflow NPU."""
 
 from __future__ import annotations
 

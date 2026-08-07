@@ -29,10 +29,10 @@ rtl/npu/sram/
   npu_round_robin_arbiter16.sv      Per-bank client arbitration
 
 specs/interfaces/
-  npu_dma_command_v0.1.md           Internal command and completion contract
-  npu_dma_data_path_v0.1.md         Beat, tag, response, and quiesce contract
+  npu_dma_command.md           Internal command and completion contract
+  npu_dma_data_path.md         Beat, tag, response, and quiesce contract
   npu_hbm_rtl.md                    Five-lane HBM service contract
-  npu_pod_shared_sram_v0.1.md       Pod SRAM client and mapping contract
+  npu_pod_shared_sram.md       Pod SRAM client and mapping contract
 
 docs/adr/
   ADR-0002-npu-hbm-egress-lane-geometry.md

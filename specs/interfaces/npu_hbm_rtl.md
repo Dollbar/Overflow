@@ -108,7 +108,7 @@ placed in a channel beat buffer. The allocator accepts one claim and one release
 per cycle. A tag is released only after its response is consumed. Released tags become visible to the
 allocator on the following cycle, avoiding a combinational response-to-allocation priority path while
 preserving one claim and one release per channel per cycle after initial turnover. Detailed claim/release
-semantics are defined in `npu_dma_data_path_v0.1.md`.
+semantics are defined in `npu_dma_data_path.md`.
 
 The NPU DMA tag tracker implements the ADR-0002 identity space as sixteen independent sets of 256
 channel-local tags. An allocation is committed only after the corresponding request is accepted by the

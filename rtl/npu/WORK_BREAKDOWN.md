@@ -31,7 +31,8 @@ A task is complete only after its listed documentation, tests, and traceability 
 | NPU-NOC-002 | `noc/` | 2 x 4 Pod Mesh, dual data fabrics, control fabric, and per-Pod CDC | NPU-NOC-001 + NoC CDC contract | VERIFIED LOGIC: RTL_SIM; physical 2 GHz remains HOLD | all-pairs, CDC ratios, bisection/long-flow utilization |
 | NPU-POD-001 | `pod/` | Shared-to-private compatibility loader for two compute clusters | Pod local-transfer v0.1 | VERIFIED LEAF: NPU-029 | RTL_SIM mapping and backpressure |
 | NPU-TOP-001 | `rtl/npu/pod/` | One-pod top-level integration | ADR-0004, DMA, scratchpad, loader, compute contracts | VERIFIED: NPU-031 | RTL_SIM integration + real-hierarchy lint |
-| NPU-TOP-002 | `rtl/npu/` | Eight-Pod structural shell, HBM affinity, and NoC-owner handoff | ADR-0004/0005/0007 + array v0.1 | VERIFIED LEAF: NPU-035; router/CDC external | production-geometry eight-Pod concurrent RTL_SIM + all 16 local loaders + four-seed HBM pressure + 84-bit functional-coverage hard gate + code-coverage baseline + ready/valid SVA + structural lint; separate real-module one-Pod lint at reduced Tensor dimension; router congestion/formal evidence external |
+| NPU-TOP-002 | `rtl/npu/` | Eight-Pod structural shell, HBM affinity, and NoC-owner handoff | ADR-0004/0005/0007 + array v0.1 | VERIFIED LEAF: NPU-035; integrated by NPU-TOP-003 | production-geometry eight-Pod concurrent RTL_SIM + all 16 local loaders + four-seed HBM pressure + 84-bit functional-coverage hard gate + code-coverage baseline + ready/valid SVA + structural lint; separate real-module one-Pod lint at reduced Tensor dimension |
+| NPU-TOP-003 | `rtl/npu/`, `verification/npu/pod_noc/` | Production 2x4 Pod Array + CDC + Mesh integration with opaque packet clients | NPU-TOP-002 + NPU-NOC-002 + NoC CDC contract | VERIFIED LOGIC: NPU-036; physical closure HOLD | zero-warning production/TB lint + eight distinct Pod clocks + 64 control routes + 512 data lane/VC routes + concurrent local commands + backpressure + quiesce/drain + clear recovery |
 
 ## 2. Ordered Assignment
 
@@ -43,8 +44,8 @@ A task is complete only after its listed documentation, tests, and traceability 
    exact macro mapping; ECC awaits a characterized storage and fault contract.
 5. Preserve the verified decoded-command sink, Pod scoreboard, independent Vector issue, managed Pod, and
    eight-Pod shell. RAS register mapping and CDC/RDC await their owning system contracts.
-6. The NoC owner implements and proves the router/escape path against the frozen attachment; the system
-   owner adds any cross-domain and global integration outside this workstream.
+6. Preserve the verified router/escape/CDC path and joint Pod/NoC integration. System owners add packet
+   semantic adapters, global scheduling, memory/KDLink integration, and physical CDC/timing closure.
 
 The controlling authority and stop conditions are recorded in
 [`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).

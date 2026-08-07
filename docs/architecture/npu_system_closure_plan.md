@@ -25,7 +25,8 @@ evidence. The authoritative compute contract is `specs/interfaces/npu_gemm_vecto
 
 The managed one-Pod path now adds an already-decoded Task/local/DMA gateway, unified completion stream,
 two-cluster scoreboard, DMA/shared-SRAM/local-loader integration, and independent Vector issue. The 2 by 4
-shell replicates eight such Pods with fixed HBM affinity and verified router-independent attachments.
+shell replicates eight such Pods with fixed HBM affinity. The joint system closes every attachment-to-CDC,
+CDC-to-Mesh, Mesh-to-CDC, and CDC-to-attachment transport connection across eight independent Pod clocks.
 
 The following system functions remain outside that verified boundary. KD-ISA and the software ABI are
 external dependencies of this NPU RTL workstream, not NPU RTL deliverables:
@@ -36,8 +37,9 @@ external dependencies of this NPU RTL workstream, not NPU RTL deliverables:
 - additional compute/NoC shared-SRAM clients, ECC policy, and software ownership transitions (the DMA-only
   shared SRAM is verified);
 - general M/N/K or block-matrix scheduling (cluster-local independent Vector issue is closed by ADR-0006);
-- global scheduling, NoC router/mesh behavior, KDLink attachment, and physical memory attachment;
-- clock/reset-domain contracts, CDC/RDC policy, power control, and system-level RAS.
+- opaque-payload adapters for remote DMA/SRAM/collectives, global scheduling, KDLink attachment, and
+  physical memory attachment;
+- command/HBM/KDLink CDC/RDC policy, physical Pod/NoC CDC signoff, power control, and system-level RAS.
 
 ## 3. Conformance Matrix
 
@@ -49,9 +51,9 @@ external dependencies of this NPU RTL workstream, not NPU RTL deliverables:
 | DMA and HBM RTL | ADR-0002/0003, NPU HBM and DMA command/data-path contracts; NPU-017..027 | Sixteen-channel mover, request/response boundary, status, quiesce, and DMA-to-SRAM Pod path `VERIFIED` | Preserve the internal contract; add IOVA/protection and host-visible adapters only through new versioned contracts | RTL backpressure/saturation, Pod round trip, and exact SRAM mapping |
 | Scratchpad system | Pod-shared SRAM v0.1 plus inherited local compute stores | DMA-only Pod client and KD28 mapping `VERIFIED`; compute/NoC clients and ECC `HOLD` | Preserve the DMA client; specify each additional client and ECC behavior before admission | Collision, starvation, capacity, mapping, and future ECC injection tests |
 | Independent Vector/general Tensor issue | ADR-0006 and NPU-033 close cluster-local independent Vector version 3; GEMM remains version 2 | Independent Vector `VERIFIED`; general Tensor `HOLD` | Preserve Vector v3; version M/N/K and block scheduling separately | Real-SRAM PASS end-to-end RTL_SIM, 104-combination operation/source/route scheduler matrix, all-operation numeric Vector RTL_SIM; future arbitrary M/N/K tests |
-| Eight-pod organization | ADR-0004 plus array v0.1 | Structural shell and HBM affinity `VERIFIED LEAF` by NPU-035 | Preserve fixed geometry; integrate external router only through attachment v0.1 | Production-geometry concurrent eight-Pod RTL_SIM including all 16 local loaders, four HBM seeds, mandatory 84-bit functional matrix, ready/valid SVA, measured code-coverage gate, structural lint, and separate real-module one-Pod lint |
-| NoC | ADR-0005 attachment v0.1 | Pod attachment `VERIFIED`; router/mesh `EXTERNAL / HOLD` | NoC owner implements VC credit routing CDC and proof obligations | Router RTL_SIM congestion regression and formal deadlock proof |
-| Clock/reset/CDC | Logical compute clocks only | `HOLD` | Define domain relationships and reset sequencing | CDC/RDC analysis and reset recovery tests |
+| Eight-pod organization | ADR-0004 plus array/system v0.1 | Structural shell and HBM affinity `VERIFIED` by NPU-035/036 | Preserve fixed geometry and opaque packet clients | Production-geometry concurrent Pod suite plus joint multi-clock regression |
+| NoC | ADR-0005/0008, attachment/router/CDC contracts | Attachment, VC/credit routers, 2x4 Mesh, CDC, and joint transport `VERIFIED LOGIC` | Preserve contracts; define packet semantics only in versioned client adapters | Router congestion/all-pairs RTL_SIM, bounded formal deadlock proof, CDC ratios, coverage, and joint 64+512 route matrix |
+| Clock/reset/CDC | NoC CDC and system v0.1 contracts | Pod/NoC path `VERIFIED LOGIC`; physical signoff and other crossings `HOLD` | Preserve independent reset release and drain; close implementation CDC/RDC with selected tools | Eight distinct Pod-clock reset/quiesce recovery plus future commercial CDC/RDC signoff |
 
 ## 4. Ordered Delivery
 
@@ -88,9 +90,9 @@ The unresolved cross-owner choices and recommended approval order are maintained
 ### Phase D: Multi-pod closure
 
 1. Preserve the accepted Pod-count/topology ADR and verified eight-Pod structural shell.
-2. The external NoC owner implements the router and escape VC and proves protocol deadlock freedom.
-3. System owners integrate the router, global scheduler, memory/KDLink adapters, CDC, telemetry, and
-   system regression through the frozen NPU boundaries.
+2. Preserve the implemented router, escape VC, CDC, formal deadlock evidence, and joint transport test.
+3. System owners integrate versioned packet clients, global scheduler, memory/KDLink adapters, and
+   physical CDC/timing/power/RAS closure through the frozen NPU boundaries.
 
 ## 5. Stop Conditions
 
@@ -101,9 +103,9 @@ claim may be reported as implementation timing or sustained RTL throughput.
 
 ## 6. Reproducible NPU-Owned RTL Gate
 
-Run `make npu-owned-rtl-test` from the repository root. It executes compute lint/reference/functional and
+Run `make npu-pod-noc-release` from the repository root for the layered Pod, NoC, joint transport, and
+repository gate. `make npu-owned-rtl-test` remains the NPU-owned compute/Pod-only gate. It executes compute lint/reference/functional and
 peak-flow regressions, DMA/shared-SRAM integration lint/synthesis/simulation, decoded-command VIP tests,
 single-Pod tests, real-hierarchy lint, production-geometry four-seed eight-Pod simulation, and the Pod
-code/functional coverage gates. The target deliberately
-does not claim or run externally owned NoC router/deadlock/CDC verification or technology-specific physical
-signoff; those gates require the contracts and implementation inputs listed above.
+code/functional coverage gates. Neither target claims technology-specific physical timing, P&R, power,
+DFT, or commercial CDC/RDC signoff; those gates require selected implementation inputs.

@@ -11,7 +11,7 @@ and tests must not depend on behavior absent from these contracts.
   for the GEMM/vector core.
 - [`npu_independent_vector.md`](npu_independent_vector.md) defines descriptor version 3, Activation Buffer
   layout reuse, shared-backend arbitration, and completion semantics for cluster-local Vector tasks.
-- [`npu_pod_boundary_v0.1.md`](npu_pod_boundary_v0.1.md) defines the controlled single-pod admission
+- [`npu_pod_boundary.md`](npu_pod_boundary.md) defines the controlled single-pod admission
   boundary, inherited compute/SRAM contracts, verified internal command/DMA/completion paths, and explicit
   holds for their externally owned ISA/ABI, NoC-router, protection, and clock-domain portions.
 - [`hbm_transaction.md`](hbm_transaction.md) defines the vendor-neutral logical HBM transaction and
@@ -19,30 +19,32 @@ and tests must not depend on behavior absent from these contracts.
 - [`npu_hbm_rtl.md`](npu_hbm_rtl.md) freezes the finite five-lane per-pod NPU HBM beat interface, its
   NPU-local DMA arbitration contract, the 4,096-identity tag-lifetime tracker behavior, and delivered-beat
   status telemetry plus lossless local quiesce.
-- [`npu_dma_data_path_v0.1.md`](npu_dma_data_path_v0.1.md) defines the admitted local-tag allocator and
+- [`npu_dma_data_path.md`](npu_dma_data_path.md) defines the admitted local-tag allocator and
   integrated beat boundary, and separates the pod-local HBM/SRAM path from the held cross-pod NoC mover
   path.
-- [`npu_dma_command_v0.1.md`](npu_dma_command_v0.1.md) freezes the already-decoded and translated local DMA
+- [`npu_dma_command.md`](npu_dma_command.md) freezes the already-decoded and translated local DMA
   command, 1D/2D/3D address generation, HBM-to-SRAM movement, and internal completion contract.
-- [`npu_pod_shared_sram_v0.1.md`](npu_pod_shared_sram_v0.1.md) defines the 16 MiB, eight-bank, sixteen-client
+- [`npu_pod_shared_sram.md`](npu_pod_shared_sram.md) defines the 16 MiB, eight-bank, sixteen-client
   pod-local DMA scratchpad and its fixed KD28 SDP macro mapping.
-- [`npu_pod_local_transfer_v0.1.md`](npu_pod_local_transfer_v0.1.md) defines the compatibility path that
+- [`npu_pod_local_transfer.md`](npu_pod_local_transfer.md) defines the compatibility path that
   reads paired data/scale beats from Pod-shared SRAM and writes one to eight banks of a compute cluster.
-- [`npu_compute_pod_v0.1.md`](npu_compute_pod_v0.1.md) defines the complete single-clock two-cluster Pod,
+- [`npu_compute_pod.md`](npu_compute_pod.md) defines the complete single-clock two-cluster Pod,
   its task/completion path, DMA/loader shared-SRAM integration, result streams, and quiesce boundary.
-- [`npu_pod_noc_attachment_v0.1.md`](npu_pod_noc_attachment_v0.1.md) defines the synchronous one-control-
+- [`npu_pod_noc_attachment.md`](npu_pod_noc_attachment.md) defines the synchronous one-control-
   lane and two-data-lane ready-valid attachment handed to the external NoC router team without exposing
   router VC, credit, routing, or CDC implementation.
-- [`npu_decoded_command_v0.1.md`](npu_decoded_command_v0.1.md) defines the NPU-internal decoded
+- [`npu_decoded_command.md`](npu_decoded_command.md) defines the NPU-internal decoded
   Task/local/DMA envelope, validation errors, and unified completion stream without defining KD-ISA.
-- [`npu_2x4_pod_array_v0.1.md`](npu_2x4_pod_array_v0.1.md) defines eight managed Pods, fixed HBM affinity,
+- [`npu_2x4_pod_array.md`](npu_2x4_pod_array.md) defines eight managed Pods, fixed HBM affinity,
   per-Pod clocks, and the array-level handoff to the externally owned NoC router.
+- [`npu_2x4_pod_noc_system.md`](npu_2x4_pod_noc_system.md) integrates the fixed Pod array with the
+  multi-clock 2x4 NoC and freezes reset, quiesce, status, and opaque packet-client boundaries.
 - [`npu_noc_router.md`](npu_noc_router.md) defines the deterministic 2 by 4 Router and Mesh port geometry,
   internal virtual-channel credits, buffering, arbitration, ordering, quiesce, telemetry, and verification
   obligations without changing the Pod flit format.
 - [`npu_noc_cdc.md`](npu_noc_cdc.md) defines the Gray-pointer FIFO boundary between Pod and NoC clocks,
   including padding, depths, reset participation, drain behavior, and CDC evidence.
-- [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
+- [`kd28_sram_fifo.md`](kd28_sram_fifo.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 
 ## Historical Contracts

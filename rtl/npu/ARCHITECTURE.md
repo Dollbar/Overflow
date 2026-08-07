@@ -15,9 +15,9 @@ npu_top
     tile_sram[0..1]
     pod_shared_sram
     dma_frontend
-    pod_noc_attachment    # frozen logical handoff; no routing or credits
-    pod_noc_router        # separately owned implementation
-  interpod_mesh           # baselined 2 x 4 placement; packet/credit RTL held
+    pod_noc_attachment    # frozen logical handoff
+    pod_noc_cdc           # paired asynchronous FIFOs
+  interpod_mesh           # verified 2 x 4 VC/credit/routing RTL
   memory_adapter          # boundary with rtl/memory
   kdlink_adapter          # boundary with rtl/kdlink
   completion_telemetry
@@ -39,20 +39,20 @@ clock, the peak is 2.097152 PFLOPS-equivalent (`ANALYTICAL`).
 | MXFP4 x MXFP8 peak: 2.097152 PFLOPS-equivalent | ANALYTICAL | checked calculator |
 | 2 x 4 logical Pod placement and HBM affinity | BASELINED | ADR-0004 |
 | Pod/NoC synchronous control/data attachment widths | BASELINED | ADR-0005 and Pod/NoC v0.1 contract |
-| NoC logical clock, VC, credit, and router behavior | PROPOSED / EXTERNAL | NPU P0 sizing proposal and NoC owner |
+| NoC VC, credit, deterministic routing, Mesh, and Pod CDC behavior | VERIFIED LOGIC | ADR-0008, NoC Router/CDC contracts, and NPU-036 |
 | Five 128-byte HBM request/response lanes per pod | BASELINED | ADR-0002 and NPU HBM RTL beat contract |
 | KD-ISA and software ABI fields | EXTERNAL / HOLD | external ISA and software-owner specifications |
 | NPU-internal decoded command, DMA descriptor, and unified completion | VERIFIED | ADR-0003/0007; NPU-034 |
 | KD-ISA decode, IOVA/protection, runtime queue and fault-policy fields | EXTERNAL / HOLD | external ISA, memory-management, and software-owner specifications |
 | FP8 and BF16 tensor issue rates | HOLD | missing multiplier-sharing decision |
-| Reset and CDC protocol | HOLD | missing clock/reset interface specification |
+| Pod/NoC reset, quiesce, and CDC protocol | VERIFIED LOGIC | NoC CDC contract and NPU-036; physical CDC signoff remains HOLD |
 
 `BASELINED assumption` means downstream analytical work may rely on the value. It does not claim
 `RTL_SIM`, `GENERIC_SYNTH`, or implementation timing closure.
 
 The verified v0.2 compute boundary accepts descriptors and data already resident in local SRAM. ADR-0004
 promotes the Pod count, compute-cluster count, and HBM affinity to an implementation contract, while NoC
-packet fields, external commands, and production private-SRAM capacity remain held. Follow the gated sequence in
+packet-client payload semantics, external commands, and production private-SRAM capacity remain held. Follow the gated sequence in
 [`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).
 
 ## 3. Dataflow
@@ -69,10 +69,10 @@ scheduler barriers own producer-consumer visibility. Cache-coherent behavior mus
 ## 4. Clock and Interface Boundary
 
 The tensor clock is a declared logical 1 GHz baseline. Vector and tile SRAM are proposed at 1 GHz; the
-NoC is proposed at 2 GHz. ADR-0005 freezes only a synchronous attachment and does not select either clock.
-Any boundary crossing requires an explicit CDC mechanism from `rtl/common/` and
-CDC evidence. Decoded-command, memory, KDLink, and reset clock relationships remain `HOLD` until
-specified.
+NoC is proposed at 2 GHz. The Pod/NoC boundary now uses paired Gray-pointer asynchronous FIFOs, independent
+reset synchronization, synchronized quiesce, and NoC-domain status aggregation. The joint regression uses
+eight distinct Pod clocks and an independent NoC clock. Decoded-command, memory, KDLink, physical CDC
+signoff, and all clock-frequency closure remain `HOLD` until their owning implementation inputs are selected.
 
 Internal implementation signals may evolve within a work package. Signals consumed outside `rtl/npu/`
 must first be defined in the owning `specs/` document, including width, ordering, backpressure, reset,
@@ -84,8 +84,8 @@ error, and compatibility behavior.
 2. Implement independently testable tensor, vector, SRAM, and router leaf blocks.
 3. Integrate and verify one managed Pod with DMA, shared SRAM, Tensor, Vector, and completion routing.
 4. Replicate eight Pods with fixed HBM affinity and router-independent NoC attachments.
-5. Let the NoC and system owners integrate router, CDC, memory-controller, KDLink, and runtime adapters
-   against the frozen boundaries.
+5. Integrate and verify the NoC router/CDC against the frozen opaque packet boundary; memory-controller,
+   KDLink, global scheduler, and runtime adapters remain separately owned.
 6. Add system saturation evidence before making sustained-throughput claims.
 
 See [Work Breakdown](WORK_BREAKDOWN.md) for assignable task IDs and acceptance gates.

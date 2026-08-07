@@ -38,8 +38,8 @@ an authorization for this workstream to define KD-ISA or ABI behavior.
 
 | Decision | Existing constraint | Requested v0.1 direction | Required external-owner output |
 | --- | --- | --- | --- |
-| KD-ISA command version | System baseline selects KD-ISA; compute descriptor version is 2 | Define a KD-ISA major/minor header and carry the existing 342-bit compute descriptor through an aligned command record without changing its packed layout | `specs/isa/kd_isa_v0.1.md` plus encoder/decoder tests |
-| Command queue ownership | Runtime, driver, and firmware are all in scope | Host-owned submission ring, device-owned completion ring, monotonic producer/consumer indices, and an explicit doorbell; no implicit polling side effects | `specs/abi/npu_queue_v0.1.md` plus runtime/firmware compatibility test |
+| KD-ISA command version | System baseline selects KD-ISA; compute descriptor version is 2 | Define a KD-ISA major/minor header and carry the existing 342-bit compute descriptor through an aligned command record without changing its packed layout | `specs/isa/kd_isa.md` plus encoder/decoder tests |
+| Command queue ownership | Runtime, driver, and firmware are all in scope | Host-owned submission ring, device-owned completion ring, monotonic producer/consumer indices, and an explicit doorbell; no implicit polling side effects | `specs/abi/npu_queue.md` plus runtime/firmware compatibility test |
 | Ordering | Current compute submit is atomic by slot index | Preserve command-record atomicity; define whether different queues order independently and which barrier establishes scratchpad visibility | ISA and ABI memory-order sections |
 | Cancellation/reset | No external semantics exist | Cancellation affects only commands not yet issued; reset completion for accepted work must be explicit rather than silently dropped | ISA exception and ABI recovery sections |
 | Completion/error | Local compute status is not a runtime ABI | Define success, malformed command, access, DMA, poison, ECC, timeout, cancelled, and reset outcomes with retryability | Versioned completion record and error table |

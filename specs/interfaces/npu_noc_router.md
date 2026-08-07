@@ -18,7 +18,7 @@ South=4. A generic Router exposes all five ports; the Mesh ties nonexistent boun
 ## 2. Logical Fabrics
 
 The control and data fabrics are independent. Both consume and produce the exact packed flits defined by
-`npu_pod_noc_attachment_v0.1.md`.
+`npu_pod_noc_attachment.md`.
 
 | Fabric | Physical lanes per direction | Payload bits | Packed flit bits | Internal VCs |
 | --- | ---: | ---: | ---: | ---: |

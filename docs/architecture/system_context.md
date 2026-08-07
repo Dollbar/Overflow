@@ -2,7 +2,7 @@
 
 ## 1. System Definition
 
-OwerFlow covers the path from model artifacts to a simulated multi-NPU inference service and the RTL that
+Overflow covers the path from model artifacts to a simulated multi-NPU inference service and the RTL that
 implements its accelerator commands, memory transactions, and KDLink communication. The lower boundary is
 synthesizable RTL plus behavioral models of the surrounding digital environment.
 
@@ -17,7 +17,7 @@ synthesizable RTL plus behavioral models of the surrounding digital environment.
                                |
                                v
  +-----------------------------------------------------------+
- |                         OwerFlow                          |
+ |                         Overflow                          |
  |                                                           |
  | Model adapter -> compiler -> executable/weight manifests  |
  |                         |                                 |
