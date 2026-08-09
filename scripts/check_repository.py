@@ -16,16 +16,16 @@ ROOT = Path(__file__).resolve().parents[1]
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 ALLOWED_HAN_NAMES = {
     "刘键宇",
-    "李贇潇",
-    "高恩",
+    "李赟潇",
+    "刘仁俊",
     "王伟林",
     "刘浩楠",
     "刘京顺",
-    "秦一",
+    "秦天一",
     "付国恒",
     "伍富",
     "陈宏伟",
-    "李代庆",
+    "刘婉晴",
     "苏蒙",
 }
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")

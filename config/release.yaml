@@ -1,0 +1,76 @@
+schema_version: 1
+
+project:
+  name: Overflow
+  repository: https://github.com/Dollbar/Overflow
+
+release:
+  version: 1.0.0
+  candidate: rc.1
+  prepared_date: 2026-08-31
+  publication_status: HOLD
+  # Full Git ID of the validated payload commit. The final attestation commit
+  # must have this commit as its sole parent; see release_management.md.
+  source_commit: null
+  source_tag: v1.0.0
+  lower_boundary: synthesizable_rtl
+
+scope:
+  included:
+    - architecture_and_interface_specifications
+    - repository_authored_behavioral_hbm_and_serdes_models
+    - kd28_synthetic_sram_fifo_models_and_timing_views
+    - mxfp_tensor_vector_compute_rtl
+    - npu_command_dma_shared_sram_and_pod_rtl
+    - two_by_four_pod_array_noc_cdc_and_joint_integration_rtl
+    - kdlink_endpoint_router_collective_and_digital_serdes_rtl
+    - self_checking_simulation_formal_lint_synthesis_and_coverage_assets
+  excluded_claims:
+    - complete_kimi_k3_inference_product
+    - model_weights_or_private_datasets
+    - complete_compiler_runtime_driver_or_firmware
+    - measured_two_pflops_or_five_tb_per_second_silicon_performance
+    - production_private_sram_capacity_freeze
+    - complete_repository_code_or_functional_coverage
+    - post_layout_timing_power_area_dft_or_physical_cdc_signoff
+    - hbm_phy_serdes_analog_package_or_board_compliance
+
+requirements:
+  admissible_states:
+    - BASELINED
+    - VERIFIED
+  nonclaim_requirement_ids:
+    - SYS-003
+    - MOD-001
+    - CMP-001
+    - ISA-001
+    - RUN-001
+    - NPU-001
+    - NPU-002
+    - NPU-003
+    - NPU-004
+    - NPU-005
+    - KDL-002
+    - KDL-003
+    - KDL-004
+    - KDL-005
+
+licensing:
+  decision_status: APPROVED
+  copyright_holder: "刘键宇"
+  contributor_rights_status: WRITTEN_ASSIGNMENTS_CONFIRMED_BY_OWNER
+  contributor_rights_confirmation: "Named contributors transferred the relevant copyrights in writing to 刘键宇; the three existing Git identities are controlled by 刘键宇."
+  inbound_contribution_policy: DCO-1.1
+  external_contributor_roster_status: OWNER_CONFIRMED
+  software_spdx_expression: Apache-2.0
+  rtl_spdx_expression: Apache-2.0 WITH SHL-2.1
+  documentation_spdx_expression: CC-BY-4.0
+  driver_spdx_expression: GPL-2.0-only
+  reuse_metadata: REUSE.toml
+
+gates:
+  toolchain_preflight: make release-preflight
+  repository: make check
+  release_audit: make release-audit
+  portable_regression: make release-regression RELEASE_JOBS=2
+  strict_release: make release-check

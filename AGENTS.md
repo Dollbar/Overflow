@@ -1,4 +1,4 @@
-# OwerFlow Automation and AI Collaboration Rules
+# Overflow Automation and AI Collaboration Rules
 
 This file applies to the entire repository. Deeper `AGENTS.md` files may add constraints but may not
 weaken the verification, licensing, or evidence requirements defined here.
@@ -43,9 +43,11 @@ full-model result.
 
 ## 4. Open-Source Rules
 
-- Do not commit model weights, private datasets, credentials, license files, or non-redistributable binaries.
+- Do not commit model weights, private datasets, credentials, unapproved third-party license material, or
+  non-redistributable binaries. Commit the official project license texts and REUSE metadata after the
+  repository owner approves the copyright holder and path-level license matrix.
 - Record source, version, license, checksum, and acquisition method for every third-party dependency.
-- Kimi-K3 weights retain their separate license and are not relicensed by OwerFlow.
+- Kimi-K3 weights retain their separate license and are not relicensed by Overflow.
 
 ## 5. Completion
 

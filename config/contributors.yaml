@@ -1,0 +1,128 @@
+schema_version: 1
+status: OWNER_CONFIRMED
+confirmed_date: 2026-08-31
+
+copyright:
+  holder: "刘键宇"
+  existing_contributions: WRITTEN_ASSIGNMENTS_CONFIRMED_BY_OWNER
+  assignment_documents_redistributed: false
+
+integration:
+  committer_name: "刘键宇"
+  committer_email: liujianyu20021122@gmail.com
+  target_remote: github
+  target_branch: main
+  history_topology: FLATTENED_LINEAR
+  preserve_merge_commits: false
+  preserved_non_merge_patches: 43
+  preserved_merge_resolution_patches: 1
+  omitted_empty_merge_nodes: 15
+  material_merge_resolution_source: f1ecfc4f639ffdc32cb1168505ac69549f1e1bf4
+  history_status: RECONSTRUCTED_AND_VERIFIED
+  remote_backup_branch: OWNER_DECLINED
+
+contributors:
+  - id: liu_jianyu
+    name: "刘键宇"
+    email: liujianyu20021122@gmail.com
+    development_period: {start: 2025-09-01, end: 2026-08-15}
+    responsibilities:
+      - overall architecture and project scope
+      - engineering task decomposition and metric constraints
+      - Tensor core design and verification
+      - KDLink protocol development
+
+  - id: li_yunxiao
+    name: "李赟潇"
+    email: 3174078831@qq.com
+    development_period: {start: 2025-09-20, end: 2026-06-30}
+    responsibilities:
+      - on-chip NoC design
+      - NoC test-plan design
+
+  - id: liu_renjun
+    name: "刘仁俊"
+    email: rjliu512@163.com
+    development_period: {start: 2025-10-05, end: 2026-07-20}
+    responsibilities:
+      - ISA specification
+      - compiler architecture development
+    release_attribution_scope: specification_and_framework_only
+    complete_implementation_claim: false
+
+  - id: wang_weilin
+    name: "王伟林"
+    email: 447209069@qq.com
+    development_period: {start: 2025-10-05, end: 2026-07-20}
+    responsibilities:
+      - ISA specification
+      - compiler architecture development
+    release_attribution_scope: specification_and_framework_only
+    complete_implementation_claim: false
+
+  - id: liu_haonan
+    name: "刘浩楠"
+    email: hnliu1001@gmail.com
+    development_period: {start: 2025-11-01, end: 2026-07-31}
+    responsibilities:
+      - reproducibility scripts
+      - build and regression automation
+      - reproducibility testing
+
+  - id: liu_jingshun
+    name: "刘京顺"
+    email: liujingshun123@gmail.com
+    development_period: {start: 2025-09-15, end: 2026-08-10}
+    responsibilities:
+      - development documentation
+      - documentation maintenance
+      - project-file management
+
+  - id: qin_tianyi
+    name: "秦天一"
+    email: qintianyizzz@163.com
+    development_period: {start: 2025-10-20, end: 2026-06-20}
+    responsibilities:
+      - on-chip DMA design
+
+  - id: fu_guoheng
+    name: "付国恒"
+    email: sim8rtlq57dev@gmail.com
+    development_period: {start: 2025-11-10, end: 2026-07-15}
+    responsibilities:
+      - HBM and SRAM simulation models
+      - timing Liberty models
+      - memory protocol iteration
+
+  - id: wu_fu
+    name: "伍富"
+    email: k41verilog7lab@gmail.com
+    development_period: {start: 2025-11-10, end: 2026-07-15}
+    responsibilities:
+      - HBM and SRAM simulation models
+      - timing Liberty models
+      - memory protocol iteration
+
+  - id: chen_hongwei
+    name: "陈宏伟"
+    email: 2473048266@qq.com
+    development_period: {start: 2025-12-01, end: 2026-08-05}
+    responsibilities:
+      - reusable VIP and testbench packages
+      - protocol checkers and unit tests
+
+  - id: liu_wanqing
+    name: "刘婉晴"
+    email: 18855200880@163.com
+    development_period: {start: 2025-12-01, end: 2026-08-05}
+    responsibilities:
+      - subsystem verification
+      - CDC and bounded formal verification
+
+  - id: su_meng
+    name: "苏蒙"
+    email: z21hardwareq74@outlook.com
+    development_period: {start: 2025-12-01, end: 2026-08-05}
+    responsibilities:
+      - system integration tests
+      - stress and coverage closure

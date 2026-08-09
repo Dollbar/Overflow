@@ -1,0 +1,240 @@
+schema_version: 1
+status: RECONSTRUCTED_AND_VERIFIED
+source_tip: 937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0
+topology: FLATTENED_LINEAR
+committer: liu_jianyu
+preview_result:
+  status: PASS
+  isolated_clone: true
+  source_tip: 937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0
+  source_tree: 670863205e510eac1c4817b56dae223fb9445a97
+  rewritten_tip: 2544634ab463f1622662c97e58c84693bbfb7bbc
+  rewritten_tree: 670863205e510eac1c4817b56dae223fb9445a97
+  commit_count: 44
+  merge_count: 0
+  branch_overlay_units: 2
+  mapping: docs/management/history_reconstruction_map.tsv
+
+# Attribution for preserved patch units. Reconstructed dates are not asserted as
+# original Git timestamps.
+patches:
+  - {source: f0bd1542e77cef9aa26a93236c7ac7d767d8ba94, author: liu_jingshun, coauthors: [liu_jianyu, liu_renjun, wang_weilin, liu_haonan]}
+  - {source: 7bfd292d6e26805775bea0a86557feb4af429343, author: liu_jianyu, coauthors: [liu_jingshun]}
+  - {source: 4ecc843327ae3c60750c0aa1dce619ef6ab4e871, author: liu_jianyu, coauthors: []}
+  - {source: 43ccd3cb8adc94f4907e6c2f70342dc318df79b3, author: liu_jianyu, coauthors: [fu_guoheng, wu_fu]}
+  - {source: a30ff647ca09542585628b038a1b2e90c983b52a, author: liu_jianyu, coauthors: []}
+  - {source: 4ac11b53bdc1b66888c77de519827faec23cf3bf, author: chen_hongwei, coauthors: [liu_jianyu, liu_haonan]}
+  - {source: 879cac985439e56c9a3ffa003b01ace19223a38e, author: liu_wanqing, coauthors: [liu_jianyu]}
+  - {source: 10e7597d9e7a3776b193cfc4c8f65ea772fd8f90, author: su_meng, coauthors: [liu_jianyu]}
+  - {source: 8205f04fd9010ee0106e54b16fbb30cf63610e82, author: fu_guoheng, coauthors: [wu_fu, liu_wanqing, liu_jianyu]}
+  - {source: a2853a2d5fe03e5c782a19a4d73f776cd247ce3c, author: wu_fu, coauthors: [fu_guoheng, liu_haonan]}
+  - {source: 5476abb3d091491f84968cb4820fc965a43e0910, author: chen_hongwei, coauthors: [liu_jianyu]}
+  - {source: f9d1abde718ad5059f2d4375ddfbf2b273a00ec8, author: liu_wanqing, coauthors: [liu_jianyu]}
+  - {source: ff536f99c9b2da96be9b11dd9d6b57205a381ba2, author: su_meng, coauthors: [liu_jianyu]}
+  - {source: 44261a08339925715ea408727c07881c4faf8499, author: liu_jianyu, coauthors: [chen_hongwei]}
+  - {source: 9737cae7b66567ba05d5550b7bffd8e90932ca03, author: liu_jianyu, coauthors: [su_meng, fu_guoheng, wu_fu]}
+  - source: f1ecfc4f639ffdc32cb1168505ac69549f1e1bf4
+    kind: reconstructed_merge_resolution
+    subject: "reconstructed(integration): preserve HBM and KDLink merge resolution"
+    author: liu_jianyu
+    coauthors: [fu_guoheng, wu_fu, chen_hongwei, liu_wanqing, su_meng, liu_jingshun]
+  - {source: d34fa84ab471a99db6edb01f8e85a81736e6fcea, author: fu_guoheng, coauthors: [wu_fu, chen_hongwei]}
+  - {source: bbd6be0505f7313df5bf529120d59dfdf7866abb, author: liu_jianyu, coauthors: [liu_wanqing, liu_haonan]}
+  - {source: e546c417760b4a79385d050c78c0bbc24a3ff24e, author: wu_fu, coauthors: [fu_guoheng, su_meng]}
+  - {source: 9627f3bb1527918ef5a545a42bad5625da68cb91, author: liu_jingshun, coauthors: [liu_jianyu]}
+  - {source: b060fe579dc628b0bf7a2eed662d146cb8eea1f5, author: liu_jingshun, coauthors: [liu_jianyu]}
+  - {source: 22e86344d6147f54f601e415d0398201a3dafcb5, author: liu_jianyu, coauthors: [fu_guoheng, wu_fu, chen_hongwei]}
+  - {source: 57661451672eb002895acd4d6b164428d05d1761, author: liu_haonan, coauthors: []}
+  - {source: d1d27765065b920a4ff17d0ad526a8628919281d, author: liu_jingshun, coauthors: [qin_tianyi, liu_jianyu]}
+  - {source: 45fcbc719b139bf54a50a0e45c3a6b56cb421c0f, author: liu_jingshun, coauthors: [liu_renjun, wang_weilin, liu_jianyu]}
+  - {source: a5fe4a75c97c4c6cf0d6462d93c7155e3b7fab99, author: qin_tianyi, coauthors: [chen_hongwei]}
+  - {source: 85b8b4ed89a00f2361d08af38152ceff436928c4, author: qin_tianyi, coauthors: [liu_wanqing]}
+  - {source: 252963c74eaba1a1f22fd9edc3ad4dd118b374ba, author: qin_tianyi, coauthors: [chen_hongwei]}
+  - {source: d00bce614a3cb145d22dd25970403e7bdb485498, author: qin_tianyi, coauthors: [chen_hongwei]}
+  - {source: e2506a1d7290485861594e24dd9dcb2bb5d519dd, author: qin_tianyi, coauthors: [liu_jianyu, liu_wanqing]}
+  - {source: 18eb4fdec890a14aa8eba1e20a4bd45b2c862fa4, author: qin_tianyi, coauthors: [su_meng]}
+  - {source: 5a868a029dfb7baa87295ff8854eedb019991188, author: qin_tianyi, coauthors: [liu_wanqing]}
+  - {source: 6f2fd278b4fe15d77b7f1087cc7ffa0efb78f1b0, author: qin_tianyi, coauthors: [liu_jianyu, su_meng]}
+  - {source: 3beeb41ddc08857a0a43ae7a9c68520b72367a89, author: liu_jingshun, coauthors: [qin_tianyi]}
+  - {source: 386d22e3d9e736e5a8c1bed687bdc69e2f0e51af, author: liu_haonan, coauthors: [qin_tianyi, liu_jingshun]}
+  - {source: 4818596c239488b66bba90bc76a6b50bbf7446fc, author: liu_haonan, coauthors: [liu_jingshun]}
+  - {source: ac660cccb5f7623dd90d582e6d061f376408fb46, author: chen_hongwei, coauthors: [liu_haonan, qin_tianyi]}
+  - {source: 7ad1f1cf48e5dff4f7975faf155aea4006c5434f, author: liu_jianyu, coauthors: [liu_wanqing, liu_haonan]}
+  - {source: 4bd201f54e7b1fa133b56af01be776432f57918e, author: liu_jingshun, coauthors: [liu_jianyu]}
+  - {source: a74487705e8caab1bbe79515662eab7506e84234, author: liu_jianyu, coauthors: [su_meng, liu_jingshun]}
+  - {source: cdf282aebad982ac25c5489c7b6538f4d3de1962, author: liu_jingshun, coauthors: [liu_jianyu]}
+  - {source: 970273db846451afa05136bf1dba390cfa98e7f8, author: liu_jianyu, coauthors: [chen_hongwei, liu_haonan, liu_jingshun, qin_tianyi]}
+  - {source: 699c9712edad2e457ed523902001a043a4881156, author: li_yunxiao, coauthors: [liu_wanqing, liu_jianyu]}
+  - {source: 937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0, author: su_meng, coauthors: [li_yunxiao, liu_haonan]}
+
+dates:
+  timezone: "+08:00"
+  policy: OWNER_APPROVED_RECONSTRUCTED_CHRONOLOGY
+  entries:
+    - {source: f0bd1542e77cef9aa26a93236c7ac7d767d8ba94, author_date: "2025-09-15T03:13:06+08:00", committer_date: "2025-09-15T20:31:22+08:00"}
+    - {source: 7bfd292d6e26805775bea0a86557feb4af429343, author_date: "2025-09-25T10:11:57+08:00", committer_date: "2025-09-25T15:49:54+08:00"}
+    - {source: 4ecc843327ae3c60750c0aa1dce619ef6ab4e871, author_date: "2025-10-10T09:27:15+08:00", committer_date: "2025-10-10T18:08:24+08:00"}
+    - {source: 43ccd3cb8adc94f4907e6c2f70342dc318df79b3, author_date: "2025-10-25T11:23:55+08:00", committer_date: "2025-10-25T15:09:45+08:00"}
+    - {source: a30ff647ca09542585628b038a1b2e90c983b52a, author_date: "2025-11-15T05:38:15+08:00", committer_date: "2025-11-15T21:51:17+08:00"}
+    - {source: 4ac11b53bdc1b66888c77de519827faec23cf3bf, author_date: "2025-12-01T00:23:47+08:00", committer_date: "2025-12-01T23:04:37+08:00"}
+    - {source: 879cac985439e56c9a3ffa003b01ace19223a38e, author_date: "2025-12-05T17:46:00+08:00", committer_date: "2025-12-05T21:43:28+08:00"}
+    - {source: 10e7597d9e7a3776b193cfc4c8f65ea772fd8f90, author_date: "2025-12-10T16:59:41+08:00", committer_date: "2025-12-10T20:58:49+08:00"}
+    - {source: 8205f04fd9010ee0106e54b16fbb30cf63610e82, author_date: "2025-12-15T12:01:19+08:00", committer_date: "2025-12-15T14:36:05+08:00"}
+    - {source: a2853a2d5fe03e5c782a19a4d73f776cd247ce3c, author_date: "2025-12-20T00:02:53+08:00", committer_date: "2025-12-20T09:15:44+08:00"}
+    - {source: 5476abb3d091491f84968cb4820fc965a43e0910, author_date: "2025-12-25T08:42:27+08:00", committer_date: "2025-12-25T17:52:46+08:00"}
+    - {source: f9d1abde718ad5059f2d4375ddfbf2b273a00ec8, author_date: "2026-01-05T01:03:26+08:00", committer_date: "2026-01-05T19:20:17+08:00"}
+    - {source: ff536f99c9b2da96be9b11dd9d6b57205a381ba2, author_date: "2026-01-10T05:02:17+08:00", committer_date: "2026-01-10T13:17:57+08:00"}
+    - {source: 44261a08339925715ea408727c07881c4faf8499, author_date: "2026-01-15T16:35:20+08:00", committer_date: "2026-01-15T19:03:29+08:00"}
+    - {source: 9737cae7b66567ba05d5550b7bffd8e90932ca03, author_date: "2026-01-20T06:40:39+08:00", committer_date: "2026-01-20T11:43:32+08:00"}
+    - {source: f1ecfc4f639ffdc32cb1168505ac69549f1e1bf4, author_date: "2026-01-25T15:35:43+08:00", committer_date: "2026-01-25T21:56:59+08:00"}
+    - {source: d34fa84ab471a99db6edb01f8e85a81736e6fcea, author_date: "2026-02-01T01:23:22+08:00", committer_date: "2026-02-01T18:11:25+08:00"}
+    - {source: bbd6be0505f7313df5bf529120d59dfdf7866abb, author_date: "2026-02-08T12:25:41+08:00", committer_date: "2026-02-08T18:59:33+08:00"}
+    - {source: e546c417760b4a79385d050c78c0bbc24a3ff24e, author_date: "2026-02-15T05:36:23+08:00", committer_date: "2026-02-15T16:58:12+08:00"}
+    - {source: 9627f3bb1527918ef5a545a42bad5625da68cb91, author_date: "2026-02-22T17:58:19+08:00", committer_date: "2026-02-22T20:27:19+08:00"}
+    - {source: b060fe579dc628b0bf7a2eed662d146cb8eea1f5, author_date: "2026-03-01T05:09:43+08:00", committer_date: "2026-03-01T16:41:27+08:00"}
+    - {source: 22e86344d6147f54f601e415d0398201a3dafcb5, author_date: "2026-03-08T01:58:28+08:00", committer_date: "2026-03-08T18:47:56+08:00"}
+    - {source: 57661451672eb002895acd4d6b164428d05d1761, author_date: "2026-03-15T07:41:05+08:00", committer_date: "2026-03-15T22:49:02+08:00"}
+    - {source: d1d27765065b920a4ff17d0ad526a8628919281d, author_date: "2026-03-22T02:01:09+08:00", committer_date: "2026-03-22T12:09:34+08:00"}
+    - {source: 45fcbc719b139bf54a50a0e45c3a6b56cb421c0f, author_date: "2026-04-01T04:13:37+08:00", committer_date: "2026-04-01T09:20:12+08:00"}
+    - {source: a5fe4a75c97c4c6cf0d6462d93c7155e3b7fab99, author_date: "2026-04-10T04:57:25+08:00", committer_date: "2026-04-10T19:39:29+08:00"}
+    - {source: 85b8b4ed89a00f2361d08af38152ceff436928c4, author_date: "2026-04-15T07:24:29+08:00", committer_date: "2026-04-15T15:25:39+08:00"}
+    - {source: 252963c74eaba1a1f22fd9edc3ad4dd118b374ba, author_date: "2026-04-20T05:58:31+08:00", committer_date: "2026-04-20T15:36:18+08:00"}
+    - {source: d00bce614a3cb145d22dd25970403e7bdb485498, author_date: "2026-04-25T05:10:57+08:00", committer_date: "2026-04-25T07:04:23+08:00"}
+    - {source: e2506a1d7290485861594e24dd9dcb2bb5d519dd, author_date: "2026-05-01T00:14:21+08:00", committer_date: "2026-05-01T21:34:37+08:00"}
+    - {source: 18eb4fdec890a14aa8eba1e20a4bd45b2c862fa4, author_date: "2026-05-05T11:49:50+08:00", committer_date: "2026-05-05T13:33:04+08:00"}
+    - {source: 5a868a029dfb7baa87295ff8854eedb019991188, author_date: "2026-05-10T19:36:34+08:00", committer_date: "2026-05-10T22:15:16+08:00"}
+    - {source: 6f2fd278b4fe15d77b7f1087cc7ffa0efb78f1b0, author_date: "2026-05-15T08:04:08+08:00", committer_date: "2026-05-15T23:18:55+08:00"}
+    - {source: 3beeb41ddc08857a0a43ae7a9c68520b72367a89, author_date: "2026-05-20T05:23:41+08:00", committer_date: "2026-05-20T17:29:24+08:00"}
+    - {source: 386d22e3d9e736e5a8c1bed687bdc69e2f0e51af, author_date: "2026-05-25T05:40:51+08:00", committer_date: "2026-05-25T21:11:32+08:00"}
+    - {source: 4818596c239488b66bba90bc76a6b50bbf7446fc, author_date: "2026-05-30T07:35:08+08:00", committer_date: "2026-05-30T08:45:58+08:00"}
+    - {source: ac660cccb5f7623dd90d582e6d061f376408fb46, author_date: "2026-06-02T15:51:40+08:00", committer_date: "2026-06-02T16:43:57+08:00"}
+    - {source: 7ad1f1cf48e5dff4f7975faf155aea4006c5434f, author_date: "2026-06-05T03:07:59+08:00", committer_date: "2026-06-05T06:26:09+08:00"}
+    - {source: 4bd201f54e7b1fa133b56af01be776432f57918e, author_date: "2026-06-08T08:24:21+08:00", committer_date: "2026-06-08T12:50:30+08:00"}
+    - {source: a74487705e8caab1bbe79515662eab7506e84234, author_date: "2026-06-11T03:56:32+08:00", committer_date: "2026-06-11T12:41:13+08:00"}
+    - {source: cdf282aebad982ac25c5489c7b6538f4d3de1962, author_date: "2026-06-14T04:00:46+08:00", committer_date: "2026-06-14T19:58:34+08:00"}
+    - {source: 970273db846451afa05136bf1dba390cfa98e7f8, author_date: "2026-06-17T15:39:07+08:00", committer_date: "2026-06-17T23:59:13+08:00"}
+    - {source: 699c9712edad2e457ed523902001a043a4881156, author_date: "2026-06-30T06:06:10+08:00", committer_date: "2026-06-30T13:30:55+08:00"}
+    - {source: 937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0, author_date: "2026-08-05T02:04:19+08:00", committer_date: "2026-08-05T17:08:56+08:00"}
+
+release_commits:
+  status: CONTENT_COMMITS_APPLIED
+  content_commit_count: 5
+  attestation_commit_count: 1
+  entries:
+    - id: stable_interface_normalization
+      subject: "refactor(release): normalize stable model and interface names"
+      author: liu_jingshun
+      coauthors: [liu_jianyu, fu_guoheng, wu_fu, chen_hongwei]
+      author_date: "2026-08-06T05:47:13+08:00"
+      committer_date: "2026-08-06T16:29:51+08:00"
+      scope:
+        - stable model, timing-view, and interface file names
+        - KDLink, HBM, and KD28 references, manifests, and focused tests
+    - id: pod_noc_system_integration
+      subject: "feat(npu): close pod and noc system integration"
+      author: liu_jianyu
+      coauthors: [li_yunxiao, qin_tianyi, liu_jingshun]
+      author_date: "2026-08-07T11:18:42+08:00"
+      committer_date: "2026-08-07T23:05:16+08:00"
+      scope:
+        - Pod, DMA, CDC, and 2-by-4 NoC system top
+        - architecture, interface, and requirement synchronization
+    - id: pod_noc_joint_verification
+      subject: "verify(npu): close pod noc joint release regression"
+      author: su_meng
+      coauthors: [chen_hongwei, liu_wanqing, li_yunxiao, liu_haonan, liu_jianyu]
+      author_date: "2026-08-05T14:37:09+08:00"
+      committer_date: "2026-08-08T03:26:44+08:00"
+      scope:
+        - joint testbench package, VIP, structural checks, and system regression
+        - NoC lint command portability correction
+    - id: reproducible_release_gates
+      subject: "build(release): add reproducible 1.0 gates and dependency locks"
+      author: liu_haonan
+      coauthors: [liu_jingshun]
+      author_date: "2026-07-31T22:11:08+08:00"
+      committer_date: "2026-08-09T09:52:31+08:00"
+      scope:
+        - repository and release audits, toolchain preflight, and root targets
+        - exact Python lock and third-party dependency inventory
+    - id: immutable_release_payload
+      subject: "docs(release): finalize 1.0 scope governance and attribution"
+      author: liu_jingshun
+      coauthors: [liu_jianyu, liu_haonan]
+      author_date: "2026-08-10T02:43:57+08:00"
+      committer_date: "2026-08-10T18:14:06+08:00"
+      scope:
+        - release scope, governance, licensing, attribution, and publication records
+        - final content tree validated as the immutable payload
+    - id: release_attestation
+      subject: "release: attest immutable 1.0 payload"
+      author: liu_jianyu
+      coauthors: []
+      author_date: "2026-08-15T07:22:41+08:00"
+      committer_date: "2026-08-15T21:36:19+08:00"
+      allowed_paths:
+        - config/release.yaml
+        - docs/releases/ACCEPTANCE.json
+
+  path_buckets:
+    stable_interface_normalization:
+      - Library/README.md
+      - Library/models/**
+      - Library/timing/**
+      - config/kdlink_toolchain.json
+      - docs/releases/KDLINK_ACCEPTANCE.json
+      - scripts/generate_kd28_sram_library.py
+      - simulator/kdlink/**
+      - simulator/memory/**
+      - specs/interfaces/hbm_transaction.md
+      - specs/interfaces/kd28_sram_fifo*.md
+      - specs/interfaces/npu*_v0.1.md
+      - specs/kdlink/simulation_environment.md
+      - technology/kd28/tests/**
+    pod_noc_system_integration:
+      - config/npu_arch_proposed.yaml
+      - docs/architecture/**
+      - requirements/traceability.csv
+      - rtl/npu/**
+      - scripts/analyze_npu_proposal.py
+      - specs/interfaces/README.md
+      - specs/interfaces/npu*.md
+    pod_noc_joint_verification:
+      - verification/npu/**
+    reproducible_release_gates:
+      - .gitignore
+      - ci/**
+      - requirements-build.lock
+      - requirements-dev.lock
+      - requirements-dev.txt
+      - scripts/README.md
+      - scripts/check_release.py
+      - scripts/check_release_toolchain.py
+      - scripts/check_repository.py
+      - third_party/**
+    immutable_release_payload:
+      - AGENTS.md
+      - CHANGELOG.md
+      - CODE_OF_CONDUCT.md
+      - CONTRIBUTING.md
+      - LICENSES/**
+      - README.md
+      - REUSE.toml
+      - SECURITY.md
+      - config/README.md
+      - config/contributors.yaml
+      - config/history_reconstruction.yaml
+      - config/release.yaml
+      - docs/README.md
+      - docs/management/**
+      - docs/planning/**
+      - docs/releases/ACCEPTANCE.json
+      - docs/releases/README.md
+      - docs/releases/RELEASE_NOTES.md
+      - docs/releases/UPLOAD_MANIFEST.md
+    split_paths:
+      Makefile:
+        pod_noc_joint_verification:
+          - Pod-NoC lint, simulation, closure, and release targets
+        reproducible_release_gates:
+          - release preflight, audit, regression, and strict candidate targets

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "project": "Overflow",
+  "release_version": "1.0.0",
+  "release_candidate": "rc.1",
+  "prepared": "2026-08-31",
+  "publication_status": "HOLD",
+  "candidate_source": {
+    "public_main_commit_at_preparation": "bc730cb33b3c987c4c65f7640f64d440eda63bc9",
+    "working_branch": "feat/npu-noc-mesh-v0.1",
+    "working_head_before_release_edits": "937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0",
+    "immutable_payload_commit": null,
+    "annotated_tag": null
+  },
+  "scope": {
+    "lower_boundary": "synthesizable_rtl",
+    "release_type": "source_and_verification_baseline",
+    "full_model_product_claim": false,
+    "silicon_signoff_claim": false
+  },
+  "rights_holder": {
+    "copyright_holder": "刘键宇",
+    "existing_contributor_rights": "WRITTEN_ASSIGNMENTS_CONFIRMED_BY_OWNER",
+    "inbound_contribution_policy": "DCO-1.1",
+    "external_contributor_roster": "OWNER_CONFIRMED",
+    "confirmation_date": "2026-08-31"
+  },
+  "known_limitations": [
+    "Production private SRAM capacity is not frozen.",
+    "Compute, decoded-command, and NPU-system gates do not produce one merged release code-coverage result; exhaustive code or functional coverage is not claimed.",
+    "Portable generic synthesis and synthetic timing views are not physical implementation signoff.",
+    "No hosted CI workflow or container image is checked in; reproducibility depends on the declared Linux toolchain preflight and a local or external runner.",
+    "Compiler, runtime, driver, firmware, deployment, analog PHY, package, and board deliverables are outside the completed 1.0 source baseline."
+  ],
+  "blocking_items": [
+    {
+      "id": "LIC-001",
+      "status": "RESOLVED",
+      "description": "Contributor rights, copyright holder, DCO policy, path-level matrix, official SPDX texts, fixed checksums, and REUSE 3.3 coverage are recorded and verified."
+    },
+    {
+      "id": "REL-001",
+      "status": "HOLD",
+      "description": "The reviewed release tree is not yet captured by a clean payload commit followed by a fresh-clone regression and attestation-only commit."
+    },
+    {
+      "id": "OPS-001",
+      "status": "HOLD",
+      "description": "The repository owner must confirm that GitHub private vulnerability reporting is enabled or publish another monitored private security contact."
+    }
+  ],
+  "candidate_worktree_evidence": {
+    "status": "ENGINEERING_COMPONENT_REGRESSION_PASS",
+    "qualification": "The complete release-regression target was exercised component by component after stable-file renames. A fresh-clone run at the immutable payload commit remains mandatory before GO.",
+    "release_toolchain_preflight": "PASS_12_TOOLS_17_LOCKED_PYTHON_PACKAGES",
+    "reuse_compliance": "PASS_SPECIFICATION_3.3_776_OF_776_COVERED_FILES",
+    "repository_gate": "PASS",
+    "hbm_functional_and_rtl": "PASS_27_FUNCTIONAL_CASES_PLUS_RTL_BFM",
+    "kdlink_portable_release_gate": "PASS_216_OF_216_MODEL_61_OF_61_RTL_27_LINT_7_CDC_13_FORMAL_48_COVERAGE",
+    "kd28_shared_sram_and_fifo": "PASS_14_MACROS_3_LIBERTY_CORNERS_FUNCTIONAL_AND_SYNTHESIS_MAPPING",
+    "interface_and_kd28_timing": "PASS_FAST_TYPICAL_SLOW_SYNTHETIC_PRE_LAYOUT_VIEWS",
+    "npu_owned_rtl": "PASS_COMPUTE_COMMAND_DMA_SYSTEM_AND_POD_CLOSURE",
+    "pod_array_coverage": "PASS_LINE_96.1_TOGGLE_12.7_BRANCH_56.1_EXPRESSION_77.0_FSM_STATE_100.0_USER_25.0",
+    "noc_closure": "PASS_3_SYNTH_TOPS_4_BOUNDED_FORMAL_PROOFS_7_SIMULATION_TOPS_AND_COVERAGE",
+    "noc_full_coverage": "PASS_LINE_93.3_TOGGLE_40.8_BRANCH_79.4_EXPRESSION_63.0",
+    "pod_noc_joint": "PASS_64_CONTROL_ROUTES_512_DATA_LANE_VC_ROUTES_8_COMMANDS_8_DISTINCT_POD_CLOCKS"
+  },
+  "validated_toolchain": {
+    "platform": "Linux_x86_64",
+    "python": "3.12.3",
+    "pip": "24.0",
+    "verilator": "5.050",
+    "verilator_coverage": "5.050",
+    "yosys": "0.67+post",
+    "iverilog": "12.0",
+    "vvp": "12.0",
+    "opensta": "3.1.0",
+    "g++": "13.3.0",
+    "git": "2.43.0",
+    "make": "4.3",
+    "reuse": "6.2.0"
+  },
+  "release_commands": {
+    "toolchain_preflight": "make release-preflight",
+    "audit": "make release-audit",
+    "portable_regression": "make release-regression RELEASE_JOBS=2",
+    "strict_gate": "make release-check"
+  }
+}

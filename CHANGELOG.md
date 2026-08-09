@@ -4,9 +4,17 @@ Significant changes are recorded under Added, Changed, Fixed, Removed, and Secur
 
 ## [Unreleased]
 
+No post-1.0 changes are recorded yet.
+
+## [1.0.0] - 2026-09-01
+
+Overflow `1.0.0` is the first published source-and-verification baseline. The owner-approved license
+matrix, reconstructed attribution history, immutable payload, release attestation, and annotated tag are
+recorded in the repository release documents.
+
 ### Added
 
-- Established the OwerFlow v0.1 model-to-RTL architecture baseline.
+- Established the Overflow v0.1 model-to-RTL architecture baseline.
 - Defined the OF-5P6T workload envelope, system context, and evidence policy.
 - Added repository, risk, release, and requirement-traceability rules.
 - Added the MX-only GEMM/vector v0.2 interface, numerical blocks, SRAM-boundary models, and deterministic
@@ -18,9 +26,16 @@ Significant changes are recorded under Added, Changed, Fixed, Removed, and Secur
 - Added full-array buffer-to-GEMM regressions for K=256 and K=4096 continuous
   streams of 256 A and 256 B elements per cycle with complete 65,536-result
   checking.
+- Added the independent Vector issue path, decoded command gateway, DMA and Pod-shared SRAM integration,
+  complete two-cluster compute Pod, managed eight-Pod array, and joint Pod/NoC production top.
+- Added the three-plane 2 by 4 NoC mesh, virtual-channel routers, deterministic escape path, per-Pod CDC,
+  reset/quiesce recovery, reusable VIP, bounded formal checks, multiseed stress, and coverage gates.
+- Added a formal 1.0 release scope, machine-readable acceptance record, dependency inventory, stable-file
+  audit, secret/artifact checks, pinned Python dependencies, and complete portable release entry points.
 
 ### Changed
 
+- Corrected the owner-confirmed contributor names and email identities used by the reconstructed history.
 - Froze the repository lower boundary at synthesizable RTL and behavioral external-interface models.
 - Updated the GEMM/vector path to use 32-element MX blocks with E8M0 scales,
   direct registered west-to-east/north-to-south Tile links, paired MX feedback
@@ -37,6 +52,9 @@ Significant changes are recorded under Added, Changed, Fixed, Removed, and Secur
   removed rounding metadata from descriptors and the GEMM/Vector transport,
   and added scheduler rejection for older descriptor versions and reserved MX
   format encodings.
+- Normalized the project name to `Overflow` and made repository-owned engineering file names version
+  neutral while preserving protocol schema values inside their contents.
+- Replaced historical v0.1 release positioning with an evidence-bounded 1.0 source-and-verification scope.
 
 ### Removed
 

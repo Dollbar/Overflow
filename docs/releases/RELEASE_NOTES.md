@@ -1,10 +1,63 @@
 # Overflow Release Notes
 
+## Overflow 1.0.0
+
+- Prepared: 2026-08-31
+- Published: 2026-09-01
+- Tag: `v1.0.0`
+- Publication status: `GO`
+
+This release is the first formal source-and-verification baseline for the complete repository-owned
+model-to-synthesizable-RTL boundary. It integrates the MX compute path, independent Vector issue,
+decoded-command gateway, DMA, 16 MiB Pod-shared SRAM, complete two-cluster compute Pod, managed eight-Pod
+array, three-plane 2 by 4 NoC with per-Pod CDC, and the joint production Pod/NoC top. It also retains the
+KDLink endpoint/router/collective and digital SerDes package, HBM behavior, KD28 SRAM/FIFO models, reusable
+VIP, and their layered verification assets.
+
+The release is deliberately bounded. It does not claim a complete compiler/runtime/driver product,
+execution of Kimi-K3 weights, end-to-end 50 token/s performance, measured 2 PFLOPS or 5 TB/s silicon,
+frozen production private SRAM capacity, analog PHY compliance, or physical implementation signoff.
+Fourteen `PROPOSED` requirements are enumerated as explicit non-claims in `config/release.yaml`.
+
+Measured code-coverage thresholds are enforced for KDLink, the Pod array, and NoC. Compute, decoded-command,
+and NPU-system closure use extensive directed and stress simulation, lint, and synthesis-readiness checks,
+but do not produce a single merged release-gated code-coverage number. This release therefore makes no
+claim of exhaustive repository code or functional coverage.
+
+The complete portable suite passed in the isolated release worktree after stable-file normalization. This
+includes HBM, KD28 memories, interface timing, KDLink, NPU-owned RTL, Pod, NoC, and joint Pod/NoC gates.
+The later owner-directed contributor-identity corrections changed commit metadata and attribution/release
+documents only; production RTL, verification sources, models, interfaces, and build scripts remain
+byte-identical to the regression-passed payload. Repository and strict release audits were repeated after
+each metadata correction. `docs/releases/ACCEPTANCE.json` is authoritative.
+
+Current integrated results include all 64 control routes and 512 data lane/VC routes across eight distinct
+Pod clock domains. NoC full-suite coverage passed at line 93.3%, branch 79.4%, expression 63.0%, and toggle
+40.8%; Pod-array coverage passed its separate declared thresholds. These are thresholded RTL metrics, not
+an exhaustive functional-coverage or silicon-signoff claim.
+
+Reproduce the release with:
+
+```bash
+python3 -m pip install --require-hashes -r requirements-build.lock
+python3 -m pip install --require-hashes --no-build-isolation -r requirements-dev.lock
+make release-preflight
+make release-audit
+make release-regression RELEASE_JOBS=2
+make release-check
+```
+
+Expected terminal signatures are `RELEASE_REGRESSION_PASS` after the portable suite and
+`RELEASE_GATE_PASS` with zero errors and zero holds for the strict publication audit.
+
+The sections below retain earlier KDLink and repository-candidate history. Their historical branch and PR
+states are not the current overall 1.0 publication decision.
+
 ## KDLink v0.4 million-scale release candidate
 
 - Prepared: 2026-08-27
-- State: `PUSHED_AS_OPEN_PR`
-- Review gate: new PR #20 is open for review; merge and tagging remain separately gated
+- State: `MERGED_BY_PR_20`
+- Release relationship: PR #20 was incorporated into the published Overflow 1.0 baseline
 - Candidate base: `origin/main` at `ac71fe8fca39130c6b0e22bc44ea3106c3175af8`
 - Development isolation: `feat/kdlink-million-scale`
 - Inherited branch head: `4bd201f54e7b1fa133b56af01be776432f57918e`, containing the rebased previously
@@ -60,7 +113,7 @@ and tapeout signoff remain outside this result. SerDes behavioral-model sources 
 sources are unchanged from `origin/main` and are not part of this candidate delta.
 
 The machine-readable acceptance result is `docs/releases/KDLINK_ACCEPTANCE.json`. The v0.4 branch is pushed
-and new PR #20 is open against `main`; it is not merged or tagged. The exact final-tree candidate relative
+and PR #20 is merged in the current `main` history; it is not independently tagged. The exact final-tree candidate relative
 to `origin/main` intentionally also includes the inherited v0.3 branch commits.
 
 ## KDLink v0.3 multidomain release candidate

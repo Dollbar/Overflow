@@ -1,12 +1,17 @@
 # Documentation Center
 
-This directory contains OwerFlow architecture, planning, management, and ADR documentation. Formal
+This directory contains Overflow architecture, planning, management, and ADR documentation. Formal
 interface definitions belong in `specs/`; implementation details belong in their subsystem directories.
 
 - `architecture/`: model-to-RTL context, responsibility boundaries, and cross-layer data flow.
 - `planning/`: release scope and technical risks.
 - `management/`: repository, requirements, versions, and release management.
 - `adr/`: architecture decisions requiring multi-owner approval.
+- `releases/`: machine-readable acceptance, release notes, and source publication manifest.
+
+The [Git History Reconstruction Plan](management/history_reconstruction.md) records the owner-approved
+authorship correction methodology and remains explicitly non-executed until its preview, tree comparison,
+and force-with-lease command receive final approval.
 
 Targets in these documents must match `config/system_baseline.yaml`. Resolve conflicts through an ADR
 before implementation; subsystems may not silently select different baselines.

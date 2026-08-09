@@ -1,125 +1,105 @@
-# OwerFlow Open AI Accelerator RTL System
+# Overflow AI Accelerator RTL System
 
-OwerFlow is an open engineering project spanning model adaptation, compilers, instruction sets, runtime
-software, NPU digital logic, and the KDLink scale-up fabric. It targets Kimi-K3 and future sparse MoE
-models at roughly twice its scale. The project is organized as one verifiable path from model semantics to
-synthesizable RTL rather than a collection of disconnected components.
+Overflow is an open engineering project that connects model-level accelerator requirements to
+synthesizable NPU and KDLink RTL. The repository lower boundary is synthesizable RTL; external HBM,
+SerDes, host, and technology behavior is represented by explicitly labeled models and interfaces.
 
-The repository lower boundary is synthesizable RTL plus behavioral models for external memory, host, and
-link environments. Work below that boundary is not part of OwerFlow. The current `v0.1` release is an
-architecture and repository baseline; it does not claim a complete compiler, complete RTL, or full-model
-performance.
+The repository publishes the `1.0.0` source-and-verification baseline at tag `v1.0.0`. Its authoritative
+publication decision and validation boundary are recorded in
+[`docs/releases/ACCEPTANCE.json`](docs/releases/ACCEPTANCE.json).
 
-## 1. System Targets
+## Release Scope
 
-The OwerFlow design envelope is named `OF-5P6T`:
+The 1.0 source scope includes:
 
-| Item | v0.1 baseline |
+- MXFP tensor/vector compute RTL, decoded-command routing, DMA, 16 MiB Pod-shared SRAM, and Pod-local
+  data movement.
+- A two-cluster compute Pod, eight-Pod 2 by 4 array, three-plane NoC, per-Pod CDC, and the integrated
+  Pod/NoC top.
+- KDLink endpoint, router, collective, scale model, and vendor-neutral digital SerDes models.
+- Repository-authored HBM behavior, KD28 SRAM/FIFO models, portable synthetic timing views, testbench
+  packages, VIP, lint, formal, simulation, synthesis, and coverage gates.
+- Architecture, interface, requirement, ADR, dependency, risk, and release records.
+
+This release does not include model weights, private datasets, a complete compiler/runtime/driver stack,
+an end-to-end Kimi-K3 product, analog PHY models, physical design, DFT, or silicon signoff. The 2 PFLOPS,
+5 TB/s, 50 token/s, and one-million-endpoint values remain architecture or simulation claims at their
+declared evidence levels; they are not measured silicon results. Production private SRAM capacity is not
+frozen. Coverage is thresholded where a code-coverage gate exists and is never presented as exhaustive;
+the detailed subsystem boundary is recorded in the release scope.
+
+See the complete [release scope](docs/planning/release_scope.md) and
+[release notes](docs/releases/RELEASE_NOTES.md).
+
+## Architecture Envelope
+
+| Item | Declared baseline |
 | --- | ---: |
-| Reference model | Kimi-K3: 2.8T total, 104B active parameters |
-| Forward-looking envelope | 5.6T total, 208B active parameters |
-| Weight format | MXFP4 or equivalent 4-bit block-scaled format |
-| Activation formats | MXFP8, FP8, BF16 |
-| Simulated scale | Up to 32 logical NPU nodes |
+| Reference workload | Kimi-K3, 2.8T total and 104B active parameters |
+| Forward-looking envelope | 5.6T total and 208B active parameters |
+| Weight and activation formats | MXFP4 weights; MXFP8, FP8, and BF16 activations |
+| Logical NPU scale | 32 nodes in the system baseline |
 | Logical HBM capacity | 192 GB per NPU, 6.144 TB aggregate |
-| Compute target | 2 PFLOPS-equivalent per NPU under declared model assumptions |
-| Logical HBM target | 5 TB/s per NPU |
-| KDLink injection target | 512 GB/s TX + 512 GB/s RX payload per NPU |
-| Model context | 1M-token compatibility, 2M-token capacity stress mode |
-| Service scope | Inference first; training is outside the project boundary |
+| NPU organization | 8 Pods in a 2 by 4 mesh, 8 HBM partitions, 1 DMA per Pod |
+| KDLink injection target | 512 GB/s TX and 512 GB/s RX payload per NPU, analytical |
 
-Targets are architectural assumptions until supported by the stated evidence. Performance reports must
-label analytical results, functional simulation, RTL simulation, formal results, and generic synthesis
-separately.
+Configuration values are source-controlled in
+[`config/system_baseline.yaml`](config/system_baseline.yaml) and
+[`config/npu_arch_proposed.yaml`](config/npu_arch_proposed.yaml). Status fields distinguish frozen
+interfaces from proposed product sizing.
 
-## 2. System Context
-
-```text
-Kimi-K3 / future model artifacts
-              |
-              v
-Model adapter -> compiler/sharding -> KD-ISA executable
-                                         |
-                                         v
-                            Serving runtime / driver
-                                         |
-                                         v
-       +--------------------------------------------------+
-       | NPU RTL: command, tensor, vector, SRAM/NoC/HBM  |
-       |                         + KDLink NIC/collective  |
-       +--------------------------------------------------+
-                                         |
-                          KDLink router and KDSwitch RTL
-                                         |
-                          32-node behavioral environment
-```
-
-See [System Context and Responsibility Boundaries](docs/architecture/system_context.md) for the detailed
-scope definition.
-
-## 3. Repository Map
+## Repository Map
 
 | Directory | Responsibility |
 | --- | --- |
-| `Library/` | Reusable HBM/SerDes/KD28 models, parameter profiles, and synthetic timing views |
+| `Library/` | Reusable HBM, SerDes, KD28 models, profiles, and synthetic timing views |
 | `specs/` | Model, compiler, ISA, ABI, KDLink, and digital-interface specifications |
-| `models/` | Model manifests, operator lists, weight sharding, and numerical references |
-| `compiler/` | Graph import, IR, optimization, partitioning, scheduling, and code generation |
-| `isa/` | KD-ISA encoding, assembler, disassembler, and conformance tests |
-| `runtime/` | Serving, execution queues, KV cache, and multi-device scheduling |
-| `drivers/` | Driver interfaces and user-space device access |
-| `firmware/` | Management firmware, command processing, and KDLink control |
 | `rtl/` | NPU, KDLink, memory, host, and common synthesizable RTL |
-| `simulator/` | ISA, NPU, memory, KDLink, and 32-node behavioral simulation |
-| `verification/` | Golden models, RTL simulation, formal checks, CDC, and coverage |
-| `deployment/` | Serving images, containers, logical cluster configuration, and operations |
-| `third_party/` | Redistributable software and RTL dependency manifests |
-| `requirements/` | Requirement ownership, verification method, and evidence state |
-| `docs/` | Architecture, planning, management, and ADR documents |
-| `config/` | Machine-readable architecture and protocol baselines |
-| `scripts/` | Reproducible repository, model, compiler, simulator, and RTL tooling |
-| `technology/` | Portable front-end STA validation for reusable synthetic timing views |
-| `ci/` | Automated formatting, test, simulation, and release gates |
-| `LICENSES/` | Software, RTL, documentation, and model license boundaries |
+| `simulator/` | HBM, NPU, KDLink, and system functional environments |
+| `verification/` | Packages, VIP, self-checking RTL tests, formal, CDC, and coverage |
+| `technology/` | Portable timing-view validation and implementation-boundary scripts |
+| `requirements/` | Requirement ownership and evidence states |
+| `docs/` | Architecture, ADR, planning, management, and release records |
+| `config/` | Machine-readable architecture, toolchain, and release configuration |
+| `third_party/` | Dependency inventory; external restricted inputs are never stored here |
+| `LICENSES/` | Owner-approved official license and exception texts |
 
-## 4. v0.1 Deliverables
+Other first-level directories define model, compiler, ISA, runtime, driver, firmware, and deployment
+ownership. Some are specification placeholders and are not represented as completed implementations.
 
-`v0.1` includes:
+## Reproduce the Release
 
-- The OF-5P6T workload and logical-capacity baseline.
-- A model-to-RTL context boundary and cross-layer interface ownership.
-- Repository, branch, version, review, and release rules.
-- Initial requirement-to-artifact-to-test traceability.
-- Placeholder areas with clear ownership for specifications and implementations.
+Use a fresh clone on a Linux x86-64 host with Python 3.12, GNU Make, GCC, Verilator, Yosys, OpenSTA, and
+`verilator_coverage` available from `PATH`. The exact validated versions, sources, licenses, and checksums
+are in [`third_party/dependencies.yaml`](third_party/dependencies.yaml).
 
-See [v0.1 Scope](docs/planning/v0.1_scope.md) for exit criteria.
-
-## 5. Core Engineering Rules
-
-1. Project documentation and README files are written in English.
-2. Specifications precede implementations; each cross-directory interface has one versioned source of truth.
-3. Generated artifacts are reproducible from committed sources and commands.
-4. Model weights and non-redistributable dependencies do not enter the repository.
-5. Logical clocks and bandwidths are assumptions unless a cited test establishes the stated evidence level.
-6. Internal gates are risk controls and are not presented as completed product releases.
-
-Read [Contributing](CONTRIBUTING.md), [Governance](GOVERNANCE.md), and
-[Repository Management](docs/management/repository_management.md) before contributing.
-
-Run the repository gate:
+A machine with at least 32 GiB of RAM is recommended for the complete RTL regression. Use
+`RELEASE_JOBS=1` on smaller hosts or when several generated C++ compilations would otherwise overlap, and
+provide swap rather than relying on an OOM kill. The largest validated single Pod lint used about 20 GiB.
+The first uncached run is intentionally long: on the validated 24-thread host, the KDLink RTL gate takes
+about 45 minutes and its instrumented coverage gate takes about 48 minutes. These figures are planning
+guidance, not performance requirements.
 
 ```bash
-python3 -m pip install -r requirements-dev.txt
-make check
+python3 -m venv .release-env
+. .release-env/bin/activate
+python3 -m pip install --require-hashes -r requirements-build.lock
+python3 -m pip install --require-hashes --no-build-isolation -r requirements-dev.lock
+make release-preflight
+make release-audit
+make release-regression RELEASE_JOBS=2
+make release-check
 ```
 
-Run the host-independent KDLink dependency and path audit, or the complete portable KDLink release gate:
+Expected outputs for the published tree are `RELEASE_REGRESSION_PASS` after all portable engineering gates
+and `RELEASE_GATE_PASS` from the clean, licensed release attestation. Generated files stay in ignored
+`build/` or `work/` directories. The immutable payload, attestation relationship, and annotated-tag
+procedure are documented in [`docs/management/release_management.md`](docs/management/release_management.md).
 
-```bash
-make kdlink-preflight
-make kdlink-release-check KDLINK_JOBS=2
-```
+## Contribution and Evidence Rules
 
-The portable gate uses only repository-relative source/model paths and open tools discovered from `PATH`.
-Technology-specific multi-corner STA is separate because its standard-cell Liberty files are licensed
-external inputs; repository-distributed HBM/SerDes interface views remain part of that flow.
+Read [Contributing](CONTRIBUTING.md), [Governance](GOVERNANCE.md), the
+[Code of Conduct](CODE_OF_CONDUCT.md), [Security Policy](SECURITY.md), and the repository-wide
+[automation rules](AGENTS.md) before changing interfaces. Specifications precede implementations;
+versioned protocol values live inside stable, version-neutral engineering files. Evidence is labeled as
+`ANALYTICAL`, `FUNCTIONAL_SIM`, `RTL_SIM`, `FORMAL`, or `GENERIC_SYNTH`.

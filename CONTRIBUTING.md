@@ -19,6 +19,20 @@ Use this format:
 Common scopes include `model`, `compiler`, `isa`, `runtime`, `simulator`, `rtl`, `kdlink`,
 `verification`, `docs`, and `ci`.
 
+## Developer Certificate of Origin
+
+Overflow uses the [Developer Certificate of Origin 1.1](https://developercertificate.org/). Every external
+contribution commit must contain a `Signed-off-by` trailer using the contributor's real name and a valid
+email address:
+
+```text
+Signed-off-by: Full Legal Name <email@example.com>
+```
+
+Create the trailer with `git commit -s`. A sign-off certifies that the contributor has the right to submit
+the contribution under the license applicable to the changed path. Maintainers must not merge commits
+that lack the required sign-off.
+
 ## Interfaces and Compatibility
 
 - Model schemas, ISA, ABI, register maps, packet formats, and digital interface contracts are versioned.
