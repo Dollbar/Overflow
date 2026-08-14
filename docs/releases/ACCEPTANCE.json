@@ -4,13 +4,13 @@
   "release_version": "1.0.0",
   "release_candidate": "rc.1",
   "prepared": "2026-08-31",
-  "publication_status": "HOLD",
+  "publication_status": "GO",
   "candidate_source": {
     "public_main_commit_at_preparation": "bc730cb33b3c987c4c65f7640f64d440eda63bc9",
     "working_branch": "feat/npu-noc-mesh-v0.1",
     "working_head_before_release_edits": "937aa1630d69ec4c95bf4e35b8c33ecbf24f4df0",
-    "immutable_payload_commit": null,
-    "annotated_tag": null
+    "immutable_payload_commit": "e78d0e97831c15b128cb6652520ef4ce66fc6e34",
+    "annotated_tag": "v1.0.0"
   },
   "scope": {
     "lower_boundary": "synthesizable_rtl",
@@ -40,18 +40,18 @@
     },
     {
       "id": "REL-001",
-      "status": "HOLD",
-      "description": "The reviewed release tree is not yet captured by a clean payload commit followed by a fresh-clone regression and attestation-only commit."
+      "status": "RESOLVED",
+      "description": "The final payload e78d0e97831c15b128cb6652520ef4ce66fc6e34 synchronizes the owner-approved contributor names, emails, stable IDs, history mapping, and release documents recorded in config/contributors.yaml. RTL, verification, simulator, model, interface, build, and dependency inputs remain byte-identical to the regression-passed release. The owner directed that the complete RTL regression not be repeated; repository and strict release gates were repeated after the correction."
     },
     {
       "id": "OPS-001",
-      "status": "HOLD",
-      "description": "The repository owner must confirm that GitHub private vulnerability reporting is enabled or publish another monitored private security contact."
+      "status": "RESOLVED",
+      "description": "The repository owner confirmed on 2026-09-01 that the private vulnerability-reporting route named by SECURITY.md is operational."
     }
   ],
   "candidate_worktree_evidence": {
-    "status": "ENGINEERING_COMPONENT_REGRESSION_PASS",
-    "qualification": "The complete release-regression target was exercised component by component after stable-file renames. A fresh-clone run at the immutable payload commit remains mandatory before GO.",
+    "status": "REGRESSION_INHERITED_METADATA_ONLY_CORRECTION",
+    "qualification": "The complete release-regression target passed before the owner-directed contributor-identity and release-document corrections. The final payload changes attribution and release metadata only; the owner explicitly directed that RTL regression not be repeated, and the repository plus strict release gates were rerun on the corrected history.",
     "release_toolchain_preflight": "PASS_12_TOOLS_17_LOCKED_PYTHON_PACKAGES",
     "reuse_compliance": "PASS_SPECIFICATION_3.3_776_OF_776_COVERED_FILES",
     "repository_gate": "PASS",

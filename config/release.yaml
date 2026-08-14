@@ -8,10 +8,10 @@ release:
   version: 1.0.0
   candidate: rc.1
   prepared_date: 2026-08-31
-  publication_status: HOLD
+  publication_status: GO
   # Full Git ID of the validated payload commit. The final attestation commit
   # must have this commit as its sole parent; see release_management.md.
-  source_commit: null
+  source_commit: e78d0e97831c15b128cb6652520ef4ce66fc6e34
   source_tag: v1.0.0
   lower_boundary: synthesizable_rtl
 
