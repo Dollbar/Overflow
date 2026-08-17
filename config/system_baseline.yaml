@@ -1,0 +1,63 @@
+schema_version: 2
+baseline_id: OF-5P6T-v0.1
+status: architecture_baseline
+
+repository_boundary:
+  upper_boundary: model_adapter
+  lower_boundary: synthesizable_rtl
+  external_environment: behavioral_models
+
+workload:
+  reference_model: Kimi-K3
+  reference_total_parameters: 2800000000000
+  reference_active_parameters_per_token: 104000000000
+  design_total_parameters: 5600000000000
+  design_active_parameters_per_token: 208000000000
+  weight_format: MXFP4
+  activation_formats:
+    - MXFP8
+    - FP8
+    - BF16
+  context_compatibility_tokens: 1048576
+  context_capacity_stress_tokens: 2097152
+  training_in_scope: false
+
+system:
+  logical_npu_count: 32
+  logical_hbm_gbyte_per_npu: 192
+  aggregate_logical_hbm_gbyte: 6144
+  target_decode_tokens_per_second: 50
+
+npu:
+  target_mxfp4_mxfp8_pflops_equivalent: 2.0
+  target_logical_hbm_tbyte_per_second: 5.0
+  management_isa: RV64
+  command_isa: KD-ISA
+
+kdlink:
+  logical_payload_bits_per_cycle_per_port: 512
+  assumed_logical_port_clock_hz: 1000000000
+  analytical_payload_gbyte_per_second_per_port: 64
+  target_ports_per_npu: 8
+  analytical_tx_payload_gbyte_per_second_per_npu: 512
+  analytical_rx_payload_gbyte_per_second_per_npu: 512
+  required_operations:
+    - all_reduce
+    - reduce_scatter
+    - all_gather
+    - all_to_all
+    - all_to_all_v
+    - point_to_point
+
+evidence_policy:
+  allowed_levels:
+    - ANALYTICAL
+    - FUNCTIONAL_SIM
+    - RTL_SIM
+    - FORMAL
+    - GENERIC_SYNTH
+  theoretical_values_must_be_labeled: true
+
+open_source_boundary:
+  redistributable_model_weights: false
+  third_party_dependencies_require_manifests: true

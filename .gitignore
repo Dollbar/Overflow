@@ -1,0 +1,50 @@
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Python and native builds
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+*.o
+*.a
+*.so
+
+# RTL simulation, formal, and generated outputs
+*.log
+*.vcd
+*.fst
+*.wlf
+*.vvp
+coverage.dat
+obj_dir/
+work/
+csrc/
+simv*
+formal/output/
+reports/generated/
+
+# Model artifacts and datasets
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
+datasets/
+weights/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.local.yaml
+*.local.json
+secrets/
