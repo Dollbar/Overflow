@@ -1,0 +1,106 @@
+schema_version: 1
+proposal_id: OF-NPU-P0
+status: proposed_not_frozen
+evidence_level: ANALYTICAL
+baseline_ref: OF-5P6T-v0.1
+
+assumptions:
+  decimal_bandwidth_units: true
+  mac_counts_as_operations: 2
+  weight_bits: 4
+  activation_bits: 8
+  hbm_round_trip_latency_ns_nominal: 500
+  hbm_round_trip_latency_ns_stress: 800
+
+organization:
+  pod_rows: 2
+  pod_columns: 4
+  pods_per_npu: 8
+  tensor_tiles_per_pod: 2
+  tensor_tiles_per_npu: 16
+  hbm_partitions_per_npu: 8
+  kdlink_ports_per_npu: 8
+
+clocks:
+  tensor_hz: 1000000000
+  tensor_clock_evidence: declared_logical_clock
+  vector_hz: 1000000000
+  local_sram_hz: 1000000000
+  noc_hz: 2000000000
+
+tensor:
+  array_rows_per_tile: 256
+  array_columns_per_tile: 256
+  geometry_decision: ADR-0001
+  mxfp4_mxfp8_macs_per_array_cell_per_cycle: 1
+  fp32_accumulation: true
+  target_pflops_equivalent: 2.0
+
+vector:
+  datapath_bits_per_tile: 2048
+  fp8_lanes_per_tile: 256
+  bf16_lanes_per_tile: 128
+  fp32_lanes_per_tile: 64
+  fma_per_lane_per_cycle: 1
+  special_function_lanes_per_tile: 16
+  special_functions:
+    - exp2
+    - reciprocal
+    - reciprocal_sqrt
+
+sram:
+  tile_private_mib: 8
+  tile_bank_count: 32
+  tile_bank_width_bits: 256
+  target_read_bytes_per_tile_cycle: 512
+  target_write_bytes_per_tile_cycle: 256
+  pod_shared_mib: 16
+  pod_shared_bank_count: 64
+  pod_shared_bank_width_bits: 256
+
+hbm:
+  capacity_gbyte_per_partition: 24
+  target_aggregate_tbyte_per_second: 5.0
+  target_payload_gbyte_per_second_per_partition: 625
+  bandwidth_definition: aggregate_read_plus_write_payload
+
+noc:
+  topology: hierarchical_pod_mesh_2x4
+  routing: deterministic_xy_escape_with_adaptive_non_escape
+  tile_data_port_bits_per_cycle: 2048
+  tile_data_ports_per_tile: 1
+  pod_hbm_data_port_bits_per_cycle: 3072
+  interpod_data_lanes_per_direction: 2
+  interpod_data_lane_bits_per_cycle: 1024
+  control_flit_bits: 128
+  data_flit_bits: 1024
+  virtual_channels: 4
+  escape_virtual_channels: 1
+  max_nonlocal_hbm_traffic_fraction: 0.20
+
+dma:
+  engines_per_npu: 8
+  logical_channels_per_engine: 16
+  active_descriptors_per_engine: 64
+  address_bits: 52
+  data_beat_bytes: 128
+  outstanding_data_beats_per_engine: 4096
+  maximum_descriptor_bytes: 16777216
+  maximum_coalesced_burst_bytes: 4096
+  supported_transfers:
+    - linear_1d
+    - strided_2d
+    - strided_3d
+    - scatter_gather
+    - indexed_gather_scatter
+    - pod_local_multicast
+    - zero_fill
+  coherence: explicit_scratchpad_noncoherent
+  qos_classes: 4
+
+open_decisions:
+  - Confirm whether 5 TB/s is aggregate read plus write or a per-direction target.
+  - Evaluate physical clock feasibility without presenting generic synthesis as a frequency result.
+  - Freeze address and protocol widths only through an ADR and interface specification.
+  - Validate the 20 percent nonlocal traffic budget with compiler placement traces.
+  - Derive vector SFU demand from an operator and shape manifest.

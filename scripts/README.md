@@ -10,3 +10,9 @@ Run the v0.1 repository checks:
 python3 -m pip install -r requirements-dev.txt
 make check
 ```
+
+Reproduce the proposed NPU analytical sizing:
+
+```bash
+python3 scripts/analyze_npu_proposal.py
+```
