@@ -10,3 +10,6 @@ interface definitions belong in `specs/`; implementation details belong in their
 
 Targets in these documents must match `config/system_baseline.yaml`. Resolve conflicts through an ADR
 before implementation; subsystems may not silently select different baselines.
+
+The [NPU Subsystem Architecture Proposal](architecture/npu_subsystem_proposal.md) derives an explicitly
+`ANALYTICAL`, not-yet-frozen compute, SRAM, NoC, and DMA sizing point from the system baseline.

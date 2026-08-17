@@ -6,8 +6,12 @@ MOD-001,Model,Support Kimi-K3 MXFP4 weight and MXFP8 activation semantics,models
 CMP-001,Compiler,Support TP EP PP partitioning and weight layout,compiler,IR and generated-artifact conformance,FUNCTIONAL_SIM,PROPOSED
 ISA-001,ISA,Use versioned KD-ISA binary encoding with compatibility tests,isa;specs,Assembler-disassembler round trip,FUNCTIONAL_SIM,PROPOSED
 RUN-001,Runtime,Support paged KV cache and continuous batching,runtime;drivers,End-to-end serving stress test,FUNCTIONAL_SIM,PROPOSED
-NPU-001,NPU,Model a 2-PFLOPS-equivalent MXFP4 by MXFP8 target under declared logical clock and initiation-interval assumptions,rtl;simulator,Cycle and utilization model,ANALYTICAL,PROPOSED
-NPU-002,NPU,Model at least 5 TB/s of logical HBM bandwidth per NPU,rtl;simulator,Traffic-model saturation regression,FUNCTIONAL_SIM,PROPOSED
+NPU-001,NPU,Model a 2-PFLOPS-equivalent MXFP4 by MXFP8 target under declared logical clock and initiation-interval assumptions,rtl/npu/tensor;simulator,Cycle and utilization model,ANALYTICAL,PROPOSED
+NPU-002,NPU,Model at least 5 TB/s of logical HBM bandwidth per NPU,rtl/npu/dma;rtl/memory;simulator,Traffic-model saturation regression,FUNCTIONAL_SIM,PROPOSED
+NPU-003,NPU,Provide a hierarchical eight-pod on-chip NoC with an analytical 1.024 TB/s middle bisection,rtl/npu/noc;simulator;verification,Topology calculation and congestion regression,ANALYTICAL,PROPOSED
+NPU-004,NPU,Provision one DMA engine per pod with enough in-flight data for the declared HBM stress latency,rtl/npu/dma;rtl/memory;simulator;verification,Bandwidth-delay calculation and backpressure regression,ANALYTICAL,PROPOSED
+NPU-005,NPU,Provide a per-tile vector engine and explicit special-function capacity,rtl/npu/vector;simulator,Operator demand model and cycle regression,ANALYTICAL,PROPOSED
+NPU-006,NPU,Use sixteen 256 by 256 tensor arrays at a declared logical 1 GHz tensor clock,rtl/npu/tensor;simulator;verification,Checked capacity calculation and continuous-flow regression,ANALYTICAL,BASELINED
 KDL-001,KDLink,Transfer 512 payload bits per logical port cycle with a steady-state initiation interval of one,rtl;verification,Continuous-flow RTL regression,RTL_SIM,PROPOSED
 KDL-002,KDLink,Support eight logical ports and 512 GB/s analytical payload injection per direction per NPU,rtl;simulator;verification,Multi-port fabric performance regression,RTL_SIM,PROPOSED
 KDL-003,KDLink,Support AllReduce AllGather ReduceScatter AllToAllv and point-to-point operations,rtl;verification,32-node exact-result regression,RTL_SIM,PROPOSED
