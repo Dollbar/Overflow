@@ -46,7 +46,9 @@ module npu_gemm_feedback_writer16 #(
 
     // Each column is a byte-write SRAM bank. One arriving row writes one byte
     // into all 16 column banks; draining reads one complete 128-bit column.
-    (* ram_style = "block" *) logic [127:0] transpose_mem
+    // Logical transpose storage is technology-neutral. Integrations may
+    // replace this banked scratchpad with a macro or register-file instance.
+    logic [127:0] transpose_mem
         [0:SLOTS-1][0:CHANNELS-1][0:MAX_SEGMENTS-1][0:15];
 
     logic [SLOTS-1:0] slot_input_done_q;

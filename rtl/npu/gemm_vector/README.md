@@ -1,10 +1,10 @@
 # GEMM and Vector Core Path
 
 This directory is a source-only extraction of the Transformer NPU compute path
-from the `Transform` RTL project. It contains synthesizable SystemVerilog plus
-the small behavioral SRAM/FIFO wrappers required by the RTL hierarchy. It does
-not contain testbenches, generated build output, timing collateral, papers,
-model data, or DMA/HBM logic.
+from the `Transform` RTL project. It contains synthesizable SystemVerilog and
+the FIFO controllers required by the RTL hierarchy. It does not contain
+behavioral SRAM models, foundry macro mappings, testbenches, generated build
+output, timing collateral, papers, model data, or DMA/HBM logic.
 
 ## Boundary
 
@@ -14,6 +14,14 @@ the descriptor by slot index. The core owns descriptor issue, local tensor
 buffer reads, GEMM execution, result routing, vector operand reads, and
 feedback quantization. HBM, DMA, host queues, and physical SRAM macros remain
 outside this source-only block.
+
+`sram_macro_blackbox.sv` is declaration-only. `SRAM_32_32`, `SRAM_32_64`, and
+`SRAM_32_128` are replacement points for the selected foundry/compiler SRAM
+views. The declarations specify two synchronous request ports, full-word
+write enables, and one-cycle read-valid/read-data behavior expected by the
+FIFO and K-accumulator controllers. No storage array is inferred by this
+directory for those instances, and no `SYNTHESIS` conditional selects a
+technology macro.
 
 ## Main hierarchy
 
@@ -78,6 +86,12 @@ verilator --lint-only --language 1800-2017 -Wall \
       ! -name 'fp8_pkg.sv' ! -name 'vector_pkg.sv' \
       ! -name 'npu_scheduler_pkg.sv' ! -name 'tile_noc_pkg.sv' | sort)
 ```
+
+For a lint-only source check, keep `sram_macro_blackbox.sv` in the command.
+For synthesis or gate-level simulation, replace it with the exact generated
+macro adapter and matching Liberty/LEF/GDS views for the selected SRAM
+configuration. The behavioral SRAM models intentionally removed from this
+tree must not be used as a substitute for that macro binding.
 
 The command is a structural/lint gate only; it is not a claim of FPGA timing
 closure or foundry signoff. Functional regressions and waveform collateral
