@@ -81,7 +81,8 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
 - SystemVerilog testbenches produce `RTL_SIM` evidence only after the compiled RTL emits the exact pass
   signature recorded in `manifest.json`. The added `serdes_pcs_link` test covers full-duplex PCS traffic
   through a skewed channel; `baseboard32` covers eight cards, 32 nodes, card removal, plane isolation,
-  and per-slice link isolation.
+  and per-slice link isolation. `multiboard_e2e` composes packetizer/CRC, PCS, SerDes, depacketizer,
+  NACK, and the RTL replay buffer for an exact-once retry path.
 - The reusable VIP is dependency-free SystemVerilog: `kdlink_v2_stream_if` supplies valid/ready source
   tasks and modports, while `kdlink_v2_stream_monitor` checks header legality, CRC, flit count, and packet
   completion.
