@@ -94,8 +94,23 @@ configuration. The behavioral SRAM models intentionally removed from this
 tree must not be used as a substitute for that macro binding.
 
 The command is a structural/lint gate only; it is not a claim of FPGA timing
-closure or foundry signoff. Functional regressions and waveform collateral
-remain in the original development tree and are intentionally excluded here.
+closure or foundry signoff. Reusable functional regressions, reference models,
+VIP, and waveform collateral are kept outside production RTL under
+`verification/npu/gemm_vector/`.
+
+## Verification
+
+From the repository root, run:
+
+```sh
+make npu-gemm-vector-lint
+make npu-gemm-vector-test
+make npu-gemm-vector-waves
+```
+
+The verification environment substitutes its generic registered-read SRAM
+model for the declaration-only macro boundary. It never compiles that model
+in a synthesis source list.
 
 ## Integration notes
 

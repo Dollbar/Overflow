@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[dumpfile] build/waves/npu_input_scheduler.vcd
+[timestart] 0
+@28
+tb_npu_input_scheduler.clk_i
+tb_npu_input_scheduler.rst_i
+tb_npu_input_scheduler.clear_i
+tb_npu_input_scheduler.scenario_id[7:0]
+tb_npu_input_scheduler.task_valid_i
+tb_npu_input_scheduler.task_ready_o
+tb_npu_input_scheduler.gemm_command_valid_o
+tb_npu_input_scheduler.gemm_command_ready_i
+tb_npu_input_scheduler.completion_valid_i
+tb_npu_input_scheduler.completion_ready_o
+tb_npu_input_scheduler.status_valid_o
+tb_npu_input_scheduler.protocol_error_o

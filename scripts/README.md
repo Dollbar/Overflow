@@ -16,3 +16,14 @@ Reproduce the proposed NPU analytical sizing:
 ```bash
 python3 scripts/analyze_npu_proposal.py
 ```
+
+The GEMM/vector RTL verification workflow is intentionally owned by its local Makefile rather than a
+standalone script:
+
+```bash
+make npu-gemm-vector-test
+make npu-gemm-vector-waves
+```
+
+These targets keep generated simulator code, numerical vectors, logs, and waveforms below
+`verification/npu/gemm_vector/build/`.

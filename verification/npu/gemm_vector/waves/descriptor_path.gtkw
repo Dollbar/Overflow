@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[dumpfile] build/waves/descriptor_path.vcd
+[timestart] 0
+@28
+tb_descriptor_path.clk_i
+tb_descriptor_path.rst_i
+tb_descriptor_path.clear_i
+tb_descriptor_path.scenario_id[7:0]
+tb_descriptor_path.command_valid_i
+tb_descriptor_path.command_ready_o
+tb_descriptor_path.command_submit_i
+tb_descriptor_path.command_index_i[1:0]
+tb_descriptor_path.task_valid
+tb_descriptor_path.task_ready
+tb_descriptor_path.monitor_valid
+tb_descriptor_path.descriptor_protocol_error
