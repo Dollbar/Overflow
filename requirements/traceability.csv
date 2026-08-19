@@ -12,6 +12,9 @@ NPU-003,NPU,Provide a hierarchical eight-pod on-chip NoC with an analytical 1.02
 NPU-004,NPU,Provision one DMA engine per pod with enough in-flight data for the declared HBM stress latency,rtl/npu/dma;rtl/memory;simulator;verification,Bandwidth-delay calculation and backpressure regression,ANALYTICAL,PROPOSED
 NPU-005,NPU,Provide a per-tile vector engine and explicit special-function capacity,rtl/npu/vector;simulator,Operator demand model and cycle regression,ANALYTICAL,PROPOSED
 NPU-006,NPU,Use sixteen 256 by 256 tensor arrays at a declared logical 1 GHz tensor clock,rtl/npu/tensor;simulator;verification,Checked capacity calculation and continuous-flow regression,ANALYTICAL,BASELINED
+NPU-007,NPU,Commit square-GEMM descriptors atomically and preserve compiler-owned placement through task issue,rtl/npu/gemm_vector;specs/interfaces;verification/npu/gemm_vector,Descriptor path and scheduler RTL regressions,RTL_SIM,PROPOSED
+NPU-008,NPU,Provide sixteen independent 16-lane vector channels with tag-matched mixed-operator completion,rtl/npu/gemm_vector;verification/npu/gemm_vector,Continuous and mixed-latency vector-engine RTL regression,RTL_SIM,PROPOSED
+NPU-009,NPU,Keep foundry SRAM implementation outside production RTL behind registered true-dual-port replacement contracts,rtl/npu/gemm_vector;specs/interfaces;verification/npu/gemm_vector,Behavioral macro-contract RTL regression,RTL_SIM,PROPOSED
 KDL-001,KDLink,Transfer 512 payload bits per logical port cycle with a steady-state initiation interval of one,rtl;verification,Continuous-flow RTL regression,RTL_SIM,PROPOSED
 KDL-002,KDLink,Support eight logical ports and 512 GB/s analytical payload injection per direction per NPU,rtl;simulator;verification,Multi-port fabric performance regression,RTL_SIM,PROPOSED
 KDL-003,KDLink,Support AllReduce AllGather ReduceScatter AllToAllv and point-to-point operations,rtl;verification,32-node exact-result regression,RTL_SIM,PROPOSED

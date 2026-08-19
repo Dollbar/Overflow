@@ -1,0 +1,18 @@
+[*]
+[*] GTKWave Analyzer save file
+[dumpfile] build/waves/sram_macro_contract.vcd
+[timestart] 0
+@28
+tb_sram_macro_contract.clk_i
+tb_sram_macro_contract.rst_i
+tb_sram_macro_contract.scenario_id[7:0]
+tb_sram_macro_contract.a_req_i
+tb_sram_macro_contract.a_we_i
+tb_sram_macro_contract.a_addr_i[4:0]
+tb_sram_macro_contract.a_rvalid128
+tb_sram_macro_contract.a_rdata128[127:0]
+tb_sram_macro_contract.b_req_i
+tb_sram_macro_contract.b_we_i
+tb_sram_macro_contract.b_addr_i[4:0]
+tb_sram_macro_contract.b_rvalid128
+tb_sram_macro_contract.b_rdata128[127:0]

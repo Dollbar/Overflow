@@ -1,0 +1,15 @@
+[*]
+[*] GTKWave Analyzer save file
+[dumpfile] build/waves/vector_engine16.vcd
+[timestart] 0
+@28
+tb_vector_engine16.clk_i
+tb_vector_engine16.rst_i
+tb_vector_engine16.clear_i
+tb_vector_engine16.scenario_id[7:0]
+tb_vector_engine16.request_valid_i
+tb_vector_engine16.request_ready_o
+tb_vector_engine16.control_i[41:0]
+tb_vector_engine16.response_valid_o
+tb_vector_engine16.response_ready_i
+tb_vector_engine16.response_control_o[43:0]
