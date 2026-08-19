@@ -303,6 +303,35 @@
       ],
       "pass_signature": "TB_KDLINK_V2_BASEBOARD32_PASS"
     },
+    "reliable_endpoint_e2e": {
+      "group": "system",
+      "top": "tb_kdlink_v2_reliable_endpoint_e2e",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_reliable_endpoint_e2e.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/kdlink_v2_packetizer.v",
+        "rtl/kdlink/kdlink_v2_depacketizer.v",
+        "rtl/kdlink/kdlink_v2_scrambler64.v",
+        "rtl/kdlink/kdlink_v2_descrambler64.v",
+        "rtl/kdlink/kdlink_v2_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_v2_pcs_tx.v",
+        "rtl/kdlink/kdlink_v2_pcs_rx.v",
+        "rtl/kdlink/kdlink_v2_pcs.v",
+        "rtl/kdlink/kdlink_v2_reverse_codec.v",
+        "rtl/kdlink/kdlink_v2_reverse_ctrl.v",
+        "rtl/kdlink/kdlink_v2_credit_bank8.v",
+        "rtl/kdlink/kdlink_v2_replay_window.v",
+        "rtl/kdlink/kdlink_v2_rx_commit.v",
+        "rtl/kdlink/kdlink_v2_reliable_endpoint.v",
+        "simulator/kdlink/model/serdes/kdlink_v2_serdes_channel_model.sv",
+        "simulator/kdlink/model/serdes/kdlink_v2_serdes_link_model.sv",
+        "simulator/kdlink/model/serdes/kdlink_v2_reverse_channel_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_RELIABLE_ENDPOINT_E2E_PASS"
+    },
     "multiboard_e2e": {
       "group": "system",
       "top": "tb_kdlink_v2_multiboard_e2e",

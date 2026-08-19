@@ -56,6 +56,11 @@ group period, lane, and bit mask; it is a reproducible stress mechanism, not a p
 The channel has no reverse combinational ready path. Link-level flow control remains the responsibility of
 KDLink credit, replay, and elastic buffering.
 
+The reverse channel is an independent 128-bit registered path. It transports cumulative credit, ACK,
+NACK, and link-management words and never participates in a same-cycle forward admission decision.
+`kdlink_v2_reverse_channel_model` provides deterministic propagation, corruption, and drop controls for
+this digital contract.
+
 ## 4. Card and Baseboard Contract
 
 A card is online only when its slot is present and reset completion is asserted. Each of its 64 slice paths
@@ -77,6 +82,8 @@ real KDSwitch RTL data path.
 - Deterministic corruption, drop, lane-down, and retraining behavior.
 - Eight-card, 32-node baseboard permutation traffic with all 512 slice paths active.
 - Card removal and plane isolation without traffic leakage.
+- Two autonomous KDLink-v2 endpoints with all eight VCs, asynchronous core clocks, cumulative credit
+  recovery, CRC-triggered NACK, replay through VC6, and exact-once commit.
 
 These tests establish digital behavior at the declared clock. They do not establish post-layout frequency,
 analog SerDes line rate, signal integrity, or hardware interoperability.

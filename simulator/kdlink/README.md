@@ -89,6 +89,12 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
   bubbles, 64 GB/s in each direction, and 128 GB/s aggregate at a 1 GHz logical simulation clock.
   `reduction_dtype_ii1` drives a 4,096-flit mixed INT32/FP32/FP16/BF16 stream through the 512-bit SUM
   pipeline and requires bit-exact lane results, aligned metadata, and zero output bubbles.
+  `reliable_endpoint_e2e` is the canonical KDLink-v2 reliability closure: two autonomous 8-VC endpoints
+  run on independent core clocks, cross registered CDC FIFOs, exchange forward traffic through two PCS
+  instances and the full-duplex digital SerDes model, and return 128-bit ACK/NACK/credit traffic through
+  an independent delayed reverse-channel model. The test covers credit exhaustion and cumulative recovery,
+  an injected forward CRC fault, autonomous NACK, VC6 replay, exact-once commit, duplicate suppression,
+  and replay-window release in both directions.
 - The reusable VIP is dependency-free SystemVerilog: `kdlink_v2_stream_if` supplies valid/ready source
   tasks and modports, while `kdlink_v2_stream_monitor` checks header legality, CRC, flit count, and packet
   completion.
