@@ -4,6 +4,7 @@ from .bonding import BondedPortDistributor, BondedPortReorder
 from .performance import FabricPerformance, fabric_performance
 from .protocol import KDLinkFlit, KDLinkHeader, KDLinkReverseWord
 from .topology import FabricRoute, route_direct
+from .chassis import ChassisTopology, EndpointLocation, LinkState, SliceLink
 
 __all__ = [
     "BondedPortDistributor",

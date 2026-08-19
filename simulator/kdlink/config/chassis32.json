@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "name": "kdlink-v2-chassis32",
+  "card_slots": 8,
+  "npus_per_card": 4,
+  "nodes": 32,
+  "planes": 8,
+  "slices_per_port": 2,
+  "slices_per_npu": 16,
+  "pcs": {
+    "lanes_per_slice": 10,
+    "block_width_bits": 66,
+    "blocks_per_group": 10,
+    "logical_flit_bits": 640,
+    "payload_bits": 512
+  },
+  "mapping": {
+    "node_id": "slot_id * 4 + local_npu",
+    "endpoint_index": "node_id * 16 + plane_id * 2 + slice_id"
+  },
+  "behavioral_boundary": "digital_pcs_pma"
+}

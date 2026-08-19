@@ -64,6 +64,29 @@
       ],
       "pass_signature": "TB_KDLINK_V2_VIP_STREAM_PASS"
     },
+    "env_pkg": {
+      "group": "unit",
+      "top": "tb_kdlink_v2_env_pkg",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_env_pkg.sv",
+      "rtl": ["simulator/kdlink/pkg/kdlink_v2_env_pkg.sv"],
+      "pass_signature": "TB_KDLINK_V2_ENV_PKG_PASS"
+    },
+    "serial_if": {
+      "group": "unit",
+      "top": "tb_kdlink_v2_serial_if",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serial_if.sv",
+      "rtl": ["simulator/kdlink/vip/kdlink_v2_serial_if.sv"],
+      "pass_signature": "TB_KDLINK_V2_SERIAL_IF_PASS"
+    },
+    "serdes_channel": {
+      "group": "unit",
+      "top": "tb_kdlink_v2_serdes_channel",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serdes_channel.sv",
+      "rtl": [
+        "simulator/kdlink/model/serdes/kdlink_v2_serdes_channel_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_SERDES_CHANNEL_PASS"
+    },
     "bonded_port": {
       "group": "subsystem",
       "top": "tb_kdlink_v2_bonded_port",
@@ -118,6 +141,22 @@
         "rtl/kdlink/kdlink_v2_pcs.v"
       ],
       "pass_signature": "TB_KDLINK_V2_PCS_PASS"
+    },
+    "serdes_pcs_link": {
+      "group": "subsystem",
+      "top": "tb_kdlink_v2_serdes_pcs_link",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_serdes_pcs_link.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_v2_scrambler64.v",
+        "rtl/kdlink/kdlink_v2_descrambler64.v",
+        "rtl/kdlink/kdlink_v2_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_v2_pcs_tx.v",
+        "rtl/kdlink/kdlink_v2_pcs_rx.v",
+        "rtl/kdlink/kdlink_v2_pcs.v",
+        "simulator/kdlink/model/serdes/kdlink_v2_serdes_channel_model.sv",
+        "simulator/kdlink/model/serdes/kdlink_v2_serdes_link_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_SERDES_PCS_LINK_PASS"
     },
     "reverse_ctrl": {
       "group": "subsystem",
@@ -185,6 +224,19 @@
         "rtl/kdlink/kdlink_v2_fabric32.v"
       ],
       "pass_signature": "TB_KDLINK_V2_FABRIC32_PASS"
+    },
+    "baseboard32": {
+      "group": "system",
+      "top": "tb_kdlink_v2_baseboard32",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_baseboard32.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_v2_switch_slice32.v",
+        "rtl/kdlink/kdlink_v2_switch32.v",
+        "rtl/kdlink/kdlink_v2_fabric32.v",
+        "simulator/kdlink/model/system/kdlink_v2_card_model.sv",
+        "simulator/kdlink/model/system/kdlink_v2_baseboard32_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_BASEBOARD32_PASS"
     }
   }
 }
