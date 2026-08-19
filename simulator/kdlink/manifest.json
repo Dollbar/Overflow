@@ -194,6 +194,21 @@
       ],
       "pass_signature": "TB_KDLINK_V2_ENDPOINT_CREDIT_RECOVERY_PASS"
     },
+    "reduction_dtype_ii1": {
+      "group": "subsystem",
+      "top": "tb_kdlink_v2_reduction_dtype_ii1",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_reduction_dtype_ii1.sv",
+      "rtl": [
+        "rtl/kdlink/coll_lzc24.v",
+        "rtl/kdlink/coll_fp16_to_fp32.v",
+        "rtl/kdlink/coll_fp32_add_lane.v",
+        "rtl/kdlink/coll_fp32_to_fp16_pipeline.v",
+        "rtl/kdlink/coll_fp32_to_bf16.v",
+        "rtl/kdlink/coll_int32_reduction.v",
+        "rtl/kdlink/coll_reduction_engine.v"
+      ],
+      "pass_signature": "TB_KDLINK_V2_REDUCTION_DTYPE_II1_PASS"
+    },
     "switch32_congestion": {
       "group": "subsystem",
       "top": "tb_kdlink_v2_switch32_congestion",

@@ -87,6 +87,8 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
   credit recovery, retry, exact commits, and control-VC progress. `four_node_full_duplex` drives 1,024
   continuous 512-bit payload flits per node through a four-node ring and requires II=1, zero data-path
   bubbles, 64 GB/s in each direction, and 128 GB/s aggregate at a 1 GHz logical simulation clock.
+  `reduction_dtype_ii1` drives a 4,096-flit mixed INT32/FP32/FP16/BF16 stream through the 512-bit SUM
+  pipeline and requires bit-exact lane results, aligned metadata, and zero output bubbles.
 - The reusable VIP is dependency-free SystemVerilog: `kdlink_v2_stream_if` supplies valid/ready source
   tasks and modports, while `kdlink_v2_stream_monitor` checks header legality, CRC, flit count, and packet
   completion.
