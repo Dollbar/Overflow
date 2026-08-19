@@ -169,6 +169,31 @@
       ],
       "pass_signature": "TB_KDLINK_V2_REVERSE_CTRL_PASS"
     },
+    "endpoint_credit_recovery": {
+      "group": "subsystem",
+      "top": "tb_kdlink_v2_endpoint_credit_recovery",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_endpoint_credit_recovery.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_packetizer.v",
+        "rtl/kdlink/coll_depacketizer.v",
+        "rtl/kdlink/coll_header_checker.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_phy_adapter.v",
+        "rtl/kdlink/coll_vc_credit_bank.v",
+        "rtl/kdlink/coll_vc_arbiter.v",
+        "rtl/kdlink/coll_replay_retry_table.v",
+        "rtl/kdlink/coll_replay_buffer.v",
+        "rtl/kdlink/coll_rx_identity_history.v",
+        "rtl/kdlink/coll_packet_rx_commit.v",
+        "rtl/kdlink/coll_reverse_codec.v",
+        "rtl/kdlink/coll_link_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_V2_ENDPOINT_CREDIT_RECOVERY_PASS"
+    },
     "switch32_congestion": {
       "group": "subsystem",
       "top": "tb_kdlink_v2_switch32_congestion",
@@ -224,6 +249,31 @@
         "rtl/kdlink/kdlink_v2_fabric32.v"
       ],
       "pass_signature": "TB_KDLINK_V2_FABRIC32_PASS"
+    },
+    "four_node_full_duplex": {
+      "group": "system",
+      "top": "tb_kdlink_v2_four_node_full_duplex",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_four_node_full_duplex.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_packetizer.v",
+        "rtl/kdlink/coll_depacketizer.v",
+        "rtl/kdlink/coll_header_checker.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_phy_adapter.v",
+        "rtl/kdlink/coll_vc_credit_bank.v",
+        "rtl/kdlink/coll_vc_arbiter.v",
+        "rtl/kdlink/coll_replay_retry_table.v",
+        "rtl/kdlink/coll_replay_buffer.v",
+        "rtl/kdlink/coll_rx_identity_history.v",
+        "rtl/kdlink/coll_packet_rx_commit.v",
+        "rtl/kdlink/coll_reverse_codec.v",
+        "rtl/kdlink/coll_link_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_V2_FOUR_NODE_FULL_DUPLEX_PASS"
     },
     "baseboard32": {
       "group": "system",

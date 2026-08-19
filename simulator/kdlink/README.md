@@ -82,12 +82,17 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
   signature recorded in `manifest.json`. The added `serdes_pcs_link` test covers full-duplex PCS traffic
   through a skewed channel; `baseboard32` covers eight cards, 32 nodes, card removal, plane isolation,
   and per-slice link isolation. `multiboard_e2e` composes packetizer/CRC, PCS, SerDes, depacketizer,
-  NACK, and the RTL replay buffer for an exact-once retry path.
+  NACK, and the RTL replay buffer for an exact-once retry path. `endpoint_credit_recovery` connects two
+  reliable endpoints across asynchronous collective and PHY clocks and checks credit exhaustion, cumulative
+  credit recovery, retry, exact commits, and control-VC progress. `four_node_full_duplex` drives 1,024
+  continuous 512-bit payload flits per node through a four-node ring and requires II=1, zero data-path
+  bubbles, 64 GB/s in each direction, and 128 GB/s aggregate at a 1 GHz logical simulation clock.
 - The reusable VIP is dependency-free SystemVerilog: `kdlink_v2_stream_if` supplies valid/ready source
   tasks and modports, while `kdlink_v2_stream_monitor` checks header legality, CRC, flit count, and packet
   completion.
 - A declared bandwidth, clock, or latency formula remains `ANALYTICAL` unless the corresponding RTL test
   measures it. Simulation does not establish post-layout frequency or physical SerDes performance.
+  The full-duplex result is therefore a logical-interface `RTL_SIM` measurement, not a PHY or STA claim.
 
 The system tests use large, deliberately parallel RTL structures and therefore require substantially more
 compile memory and time than the unit tests.

@@ -12,7 +12,7 @@ NPU-003,NPU,Provide a hierarchical eight-pod on-chip NoC with an analytical 1.02
 NPU-004,NPU,Provision one DMA engine per pod with enough in-flight data for the declared HBM stress latency,rtl/npu/dma;rtl/memory;simulator;verification,Bandwidth-delay calculation and backpressure regression,ANALYTICAL,PROPOSED
 NPU-005,NPU,Provide a per-tile vector engine and explicit special-function capacity,rtl/npu/vector;simulator,Operator demand model and cycle regression,ANALYTICAL,PROPOSED
 NPU-006,NPU,Use sixteen 256 by 256 tensor arrays at a declared logical 1 GHz tensor clock,rtl/npu/tensor;simulator;verification,Checked capacity calculation and continuous-flow regression,ANALYTICAL,BASELINED
-KDL-001,KDLink,Transfer 512 payload bits per logical port cycle with a steady-state initiation interval of one,rtl;verification,Continuous-flow RTL regression,RTL_SIM,PROPOSED
+KDL-001,KDLink,Transfer 512 payload bits per logical port cycle with a steady-state initiation interval of one,rtl;simulator/kdlink,Four-node full-duplex continuous-flow RTL regression,RTL_SIM,BASELINED
 KDL-002,KDLink,Support eight logical ports and 512 GB/s analytical payload injection per direction per NPU,rtl;simulator;verification,Multi-port fabric performance regression,RTL_SIM,PROPOSED
 KDL-003,KDLink,Support AllReduce AllGather ReduceScatter AllToAllv and point-to-point operations,rtl;verification,32-node exact-result regression,RTL_SIM,PROPOSED
 KDL-004,KDLink,Provide versioned PCS encoding lane striping training deskew and fault behavior,rtl;specs;verification,Encoded-stream and fault-injection regression,RTL_SIM,PROPOSED
@@ -20,5 +20,7 @@ KDL-005,KDLink,Provide deadlock-free deterministic routing with a guaranteed esc
 KDL-006,KDLink,Represent eight card slots and a 32-node baseboard topology with card plane and slice isolation,simulator/kdlink;specs/kdlink,Baseboard permutation and fault-isolation RTL regression,RTL_SIM,BASELINED
 KDL-007,KDLink,Provide a vendor-neutral ten-lane digital SerDes channel model with latency skew training and deterministic fault injection,simulator/kdlink;specs/kdlink,PCS-to-SerDes full-duplex and fault-injection regression,RTL_SIM,BASELINED
 KDL-008,KDLink,Complete a representative packet CRC NACK replay and exact-once path across PCS and digital SerDes,rtl/kdlink;simulator/kdlink,Integrated multiboard E2E regression with injected CRC fault,RTL_SIM,BASELINED
+KDL-009,KDLink,Recover forward progress after VC credit exhaustion without a combinational reverse ready path,rtl/kdlink;simulator/kdlink,Asynchronous two-endpoint credit exhaustion and cumulative recovery regression,RTL_SIM,BASELINED
+KDL-010,KDLink,Sustain 64 GB/s payload per direction and 128 GB/s aggregate on one 512-bit logical full-duplex port at 1 GHz,rtl/kdlink;simulator/kdlink,Four-node 1024-flit-per-rank zero-bubble bandwidth regression,RTL_SIM,BASELINED
 VER-001,Verification,Label every performance claim with an allowed evidence level,verification;docs,Release audit,ANALYTICAL,BASELINED
 REL-001,Release,Exclude model weights credentials private datasets and non-redistributable binaries,third_party;LICENSES;ci,License and secret scan,ANALYTICAL,BASELINED
