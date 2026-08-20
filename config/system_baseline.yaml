@@ -31,6 +31,8 @@ system:
 npu:
   target_mxfp4_mxfp8_pflops_equivalent: 2.0
   target_logical_hbm_tbyte_per_second: 5.0
+  logical_hbm_clock_hz: 1000000000
+  logical_hbm_bandwidth_definition: aggregate_read_plus_write_payload
   management_isa: RV64
   command_isa: KD-ISA
 
@@ -41,6 +43,11 @@ kdlink:
   target_ports_per_npu: 8
   analytical_tx_payload_gbyte_per_second_per_npu: 512
   analytical_rx_payload_gbyte_per_second_per_npu: 512
+  physical_planning_profile: versal_gtm_106g_pam4_rate_adapted
+  physical_line_rate_gbit_per_second: 106.25
+  physical_modulation: PAM4
+  logical_to_physical_rate_adapter_required: true
+  physical_mapping_evidence: ANALYTICAL
   required_operations:
     - all_reduce
     - reduce_scatter

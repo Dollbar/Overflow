@@ -21,7 +21,7 @@ module kdlink_v2_serdes_channel_model #(
     output reg [31:0] dropped_blocks_o,
     output reg [31:0] corrupted_blocks_o
 );
-    localparam integer PIPE_STAGES = PROPAGATION_CYCLES + MAX_LANE_SKEW_CYCLES + 1;
+    localparam integer PIPE_STAGES = PROPAGATION_CYCLES + MAX_LANE_SKEW_CYCLES;
     localparam [1:0] LINK_DOWN = 2'd0;
     localparam [1:0] LINK_TRAINING = 2'd1;
     localparam [1:0] LINK_UP = 2'd2;
@@ -56,10 +56,17 @@ module kdlink_v2_serdes_channel_model #(
     assign link_state_o = link_state_q;
     assign link_up_o = (link_state_q == LINK_UP);
 
+    initial begin
+        if (PROPAGATION_CYCLES < 1) $fatal(1, "PROPAGATION_CYCLES must be at least one");
+        if (MAX_LANE_SKEW_CYCLES < 0) $fatal(1, "MAX_LANE_SKEW_CYCLES must be non-negative");
+        if (TRAINING_CYCLES < 1) $fatal(1, "TRAINING_CYCLES must be at least one");
+    end
+
     genvar event_lane;
     generate
         for (event_lane = 0; event_lane < 10; event_lane = event_lane + 1) begin : g_fault_event
             assign corrupt_event[event_lane] = tx_group_valid_i && admin_up_i && lane_up_i[event_lane] &&
+                !inject_drop_i[event_lane] &&
                 (inject_corrupt_i[event_lane] || (ber_event && (ber_lane_i == event_lane[3:0])));
         end
     endgenerate
@@ -67,10 +74,10 @@ module kdlink_v2_serdes_channel_model #(
     genvar output_lane;
     generate
         for (output_lane = 0; output_lane < 10; output_lane = output_lane + 1) begin : g_channel_output
-            localparam integer LANE_DELAY = PROPAGATION_CYCLES +
+            localparam integer LANE_LATENCY = PROPAGATION_CYCLES +
                 ((MAX_LANE_SKEW_CYCLES == 0) ? 0 : (output_lane % (MAX_LANE_SKEW_CYCLES + 1)));
-            assign rx_lane_valid_o[output_lane] = lane_valid_pipe[output_lane][LANE_DELAY];
-            assign rx_lane_blocks_o[output_lane*66 +: 66] = lane_data_pipe[output_lane][LANE_DELAY];
+            assign rx_lane_valid_o[output_lane] = lane_valid_pipe[output_lane][LANE_LATENCY-1];
+            assign rx_lane_blocks_o[output_lane*66 +: 66] = lane_data_pipe[output_lane][LANE_LATENCY-1];
         end
     endgenerate
 
@@ -96,7 +103,7 @@ module kdlink_v2_serdes_channel_model #(
                 link_state_q <= LINK_DEGRADED;
                 training_count_q <= 32'd0;
             end else if ((link_state_q == LINK_DOWN) || (link_state_q == LINK_DEGRADED)) begin
-                link_state_q <= LINK_TRAINING;
+                link_state_q <= (TRAINING_CYCLES == 1) ? LINK_UP : LINK_TRAINING;
                 training_count_q <= 32'd1;
             end else if (link_state_q == LINK_TRAINING) begin
                 if (training_count_q >= (TRAINING_CYCLES - 1)) begin
@@ -109,7 +116,9 @@ module kdlink_v2_serdes_channel_model #(
                 link_state_q <= LINK_UP;
             end
 
-            if (tx_group_valid_i && admin_up_i) begin
+            if (!admin_up_i) begin
+                ber_group_count_q <= 32'd0;
+            end else if (tx_group_valid_i && any_lane_up) begin
                 transmitted_groups_o <= transmitted_groups_o + 32'd1;
                 if (ber_event) begin
                     ber_group_count_q <= 32'd0;
@@ -125,15 +134,21 @@ module kdlink_v2_serdes_channel_model #(
             end
 
             for (lane_index = 0; lane_index < 10; lane_index = lane_index + 1) begin
-                lane_valid_pipe[lane_index][0] <= tx_group_valid_i && admin_up_i && lane_up_i[lane_index] &&
-                    !inject_drop_i[lane_index];
-                lane_data_pipe[lane_index][0] <= tx_group_blocks_i[lane_index*66 +: 66];
-                if (corrupt_event[lane_index]) begin
-                    lane_data_pipe[lane_index][0] <= tx_group_blocks_i[lane_index*66 +: 66] ^ 66'd3;
-                end
-                for (stage_index = 1; stage_index < PIPE_STAGES; stage_index = stage_index + 1) begin
-                    lane_valid_pipe[lane_index][stage_index] <= lane_valid_pipe[lane_index][stage_index-1];
-                    lane_data_pipe[lane_index][stage_index] <= lane_data_pipe[lane_index][stage_index-1];
+                if (!admin_up_i || !lane_up_i[lane_index]) begin
+                    for (stage_index = 0; stage_index < PIPE_STAGES; stage_index = stage_index + 1) begin
+                        lane_valid_pipe[lane_index][stage_index] <= 1'b0;
+                        lane_data_pipe[lane_index][stage_index] <= 66'd0;
+                    end
+                end else begin
+                    lane_valid_pipe[lane_index][0] <= tx_group_valid_i && !inject_drop_i[lane_index];
+                    lane_data_pipe[lane_index][0] <= tx_group_blocks_i[lane_index*66 +: 66];
+                    if (corrupt_event[lane_index]) begin
+                        lane_data_pipe[lane_index][0] <= tx_group_blocks_i[lane_index*66 +: 66] ^ 66'd3;
+                    end
+                    for (stage_index = 1; stage_index < PIPE_STAGES; stage_index = stage_index + 1) begin
+                        lane_valid_pipe[lane_index][stage_index] <= lane_valid_pipe[lane_index][stage_index-1];
+                        lane_data_pipe[lane_index][stage_index] <= lane_data_pipe[lane_index][stage_index-1];
+                    end
                 end
             end
         end

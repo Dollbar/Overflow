@@ -1,0 +1,4 @@
+Library/models/kdlink/serdes/kdlink_v2_serdes_profile_pkg.sv
+Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv
+Library/models/kdlink/serdes/kdlink_v2_serdes_channel_full_model.sv
+Library/models/kdlink/serdes/kdlink_v2_serdes_link_full_model.sv

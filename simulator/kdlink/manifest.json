@@ -83,9 +83,18 @@
       "top": "tb_kdlink_v2_serdes_channel",
       "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serdes_channel.sv",
       "rtl": [
-        "simulator/kdlink/model/serdes/kdlink_v2_serdes_channel_model.sv"
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv"
       ],
       "pass_signature": "TB_KDLINK_V2_SERDES_CHANNEL_PASS"
+    },
+    "serdes_full_lane": {
+      "group": "unit",
+      "top": "tb_kdlink_v2_serdes_full_lane",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serdes_full_lane.sv",
+      "rtl": [
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_SERDES_FULL_LANE_PASS"
     },
     "bonded_port": {
       "group": "subsystem",
@@ -153,10 +162,21 @@
         "rtl/kdlink/kdlink_v2_pcs_tx.v",
         "rtl/kdlink/kdlink_v2_pcs_rx.v",
         "rtl/kdlink/kdlink_v2_pcs.v",
-        "simulator/kdlink/model/serdes/kdlink_v2_serdes_channel_model.sv",
-        "simulator/kdlink/model/serdes/kdlink_v2_serdes_link_model.sv"
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv"
       ],
       "pass_signature": "TB_KDLINK_V2_SERDES_PCS_LINK_PASS"
+    },
+    "serdes_full_link": {
+      "group": "subsystem",
+      "top": "tb_kdlink_v2_serdes_full_link",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_serdes_full_link.sv",
+      "rtl": [
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_full_model.sv",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_full_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_V2_SERDES_FULL_LINK_PASS"
     },
     "reverse_ctrl": {
       "group": "subsystem",

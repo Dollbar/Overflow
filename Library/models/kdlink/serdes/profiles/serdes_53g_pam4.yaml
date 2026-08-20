@@ -1,0 +1,29 @@
+schema_version: 1
+profile_id: versal-gtm-53g-pam4-reference
+evidence_level: ANALYTICAL
+physical:
+  line_rate_gbit_per_second: 53.125
+  modulation: PAM4
+  bits_per_symbol: 2
+  symbol_rate_gbaud: 26.5625
+  encoding: 64b66b
+  pcs_data_gbit_per_second_per_lane: 51.515151515152
+  block_group_clock_hz: 804924242.424242
+model_parameters:
+  line_rate_kbps: 53125000
+  modulation_bits_per_symbol: 2
+  propagation_cycles: 3
+  maximum_lane_skew_cycles: 2
+  cdr_lock_cycles: 16
+  block_lock_cycles: 16
+  jitter_period_blocks: 0
+  jitter_extra_cycles: 0
+  burst_error_length_blocks: 4
+  elastic_depth: 64
+source:
+  vendor: AMD
+  document: Versal Prime Series Data Sheet DS956
+  url: https://docs.amd.com/r/en-US/ds956-versal-prime/GTM-Transceiver-Performance
+limitations:
+  - Rates are metadata and analytical clock conversions; no analog GTM behavior is included.
+  - This profile cannot directly sustain the 1 GHz KDLink logical group rate without changing framing.
