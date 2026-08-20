@@ -1,0 +1,2 @@
+Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv
+Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv

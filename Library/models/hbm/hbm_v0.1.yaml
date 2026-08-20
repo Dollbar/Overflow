@@ -1,0 +1,77 @@
+schema_version: 2
+model_id: overflow-hbm-v0.1
+evidence_level: FUNCTIONAL_SIM
+parameter_status: architecture_baseline
+units:
+  capacity: decimal_bytes
+  clock: hertz
+  latency: logical_cycles_from_issue
+  bandwidth: combined_read_write_payload_bytes_per_logical_cycle
+hbm:
+  partitions: 8
+  capacity_bytes_per_partition: 24000000000
+  logical_clock_hz: 1000000000
+  beat_bytes: 128
+  maximum_transaction_bytes: 4096
+  payload_bytes_per_cycle_per_partition: 625
+  read_latency_cycles: 500
+  write_latency_cycles: 500
+  max_outstanding_per_partition: 4096
+geometry:
+  channels_per_partition: 16
+  pseudo_channels_per_channel: 2
+  bank_groups_per_pseudo_channel: 4
+  banks_per_bank_group: 4
+  row_bytes: 2048
+  bank_interleave_bytes: 128
+timing:
+  timing_model_enabled: false
+  scheduler_policy: fifo
+  max_issues_per_partition_per_cycle: 0
+  activate_cycles: 14
+  precharge_cycles: 14
+  minimum_row_active_cycles: 32
+  column_to_column_cycles: 4
+  row_to_row_cycles: 4
+  four_activate_window_cycles: 16
+  read_to_write_cycles: 8
+  write_to_read_cycles: 12
+refresh:
+  refresh_enabled: false
+  refresh_interval_cycles: 3900
+  refresh_duration_cycles: 160
+  refresh_stagger_cycles: 1
+ecc:
+  ecc_enabled: true
+  correctable_bits_per_beat: 1
+observability:
+  event_log_depth: 4096
+profiles:
+  stress:
+    hbm:
+      read_latency_cycles: 800
+      write_latency_cycles: 800
+  banked_nominal:
+    timing:
+      timing_model_enabled: true
+      scheduler_policy: fr_fcfs
+      max_issues_per_partition_per_cycle: 4
+    refresh:
+      refresh_enabled: true
+  banked_stress:
+    hbm:
+      read_latency_cycles: 800
+      write_latency_cycles: 800
+    timing:
+      timing_model_enabled: true
+      scheduler_policy: fifo
+      max_issues_per_partition_per_cycle: 1
+    refresh:
+      refresh_enabled: true
+      refresh_duration_cycles: 260
+source_notes:
+  organization: Micron public HBM3E material describes 16 channels and 32 pseudo-channels per placement.
+  capacity: The 24 GB per-partition value matches a public 8-high HBM3E capacity point.
+  bandwidth: The 625 GB/s cap is the Overflow architecture allocation, not the physical stack ceiling.
+  dram_timing: Command-cycle values are configurable simulation assumptions, not vendor timing-bin data.
+  source_url: https://www.micron.com/products/memory/hbm/hbm3e
