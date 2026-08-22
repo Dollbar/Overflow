@@ -43,6 +43,7 @@ REQUIRED_TOP_LEVEL_READMES = {
     "simulator",
     "specs",
     "third_party",
+    "technology",
     "verification",
 }
 ALLOWED_TOP_LEVEL_DIRECTORIES = REQUIRED_TOP_LEVEL_READMES | {".git", ".github"}
