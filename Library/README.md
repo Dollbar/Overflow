@@ -7,8 +7,8 @@ consumed by multiple simulators or verification environments without copying the
 
 | Path | Content |
 | --- | --- |
-| [`models/`](models/) | Executable HBM and KDLink digital SerDes models |
-| [`timing/`](timing/) | Synthetic HBM/SerDes interface timing views for portable front-end STA |
+| [`models/`](models/) | Executable HBM, KDLink SerDes, and KD28 SRAM/FIFO models |
+| [`timing/`](timing/) | Synthetic interface and KD28 SRAM timing views for portable front-end STA |
 
 Tests, testbenches, tool adapters, generated outputs, and scenario configuration remain with their
 consumer under `simulator/`, `verification/`, or `technology/`. Restricted foundry and vendor collateral
