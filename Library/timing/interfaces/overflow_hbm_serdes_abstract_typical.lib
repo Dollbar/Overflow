@@ -1,0 +1,164 @@
+/*
+ * Apache-2.0 repository-authored front-end interface timing abstraction.
+ * Values are synthetic STA plumbing assumptions, not process/PVT characterization.
+ */
+library (overflow_hbm_serdes_abstract_typical) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  pulling_resistance_unit : "1kohm";
+  leakage_power_unit : "1nW";
+  capacitive_load_unit (1, pf);
+  nom_process : 1.0;
+  nom_temperature : 25.0;
+  nom_voltage : 1.0;
+  default_cell_leakage_power : 0.0;
+  default_input_pin_cap : 0.001;
+  default_output_pin_cap : 0.0;
+
+  operating_conditions (abstract_typical) {
+    process : 1.0;
+    temperature : 25.0;
+    voltage : 1.0;
+    tree_type : balanced_tree;
+  }
+  default_operating_conditions : abstract_typical;
+
+  lu_table_template (delay_1x1) {
+    variable_1 : input_net_transition;
+    variable_2 : total_output_net_capacitance;
+    index_1 ("0.05");
+    index_2 ("0.005");
+  }
+  lu_table_template (constraint_1x1) {
+    variable_1 : related_pin_transition;
+    variable_2 : constrained_pin_transition;
+    index_1 ("0.05");
+    index_2 ("0.05");
+  }
+
+  cell (OVERFLOW_HBM_PORT_ABSTRACT) {
+    area : 0.0;
+    dont_use : true;
+    ff (IQ, IQN) { clocked_on : "CLK"; next_state : "REQ_VALID"; }
+    pin (CLK) { direction : input; clock : true; capacitance : 0.002; }
+    pin (REQ_VALID) {
+      direction : input; capacitance : 0.002;
+      timing () { related_pin : "CLK"; timing_type : setup_rising;
+        rise_constraint (constraint_1x1) { values ("0.100"); }
+        fall_constraint (constraint_1x1) { values ("0.100"); }
+      }
+      timing () { related_pin : "CLK"; timing_type : hold_rising;
+        rise_constraint (constraint_1x1) { values ("0.020"); }
+        fall_constraint (constraint_1x1) { values ("0.020"); }
+      }
+    }
+    pin (REQ_WRITE) { direction : input; capacitance : 0.002;
+      timing () { related_pin : "CLK"; timing_type : setup_rising;
+        rise_constraint (constraint_1x1) { values ("0.100"); }
+        fall_constraint (constraint_1x1) { values ("0.100"); }
+      }
+      timing () { related_pin : "CLK"; timing_type : hold_rising;
+        rise_constraint (constraint_1x1) { values ("0.020"); }
+        fall_constraint (constraint_1x1) { values ("0.020"); }
+      }
+    }
+    pin (REQ_DATA) { direction : input; capacitance : 0.002;
+      timing () { related_pin : "CLK"; timing_type : setup_rising;
+        rise_constraint (constraint_1x1) { values ("0.100"); }
+        fall_constraint (constraint_1x1) { values ("0.100"); }
+      }
+      timing () { related_pin : "CLK"; timing_type : hold_rising;
+        rise_constraint (constraint_1x1) { values ("0.020"); }
+        fall_constraint (constraint_1x1) { values ("0.020"); }
+      }
+    }
+    pin (REQ_READY) { direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.150"); }
+        cell_fall (delay_1x1) { values ("0.150"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+    pin (RSP_VALID) {
+      direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.150"); }
+        cell_fall (delay_1x1) { values ("0.150"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+    pin (RSP_ERROR) { direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.150"); }
+        cell_fall (delay_1x1) { values ("0.150"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+    pin (RSP_DATA) { direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.150"); }
+        cell_fall (delay_1x1) { values ("0.150"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+  }
+
+  cell (OVERFLOW_SERDES_SLICE_ABSTRACT) {
+    area : 0.0;
+    dont_use : true;
+    ff (IQ, IQN) { clocked_on : "CLK"; next_state : "TX_VALID"; }
+    pin (CLK) { direction : input; clock : true; capacitance : 0.002; }
+    pin (TX_VALID) {
+      direction : input; capacitance : 0.002;
+      timing () { related_pin : "CLK"; timing_type : setup_rising;
+        rise_constraint (constraint_1x1) { values ("0.080"); }
+        fall_constraint (constraint_1x1) { values ("0.080"); }
+      }
+      timing () { related_pin : "CLK"; timing_type : hold_rising;
+        rise_constraint (constraint_1x1) { values ("0.020"); }
+        fall_constraint (constraint_1x1) { values ("0.020"); }
+      }
+    }
+    pin (TX_BLOCK) { direction : input; capacitance : 0.002;
+      timing () { related_pin : "CLK"; timing_type : setup_rising;
+        rise_constraint (constraint_1x1) { values ("0.080"); }
+        fall_constraint (constraint_1x1) { values ("0.080"); }
+      }
+      timing () { related_pin : "CLK"; timing_type : hold_rising;
+        rise_constraint (constraint_1x1) { values ("0.020"); }
+        fall_constraint (constraint_1x1) { values ("0.020"); }
+      }
+    }
+    pin (RX_VALID) {
+      direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.120"); }
+        cell_fall (delay_1x1) { values ("0.120"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+    pin (RX_BLOCK) { direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.120"); }
+        cell_fall (delay_1x1) { values ("0.120"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+    pin (LINK_UP) { direction : output; function : "IQ"; max_capacitance : 0.050;
+      timing () { related_pin : "CLK"; timing_type : rising_edge; timing_sense : non_unate;
+        cell_rise (delay_1x1) { values ("0.120"); }
+        cell_fall (delay_1x1) { values ("0.120"); }
+        rise_transition (delay_1x1) { values ("0.050"); }
+        fall_transition (delay_1x1) { values ("0.050"); }
+      }
+    }
+  }
+}

@@ -8,10 +8,11 @@ consumed by multiple simulators or verification environments without copying the
 | Path | Content |
 | --- | --- |
 | [`models/`](models/) | Executable HBM and KDLink digital SerDes models |
+| [`timing/`](timing/) | Synthetic HBM/SerDes interface timing views for portable front-end STA |
 
 Tests, testbenches, tool adapters, generated outputs, and scenario configuration remain with their
-consumer under `simulator/` or `verification/`. Restricted foundry and vendor collateral must not be
-copied here.
+consumer under `simulator/`, `verification/`, or `technology/`. Restricted foundry and vendor collateral
+must not be copied here.
 
 Asset licensing follows [`LICENSES/README.md`](../LICENSES/README.md). Third-party assets require
 provenance, license, version, and checksum records before admission.

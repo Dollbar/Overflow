@@ -1,0 +1,50 @@
+schema_version: 1
+license: Apache-2.0
+evidence_level: ANALYTICAL
+characterization_status: synthetic_frontend_only
+units:
+  time: ns
+cells:
+  - OVERFLOW_HBM_PORT_ABSTRACT
+  - OVERFLOW_SERDES_SLICE_ABSTRACT
+scenarios:
+  fast:
+    liberty: Library/timing/interfaces/overflow_hbm_serdes_abstract_fast.lib
+    hbm_setup: 0.050
+    hbm_hold: 0.010
+    hbm_clock_to_response: 0.080
+    serdes_setup: 0.040
+    serdes_hold: 0.010
+    serdes_clock_to_receive: 0.060
+  typical:
+    liberty: Library/timing/interfaces/overflow_hbm_serdes_abstract_typical.lib
+    hbm_setup: 0.100
+    hbm_hold: 0.020
+    hbm_clock_to_response: 0.150
+    serdes_setup: 0.080
+    serdes_hold: 0.020
+    serdes_clock_to_receive: 0.120
+  slow:
+    liberty: Library/timing/interfaces/overflow_hbm_serdes_abstract_slow.lib
+    hbm_setup: 0.200
+    hbm_hold: 0.040
+    hbm_clock_to_response: 0.300
+    serdes_setup: 0.160
+    serdes_hold: 0.040
+    serdes_clock_to_receive: 0.240
+permitted_claims:
+  - liberty_parse_after_validation
+  - blackbox_linking_after_validation
+  - front_end_constraint_plumbing
+prohibited_claims:
+  - physical_pvt
+  - memory_array_timing
+  - serdes_analog_timing
+  - package_or_board_timing
+  - signoff
+replacement_inputs:
+  - vendor_controller_or_phy_liberty
+  - process_and_pvt_corner
+  - package_and_board_delay
+  - generated_clock_and_multicycle_sdc
+  - tool_and_library_checksums
