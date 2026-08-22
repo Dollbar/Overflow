@@ -61,7 +61,7 @@ scope definition.
 
 | Directory | Responsibility |
 | --- | --- |
-| `Library/` | Reusable HBM/SerDes behavioral models, parameter profiles, and synthetic timing views |
+| `Library/` | Reusable HBM/SerDes/KD28 models, parameter profiles, and synthetic timing views |
 | `specs/` | Model, compiler, ISA, ABI, KDLink, and digital-interface specifications |
 | `models/` | Model manifests, operator lists, weight sharding, and numerical references |
 | `compiler/` | Graph import, IR, optimization, partitioning, scheduling, and code generation |

@@ -1,0 +1,300 @@
+/* Apache-2.0 generated KD28 typical synthetic SRAM timing view. */
+library (kd28_sram_typical) {
+  delay_model : table_lookup;
+  time_unit : "1ns";
+  voltage_unit : "1V";
+  current_unit : "1mA";
+  leakage_power_unit : "1nW";
+  capacitive_load_unit (1, pf);
+  nom_process : 1.0;
+  nom_voltage : 0.900;
+  nom_temperature : 25.0;
+  lu_table_template (kd28_constraint) { variable_1 : constrained_pin_transition; index_1 ("0.050"); }
+  lu_table_template (kd28_delay) { variable_1 : total_output_net_capacitance; index_1 ("0.010"); }
+  type (kd28_bus_4) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 4;
+    bit_from : 3;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_5) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 5;
+    bit_from : 4;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_8) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 8;
+    bit_from : 7;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_9) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 9;
+    bit_from : 8;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_10) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 10;
+    bit_from : 9;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_11) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 11;
+    bit_from : 10;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_16) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 16;
+    bit_from : 15;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_32) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 32;
+    bit_from : 31;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_64) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 64;
+    bit_from : 63;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_128) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 128;
+    bit_from : 127;
+    bit_to : 0;
+    downto : true;
+  }
+  type (kd28_bus_256) {
+    base_type : array;
+    data_type : bit;
+    bit_width : 256;
+    bit_from : 255;
+    bit_to : 0;
+    downto : true;
+  }
+  cell (KD28_SRAM_SP_256X32) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (CS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (WE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (A) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SP_512X64) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (CS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (WE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (A) { bus_type : kd28_bus_9; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SP_1024X128) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (CS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (WE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (A) { bus_type : kd28_bus_10; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SP_2048X256) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (CS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (WE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (A) { bus_type : kd28_bus_11; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_256; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_256; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SDP_256X32) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (WCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (WCS) { direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WA) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (RCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (RCS) { direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (RA) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SDP_512X64) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (WCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (WCS) { direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WA) { bus_type : kd28_bus_9; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (RCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (RCS) { direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (RA) { bus_type : kd28_bus_9; direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SDP_1024X128) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (WCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (WCS) { direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WA) { bus_type : kd28_bus_10; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (RCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (RCS) { direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (RA) { bus_type : kd28_bus_10; direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_SDP_2048X256) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (WCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (WCS) { direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WA) { bus_type : kd28_bus_11; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (D) { bus_type : kd28_bus_256; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (WM) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "WCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "WCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (RCLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (RCS) { direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (RA) { bus_type : kd28_bus_11; direction : input; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "RCLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (Q) { bus_type : kd28_bus_256; direction : output; capacitance : 0.001; timing () { related_pin : "RCLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_32X32) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_32X64) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_32X128) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_5; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_256X32) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_32; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_4; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_32; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_512X64) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_9; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_9; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_64; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_8; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_64; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+  cell (KD28_SRAM_TDP_1024X128) {
+    area : 0.0;
+    is_macro_cell : true;
+    pin (CLK) { direction : input; capacitance : 0.001; clock : true; }
+    pin (ACS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (AWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AA) { bus_type : kd28_bus_10; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AD) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AWM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (AQ) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+    pin (BCS) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    pin (BWE) { direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BA) { bus_type : kd28_bus_10; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BD) { bus_type : kd28_bus_128; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BWM) { bus_type : kd28_bus_16; direction : input; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : setup_rising; rise_constraint (kd28_constraint) { values ("0.100"); } fall_constraint (kd28_constraint) { values ("0.100"); } } timing () { related_pin : "CLK"; timing_type : hold_rising; rise_constraint (kd28_constraint) { values ("0.030"); } fall_constraint (kd28_constraint) { values ("0.030"); } } }
+    bus (BQ) { bus_type : kd28_bus_128; direction : output; capacitance : 0.001; timing () { related_pin : "CLK"; timing_type : rising_edge; cell_rise (kd28_delay) { values ("0.200"); } cell_fall (kd28_delay) { values ("0.200"); } rise_transition (kd28_delay) { values ("0.100"); } fall_transition (kd28_delay) { values ("0.100"); } } }
+  }
+}

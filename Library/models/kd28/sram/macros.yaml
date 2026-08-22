@@ -1,0 +1,35 @@
+schema_version: 1
+technology: KD28
+technology_status: repository_synthetic_not_foundry_pdk
+license: Apache-2.0
+families:
+  SP:
+    description: one synchronous read_write port
+    macros:
+      - {depth: 256, width: 32}
+      - {depth: 512, width: 64}
+      - {depth: 1024, width: 128}
+      - {depth: 2048, width: 256}
+  SDP:
+    description: independent synchronous write and read ports
+    macros:
+      - {depth: 256, width: 32}
+      - {depth: 512, width: 64}
+      - {depth: 1024, width: 128}
+      - {depth: 2048, width: 256}
+  TDP:
+    description: two synchronous read_write ports on one shared clock
+    macros:
+      - {depth: 32, width: 32}
+      - {depth: 32, width: 64}
+      - {depth: 32, width: 128}
+      - {depth: 256, width: 32}
+      - {depth: 512, width: 64}
+      - {depth: 1024, width: 128}
+semantics:
+  read_latency_cycles: 1
+  write_mask_granularity_bits: 8
+  memory_reset: none
+  sdp_same_address_read_write: read_before_write
+  tdp_same_address_dual_write: undefined
+generation_command: python3 scripts/generate_kd28_sram_library.py

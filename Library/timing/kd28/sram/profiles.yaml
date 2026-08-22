@@ -1,0 +1,27 @@
+schema_version: 1
+technology: KD28
+evidence_level: ANALYTICAL
+characterization_status: synthetic_frontend_only
+scenarios:
+  fast:
+    process_label: synthetic_fast
+    voltage: 1.05
+    temperature_c: -20
+    setup_ns: 0.060
+    hold_ns: 0.020
+    clock_to_q_ns: 0.120
+  typical:
+    process_label: synthetic_typical
+    voltage: 0.90
+    temperature_c: 25
+    setup_ns: 0.100
+    hold_ns: 0.030
+    clock_to_q_ns: 0.200
+  slow:
+    process_label: synthetic_slow
+    voltage: 0.81
+    temperature_c: 125
+    setup_ns: 0.160
+    hold_ns: 0.050
+    clock_to_q_ns: 0.320
+generation_command: python3 scripts/generate_kd28_sram_library.py
