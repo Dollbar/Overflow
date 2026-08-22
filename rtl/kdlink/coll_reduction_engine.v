@@ -142,7 +142,7 @@ module coll_reduction_engine ( // 定义五百一十二位四 dtype SUM reductio
             selected_byte_valid_q <= select_byte_valid_q; selected_local_q <= select_local_q; selected_valid_q <= (select_dtype_q[0] == `COLL_DTYPE_INT32) ? int_valid_q[22] : fp_format_valid_q; // 锁存 tail metadata 和已补偿三级 INT32 与浮点延迟的统一有效
             valid_o <= selected_valid_q; // 输出已完成 dtype 选择和 metadata 对齐的有效
             for (segment_index = 0; segment_index < 16; segment_index = segment_index + 1) result_o[segment_index*32 +: 32] <= segment_result_d[segment_index]; // 分段锁存最终 reduction 结果
-            byte_valid_o <= select_byte_valid_q; // 锁存最终 byte mask
+            byte_valid_o <= selected_byte_valid_q; // 锁存与最终 reduction 结果同拍的 byte mask
         end // 结束 reduction pipeline 复位选择
     end // 结束 reduction pipeline 时序逻辑
 endmodule // 结束四 dtype 五百一十二位 reduction engine

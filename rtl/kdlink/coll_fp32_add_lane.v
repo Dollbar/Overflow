@@ -57,10 +57,18 @@ module coll_fp32_add_lane ( // 定义十六级 IEEE FP32 RNE 加法流水 lane
     reg arithmetic_carry_q; // 保存尾数加减低十四位进位或无借位标志
     reg [13:0] arithmetic_high0_q; // 保存尾数加减高十四位无低半进位或借位候选
     reg [13:0] arithmetic_high1_q; // 保存尾数加减高十四位有低半进位或借位候选
-    reg [7:0] arithmetic_high_low0_d; // 保存高十四位候选零的低七位结果和进位
-    reg [7:0] arithmetic_high_low1_d; // 保存高十四位候选一的低七位结果和进位
-    reg [6:0] arithmetic_high_top0_d; // 保存高十四位顶七位无进位候选
-    reg [6:0] arithmetic_high_top1_d; // 保存高十四位顶七位有进位候选
+    wire [7:0] arithmetic_add_high_low0; // 保存加法高十四位低七位无进位候选
+    wire [7:0] arithmetic_add_high_low1; // 保存加法高十四位低七位有进位候选
+    wire [6:0] arithmetic_add_high_top0; // 保存加法高十四位顶七位无进位候选
+    wire [6:0] arithmetic_add_high_top1; // 保存加法高十四位顶七位有进位候选
+    wire [7:0] arithmetic_sub_high_low0; // 保存减法高十四位低七位无借位候选
+    wire [7:0] arithmetic_sub_high_low1; // 保存减法高十四位低七位有借位候选
+    wire [6:0] arithmetic_sub_high_top0; // 保存减法高十四位顶七位无进位候选
+    wire [6:0] arithmetic_sub_high_top1; // 保存减法高十四位顶七位有进位候选
+    wire [13:0] arithmetic_add_high0; // 保存拼接后的加法高十四位候选零
+    wire [13:0] arithmetic_add_high1; // 保存拼接后的加法高十四位候选一
+    wire [13:0] arithmetic_sub_high0; // 保存拼接后的减法高十四位候选零
+    wire [13:0] arithmetic_sub_high1; // 保存拼接后的减法高十四位候选一
     reg [13:0] arithmetic_high0_d; // 保存分段拼接后的高十四位候选零
     reg [13:0] arithmetic_high1_d; // 保存分段拼接后的高十四位候选一
     reg valid_s2_q; // 保存尾数加减级有效
@@ -158,6 +166,18 @@ module coll_fp32_add_lane ( // 定义十六级 IEEE FP32 RNE 加法流水 lane
     coll_lzc24 u_lzc (.value_i(arithmetic_s2_q[26:3]), .count_o(), .selected_byte_o(lzc_selected_wire), .base_count_o(lzc_base_wire)); // 并行计算相减尾数分组选择
     assign valid_o = valid_s5_q; // 输出末级有效
     assign result_o = result_s5_q; // 输出末级 FP32 结果
+    assign arithmetic_add_high_low0 = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, small_aligned_s1_q[20:14]}; // 并行计算加法低七位无进位候选
+    assign arithmetic_add_high_low1 = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, small_aligned_s1_q[20:14]} + 8'd1; // 并行计算加法低七位有进位候选
+    assign arithmetic_add_high_top0 = {1'b0, big_aligned_s1_q[26:21]} + {1'b0, small_aligned_s1_q[26:21]}; // 并行计算加法顶七位无进位候选
+    assign arithmetic_add_high_top1 = {1'b0, big_aligned_s1_q[26:21]} + {1'b0, small_aligned_s1_q[26:21]} + 7'd1; // 并行计算加法顶七位有进位候选
+    assign arithmetic_sub_high_low0 = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, ~small_aligned_s1_q[20:14]} + 8'd1; // 并行计算减法低七位无借位候选
+    assign arithmetic_sub_high_low1 = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, ~small_aligned_s1_q[20:14]}; // 并行计算减法低七位有借位候选
+    assign arithmetic_sub_high_top0 = {1'b0, big_aligned_s1_q[26:21]} + {1'b1, ~small_aligned_s1_q[26:21]}; // 并行计算减法顶七位无进位候选
+    assign arithmetic_sub_high_top1 = {1'b0, big_aligned_s1_q[26:21]} + {1'b1, ~small_aligned_s1_q[26:21]} + 7'd1; // 并行计算减法顶七位有进位候选
+    assign arithmetic_add_high0 = {arithmetic_add_high_low0[7] ? arithmetic_add_high_top1 : arithmetic_add_high_top0, arithmetic_add_high_low0[6:0]}; // 拼接加法高半候选零
+    assign arithmetic_add_high1 = {arithmetic_add_high_low1[7] ? arithmetic_add_high_top1 : arithmetic_add_high_top0, arithmetic_add_high_low1[6:0]}; // 拼接加法高半候选一
+    assign arithmetic_sub_high0 = {arithmetic_sub_high_low0[7] ? arithmetic_sub_high_top1 : arithmetic_sub_high_top0, arithmetic_sub_high_low0[6:0]}; // 拼接减法高半候选零
+    assign arithmetic_sub_high1 = {arithmetic_sub_high_low1[7] ? arithmetic_sub_high_top1 : arithmetic_sub_high_top0, arithmetic_sub_high_low1[6:0]}; // 拼接减法高半候选一
     always @(*) begin // 组合执行输入 FP 分类和 magnitude 比较
         a_is_nan_d = (input_a_q[30:23] == 8'hFF) && (input_a_q[22:0] != 23'd0); // 分类 A NaN
         b_is_nan_d = (input_b_q[30:23] == 8'hFF) && (input_b_q[22:0] != 23'd0); // 分类 B NaN
@@ -238,22 +258,13 @@ module coll_fp32_add_lane ( // 定义十六级 IEEE FP32 RNE 加法流水 lane
         rounded_high0_d = {1'b0, mant_grs_s4_q[26:15]}; // 并行形成高十二位无进位候选
         rounded_high1_d = {1'b0, mant_grs_s4_q[26:15]} + 1'b1; // 并行形成高十二位有进位候选
     end // 结束分段 RNE 候选组合逻辑
-    always @(*) begin // 组合执行高十四位七加七 carry-select 加减
-        arithmetic_high_low0_d = 8'd0; arithmetic_high_low1_d = 8'd0; // 默认清零两个低七位候选
-        arithmetic_high_top0_d = 7'd0; arithmetic_high_top1_d = 7'd0; // 默认清零两个顶七位候选
-        if (!subtract_s1_q) begin // 形成同号加法的分段候选
-            arithmetic_high_low0_d = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, small_aligned_s1_q[20:14]}; // 计算高半低七位无进位候选
-            arithmetic_high_low1_d = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, small_aligned_s1_q[20:14]} + 8'd1; // 计算高半低七位有进位候选
-            arithmetic_high_top0_d = {1'b0, big_aligned_s1_q[26:21]} + {1'b0, small_aligned_s1_q[26:21]}; // 并行计算顶七位无进位候选
-            arithmetic_high_top1_d = {1'b0, big_aligned_s1_q[26:21]} + {1'b0, small_aligned_s1_q[26:21]} + 7'd1; // 并行计算顶七位有进位候选
-        end else begin // 形成异号相减的二补码分段候选
-            arithmetic_high_low0_d = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, ~small_aligned_s1_q[20:14]} + 8'd1; // 计算 A 减 B 的低七位和无借位
-            arithmetic_high_low1_d = {1'b0, big_aligned_s1_q[20:14]} + {1'b0, ~small_aligned_s1_q[20:14]}; // 计算 A 减 B 减一的低七位和无借位
-            arithmetic_high_top0_d = {1'b0, big_aligned_s1_q[26:21]} + {1'b1, ~small_aligned_s1_q[26:21]}; // 并行计算二补码顶七位无进位候选
-            arithmetic_high_top1_d = {1'b0, big_aligned_s1_q[26:21]} + {1'b1, ~small_aligned_s1_q[26:21]} + 7'd1; // 并行计算二补码顶七位有进位候选
-        end // 结束加减类型选择
-        arithmetic_high0_d = {arithmetic_high_low0_d[7] ? arithmetic_high_top1_d : arithmetic_high_top0_d, arithmetic_high_low0_d[6:0]}; // 用候选零低段进位拼接完整结果
-        arithmetic_high1_d = {arithmetic_high_low1_d[7] ? arithmetic_high_top1_d : arithmetic_high_top0_d, arithmetic_high_low1_d[6:0]}; // 用候选一低段进位拼接完整结果
+    always @(*) begin // 在已并行计算的高十四位加减候选之间选择
+        arithmetic_high0_d = arithmetic_add_high0; // 默认选择同号加法无低半进位候选
+        arithmetic_high1_d = arithmetic_add_high1; // 默认选择同号加法有低半进位候选
+        if (subtract_s1_q) begin // 异号时切换到预计算的 magnitude 相减候选
+            arithmetic_high0_d = arithmetic_sub_high0; // 选择相减无借位候选
+            arithmetic_high1_d = arithmetic_sub_high1; // 选择相减有借位候选
+        end // 结束加减候选选择
     end // 结束高十四位 carry-select 组合逻辑
     always @(posedge clk_i or negedge rst_n_i) begin // 更新十六级 FP32 加法流水
         if (!rst_n_i) begin // 检测复位有效

@@ -1,262 +1,552 @@
 {
   "schema_version": 1,
   "tests": {
+    "credit_bank8": {
+      "group": "unit",
+      "top": "tb_kdlink_credit_bank8",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_credit_bank8.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_credit_bank8.v"
+      ],
+      "pass_signature": "TB_KDLINK_CREDIT_BANK8_PASS"
+    },
+    "fifo_primitives": {
+      "group": "unit",
+      "top": "tb_kdlink_fifo_primitives",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_fifo_primitives.sv",
+      "rtl": [
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_sync_fifo.v"
+      ],
+      "pass_signature": "TB_KDLINK_FIFO_PRIMITIVES_PASS"
+    },
+    "vc_ingress8": {
+      "group": "unit",
+      "top": "tb_kdlink_vc_ingress8",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_vc_ingress8.sv",
+      "rtl": [
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/kdlink_vc_ingress8.v"
+      ],
+      "pass_signature": "TB_KDLINK_VC_INGRESS8_PASS"
+    },
+    "link_manager": {
+      "group": "unit",
+      "top": "tb_kdlink_link_manager",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_link_manager.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_link_manager.v"
+      ],
+      "pass_signature": "TB_KDLINK_LINK_MANAGER_PASS"
+    },
+    "replay_timeout": {
+      "group": "unit",
+      "top": "tb_kdlink_replay_timeout",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_replay_timeout.sv",
+      "rtl": [
+        "rtl/kdlink/kdlink_replay_window.v"
+      ],
+      "pass_signature": "TB_KDLINK_REPLAY_TIMEOUT_PASS"
+    },
+    "rx_commit_stress": {
+      "group": "unit",
+      "top": "tb_kdlink_rx_commit_stress",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_rx_commit_stress.sv",
+      "rtl": ["rtl/kdlink/kdlink_rx_commit.v"],
+      "pass_signature": "TB_KDLINK_RX_COMMIT_STRESS_PASS"
+    },
     "bonded_reorder": {
       "group": "unit",
-      "top": "tb_kdlink_v2_bonded_reorder",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_bonded_reorder.sv",
-      "rtl": ["rtl/kdlink/kdlink_v2_bonded_reorder.v"],
-      "pass_signature": "TB_KDLINK_V2_BONDED_REORDER_PASS"
+      "top": "tb_kdlink_bonded_reorder",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_bonded_reorder.sv",
+      "rtl": ["rtl/kdlink/kdlink_bonded_reorder.v"],
+      "pass_signature": "TB_KDLINK_BONDED_REORDER_PASS"
     },
     "context_scheduler16": {
       "group": "unit",
-      "top": "tb_kdlink_v2_context_scheduler16",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_context_scheduler16.sv",
-      "rtl": ["rtl/kdlink/kdlink_v2_context_scheduler16.v"],
-      "pass_signature": "TB_KDLINK_V2_CONTEXT_SCHEDULER16_PASS"
+      "top": "tb_kdlink_context_scheduler16",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_context_scheduler16.sv",
+      "rtl": ["rtl/kdlink/kdlink_context_scheduler16.v"],
+      "pass_signature": "TB_KDLINK_CONTEXT_SCHEDULER16_PASS"
+    },
+    "direct_scheduler32": {
+      "group": "unit",
+      "top": "tb_kdlink_direct_scheduler32",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_direct_scheduler32.sv",
+      "rtl": ["rtl/kdlink/kdlink_direct_scheduler32.v"],
+      "pass_signature": "TB_KDLINK_DIRECT_SCHEDULER32_PASS"
     },
     "pcs_deskew10": {
       "group": "unit",
-      "top": "tb_kdlink_v2_pcs_deskew10",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_pcs_deskew10.sv",
-      "rtl": ["rtl/kdlink/kdlink_v2_pcs_deskew10.v"],
-      "pass_signature": "TB_KDLINK_V2_PCS_DESKEW10_PASS"
+      "top": "tb_kdlink_pcs_deskew10",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_pcs_deskew10.sv",
+      "rtl": ["rtl/kdlink/kdlink_pcs_deskew10.v"],
+      "pass_signature": "TB_KDLINK_PCS_DESKEW10_PASS"
     },
     "replay_buffer": {
       "group": "unit",
-      "top": "tb_kdlink_v2_replay_buffer",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_replay_buffer.sv",
-      "rtl": ["rtl/kdlink/kdlink_v2_replay_buffer.v"],
-      "pass_signature": "TB_KDLINK_V2_REPLAY_BUFFER_PASS"
+      "top": "tb_kdlink_replay_buffer",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_replay_buffer.sv",
+      "rtl": ["rtl/kdlink/kdlink_replay_buffer.v"],
+      "pass_signature": "TB_KDLINK_REPLAY_BUFFER_PASS"
     },
     "slice": {
       "group": "unit",
-      "top": "tb_kdlink_v2_slice",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_slice.sv",
+      "top": "tb_kdlink_slice",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_slice.sv",
       "rtl": [
         "rtl/kdlink/coll_crc32_nibble.v",
         "rtl/kdlink/coll_crc32_flit_pipeline.v",
-        "rtl/kdlink/kdlink_v2_packetizer.v",
-        "rtl/kdlink/kdlink_v2_depacketizer.v",
-        "rtl/kdlink/kdlink_v2_slice.v",
-        "rtl/kdlink/kdlink_v2_header_checker.v"
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_slice.v",
+        "rtl/kdlink/kdlink_header_checker.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_SLICE_PASS"
+      "pass_signature": "TB_KDLINK_SLICE_PASS"
     },
     "tensor_bank_array": {
       "group": "unit",
-      "top": "tb_kdlink_v2_tensor_bank_array",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_tensor_bank_array.sv",
+      "top": "tb_kdlink_tensor_bank_array",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_tensor_bank_array.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_tensor_bank_lane.v",
-        "rtl/kdlink/kdlink_v2_tensor_bank_array.v"
+        "rtl/kdlink/kdlink_tensor_bank_lane.v",
+        "rtl/kdlink/kdlink_tensor_bank_array.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_TENSOR_BANK_ARRAY_PASS"
+      "pass_signature": "TB_KDLINK_TENSOR_BANK_ARRAY_PASS"
     },
     "vip_stream": {
       "group": "unit",
-      "top": "tb_kdlink_v2_vip_stream",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_vip_stream.sv",
+      "top": "tb_kdlink_vip_stream",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_vip_stream.sv",
       "rtl": [
-        "simulator/kdlink/pkg/kdlink_v2_tb_pkg.sv",
-        "simulator/kdlink/vip/kdlink_v2_stream_if.sv",
-        "simulator/kdlink/vip/kdlink_v2_stream_monitor.sv"
+        "simulator/kdlink/pkg/kdlink_tb_pkg.sv",
+        "simulator/kdlink/vip/kdlink_stream_if.sv",
+        "simulator/kdlink/vip/kdlink_stream_monitor.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_VIP_STREAM_PASS"
+      "pass_signature": "TB_KDLINK_VIP_STREAM_PASS"
     },
     "env_pkg": {
       "group": "unit",
-      "top": "tb_kdlink_v2_env_pkg",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_env_pkg.sv",
-      "rtl": ["simulator/kdlink/pkg/kdlink_v2_env_pkg.sv"],
-      "pass_signature": "TB_KDLINK_V2_ENV_PKG_PASS"
+      "top": "tb_kdlink_env_pkg",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_env_pkg.sv",
+      "rtl": ["simulator/kdlink/pkg/kdlink_env_pkg.sv"],
+      "pass_signature": "TB_KDLINK_ENV_PKG_PASS"
     },
     "serial_if": {
       "group": "unit",
-      "top": "tb_kdlink_v2_serial_if",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serial_if.sv",
-      "rtl": ["simulator/kdlink/vip/kdlink_v2_serial_if.sv"],
-      "pass_signature": "TB_KDLINK_V2_SERIAL_IF_PASS"
+      "top": "tb_kdlink_serial_if",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_serial_if.sv",
+      "rtl": ["simulator/kdlink/vip/kdlink_serial_if.sv"],
+      "pass_signature": "TB_KDLINK_SERIAL_IF_PASS"
     },
     "serdes_channel": {
       "group": "unit",
-      "top": "tb_kdlink_v2_serdes_channel",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serdes_channel.sv",
+      "top": "tb_kdlink_serdes_channel",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_serdes_channel.sv",
       "rtl": [
         "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_SERDES_CHANNEL_PASS"
+      "pass_signature": "TB_KDLINK_SERDES_CHANNEL_PASS"
     },
     "serdes_full_lane": {
       "group": "unit",
-      "top": "tb_kdlink_v2_serdes_full_lane",
-      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_v2_serdes_full_lane.sv",
+      "top": "tb_kdlink_serdes_full_lane",
+      "testbench": "simulator/kdlink/tb/unit/tb_kdlink_serdes_full_lane.sv",
       "rtl": [
         "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_SERDES_FULL_LANE_PASS"
+      "pass_signature": "TB_KDLINK_SERDES_FULL_LANE_PASS"
     },
     "bonded_port": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_bonded_port",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_bonded_port.sv",
+      "top": "tb_kdlink_bonded_port",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_bonded_port.sv",
       "rtl": [
         "rtl/kdlink/coll_crc32_nibble.v",
         "rtl/kdlink/coll_crc32_flit_pipeline.v",
-        "rtl/kdlink/kdlink_v2_packetizer.v",
-        "rtl/kdlink/kdlink_v2_depacketizer.v",
-        "rtl/kdlink/kdlink_v2_slice.v",
-        "rtl/kdlink/kdlink_v2_replay_buffer.v",
-        "rtl/kdlink/kdlink_v2_bonded_reorder.v",
-        "rtl/kdlink/kdlink_v2_bonded_tx_register.v",
-        "rtl/kdlink/kdlink_v2_bonded_port.v"
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_slice.v",
+        "rtl/kdlink/kdlink_replay_buffer.v",
+        "rtl/kdlink/kdlink_bonded_reorder.v",
+        "rtl/kdlink/kdlink_bonded_tx_register.v",
+        "rtl/kdlink/kdlink_bonded_port.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_BONDED_PORT_PASS"
+      "pass_signature": "TB_KDLINK_BONDED_PORT_PASS"
     },
     "nic8": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_nic8",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_nic8.sv",
+      "top": "tb_kdlink_nic8",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_nic8.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_tensor_bank_lane.v",
-        "rtl/kdlink/kdlink_v2_tensor_bank_array.v",
-        "rtl/kdlink/kdlink_v2_nic8.v"
+        "rtl/kdlink/kdlink_tensor_bank_lane.v",
+        "rtl/kdlink/kdlink_tensor_bank_array.v",
+        "rtl/kdlink/kdlink_nic8.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_NIC8_PASS"
+      "pass_signature": "TB_KDLINK_NIC8_PASS"
     },
     "nic8_cdc": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_nic8_cdc",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_nic8_cdc.sv",
+      "top": "tb_kdlink_nic8_cdc",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_nic8_cdc.sv",
       "rtl": [
         "rtl/kdlink/coll_async_fifo.v",
-        "rtl/kdlink/kdlink_v2_tensor_bank_lane.v",
-        "rtl/kdlink/kdlink_v2_tensor_bank_array.v",
-        "rtl/kdlink/kdlink_v2_nic8.v",
-        "rtl/kdlink/kdlink_v2_nic8_cdc.v"
+        "rtl/kdlink/kdlink_tensor_bank_lane.v",
+        "rtl/kdlink/kdlink_tensor_bank_array.v",
+        "rtl/kdlink/kdlink_nic8.v",
+        "rtl/kdlink/kdlink_nic8_cdc.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_NIC8_CDC_PASS"
+      "pass_signature": "TB_KDLINK_NIC8_CDC_PASS"
     },
     "pcs": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_pcs",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_pcs.sv",
+      "top": "tb_kdlink_pcs",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_pcs.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_scrambler64.v",
-        "rtl/kdlink/kdlink_v2_descrambler64.v",
-        "rtl/kdlink/kdlink_v2_pcs_deskew10.v",
-        "rtl/kdlink/kdlink_v2_pcs_tx.v",
-        "rtl/kdlink/kdlink_v2_pcs_rx.v",
-        "rtl/kdlink/kdlink_v2_pcs.v"
+        "rtl/kdlink/kdlink_scrambler64.v",
+        "rtl/kdlink/kdlink_descrambler64.v",
+        "rtl/kdlink/kdlink_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_pcs_tx.v",
+        "rtl/kdlink/kdlink_pcs_rx.v",
+        "rtl/kdlink/kdlink_pcs.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_PCS_PASS"
+      "pass_signature": "TB_KDLINK_PCS_PASS"
     },
     "serdes_pcs_link": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_serdes_pcs_link",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_serdes_pcs_link.sv",
+      "top": "tb_kdlink_serdes_pcs_link",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_serdes_pcs_link.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_scrambler64.v",
-        "rtl/kdlink/kdlink_v2_descrambler64.v",
-        "rtl/kdlink/kdlink_v2_pcs_deskew10.v",
-        "rtl/kdlink/kdlink_v2_pcs_tx.v",
-        "rtl/kdlink/kdlink_v2_pcs_rx.v",
-        "rtl/kdlink/kdlink_v2_pcs.v",
+        "rtl/kdlink/kdlink_scrambler64.v",
+        "rtl/kdlink/kdlink_descrambler64.v",
+        "rtl/kdlink/kdlink_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_pcs_tx.v",
+        "rtl/kdlink/kdlink_pcs_rx.v",
+        "rtl/kdlink/kdlink_pcs.v",
         "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
         "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_SERDES_PCS_LINK_PASS"
+      "pass_signature": "TB_KDLINK_SERDES_PCS_LINK_PASS"
     },
     "serdes_full_link": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_serdes_full_link",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_serdes_full_link.sv",
+      "top": "tb_kdlink_serdes_full_link",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_serdes_full_link.sv",
       "rtl": [
         "Library/models/kdlink/serdes/kdlink_v2_serdes_lane_full_model.sv",
         "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_full_model.sv",
         "Library/models/kdlink/serdes/kdlink_v2_serdes_link_full_model.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_SERDES_FULL_LINK_PASS"
+      "pass_signature": "TB_KDLINK_SERDES_FULL_LINK_PASS"
     },
     "reverse_ctrl": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_reverse_ctrl",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_reverse_ctrl.sv",
+      "top": "tb_kdlink_reverse_ctrl",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_reverse_ctrl.sv",
       "rtl": [
         "rtl/kdlink/coll_crc16_byte.v",
-        "rtl/kdlink/kdlink_v2_reverse_codec.v",
-        "rtl/kdlink/kdlink_v2_reverse_ctrl.v"
+        "rtl/kdlink/kdlink_reverse_codec.v",
+        "rtl/kdlink/kdlink_reverse_ctrl.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_REVERSE_CTRL_PASS"
+      "pass_signature": "TB_KDLINK_REVERSE_CTRL_PASS"
+    },
+    "endpoint_credit_recovery": {
+      "group": "subsystem",
+      "top": "tb_kdlink_endpoint_credit_recovery",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_endpoint_credit_recovery.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_packetizer.v",
+        "rtl/kdlink/coll_depacketizer.v",
+        "rtl/kdlink/coll_header_checker.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_phy_adapter.v",
+        "rtl/kdlink/coll_vc_credit_bank.v",
+        "rtl/kdlink/coll_vc_arbiter.v",
+        "rtl/kdlink/coll_replay_retry_table.v",
+        "rtl/kdlink/coll_replay_buffer.v",
+        "rtl/kdlink/coll_rx_identity_history.v",
+        "rtl/kdlink/coll_packet_rx_commit.v",
+        "rtl/kdlink/coll_reverse_codec.v",
+        "rtl/kdlink/coll_link_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_ENDPOINT_CREDIT_RECOVERY_PASS"
+    },
+    "reduction_dtype_ii1": {
+      "group": "subsystem",
+      "top": "tb_kdlink_reduction_dtype_ii1",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_reduction_dtype_ii1.sv",
+      "rtl": [
+        "rtl/kdlink/coll_lzc24.v",
+        "rtl/kdlink/coll_fp16_to_fp32.v",
+        "rtl/kdlink/coll_fp32_add_lane.v",
+        "rtl/kdlink/coll_fp32_to_fp16_pipeline.v",
+        "rtl/kdlink/coll_fp32_to_bf16.v",
+        "rtl/kdlink/coll_int32_reduction.v",
+        "rtl/kdlink/coll_reduction_engine.v"
+      ],
+      "pass_signature": "TB_KDLINK_REDUCTION_DTYPE_II1_PASS"
+    },
+    "reduction_random": {
+      "group": "subsystem",
+      "top": "tb_kdlink_reduction_random",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_reduction_random.sv",
+      "rtl": [
+        "rtl/kdlink/coll_lzc24.v",
+        "rtl/kdlink/coll_fp16_to_fp32.v",
+        "rtl/kdlink/coll_fp32_add_lane.v",
+        "rtl/kdlink/coll_fp32_to_fp16_pipeline.v",
+        "rtl/kdlink/coll_fp32_to_bf16.v",
+        "rtl/kdlink/coll_int32_reduction.v",
+        "rtl/kdlink/coll_reduction_engine.v"
+      ],
+      "pass_signature": "TB_KDLINK_REDUCTION_RANDOM_PASS"
+    },
+    "collective_datapath16": {
+      "group": "subsystem",
+      "top": "tb_kdlink_collective_datapath16",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_collective_datapath16.sv",
+      "rtl": [
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_lzc24.v",
+        "rtl/kdlink/coll_fp16_to_fp32.v",
+        "rtl/kdlink/coll_fp32_add_lane.v",
+        "rtl/kdlink/coll_fp32_to_fp16_pipeline.v",
+        "rtl/kdlink/coll_fp32_to_bf16.v",
+        "rtl/kdlink/coll_int32_reduction.v",
+        "rtl/kdlink/coll_reduction_engine.v",
+        "rtl/kdlink/kdlink_context_scheduler16.v",
+        "rtl/kdlink/kdlink_collective_datapath16.v"
+      ],
+      "pass_signature": "TB_KDLINK_COLLECTIVE_DATAPATH16_PASS"
     },
     "switch32_congestion": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_switch32_congestion",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_switch32_congestion.sv",
-      "rtl": ["rtl/kdlink/kdlink_v2_switch_slice32.v"],
-      "pass_signature": "TB_KDLINK_V2_SWITCH32_CONGESTION_PASS"
+      "top": "tb_kdlink_switch32_congestion",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_switch32_congestion.sv",
+      "rtl": ["rtl/kdlink/kdlink_switch_slice32.v"],
+      "pass_signature": "TB_KDLINK_SWITCH32_CONGESTION_PASS"
     },
     "switch32_permutation": {
       "group": "subsystem",
-      "top": "tb_kdlink_v2_switch32_permutation",
-      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_v2_switch32_permutation.sv",
+      "top": "tb_kdlink_switch32_permutation",
+      "testbench": "simulator/kdlink/tb/subsystem/tb_kdlink_switch32_permutation.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_switch_slice32.v",
-        "rtl/kdlink/kdlink_v2_switch32.v"
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_SWITCH32_PERMUTATION_PASS"
+      "pass_signature": "TB_KDLINK_SWITCH32_PERMUTATION_PASS"
     },
     "collective32_int32": {
       "group": "system",
-      "top": "tb_kdlink_v2_collective32_int32",
-      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_collective32_int32.sv",
+      "top": "tb_kdlink_collective32_int32",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_collective32_int32.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_int32_reduce_array512.v",
-        "rtl/kdlink/kdlink_v2_direct_scheduler32.v",
-        "rtl/kdlink/kdlink_v2_switch_slice32.v",
-        "rtl/kdlink/kdlink_v2_switch32.v",
-        "rtl/kdlink/kdlink_v2_fabric32.v",
-        "rtl/kdlink/kdlink_v2_collective32_int32.v"
+        "rtl/kdlink/kdlink_int32_reduce_array512.v",
+        "rtl/kdlink/kdlink_direct_scheduler32.v",
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v",
+        "rtl/kdlink/kdlink_fabric32.v",
+        "rtl/kdlink/kdlink_collective32_int32.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_COLLECTIVE32_INT32_PASS"
+      "pass_signature": "TB_KDLINK_COLLECTIVE32_INT32_PASS"
     },
     "direct32": {
       "group": "system",
-      "top": "tb_kdlink_v2_direct32",
-      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_direct32.sv",
+      "top": "tb_kdlink_direct32",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_direct32.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_int32_reduce_array512.v",
-        "rtl/kdlink/kdlink_v2_direct_scheduler32.v",
-        "rtl/kdlink/kdlink_v2_switch_slice32.v",
-        "rtl/kdlink/kdlink_v2_switch32.v",
-        "rtl/kdlink/kdlink_v2_fabric32.v",
-        "rtl/kdlink/kdlink_v2_collective32_int32.v"
+        "rtl/kdlink/kdlink_int32_reduce_array512.v",
+        "rtl/kdlink/kdlink_direct_scheduler32.v",
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v",
+        "rtl/kdlink/kdlink_fabric32.v",
+        "rtl/kdlink/kdlink_collective32_int32.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_DIRECT32_PASS"
+      "pass_signature": "TB_KDLINK_DIRECT32_PASS"
     },
     "fabric32": {
       "group": "system",
-      "top": "tb_kdlink_v2_fabric32",
-      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_fabric32.sv",
+      "top": "tb_kdlink_fabric32",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_fabric32.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_switch_slice32.v",
-        "rtl/kdlink/kdlink_v2_switch32.v",
-        "rtl/kdlink/kdlink_v2_fabric32.v"
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v",
+        "rtl/kdlink/kdlink_fabric32.v"
       ],
-      "pass_signature": "TB_KDLINK_V2_FABRIC32_PASS"
+      "pass_signature": "TB_KDLINK_FABRIC32_PASS"
+    },
+    "four_node_full_duplex": {
+      "group": "system",
+      "top": "tb_kdlink_four_node_full_duplex",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_four_node_full_duplex.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_packetizer.v",
+        "rtl/kdlink/coll_depacketizer.v",
+        "rtl/kdlink/coll_header_checker.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_phy_adapter.v",
+        "rtl/kdlink/coll_vc_credit_bank.v",
+        "rtl/kdlink/coll_vc_arbiter.v",
+        "rtl/kdlink/coll_replay_retry_table.v",
+        "rtl/kdlink/coll_replay_buffer.v",
+        "rtl/kdlink/coll_rx_identity_history.v",
+        "rtl/kdlink/coll_packet_rx_commit.v",
+        "rtl/kdlink/coll_reverse_codec.v",
+        "rtl/kdlink/coll_link_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_FOUR_NODE_FULL_DUPLEX_PASS"
     },
     "baseboard32": {
       "group": "system",
-      "top": "tb_kdlink_v2_baseboard32",
-      "testbench": "simulator/kdlink/tb/system/tb_kdlink_v2_baseboard32.sv",
+      "top": "tb_kdlink_baseboard32",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_baseboard32.sv",
       "rtl": [
-        "rtl/kdlink/kdlink_v2_switch_slice32.v",
-        "rtl/kdlink/kdlink_v2_switch32.v",
-        "rtl/kdlink/kdlink_v2_fabric32.v",
-        "simulator/kdlink/model/system/kdlink_v2_card_model.sv",
-        "simulator/kdlink/model/system/kdlink_v2_baseboard32_model.sv"
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v",
+        "rtl/kdlink/kdlink_fabric32.v",
+        "simulator/kdlink/model/system/kdlink_card_model.sv",
+        "simulator/kdlink/model/system/kdlink_baseboard32_model.sv"
       ],
-      "pass_signature": "TB_KDLINK_V2_BASEBOARD32_PASS"
+      "pass_signature": "TB_KDLINK_BASEBOARD32_PASS"
+    },
+    "reliable_endpoint_e2e": {
+      "group": "system",
+      "top": "tb_kdlink_reliable_endpoint_e2e",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_reliable_endpoint_e2e.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_toggle_handshake.v",
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_scrambler64.v",
+        "rtl/kdlink/kdlink_descrambler64.v",
+        "rtl/kdlink/kdlink_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_pcs_tx.v",
+        "rtl/kdlink/kdlink_pcs_rx.v",
+        "rtl/kdlink/kdlink_pcs.v",
+        "rtl/kdlink/kdlink_reverse_codec.v",
+        "rtl/kdlink/kdlink_reverse_ctrl.v",
+        "rtl/kdlink/kdlink_link_manager.v",
+        "rtl/kdlink/kdlink_credit_bank8.v",
+        "rtl/kdlink/kdlink_vc_ingress8.v",
+        "rtl/kdlink/kdlink_replay_window.v",
+        "rtl/kdlink/kdlink_rx_commit.v",
+        "rtl/kdlink/kdlink_reliable_endpoint.v",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv",
+        "simulator/kdlink/model/link/kdlink_reverse_channel_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_RELIABLE_ENDPOINT_E2E_PASS"
+    },
+    "reliable_reset_recovery": {
+      "group": "system",
+      "top": "tb_kdlink_reliable_reset_recovery",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_reliable_reset_recovery.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_toggle_handshake.v",
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_reverse_codec.v",
+        "rtl/kdlink/kdlink_reverse_ctrl.v",
+        "rtl/kdlink/kdlink_link_manager.v",
+        "rtl/kdlink/kdlink_credit_bank8.v",
+        "rtl/kdlink/kdlink_vc_ingress8.v",
+        "rtl/kdlink/kdlink_replay_window.v",
+        "rtl/kdlink/kdlink_rx_commit.v",
+        "rtl/kdlink/kdlink_reliable_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_RELIABLE_RESET_RECOVERY_PASS"
+    },
+    "multiboard_e2e": {
+      "group": "system",
+      "top": "tb_kdlink_multiboard_e2e",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_multiboard_e2e.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_replay_buffer.v",
+        "rtl/kdlink/kdlink_scrambler64.v",
+        "rtl/kdlink/kdlink_descrambler64.v",
+        "rtl/kdlink/kdlink_pcs_deskew10.v",
+        "rtl/kdlink/kdlink_pcs_tx.v",
+        "rtl/kdlink/kdlink_pcs_rx.v",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_channel_model.sv",
+        "Library/models/kdlink/serdes/kdlink_v2_serdes_link_model.sv"
+      ],
+      "pass_signature": "TB_KDLINK_MULTIBOARD_E2E_PASS"
+    },
+    "reliable_bonded_endpoint": {
+      "group": "system",
+      "top": "tb_kdlink_reliable_bonded_endpoint",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_reliable_bonded_endpoint.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_toggle_handshake.v",
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_reverse_codec.v",
+        "rtl/kdlink/kdlink_reverse_ctrl.v",
+        "rtl/kdlink/kdlink_link_manager.v",
+        "rtl/kdlink/kdlink_credit_bank8.v",
+        "rtl/kdlink/kdlink_vc_ingress8.v",
+        "rtl/kdlink/kdlink_replay_window.v",
+        "rtl/kdlink/kdlink_rx_commit.v",
+        "rtl/kdlink/kdlink_reliable_endpoint.v",
+        "rtl/kdlink/kdlink_reliable_bonded_endpoint.v"
+      ],
+      "pass_signature": "TB_KDLINK_RELIABLE_BONDED_ENDPOINT_PASS"
+    },
+    "reliable_nic8_fabric": {
+      "group": "system",
+      "top": "tb_kdlink_reliable_nic8_fabric",
+      "testbench": "simulator/kdlink/tb/system/tb_kdlink_reliable_nic8_fabric.sv",
+      "rtl": [
+        "rtl/kdlink/coll_crc16_byte.v",
+        "rtl/kdlink/coll_crc32_nibble.v",
+        "rtl/kdlink/coll_crc32_flit_pipeline.v",
+        "rtl/kdlink/coll_async_fifo.v",
+        "rtl/kdlink/coll_sync_fifo.v",
+        "rtl/kdlink/coll_toggle_handshake.v",
+        "rtl/kdlink/kdlink_tensor_bank_lane.v",
+        "rtl/kdlink/kdlink_tensor_bank_array.v",
+        "rtl/kdlink/kdlink_nic8.v",
+        "rtl/kdlink/kdlink_packetizer.v",
+        "rtl/kdlink/kdlink_depacketizer.v",
+        "rtl/kdlink/kdlink_reverse_codec.v",
+        "rtl/kdlink/kdlink_reverse_ctrl.v",
+        "rtl/kdlink/kdlink_link_manager.v",
+        "rtl/kdlink/kdlink_credit_bank8.v",
+        "rtl/kdlink/kdlink_vc_ingress8.v",
+        "rtl/kdlink/kdlink_replay_window.v",
+        "rtl/kdlink/kdlink_rx_commit.v",
+        "rtl/kdlink/kdlink_reliable_endpoint.v",
+        "rtl/kdlink/kdlink_reliable_bonded_endpoint.v",
+        "rtl/kdlink/kdlink_reliable_nic8.v",
+        "rtl/kdlink/kdlink_switch_slice32.v",
+        "rtl/kdlink/kdlink_switch32.v"
+      ],
+      "pass_signature": "TB_KDLINK_RELIABLE_NIC8_FABRIC_PASS"
     }
   }
 }

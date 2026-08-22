@@ -94,4 +94,4 @@ controller and legally redistributable vendor collateral. The corresponding fron
 are under `Library/timing/interfaces/`; they are not HBM array timing views.
 
 The normative transaction contract is
-[`specs/interfaces/hbm_transaction_v0.1.md`](../../../specs/interfaces/hbm_transaction_v0.1.md).
+[`specs/interfaces/hbm_transaction.md`](../../../specs/interfaces/hbm_transaction.md).

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "name": "kdlink-v2-chassis32",
+  "name": "kdlink-chassis32",
   "card_slots": 8,
   "npus_per_card": 4,
   "nodes": 32,

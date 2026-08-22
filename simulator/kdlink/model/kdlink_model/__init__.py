@@ -1,4 +1,4 @@
-"""Executable KDLink-v2 protocol, bonding, topology, PCS, and performance model."""
+"""Executable KDLink protocol, bonding, topology, PCS, and performance model."""
 
 from .bonding import BondedPortDistributor, BondedPortReorder
 from .performance import FabricPerformance, fabric_performance
