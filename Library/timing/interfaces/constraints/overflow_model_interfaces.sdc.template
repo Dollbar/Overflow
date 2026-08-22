@@ -1,0 +1,12 @@
+# Apache-2.0. Replace angle-bracket tokens for the integration top. This is not a runnable default SDC.
+create_clock -name MODEL_CLK -period <LOGICAL_CLOCK_PERIOD_NS> [get_ports <MODEL_CLOCK_PORT>]
+
+set_input_delay  <INPUT_DELAY_NS>  -clock MODEL_CLK [get_ports <MODEL_INPUT_PORTS>]
+set_output_delay <OUTPUT_DELAY_NS> -clock MODEL_CLK [get_ports <MODEL_OUTPUT_PORTS>]
+
+# Apply only when the wrapper really implements the configured behavioral latency.
+set_multicycle_path <SETUP_CYCLES> -setup -from [get_cells <MODEL_SOURCE_CELLS>] -to [get_cells <MODEL_SINK_CELLS>]
+set_multicycle_path <HOLD_CYCLES>  -hold  -from [get_cells <MODEL_SOURCE_CELLS>] -to [get_cells <MODEL_SINK_CELLS>]
+
+# Add generated clocks and asynchronous clock groups for a selected controller or transceiver wrapper.
+# Do not use false paths to conceal an unconstrained HBM or SerDes interface.

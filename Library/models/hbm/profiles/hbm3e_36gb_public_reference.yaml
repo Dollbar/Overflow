@@ -1,0 +1,61 @@
+schema_version: 2
+model_id: public-hbm3e-36gb-reference-v0.1
+evidence_level: ANALYTICAL
+parameter_status: public_product_floor_plus_simulation_assumptions
+units:
+  capacity: decimal_bytes
+  clock: hertz
+  latency: logical_cycles_from_issue
+  bandwidth: combined_read_write_payload_bytes_per_logical_cycle
+hbm:
+  partitions: 1
+  capacity_bytes_per_partition: 36000000000
+  logical_clock_hz: 1000000000
+  beat_bytes: 128
+  maximum_transaction_bytes: 4096
+  payload_bytes_per_cycle_per_partition: 1200
+  read_latency_cycles: 500
+  write_latency_cycles: 500
+  max_outstanding_per_partition: 4096
+geometry:
+  channels_per_partition: 16
+  pseudo_channels_per_channel: 2
+  bank_groups_per_pseudo_channel: 4
+  banks_per_bank_group: 4
+  row_bytes: 2048
+  bank_interleave_bytes: 128
+timing:
+  timing_model_enabled: false
+  scheduler_policy: fifo
+  max_issues_per_partition_per_cycle: 0
+  activate_cycles: 14
+  precharge_cycles: 14
+  minimum_row_active_cycles: 32
+  column_to_column_cycles: 4
+  row_to_row_cycles: 4
+  four_activate_window_cycles: 16
+  read_to_write_cycles: 8
+  write_to_read_cycles: 12
+refresh:
+  refresh_enabled: false
+  refresh_interval_cycles: 3900
+  refresh_duration_cycles: 160
+  refresh_stagger_cycles: 0
+ecc:
+  ecc_enabled: true
+  correctable_bits_per_beat: 1
+observability:
+  event_log_depth: 4096
+public_reference:
+  vendor: Micron
+  product_family: HBM3E
+  stack_height: 12-high
+  advertised_capacity_gbyte: 36
+  advertised_pin_rate_gbit_per_second: greater_than_9.2
+  advertised_bandwidth_tbyte_per_second: greater_than_1.2
+  channels: 16
+  pseudo_channels: 32
+  source_url: https://www.micron.com/products/memory/hbm/hbm3e
+assumption_boundary:
+  - The 1200 B/cycle value is a conservative public bandwidth floor at the 1 GHz logical model clock.
+  - Latency, bank geometry below pseudo-channel level, refresh, and command timings are not vendor-qualified.

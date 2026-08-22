@@ -1,0 +1,57 @@
+schema_version: 2
+model_id: overflow-kdlink-serdes-v0.1
+evidence_level: RTL_SIM
+boundary: digital_pcs_pma
+parameter_status: logical_architecture_baseline
+logical_interface:
+  group_clock_hz: 1000000000
+  directions: full_duplex
+  lanes_per_slice: 10
+  pcs_block_bits: 66
+  pcs_data_bits_per_block: 64
+  blocks_per_group: 10
+  logical_flit_bits: 640
+  kdlink_payload_bits_per_flit: 512
+  slices_per_bonded_port: 2
+  baseline_active_slices_per_port: 1
+channel_defaults:
+  propagation_cycles: 3
+  maximum_lane_skew_cycles: 2
+  cdr_lock_cycles: 8
+  block_lock_cycles: 8
+  compatibility_training_cycles: 16
+  jitter_period_blocks: 0
+  jitter_extra_cycles: 0
+  burst_error_length_blocks: 4
+  elastic_depth: 64
+  line_rate_kbps_metadata: 106250000
+  modulation_bits_per_symbol: 2
+derived_logical_rates:
+  encoded_gbit_per_second_per_lane: 66
+  encoded_gbit_per_second_per_slice_per_direction: 660
+  pcs_client_gbit_per_second_per_slice_per_direction: 640
+  kdlink_payload_gbyte_per_second_per_slice_per_direction: 64
+  ideal_two_slice_payload_gbyte_per_second_per_direction: 128
+physical_mapping:
+  selected_profile: versal_gtm_106g_pam4_rate_adapted
+  serial_line_rate_gbit_per_second: 106.25
+  modulation: PAM4
+  symbol_rate_gbaud: 53.125
+  logical_to_physical_rate_adaptation_required: true
+  logical_groups_per_second: 1000000000
+  physical_66bit_block_capacity_per_second: 1609848484.848485
+  physical_capacity_utilization_percent: 62.117647058824
+  status: ANALYTICAL
+  source_url: https://docs.amd.com/r/en-US/ds956-versal-prime/GTM-Transceiver-Performance
+unsupported_direct_mapping:
+  logical_serial_equivalent_gbit_per_second: 66
+  reason: AMD DS956 identifies the PAM4 interval above 58 and below 76 Gbit/s as unavailable.
+  release_claim: HOLD
+fault_semantics:
+  drop_precedes_corruption: true
+  lane_down_flushes_inflight_blocks: true
+  admin_down_flushes_all_inflight_blocks: true
+  periodic_errors_are_deterministic: true
+  burst_errors_are_deterministic: true
+  jitter_adds_order_preserving_queue_delay: true
+  elastic_overflow_drops_and_counts_block: true

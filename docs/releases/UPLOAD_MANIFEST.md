@@ -2,12 +2,12 @@
 
 ## Overflow v0.1 release candidate
 
-- Prepared: 2026-08-21
-- State: `AWAITING_USER_APPROVAL`
+- Prepared: 2026-08-22
+- State: `APPROVED_FOR_PR`
 - Base for review: `origin/main` at `579cab4`
 - Final-tree candidate files: 147
 - Legacy versioned paths removed by the rename: 71
-- Git actions performed: none (not staged, committed, tagged, or pushed)
+- Release workflow: candidate committed on a dedicated feature branch; no release tag is created by this manifest
 
 ## Final-tree candidate whitelist
 

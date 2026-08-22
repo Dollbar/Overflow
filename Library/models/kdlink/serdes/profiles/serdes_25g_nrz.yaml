@@ -1,0 +1,29 @@
+schema_version: 1
+profile_id: ethernet-25g-nrz-reference
+evidence_level: ANALYTICAL
+physical:
+  line_rate_gbit_per_second: 25.78125
+  modulation: NRZ
+  bits_per_symbol: 1
+  symbol_rate_gbaud: 25.78125
+  encoding: 64b66b
+  pcs_data_gbit_per_second_per_lane: 25
+  block_group_clock_hz: 390625000
+model_parameters:
+  line_rate_kbps: 25781250
+  modulation_bits_per_symbol: 1
+  propagation_cycles: 3
+  maximum_lane_skew_cycles: 2
+  cdr_lock_cycles: 16
+  block_lock_cycles: 16
+  jitter_period_blocks: 0
+  jitter_extra_cycles: 0
+  burst_error_length_blocks: 4
+  elastic_depth: 64
+source:
+  vendor: Intel
+  document: E-Tile Hard IP for Ethernet User Guide
+  url: https://www.intel.com/content/www/us/en/docs/programmable/683468/22-3/intel-fpga-ip-supported-features.html
+limitations:
+  - The file describes a digital rate profile, not Intel encrypted IP or an electrical channel model.
+  - FEC, auto-negotiation, equalization, and compliance training remain outside this model.

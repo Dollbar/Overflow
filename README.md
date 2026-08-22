@@ -61,6 +61,7 @@ scope definition.
 
 | Directory | Responsibility |
 | --- | --- |
+| `Library/` | Reusable HBM/SerDes behavioral models, parameter profiles, and synthetic timing views |
 | `specs/` | Model, compiler, ISA, ABI, KDLink, and digital-interface specifications |
 | `models/` | Model manifests, operator lists, weight sharding, and numerical references |
 | `compiler/` | Graph import, IR, optimization, partitioning, scheduling, and code generation |
@@ -77,6 +78,7 @@ scope definition.
 | `docs/` | Architecture, planning, management, and ADR documents |
 | `config/` | Machine-readable architecture and protocol baselines |
 | `scripts/` | Reproducible repository, model, compiler, simulator, and RTL tooling |
+| `technology/` | Portable front-end STA validation for reusable synthetic timing views |
 | `ci/` | Automated formatting, test, simulation, and release gates |
 | `LICENSES/` | Software, RTL, documentation, and model license boundaries |
 
