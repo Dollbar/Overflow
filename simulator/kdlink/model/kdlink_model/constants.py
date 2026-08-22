@@ -1,4 +1,4 @@
-"""Generated KDLink-v2 constants. Do not edit manually."""
+"""Generated KDLink constants. Do not edit manually."""
 
 SCHEMA_VERSION = 2
 NUM_NODES = 32

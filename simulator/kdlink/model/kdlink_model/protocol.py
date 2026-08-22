@@ -1,4 +1,4 @@
-"""KDLink-v2 forward-flit and reverse-control codecs."""
+"""KDLink forward-flit and reverse-control codecs."""
 
 from __future__ import annotations
 
@@ -84,7 +84,7 @@ class KDLinkFlit:
 
     def __post_init__(self) -> None:
         if len(self.payload) != PAYLOAD_WIDTH // 8:
-            raise ValueError("KDLink-v2 payload must be exactly 64 bytes")
+            raise ValueError("KDLink payload must be exactly 64 bytes")
         if self.header.payload_bytes > PAYLOAD_WIDTH // 8:
             raise ValueError("payload_bytes exceeds the fixed payload")
 

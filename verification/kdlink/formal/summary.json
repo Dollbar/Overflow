@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "evidence": "FORMAL_BOUNDED",
+  "engine": "Yosys SAT",
+  "proofs": {
+    "fifo_credit": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/fifo_credit.ys",
+      "log": "verification/kdlink/formal/work/fifo_credit.log"
+    },
+    "rx_exact_once": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/rx_exact_once.ys",
+      "log": "verification/kdlink/formal/work/rx_exact_once.log"
+    },
+    "replay_progress": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/replay_progress.ys",
+      "log": "verification/kdlink/formal/work/replay_progress.log"
+    },
+    "vc_service": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/vc_service.ys",
+      "log": "verification/kdlink/formal/work/vc_service.log"
+    },
+    "escape_dependency": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/escape_dependency.ys",
+      "log": "verification/kdlink/formal/work/escape_dependency.log"
+    }
+  },
+  "pass": true
+}

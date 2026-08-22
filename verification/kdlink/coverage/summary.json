@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "evidence": "RTL_COVERAGE",
+  "scope": "rtl/kdlink source-level control coverage",
+  "aggregation": "union by RTL source point across hierarchy and Verilator parameterized-page suffixes",
+  "reused_existing_raw_databases": true,
+  "tests": [
+    "credit_bank8",
+    "fifo_primitives",
+    "vc_ingress8",
+    "link_manager",
+    "replay_timeout",
+    "rx_commit_stress",
+    "bonded_reorder",
+    "context_scheduler16",
+    "direct_scheduler32",
+    "slice",
+    "pcs_deskew10",
+    "serdes_pcs_link",
+    "tensor_bank_array",
+    "nic8",
+    "nic8_cdc",
+    "pcs",
+    "reverse_ctrl",
+    "reduction_dtype_ii1",
+    "reduction_random",
+    "collective_datapath16",
+    "switch32_congestion",
+    "switch32_permutation",
+    "collective32_int32",
+    "direct32",
+    "fabric32",
+    "reliable_endpoint_e2e",
+    "reliable_reset_recovery",
+    "reliable_bonded_endpoint",
+    "reliable_nic8_fabric"
+  ],
+  "metrics": {
+    "line": {
+      "percent": 97.4,
+      "hit": 341,
+      "total": 350
+    },
+    "toggle": {
+      "percent": 95.5,
+      "hit": 48572,
+      "total": 50870
+    },
+    "branch": {
+      "percent": 96.0,
+      "hit": 626,
+      "total": 652
+    },
+    "expr": {
+      "percent": 95.0,
+      "hit": 4572,
+      "total": 4814
+    }
+  },
+  "thresholds_percent": {
+    "line": 95.0,
+    "branch": 90.0,
+    "toggle": 95.0
+  },
+  "exclusions": [
+    "testbench and behavioral-model source paths",
+    "signals and memories wider than 64 bits for toggle coverage",
+    "tool-generated underscore-prefixed implementation signals"
+  ],
+  "pass": true
+}

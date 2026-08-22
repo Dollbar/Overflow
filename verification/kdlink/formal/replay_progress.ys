@@ -1,0 +1,7 @@
+read_verilog -formal -sv rtl/kdlink/kdlink_replay_window.v
+read_verilog -formal -sv verification/kdlink/formal/formal_replay_progress.sv
+prep -top formal_replay_progress -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 20 -set-init-zero

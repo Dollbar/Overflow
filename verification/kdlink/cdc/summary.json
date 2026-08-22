@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "evidence": "LINT+CDC_STRUCTURAL",
+  "lint_tops": {
+    "kdlink_reliable_endpoint": "PASS",
+    "kdlink_reliable_bonded_endpoint": "PASS",
+    "kdlink_reliable_nic8": "PASS",
+    "kdlink_collective_datapath16": "PASS",
+    "kdlink_collective32_int32": "PASS",
+    "kdlink_pcs": "PASS"
+  },
+  "forbidden_rtl_findings": [],
+  "raw_gated_clock_findings": [],
+  "cdc_modules": {
+    "coll_async_fifo.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "read_clk_i",
+        "write_clk_i"
+      ],
+      "required_structures": [
+        "gray",
+        "sync1",
+        "sync2"
+      ],
+      "missing_structures": []
+    },
+    "coll_toggle_handshake.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "dst_clk_i",
+        "src_clk_i"
+      ],
+      "required_structures": [
+        "sync1",
+        "sync2"
+      ],
+      "missing_structures": []
+    },
+    "kdlink_nic8_cdc.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "clk_i",
+        "read_clk_i",
+        "slice_clk_i",
+        "tensor_clk_i",
+        "write_clk_i"
+      ],
+      "required_structures": [
+        "coll_async_fifo"
+      ],
+      "missing_structures": []
+    },
+    "kdlink_vc_ingress8.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "core_clk_i",
+        "phy_clk_i",
+        "read_clk_i",
+        "write_clk_i"
+      ],
+      "required_structures": [
+        "coll_async_fifo"
+      ],
+      "missing_structures": []
+    },
+    "kdlink_reliable_endpoint.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "clk_i",
+        "core_clk_i",
+        "dst_clk_i",
+        "phy_clk_i",
+        "read_clk_i",
+        "src_clk_i",
+        "write_clk_i"
+      ],
+      "required_structures": [
+        "coll_async_fifo",
+        "coll_toggle_handshake"
+      ],
+      "missing_structures": []
+    },
+    "kdlink_reliable_bonded_endpoint.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "clk_i",
+        "core_clk_i",
+        "phy_clk_i"
+      ],
+      "required_structures": [
+        "kdlink_reliable_endpoint"
+      ],
+      "missing_structures": []
+    },
+    "kdlink_reliable_nic8.v": {
+      "status": "PASS",
+      "clock_identifiers": [
+        "clk_i",
+        "core_clk_i",
+        "phy_clk_i"
+      ],
+      "required_structures": [
+        "kdlink_reliable_bonded_endpoint"
+      ],
+      "missing_structures": []
+    }
+  },
+  "reset_assumption": "asynchronous assertion and synchronous deassertion per receiving domain; paired FIFO domains reset together",
+  "pass": true
+}

@@ -18,6 +18,16 @@ weaken the verification, licensing, or evidence requirements defined here.
 - Modify only the requested scope and never remove or revert unexplained user changes.
 - Separate hand-written sources from generated files and record source inputs and generation commands.
 
+### Stable Engineering File Names
+
+- Engineering file names must be version-neutral. This applies to RTL and testbench sources (`.v`, `.vh`,
+  `.sv`), models, scripts, configuration, manifests, requirements, traceability data, and engineering guides.
+- Do not embed release or protocol version tokens such as `v0.1`, `v0.2`, or `v2` in engineering file names.
+- Record project release status and protocol revision in the contents of stable explanatory documents such as
+  `RELEASE_NOTES.md`; a release must not require renaming source files.
+- External dependencies may retain their upstream names on disk, but they must not be copied into a release
+  solely to work around this rule. Record such dependencies and exclusions in the release notes.
+
 ## 3. Evidence Levels
 
 Every engineering claim uses one of these labels:
