@@ -270,8 +270,8 @@ module tb_kd28_sram_fifo; // Define the self-checking KD28 SRAM and FIFO testben
             errors = errors + 1; // Count the asynchronous FIFO full failure.
         end // End the asynchronous FIFO full check.
         for (expected = 1; expected <= 8; expected = expected + 1) begin // Check each SRAM word before asynchronous draining.
-            if (u_async_fifo.u_storage.memory[expected-1] !== (16'h4000 + expected)) begin // Require one unique stored word per write pointer position.
-                $display("KD28_FAIL async SRAM address=%0d expected=%04x data=%04x", expected-1, 16'h4000 + expected, u_async_fifo.u_storage.memory[expected-1]); // Report an asynchronous storage mismatch.
+            if (u_async_fifo.u_storage.gen_depth_bank[0].gen_width_lane[0].gen_sdp_256x32.u_sram.u_model.memory[expected-1][15:0] !== (16'h4000 + expected)) begin // Require data inside the selected fixed KD28 macro instance.
+                $display("KD28_FAIL async fixed SRAM address=%0d expected=%04x data=%04x", expected-1, 16'h4000 + expected, u_async_fifo.u_storage.gen_depth_bank[0].gen_width_lane[0].gen_sdp_256x32.u_sram.u_model.memory[expected-1][15:0]); // Report a fixed-macro storage mismatch.
                 errors = errors + 1; // Count the asynchronous storage failure.
             end // End the asynchronous storage word check.
         end // End the asynchronous storage content loop.
