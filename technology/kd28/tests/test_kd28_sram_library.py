@@ -83,15 +83,41 @@ def test_manifest_checksums() -> None:
 
 
 def test_fifo_parameters_stay_inside_documented_boundary() -> None:
-    """Check the committed default configurations and required Gray-pointer structure."""
+    """Check fixed-macro FIFO mapping and required Gray-pointer CDC structure."""
     fifo_root = ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl"
+    mapper_source = (fifo_root / "kd28_fifo_sdp_storage_map.v").read_text(encoding="ascii")
     sync_source = (fifo_root / "kd28_sync_fifo.v").read_text(encoding="ascii")
     async_source = (fifo_root / "kd28_async_fifo.v").read_text(encoding="ascii")
+    cdc_constraints = (
+        ROOT / "technology" / "kd28" / "constraints" / "kd28_async_fifo_cdc.sdc"
+    ).read_text(encoding="ascii")
     assert re.search(r"parameter\s+DEPTH\s*=\s*16", sync_source)
     assert re.search(r"parameter\s+DEPTH\s*=\s*16", async_source)
     assert 'async_reg = "true"' in async_source
     assert "write_gray_next" in async_source
     assert "read_gray_next" in async_source
-    assert "kd28_sram_sdp_model" in sync_source
-    assert "kd28_sram_sdp_model" in async_source
-    print("[KD28_FIFO_STRUCTURE PASS] sync async")
+    assert "read_gray_wsync1_q <= read_consume_gray_q" in async_source
+    assert "read_gray_wsync2_q <= read_gray_wsync1_q" in async_source
+    assert "write_gray_rsync1_q <= write_gray_q" in async_source
+    assert "write_gray_rsync2_q <= write_gray_rsync1_q" in async_source
+    assert "write_gray_next == {~read_gray_wsync2_q" in async_source
+    assert "read_gray_q == write_gray_rsync2_q" in async_source
+    assert "kd28_fifo_sdp_storage_map" in sync_source
+    assert "kd28_fifo_sdp_storage_map" in async_source
+    assert "kd28_sram_sdp_model" not in sync_source
+    assert "kd28_sram_sdp_model" not in async_source
+    for macro_name in (
+        "KD28_SRAM_SDP_256X32",
+        "KD28_SRAM_SDP_512X64",
+        "KD28_SRAM_SDP_1024X128",
+        "KD28_SRAM_SDP_2048X256",
+    ):
+        assert macro_name in mapper_source
+    assert "set_clock_groups -asynchronous" in cdc_constraints
+    assert "-allow_paths" in cdc_constraints
+    assert cdc_constraints.count("set_max_delay") == 2
+    assert cdc_constraints.count("-ignore_clock_latency") == 2
+    assert len(re.findall(r"^\s*set_bus_skew\s", cdc_constraints, re.MULTILINE)) == 2
+    assert "read_gray_wsync1_q" in cdc_constraints
+    assert "write_gray_rsync1_q" in cdc_constraints
+    print("[KD28_FIFO_STRUCTURE PASS] fixed_macro_mapping async_cdc")
