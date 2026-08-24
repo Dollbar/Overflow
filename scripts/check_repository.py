@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import csv
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -27,7 +28,16 @@ HOST_BINDING_SUFFIXES = {
     ".yaml",
     ".yml",
 }
-GENERATED_DIRECTORY_NAMES = {"build", "csrc", "dist", "obj_dir", "simv"}
+GENERATED_DIRECTORY_NAMES = {
+    ".pytest_cache",
+    "__pycache__",
+    "build",
+    "csrc",
+    "dist",
+    "obj_dir",
+    "simv",
+    "work",
+}
 ABSOLUTE_HOST_PATH_RE = re.compile(
     r"/(?:home|Users|opt|usr/local|mnt|workspace|data|tools|eda|proj|scratch)/"
 )
@@ -79,7 +89,27 @@ ALLOWED_EVIDENCE_LEVELS = {
 
 
 def project_files() -> list[Path]:
-    return [path for path in ROOT.rglob("*") if path.is_file() and ".git" not in path.parts]
+    result = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=ROOT,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    if result.returncode == 0:
+        return sorted(
+            ROOT / relative
+            for relative in result.stdout.split("\0")
+            if relative and (ROOT / relative).is_file()
+        )
+    return sorted(
+        path
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and ".git" not in path.parts
+        and not any(part in GENERATED_DIRECTORY_NAMES for part in path.relative_to(ROOT).parts)
+    )
 
 
 def check_repository_scope(errors: list[str]) -> None:
