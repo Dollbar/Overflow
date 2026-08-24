@@ -121,3 +121,40 @@ def test_fifo_parameters_stay_inside_documented_boundary() -> None:
     assert "read_gray_wsync1_q" in cdc_constraints
     assert "write_gray_rsync1_q" in cdc_constraints
     print("[KD28_FIFO_STRUCTURE PASS] fixed_macro_mapping async_cdc")
+
+
+def test_npu_adapters_bind_only_fixed_kd28_cells() -> None:
+    """Require NPU replacement modules to use the controlled KD28 mappers."""
+    adapter_path = ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_adapter.sv"
+    adapter = adapter_path.read_text(encoding="ascii")
+    models_filelist = (
+        ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_models.f"
+    ).read_text(encoding="ascii")
+    blackboxes_filelist = (
+        ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_blackboxes.f"
+    ).read_text(encoding="ascii")
+    pod_contract = (
+        ROOT / "specs" / "interfaces" / "npu_pod_boundary_v0.1.md"
+    ).read_text(encoding="ascii")
+    for module_name in (
+        "SRAM_32_32",
+        "SRAM_32_64",
+        "SRAM_32_128",
+        "npu_local_sram_1w1r_macro",
+        "npu_feedback_block_store_macro",
+    ):
+        assert len(re.findall(rf"\bmodule\s+{module_name}\b", adapter)) == 1
+    for macro_name in (
+        "KD28_SRAM_TDP_32X32",
+        "KD28_SRAM_TDP_32X64",
+        "KD28_SRAM_TDP_32X128",
+    ):
+        assert macro_name in adapter
+    assert "kd28_fifo_sdp_storage_map" in adapter
+    assert "logic [DATA_WIDTH-1:0] memory" not in adapter
+    assert "sram_macro_blackbox.sv" not in models_filelist
+    assert "sram_macro_blackbox.sv" not in blackboxes_filelist
+    assert "kd28_sram_cells.v" in models_filelist
+    assert "kd28_sram_blackboxes.v" in blackboxes_filelist
+    assert "Local SRAM Adapter Contract" in pod_contract
+    print("[NPU_KD28_ADAPTER_STRUCTURE PASS] fixed_tdp banked_sdp")

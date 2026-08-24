@@ -54,11 +54,14 @@ SYSTEM_PACKAGES := \
 	$(VECTOR_RTL_DIR)/vector_pkg.sv \
 	$(SCHEDULER_RTL_DIR)/npu_scheduler_pkg.sv
 
+KD28_SRAM_ADAPTER := $(SRAM_RTL_DIR)/kd28_npu_sram_adapter.sv
 SYSTEM_ALL_RTL := $(sort $(foreach dir,$(RTL_SEARCH_DIRS),$(wildcard $(dir)/*.sv) $(wildcard $(dir)/*.v)))
-SYSTEM_RTL := $(SYSTEM_PACKAGES) $(filter-out $(SYSTEM_PACKAGES),$(SYSTEM_ALL_RTL))
+SYSTEM_RTL := $(SYSTEM_PACKAGES) \
+	$(filter-out $(SYSTEM_PACKAGES) $(KD28_SRAM_ADAPTER),$(SYSTEM_ALL_RTL))
 SYSTEM_LINT_TILE_STUB := $(MODEL_DIR)/TILE_FP8_16_FIFO_lint_stub.sv
 SYSTEM_LINT_RTL := $(SYSTEM_PACKAGES) \
-	$(filter-out $(SYSTEM_PACKAGES) $(TENSOR_RTL_DIR)/TILE_FP8_16_FIFO.sv,$(SYSTEM_ALL_RTL)) \
+	$(filter-out $(SYSTEM_PACKAGES) $(KD28_SRAM_ADAPTER) \
+		$(TENSOR_RTL_DIR)/TILE_FP8_16_FIFO.sv,$(SYSTEM_ALL_RTL)) \
 	$(SYSTEM_LINT_TILE_STUB)
 
 SCHEDULER_RTL := \

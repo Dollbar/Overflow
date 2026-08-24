@@ -11,4 +11,5 @@ Large waveforms and intermediate netlists are CI artifacts rather than Git sourc
   boundary models, deterministic references, self-checking tests, and Make workflow for the GEMM/vector
   compute path.
 - [`kd28/`](kd28/) contains self-checking Verilator regressions for fixed SRAM cells, parameterized FIFO
-  wrappers, width/depth macro tiling, and generic black-box synthesis mapping checks.
+  wrappers, width/depth macro tiling, NPU SRAM replacement adapters, and exact black-box synthesis mapping
+  checks.

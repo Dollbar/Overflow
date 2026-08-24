@@ -3,7 +3,7 @@
 """Parse, link, constrain, and report every synthetic KD28 SRAM scenario.
 
 Command: ``python3 technology/scripts/run_sta_kd28.py`` or ``make sta-kd28``.
-Outputs: ``technology/work/kd28_sta/opensta_{fast,typical,slow}.log``.
+Outputs: base, FIFO, and NPU SRAM logs below ``technology/work/kd28_sta/``.
 Next: replace synthetic views with licensed macro Liberty for physical implementation.
 """
 
@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORK = ROOT / "technology" / "work" / "kd28_sta"
 SCRIPT = ROOT / "technology" / "scripts" / "sta_kd28_smoke.tcl"
 FIFO_SCRIPT = ROOT / "technology" / "scripts" / "sta_kd28_fifo_smoke.tcl"
+NPU_SRAM_SCRIPT = ROOT / "technology" / "scripts" / "sta_npu_kd28_sram_smoke.tcl"
 LIBRARIES = {
     corner: ROOT / "Library" / "timing" / "kd28" / "sram" / f"kd28_sram_{corner}.lib"
     for corner in ("fast", "typical", "slow")
@@ -36,6 +37,12 @@ def main() -> int:
     checks = (
         ("", SCRIPT, ("KD28_STA_MAX_CHECK", "KD28_STA_MIN_CHECK"), "STA_KD28"),
         ("fifo_", FIFO_SCRIPT, ("KD28_FIFO_STA_MAX_CHECK", "KD28_FIFO_STA_MIN_CHECK"), "STA_KD28_FIFO"),
+        (
+            "npu_sram_",
+            NPU_SRAM_SCRIPT,
+            ("NPU_KD28_SRAM_STA_MAX_CHECK", "NPU_KD28_SRAM_STA_MIN_CHECK"),
+            "STA_NPU_KD28_SRAM",
+        ),
     )
     for corner, liberty in LIBRARIES.items():
         for log_prefix, script, required, signature in checks:
