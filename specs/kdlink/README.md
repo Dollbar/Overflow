@@ -5,3 +5,4 @@ AllToAllv, and recovery. Analog PHY implementation is external, but the digital 
 
 - `kdlink_requirements.md` is the frozen implementation and release acceptance contract.
 - `simulation_environment.md` defines the portable digital multi-board verification boundary.
+- `multidomain_architecture.md` defines the isolated hierarchical extension and its evidence boundary.

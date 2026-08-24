@@ -16,9 +16,17 @@ state space:
 | `replay_progress` | Timeout replay is emitted on VC6, data is retained, and ACK releases the slot |
 | `vc_service` | SOP-to-EOP ownership, 16-flit packet bound, and bounded management/replay service |
 | `escape_dependency` | Exhaustive 32-node direct VC0 route dependencies have no intermediate channel edge |
+| `route_pair_order` | A following data packet cannot enter a hop before the matching Route Context ACK |
+| `spine_escape` | Four-domain and eight-domain deterministic VC0 routes move only from spine input to one leaf-down egress while decrementing the domain hop limit |
+| `global_commit_exact_once` | Back-to-back duplicate commits are acknowledged once each but delivered once, same-slot identity collisions remain blocked through the replay grace interval, and route soft reset preserves history |
+| `route_stage_scale` | Every symbolic 8-bit destination selects exactly one top, middle, and leaf radix-8 egress with monotonic hop decrement |
+| `hierarchical_membership` | Hierarchical phases never regress and inter-domain commands target only a non-local group member |
 
-The escape proof matches the frozen reference topology: a switch-plane route is a single direct ingress to
-destination-egress transfer. VC0 therefore introduces no channel-to-channel dependency edge and cannot form
-a cyclic wait graph inside the reference fabric. This is not a proof for arbitrary multi-hop topologies.
+The leaf-domain escape proof matches the frozen reference topology: a switch-plane route is a single direct
+ingress-to-destination-egress transfer. The multidomain proof adds the structural
+`leaf-up -> spine -> leaf-down` ordering for every destination in the four-domain and eight-domain profiles.
+The spine has no leaf-down-to-spine transition, so deterministic VC0 cannot form a cyclic wait dependency
+within these profiles. The scalable proof extends the deterministic dependency order through one to three
+radix-8 stages for up to 256 domains. It is not a proof for arbitrary user-defined cyclic topologies.
 
 These bounded proofs complement, rather than replace, the long randomized and directed RTL simulations.

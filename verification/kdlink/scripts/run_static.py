@@ -21,6 +21,15 @@ TOPS = (
     "kdlink_collective_datapath16",
     "kdlink_collective32_int32",
     "kdlink_pcs",
+    "kdlink_domain_adapter",
+    "kdlink_route_pair_tx",
+    "kdlink_spine_router",
+    "kdlink_route_stage",
+    "kdlink_global_transaction_source",
+    "kdlink_global_commit_tracker",
+    "kdlink_group_table",
+    "kdlink_hierarchical_collective_ctrl",
+    "kdlink_global_commit_codec",
 )
 MULTICLOCK_CONTRACT = {
     "coll_async_fifo.v": ("gray", "sync1", "sync2"),

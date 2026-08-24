@@ -1,5 +1,7 @@
 `include "kdlink_defs.vh" // 引入 KDLink 位级字段定义
-module kdlink_packetizer ( // 定义 KDLink 512-bit payload 发包流水
+module kdlink_packetizer #( // 定义 KDLink 512-bit payload 发包流水
+    parameter [0:0] ALLOW_ROUTE_CONTEXT = 1'b0 // 默认保持只发送基线 schema 二的兼容行为
+) ( // 开始 packetizer 端口声明
     input wire clk_i, // 接收一 GHz slice 工作时钟
     input wire rst_n_i, // 接收低有效异步复位
     input wire valid_i, // 接收连续 payload 有效标志
@@ -17,7 +19,8 @@ module kdlink_packetizer ( // 定义 KDLink 512-bit payload 发包流水
     wire [6:0] aligned_payload_bytes; // 保存与 CRC 对齐的有效字节数
     always @(*) begin // 组合规范化协议控制字段
         normalized_header = header_i; // 默认保留调用方提供的网络 identity
-        normalized_header[3:0] = `KDL_SCHEMA_VERSION; // 强制写入协议版本二
+        if (ALLOW_ROUTE_CONTEXT && (header_i[3:0] == `KDL_ROUTE_SCHEMA) && (header_i[7:4] == `KDL_MESSAGE_TYPE_ROUTE_CONTEXT)) normalized_header[3:0] = `KDL_ROUTE_SCHEMA; // 显式开启时保留合法 Route Context schema
+        else normalized_header[3:0] = `KDL_SCHEMA_VERSION; // 其余流量保持基线 schema 二
         normalized_header[94:88] = payload_bytes_i; // 强制写入真实 payload 字节数
         normalized_header[95] = 1'b0; // 强制清零协议保留位
     end // 结束 header 规范化组合逻辑

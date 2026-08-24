@@ -1,0 +1,7 @@
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_global_commit_tracker.v
+read_verilog -formal -sv -Irtl/kdlink verification/kdlink/formal/formal_global_commit_exact_once.sv
+prep -top formal_global_commit_exact_once -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 19 -set-init-zero

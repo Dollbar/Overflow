@@ -211,7 +211,60 @@ The release shall contain a requirements traceability report, exact tool version
 summary, formal summary, STA summary, performance statement, known limitations, and a clean-source audit.
 Only repository-owned source and redistributable generated reports may be committed.
 
-## 8. Release Decision
+## 8. Multidomain Extension Requirements
+
+These requirements are frozen as the KDLink v0.3 multidomain contract on the isolated implementation
+branch. The complete increment
+includes hop-local transport, 2- through 256-domain deterministic routing, global transaction completion,
+route-reset recovery, and hierarchical collective orchestration while reusing the released 32-node leaf
+data path.
+
+### KDL-MD-001: Packet-scoped route context
+
+A schema-3 Route Context shall describe one following packet on the same ingress and VC. The adapter shall
+check the context format, packet sequence, source and destination leaf nodes, logical plane, packet length,
+SOP, and EOP before releasing packet ownership.
+
+### KDL-MD-002: Local and remote isolation
+
+Traffic without a Route Context shall remain on the local schema-2 path. A valid remote context and its
+following packet shall remain locked to the remote path. A context targeting the local domain shall be
+consumed exactly once and only its following packet shall reach the local output.
+
+### KDL-MD-003: Hierarchical address and topology model
+
+The reference model and RTL shall represent an 8-bit domain identifier, a 5-bit leaf-local node identifier,
+2-, 4-, 8-, 16-, 32-, 64-, 128-, and 256-domain topology profiles, deterministic radix-8 stage selection,
+and failed-egress masking.
+
+### KDL-MD-004: Hop-local reliable integration
+
+Every inter-domain physical hop shall terminate credit, ACK, NACK, replay, timeout, and link-epoch state in
+the canonical reliable endpoint. A source gateway shall not release the following packet until the Route
+Context has been acknowledged on that hop, so a Route Context replay cannot arrive after its data. Passing
+the Route Context adapter test or a testbench-controlled ACK barrier alone does not complete this requirement.
+
+### KDL-MD-005: Global exact-once completion
+
+The source shall retain a global transaction until a destination commit acknowledgement arrives. Gateway
+or route soft reset shall allow retransmission without duplicate destination commit. A hard reset that
+destroys both the source transaction table and destination history starts a new protocol session and is
+outside the exact-once continuity claim.
+
+### KDL-MD-006: Hierarchical collectives
+
+Global ReduceScatter, AllGather, AllReduce, AllToAll, AllToAllv, and point-to-point operations shall use
+explicit leaf and inter-domain phases with group-table membership. The released fixed 32-node collective
+does not satisfy this requirement by itself. A phase-completion handshake shall not advance until the
+connected leaf engine or global transaction engine reports completion.
+
+### KDL-MD-007: Multidomain escape proof
+
+VC0 shall follow an acyclic deterministic `leaf-up -> spine -> leaf-down` route for every supported topology
+and failover profile. Adaptive traffic shall not create a dependency from a later escape stage to an earlier
+stage.
+
+## 9. Release Decision
 
 KDLink is releasable only when every mandatory row in the traceability matrix is `PASS`, or has a
 reviewed waiver that states the affected claim. `PROPOSED`, `PARTIAL`, `NOT_RUN`, and undocumented

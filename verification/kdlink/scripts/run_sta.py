@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Run multi-corner KDLink partition and HBM/SerDes interface STA.
 
-Command: pass one ``--corner name=/absolute/path/to/stdcells.lib`` per
-standard-cell PVT corner, plus ``--driving-cell`` and ``--period-ns``.
+Command: pass one ``--corner name=path/to/stdcells.lib`` per standard-cell PVT
+corner, plus ``--driving-cell`` and ``--period-ns``. Relative Liberty paths are
+resolved from the repository root, independent of the caller's working directory.
 Outputs: ``verification/kdlink/sta/summary.json`` and reports below the local
 ``work/`` directories. Next: replace the synthetic interface views with
 licensed macro timing views before implementation or signoff.
@@ -47,6 +48,22 @@ PARTITIONS = {
     "kdlink_pcs_deskew10": ["kdlink_pcs_deskew10.v"],
     "kdlink_bonded_tx_register": ["kdlink_bonded_tx_register.v"],
     "kdlink_switch_rr_arbiter32": ["kdlink_switch_rr_arbiter32.v"],
+    "kdlink_route_pair_tx": [
+        "kdlink_route_context_encoder.v",
+        "kdlink_route_pair_tx.v",
+    ],
+    "kdlink_spine_router": [
+        "kdlink_route_context_encoder.v",
+        "kdlink_spine_router.v",
+    ],
+    "kdlink_route_stage": [
+        "kdlink_route_context_encoder.v",
+        "kdlink_route_stage.v",
+    ],
+    "kdlink_global_transaction_source": ["kdlink_global_transaction_source.v"],
+    "kdlink_global_commit_tracker": ["kdlink_global_commit_tracker.v"],
+    "kdlink_group_table": ["kdlink_group_table.v"],
+    "kdlink_hierarchical_collective_ctrl": ["kdlink_hierarchical_collective_ctrl.v"],
 }
 
 
@@ -165,7 +182,10 @@ def parse_corner(value: str) -> tuple[str, Path]:
         raise argparse.ArgumentTypeError(
             "corner must be fast=/path, typical=/path, or slow=/path"
         )
-    liberty = Path(raw_path).expanduser().resolve()
+    liberty = Path(raw_path).expanduser()
+    if not liberty.is_absolute():
+        liberty = ROOT / liberty
+    liberty = liberty.resolve()
     if not liberty.is_file():
         raise argparse.ArgumentTypeError(f"Liberty file does not exist: {liberty}")
     return name, liberty
@@ -206,8 +226,8 @@ def main() -> None:
         action="append",
         type=parse_corner,
         default=[],
-        metavar="NAME=/ABSOLUTE/PATH.lib",
-        help="repeat for fast, typical, and slow standard-cell PVT corners",
+        metavar="NAME=PATH.lib",
+        help="repeat for fast, typical, and slow standard-cell PVT corners; relative paths use the repository root",
     )
     parser.add_argument(
         "--liberty",
@@ -225,9 +245,9 @@ def main() -> None:
     corners = dict(args.corner)
     if len(corners) != len(args.corner):
         raise SystemExit("each standard-cell corner name may be supplied only once")
-    legacy_liberty = args.liberty or (
-        Path(os.environ["KDLINK_SETUP_LIB"]) if "KDLINK_SETUP_LIB" in os.environ else None
-    )
+    legacy_liberty = args.liberty or (Path(os.environ["KDLINK_SETUP_LIB"]) if "KDLINK_SETUP_LIB" in os.environ else None)
+    if legacy_liberty is not None and not legacy_liberty.is_absolute():
+        legacy_liberty = ROOT / legacy_liberty
     if not corners and legacy_liberty is not None and legacy_liberty.is_file():
         corners = {"slow": legacy_liberty.resolve()}
     if not corners:
