@@ -15,5 +15,6 @@ The [NPU Subsystem Architecture Proposal](architecture/npu_subsystem_proposal.md
 `ANALYTICAL`, not-yet-frozen compute, SRAM, NoC, and DMA sizing point from the system baseline.
 The [NPU System Closure Plan](architecture/npu_system_closure_plan.md) records the authority order,
 current verified compute boundary, specification holds, and gated implementation sequence.
-The [NPU Command and DMA Approval Packet](architecture/npu_command_dma_approval_packet.md) records the
-cross-owner decisions required before command, DMA, general compute issue, or multi-clock pod RTL begins.
+The [NPU External Command Dependencies and DMA Approval Packet](architecture/npu_command_dma_approval_packet.md)
+records the cross-owner decisions required before the NPU decoded-command sink, DMA, general compute
+issue, or multi-clock pod RTL begins.

@@ -27,7 +27,7 @@ The intended integration unit contains the following ownership regions:
 
 ```text
 npu_pod
-  command_adapter             # HOLD: KD-ISA and queue ABI
+  decoded_command_sink        # HOLD: NPU sink; source contract externally owned
   pod_scheduler               # local policy after command validation
   compute_cluster[]           # one verified cluster; replication is PROPOSED
   tile_private_sram[]         # current local compute stores are INHERITED
@@ -35,7 +35,7 @@ npu_pod
   dma_frontend                # HOLD: finite descriptor and transaction fields
   memory_attachment           # HOLD: RTL HBM request/response contract
   noc_attachment              # HOLD: packet and credit contract
-  completion_ras              # HOLD: completion/telemetry ABI
+  completion_ras              # HOLD: NPU events; runtime ABI externally owned
 ```
 
 One `npu_square_gemm_system` instance is the only currently verified compute cluster. A second cluster per
@@ -50,9 +50,11 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | Compute post-result streams | compute cluster | integration logic | `INHERITED` | Atomic result/metadata ready-valid contract from NPU core v0.2 |
 | Compute event/status | compute cluster | integration logic | `INHERITED` | Local event/tag/status semantics only; not a runtime completion ABI |
 | Physical local SRAM cells | SRAM adapter | compute-local SRAM controller | `INHERITED` | Registered 1W/1R behavior; explicit adapter required; no inferred production storage |
-| KD-ISA command queue | firmware/runtime | command adapter | `HOLD` | Encoding, ordering, cancellation, privilege, and malformed-command behavior require `specs/isa/` and `specs/abi/` |
-| Runtime completion/interrupt | pod | firmware/runtime | `HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior require `specs/abi/` |
-| DMA descriptor | command adapter | DMA frontend | `HOLD` | Transfer type, finite widths, chaining, protection, cancellation, and fault fields are not frozen |
+| KD-ISA command queue | firmware/runtime | external KD-ISA frontend | `EXTERNAL / HOLD` | Encoding, ordering, cancellation, privilege, and malformed-command behavior are not NPU RTL deliverables and require external `specs/isa/` and `specs/abi/` contracts |
+| Decoded internal command | external KD-ISA frontend | NPU decoded-command sink | `HOLD` | Version, opcode class, resource intent, payload reference, ordering token, and error handoff require a jointly consumed interface contract |
+| NPU internal completion event | compute/scheduler/DMA | external ABI adapter | `HOLD` | Event identity, outcome, retryability, ordering token, and reset handoff require a jointly consumed interface contract |
+| Runtime completion queue/interrupt | external ABI adapter | firmware/runtime | `EXTERNAL / HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior are externally owned and require `specs/abi/` |
+| Internal DMA descriptor | decoded-command sink/scheduler | DMA frontend | `HOLD` | Transfer type, finite widths, chaining, protection, cancellation, and fault fields are not frozen |
 | HBM RTL request/response | DMA frontend | memory attachment | `HOLD` | Functional model semantics exist, but finite tag/address/data channels and reset behavior are not frozen |
 | Pod-shared SRAM client request | DMA/compute/NoC | shared SRAM | `HOLD` | Arbitration, ownership, ECC, byte enables, ordering, and starvation policy are not frozen |
 | NoC packet/credit link | pod clients | pod router | `HOLD` | Flit, VC, routing, credit, ordering, fault, and reset fields require a NoC contract |
@@ -113,11 +115,13 @@ The following work is admitted now:
 - KD28 mapping for the inherited local SRAM 1W/1R boundary;
 - verification-only adapters that translate the existing compute ports without changing semantics;
 - assertions and counters that do not escape the current compute contract;
-- specification and functional-model work for blocked command, DMA, shared-SRAM, and NoC channels.
+- NPU consuming-specification and functional-model work for the decoded-command sink, DMA,
+  shared-SRAM, and NoC channels.
 
 The following work is blocked:
 
-- production host command queue or completion RTL;
+- production KD-ISA decode, host command queue, or runtime completion-queue RTL, which is outside this
+  NPU workstream;
 - a finite-width DMA/HBM interface selected from proposal values;
 - pod-shared SRAM arbitration or ECC response fields exposed to clients;
 - independent Vector or general M/N/K descriptor encodings;
