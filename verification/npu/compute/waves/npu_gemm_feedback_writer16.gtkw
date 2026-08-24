@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_npu_gemm_feedback_writer16.clk_i
+tb_npu_gemm_feedback_writer16.rst_i
+tb_npu_gemm_feedback_writer16.clear_i
+tb_npu_gemm_feedback_writer16.scenario_id[3:0]
+tb_npu_gemm_feedback_writer16.feedback_valid_i[15:0]
+tb_npu_gemm_feedback_writer16.feedback_ready_o[15:0]
+tb_npu_gemm_feedback_writer16.activation_write_valid_o[15:0]
+tb_npu_gemm_feedback_writer16.activation_write_ready_i[15:0]
+tb_npu_gemm_feedback_writer16.activation_write_offset_o[511:0]
+tb_npu_gemm_feedback_writer16.activation_write_scale_o[127:0]
+tb_npu_gemm_feedback_writer16.completion_valid_o
+tb_npu_gemm_feedback_writer16.protocol_error_o

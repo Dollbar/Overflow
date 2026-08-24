@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_npu_post_output_formatter16.clk_i
+tb_npu_post_output_formatter16.rst_i
+tb_npu_post_output_formatter16.clear_i
+tb_npu_post_output_formatter16.scenario_id[7:0]
+tb_npu_post_output_formatter16.input_valid_i[15:0]
+tb_npu_post_output_formatter16.input_ready_o[15:0]
+tb_npu_post_output_formatter16.output_valid_o[15:0]
+tb_npu_post_output_formatter16.output_ready_i[15:0]
+tb_npu_post_output_formatter16.completion_valid_o
+tb_npu_post_output_formatter16.completion_tag_o[7:0]
+tb_npu_post_output_formatter16.protocol_error_o
+tb_npu_post_output_formatter16.busy_o

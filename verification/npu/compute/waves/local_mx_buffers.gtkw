@@ -1,0 +1,17 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_local_mx_buffers.clk_i
+tb_local_mx_buffers.rst_i
+tb_local_mx_buffers.clear_i
+tb_local_mx_buffers.scenario_id[3:0]
+tb_local_mx_buffers.tensor_write_valid
+tb_local_mx_buffers.feedback_write_valid[1:0]
+tb_local_mx_buffers.activation_read_enable
+tb_local_mx_buffers.activation_read_valid
+tb_local_mx_buffers.activation_read_data[255:0]
+tb_local_mx_buffers.activation_read_scale[15:0]
+tb_local_mx_buffers.read_b_valid[1:0]
+tb_local_mx_buffers.read_c_valid[1:0]

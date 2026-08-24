@@ -1,0 +1,12 @@
+`verilator_config
+
+// The adapter intentionally reuses the production module name so GEMM_65536
+// can bind to the precompiled Tile without changing synthesizable RTL.
+lint_off -rule DECLFILENAME -file "*TILE_FP8_16_FIFO_array16_lib.sv"
+
+// The generated DPI wrapper conservatively makes every output depend on every
+// input. Across the mesh this creates false UNOPTFLAT paths at the library
+// boundary; the production Tile remains covered by its own -Wall
+// lint before the wrapper is generated.
+lint_off -rule UNOPTFLAT -file "*array16_tile_model.sv"
+lint_off -rule UNOPTFLAT -file "*TILE_FP8_16_FIFO_array16_lib.sv"

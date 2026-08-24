@@ -7,7 +7,7 @@ Large waveforms and intermediate netlists are CI artifacts rather than Git sourc
 
 ## Environments
 
-- [`npu/gemm_vector/`](npu/gemm_vector/) contains the reusable SystemVerilog package, VIP, behavioral
+- [`npu/compute/`](npu/compute/) contains the reusable SystemVerilog package, VIP, behavioral
   boundary models, deterministic references, self-checking tests, and Make workflow for the GEMM/vector
   compute path.
 - [`kd28/`](kd28/) contains the self-checking Verilator regression and generic black-box link check for
