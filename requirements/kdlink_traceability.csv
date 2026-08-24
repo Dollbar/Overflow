@@ -13,17 +13,24 @@ KDL-BOND-003,rtl/kdlink,Active-packet slice loss replay migration and recovery,R
 KDL-FAB-001,rtl/kdlink,Canonical reliable endpoint through NIC and fabric,RTL_SIM,reliable_nic8_fabric,PASS
 KDL-FAB-002,rtl/kdlink,Route identity hop decrement and zero-hop rejection,RTL_SIM,reliable_nic8_fabric;reliable_endpoint_e2e;switch32_permutation,PASS
 KDL-FAB-003,rtl/kdlink,Congestion across eight VCs with bounded service,RTL_SIM+FORMAL,switch32_congestion;vc_service,PASS
-KDL-FAB-004,rtl/kdlink;verification/kdlink,Escape-channel dependency property,FORMAL,escape_dependency,PASS
+KDL-FAB-004,rtl/kdlink;verification/kdlink,Escape-channel dependency property,FORMAL,escape_dependency;spine_escape,PASS
 KDL-FAB-005,simulator/kdlink;specs/kdlink,32-node topology and card plane slice isolation,RTL_SIM,baseboard32,PASS
 KDL-COLL-001,rtl/kdlink,Descriptor validation allocation issue and completion,RTL_SIM,context_scheduler16;collective_datapath16,PASS
 KDL-COLL-002,rtl/kdlink,32-node six-operation result and schedule matrix,RTL_SIM,collective32_int32;direct32,PASS
 KDL-COLL-003,rtl/kdlink,Integrated 512-bit four-dtype exact-result regression,RTL_SIM,collective_datapath16;reduction_dtype_ii1;reduction_random,PASS
 KDL-COLL-004,rtl/kdlink,4096-flit zero-bubble reduction stream,RTL_SIM,reduction_dtype_ii1,PASS
 KDL-COLL-005,rtl/kdlink,Interleaved 16-context progress block isolation exact completion and epoch restoration,RTL_SIM,collective_datapath16;reliable_reset_recovery,PASS
-KDL-VER-001,simulator/kdlink,Complete portable model and RTL regression,FUNCTIONAL_SIM+RTL_SIM,26_model_tests;41_rtl_tests,PASS
-KDL-VER-002,simulator/kdlink,Fault congestion reset degradation and concurrent-context matrix,RTL_SIM,credit_bank8;replay_timeout;rx_commit_stress;serdes_full_lane;switch32_congestion;reliable_endpoint_e2e;reliable_reset_recovery;reliable_bonded_endpoint;collective_datapath16,PASS
-KDL-VER-003,verification/kdlink/coverage,Coverage collection source-point aggregation and thresholds,COVERAGE,line_97.4;toggle_95.5;branch_96.0;expr_95.0,PASS
-KDL-VER-004,verification/kdlink/formal,Five-property bounded formal suite,FORMAL,fifo_credit;rx_exact_once;replay_progress;vc_service;escape_dependency,PASS
-KDL-VER-005,rtl/kdlink;verification/kdlink,Static lint and structural CDC audit,LINT+CDC,6_lint_tops;7_cdc_contracts,PASS
-KDL-VER-006,verification/kdlink/sta,Ten-partition OpenSTA run at 1.000 ns with external Liberty,STA,10_of_10_pass;minimum_slack_0.0020_ns,PASS
-KDL-REL-001,docs/releases;requirements,Release notes traceability tools results limitations and source audit,RELEASE_AUDIT,RELEASE_NOTES.md;UPLOAD_MANIFEST.md,PASS
+KDL-VER-001,simulator/kdlink,Complete portable model and RTL regression,FUNCTIONAL_SIM+RTL_SIM,68_model_tests;54_rtl_tests,PASS
+KDL-VER-002,simulator/kdlink,Fault congestion reset degradation and concurrent-context matrix,RTL_SIM,credit_bank8;replay_timeout;rx_commit_stress;serdes_full_lane;switch32_congestion;reliable_endpoint_e2e;reliable_reset_recovery;reliable_bonded_endpoint;route_context_reliable;multidomain_bonded;collective_datapath16,PASS
+KDL-VER-003,verification/kdlink/coverage,Coverage collection source-point aggregation total thresholds and critical-module thresholds,COVERAGE,line_96.0;toggle_95.4;branch_94.8;expr_93.6;6_critical_modules_pass,PASS
+KDL-VER-004,verification/kdlink/formal,Ten-property bounded formal suite,FORMAL,fifo_credit;rx_exact_once;replay_progress;vc_service;escape_dependency;route_pair_order;spine_escape;global_commit_exact_once;route_stage_scale;hierarchical_membership,PASS
+KDL-VER-005,rtl/kdlink;verification/kdlink,Static lint and structural CDC audit,LINT+CDC,15_lint_tops;7_cdc_contracts,PASS
+KDL-VER-006,verification/kdlink/sta,Seventeen-partition three-corner OpenSTA run at 1.000 ns with external standard-cell and HBM/SerDes interface Liberty,STA,51_of_51_corner_partitions_pass;minimum_setup_slack_0.1168_ns;minimum_hold_slack_0.0098_ns;route_stage_slow_0.2151_ns;global_source_slow_0.2180_ns;global_tracker_slow_0.1168_ns;group_table_slow_0.1382_ns;hierarchical_ctrl_slow_0.1965_ns,PASS
+KDL-REL-001,docs/releases;requirements;scripts/check_kdlink_release.py,Release notes traceability tools results limitations source audit and host-independent dependency preflight,RELEASE_AUDIT,RELEASE_NOTES.md;UPLOAD_MANIFEST.md;make_kdlink_preflight,PASS
+KDL-MD-001,rtl/kdlink;simulator/kdlink,Route Context codec pairing length and identity checks,FUNCTIONAL_SIM+RTL_SIM,test_kdlink_multidomain;route_context_codec;domain_adapter,PASS
+KDL-MD-002,rtl/kdlink/kdlink_domain_adapter.v,Local bypass remote forwarding destination consumption and packet lock,RTL_SIM,domain_adapter,PASS
+KDL-MD-003,rtl/kdlink/kdlink_route_stage.v;simulator/kdlink/model/kdlink_model/multidomain.py,Global address deterministic radix-8 stages failed-egress mask and malformed-packet recovery for 2 through 256 domains,FUNCTIONAL_SIM+RTL_SIM+FORMAL,test_kdlink_multidomain;route_stage_profiles;route_stage_scale;formal_route_stage_scale,PASS
+KDL-MD-004,rtl/kdlink,Canonical reliable endpoint on every inter-domain hop and context-before-data ordering,RTL_SIM+FORMAL,route_pair_tx;route_context_reliable;multidomain_bonded;route_pair_order;production_ack_cdc,PASS
+KDL-MD-005,rtl/kdlink,Global transaction retention codec destination commit duplicate suppression protected collision and route-reset recovery,RTL_SIM+FORMAL,global_commit_codec;global_commit_window;global_transaction_stress;global_recovery;route_context_reliable;global_commit_exact_once,PASS
+KDL-MD-006,rtl/kdlink;simulator/kdlink,Group-table-driven leaf interdomain and completion phases for all six operations with contract rejection and illegal-state recovery,FUNCTIONAL_SIM+RTL_SIM+FORMAL,test_kdlink_multidomain;hierarchical_collective;hierarchical_membership,PASS
+KDL-MD-007,rtl/kdlink;verification/kdlink,Monotonic multidomain escape dependency proof through up to three radix-8 stages,RTL_SIM+FORMAL,spine_router;route_stage_scale;spine_escape;formal_route_stage_scale,PASS

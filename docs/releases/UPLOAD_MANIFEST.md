@@ -1,5 +1,109 @@
 # Upload Manifest
 
+## KDLink v0.3 multidomain candidate delta
+
+- Prepared: 2026-08-24
+- State: `ARCHITECTURE_FROZEN_AWAITING_PUSH_APPROVAL`
+- Base for review: `origin/main` at `f7c825d`
+- Candidate files: 68
+- Branch/worktree: `feat/kdlink-multidomain` in its dedicated worktree
+- Publication state: not staged, committed, tagged, pushed, or submitted as a PR
+
+Exact candidate whitelist relative to the stated base:
+
+- `Library/models/kdlink/serdes/README.md`
+- `Makefile`
+- `README.md`
+- `config/kdlink_toolchain.json`
+- `docs/releases/RELEASE_NOTES.md`
+- `docs/releases/UPLOAD_MANIFEST.md`
+- `requirements/kdlink_traceability.csv`
+- `rtl/kdlink/README.md`
+- `rtl/kdlink/kdlink_defs.vh`
+- `rtl/kdlink/kdlink_domain_adapter.v`
+- `rtl/kdlink/kdlink_global_commit_codec.v`
+- `rtl/kdlink/kdlink_global_commit_tracker.v`
+- `rtl/kdlink/kdlink_global_transaction_source.v`
+- `rtl/kdlink/kdlink_group_table.v`
+- `rtl/kdlink/kdlink_header_checker.v`
+- `rtl/kdlink/kdlink_hierarchical_collective_ctrl.v`
+- `rtl/kdlink/kdlink_packetizer.v`
+- `rtl/kdlink/kdlink_reliable_bonded_endpoint.v`
+- `rtl/kdlink/kdlink_reliable_endpoint.v`
+- `rtl/kdlink/kdlink_route_context_encoder.v`
+- `rtl/kdlink/kdlink_route_pair_tx.v`
+- `rtl/kdlink/kdlink_route_stage.v`
+- `rtl/kdlink/kdlink_rx_commit.v`
+- `rtl/kdlink/kdlink_spine_router.v`
+- `scripts/check_kdlink_release.py`
+- `simulator/kdlink/Makefile`
+- `simulator/kdlink/README.md`
+- `simulator/kdlink/config/multidomain.json`
+- `simulator/kdlink/manifest.json`
+- `simulator/kdlink/model/kdlink_model/__init__.py`
+- `simulator/kdlink/model/kdlink_model/multidomain.py`
+- `simulator/kdlink/model/tests/test_kdlink_multidomain.py`
+- `simulator/kdlink/tb/system/tb_kdlink_global_recovery.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_global_transaction_stress.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_hierarchical_collective.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_multidomain_bonded.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_route_context_reliable.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_domain_adapter.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_global_commit_codec.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_global_commit_window.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_context_codec.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_pair_tx.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_stage_profiles.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_stage_scale.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_spine_router.sv`
+- `specs/kdlink/README.md`
+- `specs/kdlink/kdlink_requirements.md`
+- `specs/kdlink/multidomain_architecture.md`
+- `verification/kdlink/cdc/summary.json`
+- `verification/kdlink/coverage/summary.json`
+- `verification/kdlink/README.md`
+- `verification/kdlink/formal/README.md`
+- `verification/kdlink/formal/formal_global_commit_exact_once.sv`
+- `verification/kdlink/formal/formal_hierarchical_membership.sv`
+- `verification/kdlink/formal/formal_route_pair_order.sv`
+- `verification/kdlink/formal/formal_route_stage_scale.sv`
+- `verification/kdlink/formal/formal_spine_escape.sv`
+- `verification/kdlink/formal/global_commit_exact_once.ys`
+- `verification/kdlink/formal/hierarchical_membership.ys`
+- `verification/kdlink/formal/route_pair_order.ys`
+- `verification/kdlink/formal/route_stage_scale.ys`
+- `verification/kdlink/formal/spine_escape.ys`
+- `verification/kdlink/formal/summary.json`
+- `verification/kdlink/scripts/run_coverage.py`
+- `verification/kdlink/scripts/run_formal.py`
+- `verification/kdlink/scripts/run_sta.py`
+- `verification/kdlink/scripts/run_static.py`
+- `verification/kdlink/sta/summary.json`
+
+Explicit exclusions for this candidate:
+
+- `Library/models/kdlink/serdes/*.sv`, profile YAML, file lists, and model data: referenced by joint
+  simulation and unchanged on `origin/main`; only the directory README test-count statement is updated.
+- `Library/timing/**` and `technology/**`: interface views are consumed and external standard-cell
+  libraries are referenced locally, but neither source set is modified or uploaded.
+- NPU, compiler, runtime, HBM model, and all other out-of-scope source trees.
+- Generated `simulator/kdlink/work/**` and `verification/kdlink/*/work/**` output.
+- External PDK/Liberty files, credentials, logs, waveforms, compiled objects, and Python bytecode.
+
+Environment portability boundary:
+
+- `config/kdlink_toolchain.json` records open-tool minimum and validated versions plus repository and
+  external dependency classes without a developer path.
+- `scripts/check_kdlink_release.py` rejects unsafe/escaping manifest paths, missing repository dependencies,
+  host-specific absolute paths, versioned engineering filenames, and missing/old portable tools.
+- `make kdlink-release-check` is the sequential portable release entry point; it does not require a PDK,
+  Vivado, or a developer-local configuration file.
+- `make kdlink-sta KDLINK_STA_ARGS='...'` is explicitly optional and requires caller-provided licensed
+  standard-cell Liberty. Relative paths are rooted at the clone; absolute external paths are consumed but
+  never recorded in committed summaries.
+
+The following section is the preserved historical manifest for the overall v0.1 baseline.
+
 ## Overflow v0.1 release candidate
 
 - Prepared: 2026-08-22

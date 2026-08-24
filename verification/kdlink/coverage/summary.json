@@ -3,11 +3,20 @@
   "evidence": "RTL_COVERAGE",
   "scope": "rtl/kdlink source-level control coverage",
   "aggregation": "union by RTL source point across hierarchy and Verilator parameterized-page suffixes",
-  "reused_existing_raw_databases": true,
+  "reused_existing_raw_databases": false,
+  "refreshed_tests": [],
   "tests": [
     "credit_bank8",
     "fifo_primitives",
     "vc_ingress8",
+    "route_context_codec",
+    "route_pair_tx",
+    "domain_adapter",
+    "spine_router",
+    "route_stage_scale",
+    "route_stage_profiles",
+    "global_commit_codec",
+    "global_commit_window",
     "link_manager",
     "replay_timeout",
     "rx_commit_stress",
@@ -31,30 +40,35 @@
     "direct32",
     "fabric32",
     "reliable_endpoint_e2e",
+    "route_context_reliable",
+    "multidomain_bonded",
+    "global_recovery",
+    "global_transaction_stress",
+    "hierarchical_collective",
     "reliable_reset_recovery",
     "reliable_bonded_endpoint",
     "reliable_nic8_fabric"
   ],
   "metrics": {
     "line": {
-      "percent": 97.4,
-      "hit": 341,
-      "total": 350
+      "percent": 96.0,
+      "hit": 430,
+      "total": 448
     },
     "toggle": {
-      "percent": 95.5,
-      "hit": 48572,
-      "total": 50870
+      "percent": 95.4,
+      "hit": 55704,
+      "total": 58406
     },
     "branch": {
-      "percent": 96.0,
-      "hit": 626,
-      "total": 652
+      "percent": 94.8,
+      "hit": 760,
+      "total": 802
     },
     "expr": {
-      "percent": 95.0,
-      "hit": 4572,
-      "total": 4814
+      "percent": 93.6,
+      "hit": 5043,
+      "total": 5388
     }
   },
   "thresholds_percent": {
@@ -62,9 +76,192 @@
     "branch": 90.0,
     "toggle": 95.0
   },
+  "critical_module_results": {
+    "kdlink_route_stage.v": {
+      "metrics": {
+        "line": {
+          "percent": 93.8,
+          "hit": 15,
+          "total": 16
+        },
+        "toggle": {
+          "percent": 95.0,
+          "hit": 595,
+          "total": 626
+        },
+        "branch": {
+          "percent": 92.9,
+          "hit": 13,
+          "total": 14
+        },
+        "expr": {
+          "percent": 82.1,
+          "hit": 55,
+          "total": 67
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_global_transaction_source.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 13,
+          "total": 13
+        },
+        "toggle": {
+          "percent": 99.0,
+          "hit": 1319,
+          "total": 1332
+        },
+        "branch": {
+          "percent": 96.2,
+          "hit": 25,
+          "total": 26
+        },
+        "expr": {
+          "percent": 95.1,
+          "hit": 97,
+          "total": 102
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_global_commit_tracker.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 4,
+          "total": 4
+        },
+        "toggle": {
+          "percent": 96.5,
+          "hit": 602,
+          "total": 624
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 10,
+          "total": 10
+        },
+        "expr": {
+          "percent": 78.9,
+          "hit": 60,
+          "total": 76
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_global_commit_codec.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 1,
+          "total": 1
+        },
+        "toggle": {
+          "percent": 100.0,
+          "hit": 402,
+          "total": 402
+        },
+        "branch": {
+          "percent": 0.0,
+          "hit": 0,
+          "total": 0
+        },
+        "expr": {
+          "percent": 100.0,
+          "hit": 3,
+          "total": 3
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_group_table.v": {
+      "metrics": {
+        "line": {
+          "percent": 100.0,
+          "hit": 10,
+          "total": 10
+        },
+        "toggle": {
+          "percent": 97.9,
+          "hit": 793,
+          "total": 810
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 14,
+          "total": 14
+        },
+        "expr": {
+          "percent": 91.4,
+          "hit": 32,
+          "total": 35
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    },
+    "kdlink_hierarchical_collective_ctrl.v": {
+      "metrics": {
+        "line": {
+          "percent": 94.4,
+          "hit": 17,
+          "total": 18
+        },
+        "toggle": {
+          "percent": 99.6,
+          "hit": 896,
+          "total": 900
+        },
+        "branch": {
+          "percent": 100.0,
+          "hit": 22,
+          "total": 22
+        },
+        "expr": {
+          "percent": 92.9,
+          "hit": 26,
+          "total": 28
+        }
+      },
+      "thresholds_percent": {
+        "line": 90.0,
+        "branch": 80.0,
+        "toggle": 80.0
+      },
+      "pass": true
+    }
+  },
   "exclusions": [
     "testbench and behavioral-model source paths",
     "signals and memories wider than 64 bits for toggle coverage",
+    "Route Context reserved bits [511:166], which the protocol requires to remain zero",
     "tool-generated underscore-prefixed implementation signals"
   ],
   "pass": true

@@ -79,9 +79,9 @@ periodic-error, and explicit fault controls for each direction.
 
 Run `make -C simulator/kdlink model` to validate the YAML schema, logical-rate derivations,
 physical-profile capacity, and RTL default parameters. Run `make -C simulator/kdlink rtl` for the
-complete 24-test manifest. Expected signatures
+complete 54-test manifest. Expected signatures
 include `[FUNCTIONAL_SIM PASS] kdlink_model`, `[RTL_SIM PASS] serdes_full_lane`,
-`[RTL_SIM PASS] serdes_full_link`, and the final `[RTL_SIM PASS] 24 test(s)`. Generated logs are under
+`[RTL_SIM PASS] serdes_full_link`, and the final `[RTL_SIM PASS] 54 test(s)`. Generated logs are under
 `simulator/kdlink/work/`. Integrators should next add board/device-specific channel and vendor-transceiver
 tests without treating these digital models as electrical compliance evidence.
 

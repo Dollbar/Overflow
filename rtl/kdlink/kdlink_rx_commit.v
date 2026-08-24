@@ -2,6 +2,7 @@
 module kdlink_rx_commit #(
     parameter integer CONTEXT_BITS = 6,
     parameter integer RESPONSE_BITS = 6,
+    parameter [0:0] ALLOW_ROUTE_CONTEXT = 1'b0,
     parameter [15:0] INITIAL_CREDIT_TOTAL = 16'd0
 ) (
     input wire clk_i,
@@ -97,6 +98,9 @@ module kdlink_rx_commit #(
     wire [7:0] header_epoch;
     wire identity_match;
     wire header_legal;
+    wire legacy_header_legal;
+    wire route_header_legal;
+    wire global_commit_header_legal; // 标记层次扩展允许的单 flit 全局提交确认 header
     wire flit_error;
     wire history_match;
     wire enqueue_event;
@@ -130,11 +134,8 @@ module kdlink_rx_commit #(
         (header_i[81:70] == rx_header_q[81:70]) &&
         (header_i[24:20] == rx_header_q[24:20]) &&
         (header_i[45:38] == rx_header_q[45:38]);
-    assign header_legal = (header_i[3:0] == `KDL_SCHEMA_VERSION) &&
+    assign legacy_header_legal = (header_i[3:0] == `KDL_SCHEMA_VERSION) &&
         (header_i[7:4] <= `KDL_MESSAGE_TYPE_FAULT) &&
-        (header_i[94:88] == payload_bytes_i) && (payload_bytes_i <= 7'd64) &&
-        (header_destination == local_node_i) && (header_epoch == link_epoch_i) &&
-        !header_i[95] &&
         ((header_retry && (header_vc == `KDL_VC_ROLE_REPLAY)) ||
          (!header_retry &&
           (((header_message_type == `KDL_MESSAGE_TYPE_DATA) &&
@@ -144,6 +145,18 @@ module kdlink_rx_commit #(
             (header_vc == `KDL_VC_ROLE_CONTROL)) ||
            ((header_message_type >= `KDL_MESSAGE_TYPE_KEEPALIVE) &&
             (header_vc == `KDL_VC_ROLE_MANAGEMENT)))));
+    assign route_header_legal = ALLOW_ROUTE_CONTEXT &&
+        (header_i[3:0] == `KDL_ROUTE_SCHEMA) &&
+        (header_message_type == `KDL_MESSAGE_TYPE_ROUTE_CONTEXT) &&
+        header_sop && header_eop && (payload_bytes_i == 7'd64) &&
+        (payload_i[165:163] <= `KDL_VC_ROLE_CONTROL) &&
+        ((header_retry && (header_vc == `KDL_VC_ROLE_REPLAY)) ||
+         (!header_retry && (header_vc == payload_i[165:163])));
+    assign global_commit_header_legal = ALLOW_ROUTE_CONTEXT && (header_i[3:0] == `KDL_SCHEMA_VERSION) && (header_message_type == `KDL_MESSAGE_TYPE_GLOBAL_COMMIT) && header_sop && header_eop && (payload_bytes_i == 7'd64) && ((header_retry && (header_vc == `KDL_VC_ROLE_REPLAY)) || (!header_retry && (header_vc == `KDL_VC_ROLE_CONTROL))); // 允许消息九以控制 VC 首发或 VC6 重放进入可靠提交队列
+    assign header_legal = (header_i[94:88] == payload_bytes_i) &&
+        (payload_bytes_i <= 7'd64) && (header_destination == local_node_i) &&
+        (header_epoch == link_epoch_i) && !header_i[95] &&
+        (legacy_header_legal || route_header_legal || global_commit_header_legal);
     assign flit_error = !crc_good_i || !header_legal ||
         (!rx_active_q && !header_sop) ||
         (rx_active_q && (header_sop || !identity_match ||

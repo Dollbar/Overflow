@@ -112,3 +112,14 @@ Run the repository gate:
 python3 -m pip install -r requirements-dev.txt
 make check
 ```
+
+Run the host-independent KDLink dependency and path audit, or the complete portable KDLink release gate:
+
+```bash
+make kdlink-preflight
+make kdlink-release-check KDLINK_JOBS=2
+```
+
+The portable gate uses only repository-relative source/model paths and open tools discovered from `PATH`.
+Technology-specific multi-corner STA is separate because its standard-cell Liberty files are licensed
+external inputs; repository-distributed HBM/SerDes interface views remain part of that flow.
