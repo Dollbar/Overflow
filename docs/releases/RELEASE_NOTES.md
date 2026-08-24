@@ -3,8 +3,8 @@
 ## KDLink v0.3 multidomain release candidate
 
 - Prepared: 2026-08-24
-- State: `ARCHITECTURE_FROZEN_AWAITING_PUSH_APPROVAL`
-- Review gate: user approval is required before staging, committing, tagging, or pushing
+- State: `PUSHED_AS_DRAFT_PR`
+- Review gate: draft PR #17 is open; user approval is required before merge or release tagging
 - Candidate base: `origin/main` at `f7c825d`
 - Development isolation: `feat/kdlink-multidomain` in its dedicated worktree
 

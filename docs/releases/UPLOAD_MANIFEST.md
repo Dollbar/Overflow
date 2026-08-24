@@ -3,11 +3,11 @@
 ## KDLink v0.3 multidomain candidate delta
 
 - Prepared: 2026-08-24
-- State: `ARCHITECTURE_FROZEN_AWAITING_PUSH_APPROVAL`
+- State: `PUSHED_AS_DRAFT_PR`
 - Base for review: `origin/main` at `f7c825d`
 - Candidate files: 68
 - Branch/worktree: `feat/kdlink-multidomain` in its dedicated worktree
-- Publication state: not staged, committed, tagged, pushed, or submitted as a PR
+- Publication state: committed and pushed on `feat/kdlink-multidomain`; draft PR #17 is open; not tagged or merged
 
 Exact candidate whitelist relative to the stated base:
 
