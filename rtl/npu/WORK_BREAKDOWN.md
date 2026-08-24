@@ -6,33 +6,40 @@ A task is complete only after its listed documentation, tests, and traceability 
 
 ## 1. Work Packages
 
-| ID | Path | Deliverable | Depends on | Start state | Required evidence |
+| ID | Path | Deliverable | Depends on | Current state | Required evidence |
 | --- | --- | --- | --- | --- | --- |
-| NPU-COM-001 | `common/` | Local parameter/type package and performance counters | ADR-0001 | READY | lint + unit tests |
+| NPU-COM-001 | `common/` | MX numeric packages and arithmetic primitives | NPU core v0.2 contract | VERIFIED: current compute scope | bit-exact RTL_SIM |
+| NPU-COM-002 | `common/`, top-level | Performance, fault, clock, and reset types | system management contracts | HOLD: specs | lint + counter/reset tests |
 | NPU-CMD-001 | `command/` | Command intake, validation, dispatch, completion | KD-ISA and queue fields | HOLD: specs | FUNCTIONAL_SIM then RTL_SIM |
-| NPU-SCH-001 | `scheduler/` | Dependency scoreboard and pod/tile issue | command contract | HOLD: NPU-CMD-001 | RTL_SIM + assertions |
-| NPU-TNS-001 | `tensor/` | MXFP4 x MXFP8 PE numerical reference and RTL | dtype semantics | HOLD: model spec | bit-exact RTL_SIM |
-| NPU-TNS-002 | `tensor/` | 256 x 256 array transport and accumulation | NPU-TNS-001 | READY for structural work | RTL_SIM continuous issue |
-| NPU-TNS-003 | `tensor/` | Tensor tile wrapper, SRAM streams, counters | NPU-TNS-002 + SRAM ports | HOLD: SRAM contract | RTL_SIM saturation |
-| NPU-VEC-001 | `vector/` | Masked vector ALU and reductions | operator manifest | HOLD: model/compiler input | bit-exact RTL_SIM |
-| NPU-VEC-002 | `vector/` | exp2, reciprocal, reciprocal-sqrt pipelines | error bounds | HOLD: numerical spec | bit-exact RTL_SIM |
-| NPU-SRM-001 | `sram/` | 8 MiB banked tile scratchpad wrapper | local port contract | READY for banking study | RTL_SIM + ECC tests |
+| NPU-SCH-001 | `scheduler/` | Local square-GEMM descriptor, dependency, and post issue | NPU core v0.2 contract | VERIFIED: NPU-007 | RTL_SIM + assertions |
+| NPU-SCH-002 | `scheduler/` | Pod/global resource scoreboard and independent issue | command and pod contracts | HOLD: specs | RTL_SIM + starvation assertions |
+| NPU-TNS-001 | `tensor/` | MXFP4 x MXFP8 PE and exact Tile accumulation | NPU core v0.2 contract | VERIFIED: NPU-010 | bit-exact RTL_SIM |
+| NPU-TNS-002 | `tensor/` | 256 x 256 array transport and accumulation | NPU-TNS-001 | VERIFIED: NPU-011 | RTL_SIM continuous issue |
+| NPU-TNS-003 | `tensor/`, `compute/` | Local-buffer stream and square-GEMM control | NPU-TNS-002 + local SRAM contract | VERIFIED: NPU-014 | RTL_SIM saturation |
+| NPU-TNS-004 | `scheduler/`, `tensor/` | Arbitrary M/N/K, batching, edge masks, and block scheduling | compiler and descriptor vNext contracts | HOLD: specs | bit-exact and boundary RTL_SIM |
+| NPU-VEC-001 | `vector/` | Current masked Vector and special-function pipelines | NPU core v0.2 contract | VERIFIED: NPU-008 and NPU-012 | bit-exact RTL_SIM |
+| NPU-VEC-002 | `scheduler/`, `vector/` | Independent Vector issue and memory flow | operator and descriptor vNext contracts | HOLD: specs | bit-exact continuous RTL_SIM |
+| NPU-SRM-001 | `sram/` | Current local Tensor/Vector storage boundary | NPU core v0.2 contract | VERIFIED: NPU-009 and NPU-014 | RTL_SIM macro contract |
+| NPU-SRM-003 | `sram/`, `Library/models/kd28/` | Map logical local 1W/1R banks onto KD28 SDP cells | KD28 and NPU local SRAM contracts | READY | exact macro counts + no inferred memory + synthetic STA |
 | NPU-SRM-002 | `sram/` | 16 MiB pod-shared scratchpad and arbitration | NoC/DMA clients | HOLD: client contract | RTL_SIM + starvation assertions |
 | NPU-NOC-001 | `noc/` | Credit-based router with deterministic escape VC | routing/packet fields | HOLD: interface spec | FORMAL deadlock obligations |
 | NPU-NOC-002 | `noc/` | Proposed 2 x 4 pod mesh integration | NPU-NOC-001 | HOLD: NPU-NOC-001 | RTL_SIM congestion regression |
 | NPU-DMA-001 | `dma/` | Descriptor scheduler and scratchpad mover | descriptor fields | HOLD: interface spec | RTL_SIM backpressure |
-| NPU-DMA-002 | `dma/`, `../memory/` | Abstract HBM transaction adapter | memory contract | HOLD: interface spec | FUNCTIONAL_SIM + RTL_SIM |
-| NPU-TOP-001 | `rtl/npu/` | One-pod then eight-pod top-level integration | all leaf packages | HOLD: leaf blocks | RTL_SIM integration |
+| NPU-DMA-002 | `dma/`, `../memory/` | Finite RTL HBM transaction adapter | HBM RTL contract | HOLD: functional-preview spec is insufficient | FUNCTIONAL_SIM equivalence + RTL_SIM |
+| NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | command, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |
+| NPU-TOP-002 | `rtl/npu/` | Eight-pod NPU top-level integration | topology ADR + NPU-NOC-002 | HOLD: proposed topology | RTL_SIM + CDC/RDC integration |
 
-## 2. Recommended Parallel Assignment
+## 2. Ordered Assignment
 
-The first parallel wave can assign NPU-COM-001, NPU-TNS-002 structural transport, NPU-SRM-001 banking
-study, and the missing model/interface specifications. Numerical PE implementation must wait for MXFP4
-block-scale and rounding semantics. Router and DMA RTL must wait for packet and descriptor fields.
+1. Reconcile specifications and traceability with the verified v0.2 compute boundary.
+2. Define the single-pod command, DMA, scratchpad, completion, error, and clock/reset contracts.
+3. Complete NPU-SRM-003 without changing the current logical SRAM behavior.
+4. Implement command, DMA, pod scoreboard, and independent issue only against approved contracts.
+5. Integrate and saturate one pod before approving the multi-pod topology and NoC contracts.
+6. Implement the router, prove the escape path, then integrate the eight-pod top level.
 
-The second wave integrates PE semantics into the array, freezes scratchpad client ports, implements vector
-operators from the manifest, and begins router/DMA leaf verification. The third wave builds one pod; the
-fourth wave builds the eight-pod mesh and cross-subsystem adapters.
+The controlling authority and stop conditions are recorded in
+[`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).
 
 ## 3. Per-Task Delivery Checklist
 
