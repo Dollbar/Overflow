@@ -25,7 +25,8 @@ A task is complete only after its listed documentation, tests, and traceability 
 | NPU-NOC-001 | `noc/` | Credit-based router with deterministic escape VC | routing/packet fields | HOLD: interface spec | FORMAL deadlock obligations |
 | NPU-NOC-002 | `noc/` | Proposed 2 x 4 pod mesh integration | NPU-NOC-001 | HOLD: NPU-NOC-001 | RTL_SIM congestion regression |
 | NPU-DMA-001 | `dma/` | Descriptor scheduler and scratchpad mover | descriptor fields | HOLD: interface spec | RTL_SIM backpressure |
-| NPU-DMA-002 | `dma/` | NPU-side finite RTL HBM transaction adapter; no HBM controller or PHY | HBM RTL contract | HOLD: functional-preview spec is insufficient | FUNCTIONAL_SIM equivalence + RTL_SIM |
+| NPU-DMA-002 | `dma/` | NPU-side HBM response retirement and finite DMA mover; no HBM controller or PHY | NPU HBM RTL beat and DMA descriptor contracts | HOLD: DMA descriptor/translation contract | FUNCTIONAL_SIM equivalence + RTL_SIM |
+| NPU-DMA-003 | `dma/` | Sixteen-channel QoS/age arbiter and five-lane elastic HBM request egress | ADR-0002 and NPU HBM RTL beat contract | VERIFIED: NPU-017 | zero-warning lint + no-loss saturation/backpressure RTL_SIM |
 | NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | decoded-command sink, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |
 | NPU-TOP-002 | `rtl/npu/` | Eight-pod NPU top-level integration | topology ADR + NPU-NOC-002 | HOLD: proposed topology | RTL_SIM + CDC/RDC integration |
 
@@ -35,7 +36,8 @@ A task is complete only after its listed documentation, tests, and traceability 
 2. Record external KD-ISA/ABI dependencies and define only the NPU-owned decoded-command sink, DMA/HBM,
    scratchpad, internal event, and clock/reset contracts.
 3. Complete NPU-SRM-003 without changing the current logical SRAM behavior.
-4. Implement DMA/HBM movement and pod-shared SRAM arbitration/ECC against approved NPU contracts.
+4. Complete DMA/HBM response retirement and movement, then pod-shared SRAM arbitration/ECC, against
+   approved NPU contracts. The request egress leaf is verified by NPU-017.
 5. Implement the decoded-command sink, pod scoreboard, independent issue, RAS/performance, and CDC/RDC;
    do not implement KD-ISA decode or software queues in this workstream.
 6. Integrate and saturate one pod before approving the multi-pod topology and NoC contracts.

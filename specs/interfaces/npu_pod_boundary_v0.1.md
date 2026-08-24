@@ -55,7 +55,8 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | NPU internal completion event | compute/scheduler/DMA | external ABI adapter | `HOLD` | Event identity, outcome, retryability, ordering token, and reset handoff require a jointly consumed interface contract |
 | Runtime completion queue/interrupt | external ABI adapter | firmware/runtime | `EXTERNAL / HOLD` | Queue layout, ordering, interrupt moderation, retry, and reset behavior are externally owned and require `specs/abi/` |
 | Internal DMA descriptor | decoded-command sink/scheduler | DMA frontend | `HOLD` | Transfer type, finite widths, chaining, protection, cancellation, and fault fields are not frozen |
-| HBM RTL request/response | DMA frontend | memory attachment | `HOLD` | Functional model semantics exist, but finite tag/address/data channels and reset behavior are not frozen |
+| HBM RTL request lanes | DMA frontend | memory attachment | `BASELINED` | ADR-0002 and `npu_hbm_rtl.md` freeze five 128-byte lanes, finite address/tag fields, stable backpressure, ordering, and reset |
+| HBM RTL response retirement | memory attachment | DMA frontend | `READY` | Response fields are frozen; tag tracking, channel retirement, fault propagation, and reset tests remain to be implemented |
 | Pod-shared SRAM client request | DMA/compute/NoC | shared SRAM | `HOLD` | Arbitration, ownership, ECC, byte enables, ordering, and starvation policy are not frozen |
 | NoC packet/credit link | pod clients | pod router | `HOLD` | Flit, VC, routing, credit, ordering, fault, and reset fields require a NoC contract |
 | KDLink injection/ejection | pod | KDLink adapter | `HOLD` | Must use a versioned logical packet adapter; implicit width conversion is prohibited |
@@ -122,7 +123,8 @@ The following work is blocked:
 
 - production KD-ISA decode, host command queue, or runtime completion-queue RTL, which is outside this
   NPU workstream;
-- a finite-width DMA/HBM interface selected from proposal values;
+- DMA descriptors, address translation, response retirement, and scratchpad movement beyond the frozen
+  HBM beat interface;
 - pod-shared SRAM arbitration or ECC response fields exposed to clients;
 - independent Vector or general M/N/K descriptor encodings;
 - multi-clock pod integration, NoC links, or eight-pod replication.

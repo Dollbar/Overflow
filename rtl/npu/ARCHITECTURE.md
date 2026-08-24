@@ -38,8 +38,9 @@ clock, the peak is 2.097152 PFLOPS-equivalent (`ANALYTICAL`).
 | MXFP4 x MXFP8 peak: 2.097152 PFLOPS-equivalent | ANALYTICAL | checked calculator |
 | 2 x 4 inter-pod mesh | PROPOSED | NPU P0 sizing proposal |
 | NoC logical clock and port widths | PROPOSED | NPU P0 sizing proposal |
+| Five 128-byte HBM request/response lanes per pod | BASELINED | ADR-0002 and NPU HBM RTL beat contract |
 | KD-ISA and software ABI fields | EXTERNAL / HOLD | external ISA and software-owner specifications |
-| Decoded-command, DMA, address, and internal error fields | HOLD | missing NPU consuming-interface specifications |
+| Decoded-command, DMA descriptor/translation, and internal error fields | HOLD | missing NPU consuming-interface specifications |
 | FP8 and BF16 tensor issue rates | HOLD | missing multiplier-sharing decision |
 | Reset and CDC protocol | HOLD | missing clock/reset interface specification |
 
