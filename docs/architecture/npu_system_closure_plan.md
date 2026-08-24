@@ -55,6 +55,9 @@ The following system functions remain outside that verified boundary:
    and clocks/resets. Proposed values remain explicitly marked until approved through an ADR.
 3. Add requirement IDs and compatibility tests before externally visible RTL is written.
 
+The unresolved cross-owner choices and recommended approval order are maintained in
+[`NPU Command and DMA Approval Packet`](npu_command_dma_approval_packet.md).
+
 ### Phase B: Storage closure
 
 1. Bind the current logical local-buffer 1W/1R contract to banked KD28 SDP cells.

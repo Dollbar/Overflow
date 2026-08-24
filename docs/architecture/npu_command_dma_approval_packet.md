@@ -1,0 +1,83 @@
+# NPU Command and DMA Approval Packet
+
+Status: `PROPOSED` decision packet. No value in this document is an implementation contract until the
+listed ADR and producing specifications are accepted.
+
+## 1. Audit Result
+
+The repository currently has no KD-ISA encoding, runtime command/completion queue ABI, finite RTL HBM
+transaction contract, DMA descriptor contract, or clock/reset interface contract. The owning `isa/`,
+`specs/isa/`, `specs/abi/`, `runtime/`, `drivers/`, `firmware/`, and `rtl/memory/` paths contain scope
+READMEs only.
+
+The portable HBM model and beat BFM provide verification behavior, not production field authority. Their
+testbench address, tag, queue-depth, and latency parameters must not be copied into RTL interfaces.
+
+## 2. Decisions Required Before Command RTL
+
+| Decision | Existing constraint | Recommended v0.1 direction | Required owner output |
+| --- | --- | --- | --- |
+| KD-ISA command version | System baseline selects KD-ISA; compute descriptor version is 2 | Define a KD-ISA major/minor header and carry the existing 342-bit compute descriptor through an aligned command record without changing its packed layout | `specs/isa/kd_isa_v0.1.md` plus encoder/decoder tests |
+| Command queue ownership | Runtime, driver, and firmware are all in scope | Host-owned submission ring, device-owned completion ring, monotonic producer/consumer indices, and an explicit doorbell; no implicit polling side effects | `specs/abi/npu_queue_v0.1.md` plus runtime/firmware compatibility test |
+| Ordering | Current compute submit is atomic by slot index | Preserve command-record atomicity; define whether different queues order independently and which barrier establishes scratchpad visibility | ISA and ABI memory-order sections |
+| Cancellation/reset | No external semantics exist | Cancellation affects only commands not yet issued; reset completion for accepted work must be explicit rather than silently dropped | ISA exception and ABI recovery sections |
+| Completion/error | Local compute status is not a runtime ABI | Define success, malformed command, access, DMA, poison, ECC, timeout, cancelled, and reset outcomes with retryability | Versioned completion record and error table |
+| Privilege/protection | System proposal mentions future IOVA/protection domains | Keep protection-domain and address-translation fields versioned; do not expose raw local SRAM macro addresses | ISA/ABI and memory-interface ownership agreement |
+
+## 3. Decisions Required Before DMA/HBM RTL
+
+| Decision | Existing constraint | Recommended v0.1 direction | Required owner output |
+| --- | --- | --- | --- |
+| External address | 192 GB per logical NPU is baselined; 52-bit IOVA is proposed | Use a parameterized IOVA field in DMA descriptors and freeze its v0.1 width only through the ADR; translate to partition plus partition-local byte address before the HBM boundary | ADR plus DMA descriptor spec |
+| HBM partition | Functional-preview contract uses partitions 0 through 7 | Retain an explicit partition field if the eight-partition organization is approved; otherwise keep partition selection behind the memory adapter | Topology/memory ADR |
+| Data beat | Functional-preview contract requires 128-byte alignment | Use one 1024-bit payload beat and 128 byte enables at the RTL memory-service boundary | `specs/interfaces/npu_hbm_rtl_v0.1.md` |
+| Transaction length | Functional-preview maximum is 4096 bytes | Encode 1 through 32 aligned beats and define whether data is atomic with the request or transferred on a separate ready/valid channel | RTL HBM contract |
+| Outstanding identity | Tags are caller-owned but unbounded in the model; 4096 beats per engine is proposed | Size the finite tag namespace from the approved outstanding limit and require no tag reuse before completion | DMA/HBM ADR and RTL contract |
+| Completion ordering | Functional model completes in issue order per partition | Preserve per-partition request order for v0.1 unless a reorder buffer and visible ordering rule are specified | RTL HBM contract and equivalence tests |
+| Status | Model has OK, corrected ECC, uncorrectable ECC, and data error | Preserve these outcomes and add access, timeout, and cancellation only if their producer semantics are defined | RTL HBM and completion ABI error tables |
+| DMA operations | P0 proposes linear, strided, gather/scatter, multicast, and zero-fill | Stage v0.1 as linear plus strided transfer first; admit gather/scatter and multicast only with compiler/runtime descriptors and bounds rules | DMA descriptor and compiler contracts |
+| QoS/starvation | Four classes and age promotion are proposed | Freeze class meaning and maximum promotion interval before RTL arbitration | DMA/client contract plus starvation assertions |
+
+## 4. Decisions Required Before General Compute Issue
+
+The current v0.2 descriptor supports one fixed-origin square GEMM followed optionally by Vector
+post-processing. It does not authorize independent Vector commands or arbitrary M/N/K scheduling.
+
+Before those features enter RTL, the compiler/operator owners shall define:
+
+- independent M, N, and K dimensions, batch count, strides, and edge masks;
+- block/subarray placement or an explicit decision to keep fixed-origin execution;
+- independent Vector source/destination layout, lane masks, and operator legality;
+- attention, MoE, transpose, gather, and KV-cache lowering responsibilities; and
+- compatibility behavior for the existing descriptor version 2.
+
+The recommended approach is a new command record that references the existing v0.2 compute descriptor for
+legacy square-GEMM execution and introduces separately versioned payloads for general Tensor, independent
+Vector, and DMA operations. Reinterpreting spare or reserved v0.2 bits is prohibited.
+
+## 5. Clock and Reset Decisions
+
+The only admitted synchronous boundary is the current compute-local `clk_i`, `rst_i`, and `clear_i`.
+Logical 1 GHz Tensor and HBM clocks are system/model assumptions; the proposed 2 GHz NoC clock is not
+approved implementation timing.
+
+Before a single-pod top crosses domains, an interface specification shall define:
+
+- command-management, compute/SRAM, HBM-service, NoC, and KDLink clock relationships;
+- asynchronous assertion and domain-synchronous reset deassertion;
+- reset propagation and in-flight request retirement or abort behavior;
+- CDC primitive ownership, maximum payload delay, and Gray-pointer bus-skew constraints; and
+- RDC behavior for independently reset producer and consumer domains.
+
+## 6. Recommended Approval Order
+
+1. Approve the command/queue/completion semantics and version ownership.
+2. Approve the finite RTL HBM request/response contract and address translation boundary.
+3. Approve the DMA v0.1 operation subset, descriptor fields, QoS, and fault behavior.
+4. Approve scratchpad clients, ownership, ECC, and arbitration.
+5. Approve general Tensor and independent Vector command payloads.
+6. Approve clock/reset relationships before constructing `npu_pod`.
+
+Each approval updates its ADR, producing specification, consuming specification, compatibility tests, and
+traceability rows in the same change. Only then may the corresponding production RTL work package move
+from `HOLD` to `READY`.
