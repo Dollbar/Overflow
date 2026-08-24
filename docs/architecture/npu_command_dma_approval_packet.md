@@ -55,10 +55,15 @@ They do not close the upstream DMA descriptor, IOVA translation, cancellation, o
 | Data beat | Functional-preview contract requires 128-byte alignment | Closed: five parallel 1024-bit lanes with 128 byte enables per pod | ADR-0002 and `specs/interfaces/npu_hbm_rtl.md` |
 | Transaction length | Functional-preview maximum is 4096 bytes | Closed at the HBM boundary as tagged single beats; a DMA operation emits a sequence of beats | NPU HBM RTL beat contract; DMA descriptor remains open |
 | Outstanding identity | Tags are caller-owned but unbounded in the model; 4096 beats per engine is proposed | Closed: twelve-bit tag composed from four-bit channel and eight-bit local identity; no reuse before retirement | ADR-0002 and NPU HBM RTL beat contract |
-| Completion ordering | Functional model completes in issue order per partition | Closed: preserve per-partition request order; response lane number carries no identity | NPU HBM RTL beat contract and future equivalence tests |
+| Completion ordering | Functional model completes in issue order per partition | Closed: preserve per-partition request order; response lane number carries no identity; the verified NPU leaf routes by tag and preserves same-channel retirement order across the five lanes | NPU HBM RTL beat contract and NPU-018 regression |
 | Status | Model has OK, corrected ECC, uncorrectable ECC, and data error | Closed at beat boundary with two-bit status; runtime retryability remains external | NPU HBM RTL beat contract and external completion ABI |
 | DMA operations | P0 proposes linear, strided, gather/scatter, multicast, and zero-fill | Stage v0.1 as linear plus strided transfer first; admit gather/scatter and multicast only with compiler/runtime descriptors and bounds rules | DMA descriptor and compiler contracts |
 | QoS/starvation | Four classes and age promotion are proposed | Closed for NPU request egress: class priority, round-robin ties, and 256-cycle promotion interval | NPU HBM RTL beat contract plus NPU-017 regression |
+
+The beat-interface leaves are now implemented and verified. The remaining DMA approval gate still covers
+descriptor fields, IOVA translation, outstanding-tag allocation/release, scratchpad movement, cancellation,
+and conversion of beat status into an externally owned completion ABI. NPU-017 and NPU-018 do not approve
+or infer those contracts.
 
 ## 4. External Inputs Required Before General Compute Issue
 
