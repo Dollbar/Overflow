@@ -1,0 +1,13 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_mxfp_block_convert.clk_i
+tb_mxfp_block_convert.rst_i
+tb_mxfp_block_convert.clear_i
+tb_mxfp_block_convert.valid_i
+tb_mxfp_block_convert.exact_i[69:0]
+tb_mxfp_block_convert.scale_exponent_i[9:0]
+tb_mxfp_block_convert.valid_o
+tb_mxfp_block_convert.result_o[31:0]

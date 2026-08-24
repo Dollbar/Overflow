@@ -1,0 +1,171 @@
+`timescale 1ns/1ps
+`default_nettype none
+
+// Verification-only model for the SRAM macro contract. Read data and valid
+// are registered. Memory contents are not cleared by reset. Same-address
+// accesses involving a write on both ports are outside the contract.
+/* verilator lint_off DECLFILENAME */
+module sram_tdp_sync_model #(
+    parameter int unsigned DATA_WIDTH = 32,
+    parameter int unsigned ADDR_WIDTH = 5,
+    parameter int unsigned DEPTH = 32
+) (
+    input  logic clk_i,
+    input  logic rst_i,
+    input  logic a_req_i,
+    input  logic a_we_i,
+    input  logic [ADDR_WIDTH-1:0] a_addr_i,
+    input  logic [DATA_WIDTH-1:0] a_wdata_i,
+    output logic [DATA_WIDTH-1:0] a_rdata_o,
+    output logic a_rvalid_o,
+    input  logic b_req_i,
+    input  logic b_we_i,
+    input  logic [ADDR_WIDTH-1:0] b_addr_i,
+    input  logic [DATA_WIDTH-1:0] b_wdata_i,
+    output logic [DATA_WIDTH-1:0] b_rdata_o,
+    output logic b_rvalid_o
+);
+
+    logic [DATA_WIDTH-1:0] memory [0:DEPTH-1];
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            a_rdata_o <= '0;
+            a_rvalid_o <= 1'b0;
+            b_rdata_o <= '0;
+            b_rvalid_o <= 1'b0;
+        end else begin
+            a_rvalid_o <= a_req_i && !a_we_i;
+            b_rvalid_o <= b_req_i && !b_we_i;
+            if (a_req_i && a_we_i) begin
+                memory[a_addr_i] <= a_wdata_i;
+            end
+            if (b_req_i && b_we_i) begin
+                memory[b_addr_i] <= b_wdata_i;
+            end
+            if (a_req_i && !a_we_i) begin
+                a_rdata_o <= memory[a_addr_i];
+            end
+            if (b_req_i && !b_we_i) begin
+                b_rdata_o <= memory[b_addr_i];
+            end
+            if (a_req_i && b_req_i && (a_addr_i == b_addr_i) &&
+                (a_we_i || b_we_i)) begin
+                $fatal(1, "SRAM model same-address write collision");
+            end
+        end
+    end
+
+endmodule
+
+module SRAM_32_32 (
+    input logic clk_i, input logic rst_i,
+    input logic a_req_i, input logic a_we_i,
+    input logic [4:0] a_addr_i, input logic [31:0] a_wdata_i,
+    output logic [31:0] a_rdata_o, output logic a_rvalid_o,
+    input logic b_req_i, input logic b_we_i,
+    input logic [4:0] b_addr_i, input logic [31:0] b_wdata_i,
+    output logic [31:0] b_rdata_o, output logic b_rvalid_o
+);
+    sram_tdp_sync_model #(.DATA_WIDTH(32)) u_model (.*);
+endmodule
+
+module SRAM_32_64 (
+    input logic clk_i, input logic rst_i,
+    input logic a_req_i, input logic a_we_i,
+    input logic [4:0] a_addr_i, input logic [63:0] a_wdata_i,
+    output logic [63:0] a_rdata_o, output logic a_rvalid_o,
+    input logic b_req_i, input logic b_we_i,
+    input logic [4:0] b_addr_i, input logic [63:0] b_wdata_i,
+    output logic [63:0] b_rdata_o, output logic b_rvalid_o
+);
+    sram_tdp_sync_model #(.DATA_WIDTH(64)) u_model (.*);
+endmodule
+
+module SRAM_32_128 (
+    input logic clk_i, input logic rst_i,
+    input logic a_req_i, input logic a_we_i,
+    input logic [4:0] a_addr_i, input logic [127:0] a_wdata_i,
+    output logic [127:0] a_rdata_o, output logic a_rvalid_o,
+    input logic b_req_i, input logic b_we_i,
+    input logic [4:0] b_addr_i, input logic [127:0] b_wdata_i,
+    output logic [127:0] b_rdata_o, output logic b_rvalid_o
+);
+    sram_tdp_sync_model #(.DATA_WIDTH(128)) u_model (.*);
+endmodule
+
+module npu_feedback_block_store_macro #(
+    parameter int unsigned CHANNELS = 16,
+    parameter int unsigned ADDRESS_WIDTH = 8,
+    parameter int unsigned DATA_WIDTH = 264
+) (
+    input  logic clk_i,
+    input  logic rst_i,
+    input  logic [CHANNELS-1:0] write_valid_i,
+    input  logic [CHANNELS*ADDRESS_WIDTH-1:0] write_address_i,
+    input  logic [CHANNELS*DATA_WIDTH-1:0] write_data_i,
+    input  logic [CHANNELS-1:0] read_enable_i,
+    input  logic [CHANNELS*ADDRESS_WIDTH-1:0] read_address_i,
+    output logic [CHANNELS-1:0] read_valid_o,
+    output logic [CHANNELS*DATA_WIDTH-1:0] read_data_o
+);
+    localparam int unsigned DEPTH = 1 << ADDRESS_WIDTH;
+    logic [DATA_WIDTH-1:0] memory [0:CHANNELS-1][0:DEPTH-1];
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            read_valid_o <= '0;
+            read_data_o <= '0;
+        end else begin
+            read_valid_o <= read_enable_i;
+            for (integer channel = 0; channel < CHANNELS; channel++) begin
+                if (write_valid_i[channel]) begin
+                    memory[channel][write_address_i[
+                        channel*ADDRESS_WIDTH +: ADDRESS_WIDTH]] <=
+                        write_data_i[channel*DATA_WIDTH +: DATA_WIDTH];
+                end
+                if (read_enable_i[channel]) begin
+                    read_data_o[channel*DATA_WIDTH +: DATA_WIDTH] <=
+                        memory[channel][read_address_i[
+                            channel*ADDRESS_WIDTH +: ADDRESS_WIDTH]];
+                end
+            end
+        end
+    end
+endmodule
+
+module npu_local_sram_1w1r_macro #(
+    parameter int unsigned ADDRESS_WIDTH = 11,
+    parameter int unsigned DATA_WIDTH = 128
+) (
+    input  logic clk_i,
+    input  logic rst_i,
+    input  logic write_enable_i,
+    input  logic [ADDRESS_WIDTH-1:0] write_address_i,
+    input  logic [DATA_WIDTH-1:0] write_data_i,
+    input  logic read_enable_i,
+    input  logic [ADDRESS_WIDTH-1:0] read_address_i,
+    output logic read_valid_o,
+    output logic [DATA_WIDTH-1:0] read_data_o
+);
+    localparam int unsigned DEPTH = 1 << ADDRESS_WIDTH;
+    logic [DATA_WIDTH-1:0] memory [0:DEPTH-1];
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            read_valid_o <= 1'b0;
+            read_data_o <= '0;
+        end else begin
+            read_valid_o <= read_enable_i;
+            if (write_enable_i) begin
+                memory[write_address_i] <= write_data_i;
+            end
+            if (read_enable_i) begin
+                read_data_o <= memory[read_address_i];
+            end
+        end
+    end
+endmodule
+/* verilator lint_on DECLFILENAME */
+
+`default_nettype wire

@@ -15,6 +15,28 @@ ROOT = Path(__file__).resolve().parents[1]
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 TEXT_SUFFIXES = {"", ".csv", ".md", ".py", ".tcl", ".txt", ".xdc", ".yaml", ".yml"}
+HOST_BINDING_SUFFIXES = {
+    ".bash",
+    ".json",
+    ".mk",
+    ".py",
+    ".sdc",
+    ".sh",
+    ".tcl",
+    ".xdc",
+    ".yaml",
+    ".yml",
+}
+GENERATED_DIRECTORY_NAMES = {"build", "csrc", "dist", "obj_dir", "simv"}
+ABSOLUTE_HOST_PATH_RE = re.compile(
+    r"/(?:home|Users|opt|usr/local|mnt|workspace|data|tools|eda|proj|scratch)/"
+)
+WINDOWS_HOST_PATH_RE = re.compile(r"[A-Za-z]:[\\/](?:Users|tools|eda|workspace)[\\/]", re.I)
+FIXED_HOST_ENDPOINT_RE = re.compile(
+    r"\b(?:local" r"host|127\.0\.0\.1|0\.0\.0\.0)\b|"
+    r"(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?![\w.])",
+    re.I,
+)
 REQUIRED_TRACE_COLUMNS = {
     "requirement_id",
     "domain",
@@ -81,6 +103,31 @@ def check_english_text(errors: list[str]) -> None:
             continue
         if HAN_RE.search(content):
             errors.append(f"Non-English Han text found: {path.relative_to(ROOT)}")
+
+
+def check_host_bindings(errors: list[str]) -> int:
+    checked = 0
+    for path in project_files():
+        relative = path.relative_to(ROOT)
+        if any(part in GENERATED_DIRECTORY_NAMES for part in relative.parts):
+            continue
+        if path.name != "Makefile" and path.suffix.lower() not in HOST_BINDING_SUFFIXES:
+            continue
+        try:
+            content = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        checked += 1
+        for line_number, line in enumerate(content.splitlines(), start=1):
+            if ABSOLUTE_HOST_PATH_RE.search(line) or WINDOWS_HOST_PATH_RE.search(line):
+                errors.append(
+                    f"Host-bound absolute path: {relative}:{line_number}"
+                )
+            if FIXED_HOST_ENDPOINT_RE.search(line):
+                errors.append(
+                    f"Fixed host endpoint: {relative}:{line_number}"
+                )
+    return checked
 
 
 def check_readmes(errors: list[str]) -> tuple[int, int]:
@@ -165,12 +212,13 @@ def main() -> int:
     errors: list[str] = []
     check_repository_scope(errors)
     check_english_text(errors)
+    host_binding_count = check_host_bindings(errors)
     readme_count, markdown_count = check_readmes(errors)
     requirement_count = check_traceability(errors)
     check_baseline(errors)
 
     print(
-        f"READMES={readme_count} MARKDOWN={markdown_count} "
+        f"READMES={readme_count} MARKDOWN={markdown_count} HOST_FILES={host_binding_count} "
         f"REQUIREMENTS={requirement_count}"
     )
     if errors:

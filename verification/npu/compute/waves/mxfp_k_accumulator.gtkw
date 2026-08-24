@@ -1,0 +1,25 @@
+[*]
+[*] GTKWave Analyzer save file
+[timestart] 0
+[size] 1200 700
+@28
+tb_mxfp_k_accumulator.clk_i
+tb_mxfp_k_accumulator.rst_i
+tb_mxfp_k_accumulator.clear_i
+tb_mxfp_k_accumulator.scenario_id[3:0]
+tb_mxfp_k_accumulator.start_i
+tb_mxfp_k_accumulator.start_ready_o
+tb_mxfp_k_accumulator.partial_valid_i
+tb_mxfp_k_accumulator.partial_ready_o
+tb_mxfp_k_accumulator.partial_exact_i[69:0]
+tb_mxfp_k_accumulator.u_dut.partial_stage_valid_q
+tb_mxfp_k_accumulator.u_dut.merge_valid_q
+tb_mxfp_k_accumulator.u_dut.cpa_stage_valid_q
+tb_mxfp_k_accumulator.u_dut.final_valid_q
+tb_mxfp_k_accumulator.u_dut.final_exact_q[0][84:0]
+tb_mxfp_k_accumulator.u_dut.convert_valid[15:0]
+tb_mxfp_k_accumulator.u_dut.result_push
+tb_mxfp_k_accumulator.result_valid_o
+tb_mxfp_k_accumulator.result_ready_i
+tb_mxfp_k_accumulator.result_data_o[511:0]
+tb_mxfp_k_accumulator.done_o
