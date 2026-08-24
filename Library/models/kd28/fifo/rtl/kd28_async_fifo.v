@@ -17,7 +17,6 @@ module kd28_async_fifo #( // Define a Gray-pointer ready-valid asynchronous FIFO
     output wire                  read_valid_o, // Indicate the registered consumer payload is valid.
     input  wire                  read_ready_i // Indicate the consumer accepts the current payload.
 ); // End the asynchronous FIFO interface.
-    localparam MASK_WIDTH = DATA_WIDTH / 8; // Provide one active write mask per payload byte.
     localparam PTR_WIDTH = ADDR_WIDTH + 1; // Add one wrap bit to each binary and Gray pointer.
     reg [PTR_WIDTH-1:0] write_bin_q; // Track the local binary write pointer.
     reg [PTR_WIDTH-1:0] write_gray_q; // Track the local Gray-coded write pointer.
@@ -61,17 +60,15 @@ module kd28_async_fifo #( // Define a Gray-pointer ready-valid asynchronous FIFO
     assign read_consume_bin_next = read_consume_bin_q + read_fire; // Advance capacity only after the consumer accepts a word.
     assign read_consume_gray_next = (read_consume_bin_next >> 1) ^ read_consume_bin_next; // Convert accepted occupancy to Gray code.
 
-    kd28_sram_sdp_model #( // Instantiate the KD28 dual-clock simple-dual-port storage model.
+    kd28_fifo_sdp_storage_map #( // Map logical dual-clock storage onto fixed KD28 SDP SRAM cells.
         .DATA_WIDTH(DATA_WIDTH), // Match SRAM word width to the FIFO payload.
         .DEPTH(DEPTH), // Match SRAM depth to the logical FIFO capacity.
-        .ADDR_WIDTH(ADDR_WIDTH), // Pass the derived address width to storage.
-        .MASK_WIDTH(MASK_WIDTH) // Enable every complete payload byte.
-    ) u_storage ( // Bind both asynchronous domains to the KD28 SRAM model.
+        .ADDR_WIDTH(ADDR_WIDTH) // Pass the derived address width to storage.
+    ) u_storage ( // Bind both asynchronous domains to the fixed-macro storage mapper.
         .write_clk_i(write_clk_i), // Use the producer clock for SRAM writes.
         .write_cs_i(write_fire), // Write storage only after a producer handshake.
         .write_addr_i(write_bin_q[ADDR_WIDTH-1:0]), // Address the next free circular FIFO word.
         .write_data_i(write_data_i), // Store the accepted producer payload.
-        .write_mask_i({MASK_WIDTH{1'b1}}), // Enable every payload byte on each FIFO write.
         .read_clk_i(read_clk_i), // Use the consumer clock for SRAM reads.
         .read_cs_i(read_issue), // Read storage only for a safe prefetch request.
         .read_addr_i(read_bin_q[ADDR_WIDTH-1:0]), // Address the oldest unread circular FIFO word.

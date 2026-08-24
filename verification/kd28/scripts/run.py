@@ -13,15 +13,30 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / "verification" / "kd28" / "work"
 RTL_WORK = WORK / "rtl"
+MAPPING_WORK = WORK / "storage_map"
 YOSYS_WORK = WORK / "yosys"
-SOURCES = [
+COMMON_SOURCES = [
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_sp_model.v",
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_sdp_model.v",
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_tdp_model.v",
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_cells.v",
+    ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_fifo_sdp_storage_map.v",
     ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_sync_fifo.v",
     ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_async_fifo.v",
-    ROOT / "verification" / "kd28" / "tb" / "tb_kd28_sram_fifo.v",
+]
+VERILATOR_CASES = [
+    (
+        "tb_kd28_sram_fifo",
+        ROOT / "verification" / "kd28" / "tb" / "tb_kd28_sram_fifo.v",
+        RTL_WORK,
+        "[RTL_SIM PASS] kd28_sram_fifo",
+    ),
+    (
+        "tb_kd28_fifo_storage_map",
+        ROOT / "verification" / "kd28" / "tb" / "tb_kd28_fifo_storage_map.v",
+        MAPPING_WORK,
+        "[RTL_SIM PASS] kd28_fifo_storage_map",
+    ),
 ]
 
 
@@ -40,39 +55,44 @@ def run_logged(command: list[str], log: Path) -> subprocess.CompletedProcess[str
 
 
 def run_verilator() -> None:
-    """Compile and execute the self-checking SRAM and FIFO regression."""
+    """Compile and execute every self-checking SRAM and FIFO regression."""
     verilator = shutil.which("verilator")
     if not verilator:
         raise SystemExit("required tool was not found in PATH: verilator")
-    RTL_WORK.mkdir(parents=True, exist_ok=True)
-    command = [
-        verilator,
-        "--binary",
-        "--timing",
-        "-j",
-        os.environ.get("JOBS", "4"),
-        "-Wall",
-        "-Wno-DECLFILENAME",
-        "-Wno-WIDTHEXPAND",
-        "-Wno-WIDTHTRUNC",
-        "--top-module",
-        "tb_kd28_sram_fifo",
-        "-Mdir",
-        str(RTL_WORK / "obj"),
-        *[str(path) for path in SOURCES],
-    ]
-    build = run_logged(command, RTL_WORK / "build.log")
-    if build.returncode:
-        raise SystemExit(f"KD28 Verilator build failed; inspect {(RTL_WORK / 'build.log').relative_to(ROOT)}")
-    binary = RTL_WORK / "obj" / "Vtb_kd28_sram_fifo"
-    simulation = run_logged([str(binary)], RTL_WORK / "simulation.log")
-    if simulation.returncode:
-        raise SystemExit(
-            f"KD28 Verilator simulation failed; inspect {(RTL_WORK / 'simulation.log').relative_to(ROOT)}"
-        )
-    if "[RTL_SIM PASS] kd28_sram_fifo" not in simulation.stdout:
-        raise SystemExit("KD28 Verilator simulation omitted its pass signature")
-    print("[RTL_SIM PASS] kd28_sram_fifo")
+    for top, testbench, case_work, signature in VERILATOR_CASES:
+        case_work.mkdir(parents=True, exist_ok=True)
+        command = [
+            verilator,
+            "--binary",
+            "--timing",
+            "-j",
+            os.environ.get("JOBS", "4"),
+            "-Wall",
+            "-Wno-DECLFILENAME",
+            "-Wno-WIDTHEXPAND",
+            "-Wno-WIDTHTRUNC",
+            "--top-module",
+            top,
+            "-Mdir",
+            str(case_work / "obj"),
+            *[str(path) for path in COMMON_SOURCES],
+            str(testbench),
+        ]
+        build = run_logged(command, case_work / "build.log")
+        if build.returncode:
+            raise SystemExit(
+                f"KD28 Verilator build failed for {top}; inspect {(case_work / 'build.log').relative_to(ROOT)}"
+            )
+        binary = case_work / "obj" / f"V{top}"
+        simulation = run_logged([str(binary)], case_work / "simulation.log")
+        if simulation.returncode:
+            raise SystemExit(
+                f"KD28 Verilator simulation failed for {top}; inspect "
+                f"{(case_work / 'simulation.log').relative_to(ROOT)}"
+            )
+        if signature not in simulation.stdout:
+            raise SystemExit(f"KD28 Verilator simulation omitted its pass signature for {top}")
+        print(signature)
 
 
 def run_yosys_link() -> None:
@@ -93,6 +113,29 @@ def run_yosys_link() -> None:
     if result.returncode:
         raise SystemExit(f"KD28 Yosys link failed; inspect {(YOSYS_WORK / 'link.log').relative_to(ROOT)}")
     print("[GENERIC_SYNTH PASS] kd28_fixed_blackbox_link")
+
+    mapper = ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_fifo_sdp_storage_map.v"
+    sync_fifo = ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_sync_fifo.v"
+    async_fifo = ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_async_fifo.v"
+    mapping_smoke = ROOT / "technology" / "kd28" / "smoke" / "kd28_fifo_mapping_smoke_top.v"
+    mapping_script = (
+        f"read_verilog -lib {blackboxes}; "
+        f"read_verilog {mapper} {sync_fifo} {async_fifo} {mapping_smoke}; "
+        "hierarchy -check -top kd28_fifo_mapping_smoke_top; "
+        "proc; opt_clean; "
+        "select -assert-count 2 t:KD28_SRAM_SDP_256X32; "
+        "select -assert-count 1 t:KD28_SRAM_SDP_512X64; "
+        "select -assert-count 1 t:KD28_SRAM_SDP_1024X128; "
+        "select -assert-count 4 t:KD28_SRAM_SDP_2048X256; "
+        "select -assert-none t:$mem_v2; "
+        "check -assert"
+    )
+    mapping_result = run_logged([yosys, "-q", "-p", mapping_script], YOSYS_WORK / "fifo_mapping.log")
+    if mapping_result.returncode:
+        raise SystemExit(
+            f"KD28 mapped FIFO synthesis failed; inspect {(YOSYS_WORK / 'fifo_mapping.log').relative_to(ROOT)}"
+        )
+    print("[GENERIC_SYNTH PASS] kd28_fifo_fixed_macro_mapping")
 
 
 def main() -> int:

@@ -48,6 +48,11 @@ ready/valid channels and accept `DATA_WIDTH` and `DEPTH` parameters. `DATA_WIDTH
 multiple of eight. The synchronous wrapper accepts any `DEPTH` from 2 through 65536 and preserves that
 exact logical capacity even when `DEPTH` is not a power of two.
 
+Both wrappers instantiate `kd28_fifo_sdp_storage_map`, which selects a fixed KD28 SDP macro class by
+logical depth, tiles additional word-width lanes, and banks configurations deeper than one selected macro.
+Simulation binds those fixed names to portable behavior. Synthesis and STA bind the same names to black-box
+and Liberty views. No generic inferred memory is part of the FIFO synthesis contract.
+
 The asynchronous wrapper requires a power-of-two `DEPTH` from 4 through 65536. Reset assertion is
 asynchronous in each domain; system integration must synchronize reset deassertion independently for the
 write and read domains. Both domains must participate in the same FIFO reset event; independent one-sided
@@ -69,6 +74,8 @@ make kd28-sram-fifo
 make sta-kd28
 ```
 
-Expected source evidence is `[RTL_SIM PASS] kd28_sram_fifo`. Expected timing evidence is one
-`[STA_KD28 PASS]` line for each fast, typical, and slow scenario. The next integration step is to bind a
-real SRAM compiler macro set behind the fixed KD28 names and rerun the consumer RTL regressions.
+Expected source evidence includes `[RTL_SIM PASS] kd28_sram_fifo`, `[RTL_SIM PASS]
+kd28_fifo_storage_map`, and `[GENERIC_SYNTH PASS] kd28_fifo_fixed_macro_mapping`. Expected timing evidence
+is one `[STA_KD28 PASS]` and one `[STA_KD28_FIFO PASS]` line for each fast, typical, and slow scenario. The
+next integration step is to bind a real SRAM compiler macro set behind the fixed KD28 names and rerun the
+consumer RTL regressions.

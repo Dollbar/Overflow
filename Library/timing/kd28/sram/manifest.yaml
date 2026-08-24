@@ -1,6 +1,6 @@
 schema_version: 1
-asset_id: kd28-sram-fifo-library-v0.1
-version: 0.1
+asset_id: kd28-sram-fifo-library-v0.2
+version: 0.2
 technology: KD28
 technology_status: repository_synthetic_not_foundry_pdk
 license: Apache-2.0
@@ -18,9 +18,13 @@ checksums:
   Library/models/kd28/sram/rtl/kd28_sram_tdp_model.v: e3b524987682211c29779e1baea1d08a1c3ec896c768f31fd5a655e10c57d6a3
   Library/models/kd28/sram/rtl/kd28_sram_cells.v: 29e7d8c15b05353a0ee7fbc2f2d257453be083668461eda6d0892ddc5e984fed
   Library/models/kd28/sram/rtl/kd28_sram_blackboxes.v: cd48ea4bb1cdd7c185fb1f0ab0a3a4922338af260cd66b60e728c32ce97281a6
-  Library/models/kd28/fifo/rtl/kd28_sync_fifo.v: 4ec3444d324b716c0659eaeddc336aea04479a41351e629f206b1cfc877eb810
-  Library/models/kd28/fifo/rtl/kd28_async_fifo.v: 0c158b6ab949f12719c65a0138aace9888beb25f64aa06d3dcdbaf304598b865
-  specs/interfaces/kd28_sram_fifo_v0.1.md: f234b840720686b3d9f3f449164a8d9f04897005ef9b38806ea365fc09829965
+  Library/models/kd28/fifo/rtl/kd28_fifo_sdp_storage_map.v: 821c2b14cfdd3f029cb47d7e005c960bca10b18e4e9e3414cc06595cbfe89f1c
+  Library/models/kd28/fifo/rtl/kd28_sync_fifo.v: 80fbc5fc272b411a8e0b72bae5948b14811df87b222d75a8ad3d67f4c947161b
+  Library/models/kd28/fifo/rtl/kd28_async_fifo.v: 67f3372fce3f4a364f4594b96d09fceca27de6e7bf42a15294bd4f3a01447080
+  Library/models/kd28/fifo/kd28_fifo.f: 527d8cb3e2c2fea50f621f867cb8fe2c1e986adb208b573ee82f8dddb8993636
+  Library/models/kd28/fifo/kd28_fifo_blackboxes.f: 88428ebb448870ca18f395f8e440b5d4731e02c037874d8b4816d778107f9a0c
+  technology/kd28/constraints/kd28_async_fifo_cdc.sdc: e4faa97487bfd5cbd5283bd6fd55b0f47d2463b2289cdf57b3aca9e41c2a161a
+  specs/interfaces/kd28_sram_fifo_v0.1.md: c80606c661cf086a5452ddfc536415dbd508c683ae531b3049b1b5bb8817597d
   Library/timing/kd28/sram/kd28_sram_fast.lib: 4ade5f896ed7250364a6cca5f6d5b4379e55355f46ce549d432a40283d5fe8b2
   Library/timing/kd28/sram/kd28_sram_typical.lib: 2e9acb8aece58d1012f2c85d1021e11dc9dc14760ff04849e49f351c9e230340
   Library/timing/kd28/sram/kd28_sram_slow.lib: 4a1624c676bd92c9bbd899ab8c02e286cbdf6015c0f9dee5eb54bab300b78740
@@ -28,6 +32,8 @@ permitted_claims:
   - fixed_cell_name_and_port_link
   - portable_synchronous_sram_behavior
   - parameterized_fifo_functional_behavior
+  - fixed_macro_fifo_storage_mapping
+  - asynchronous_fifo_cdc_constraint_template
   - synthetic_setup_hold_and_clock_to_output_plumbing
 prohibited_claims:
   - foundry_pvt
