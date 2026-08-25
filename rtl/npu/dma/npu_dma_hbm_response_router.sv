@@ -63,6 +63,7 @@ module npu_dma_hbm_response_router #(
     logic [HBM_LANES-1:0] lane_accept;
     logic [HBM_LANES-1:0] lane_survives;
     logic [HBM_LANES-1:0] accepted_handshake;
+    logic [HBM_LANES-1:0] accepted_handshake_buffered;
     logic [HBM_LANES*CONTROL_COPIES-1:0] accepted_control_copy;
     logic [CHANNELS-1:0] delivered_handshake;
     logic [2*2-1:0] accepted_pair;
@@ -78,6 +79,10 @@ module npu_dma_hbm_response_router #(
     logic [4:0] delivered_increment_q;
     logic backpressure_increment;
     logic backpressure_increment_q;
+    logic [63:0] accepted_responses_next;
+    logic [63:0] delivered_responses_next;
+    logic [63:0] dropped_responses_next;
+    logic [63:0] backpressure_cycles_next;
 
     always_comb begin
         integer lane_index;
@@ -138,12 +143,19 @@ module npu_dma_hbm_response_router #(
 
     assign accepted_handshake = hbm_response_valid_i & hbm_response_ready_o;
     generate
+        for (genvar lane_index = 0; lane_index < HBM_LANES;
+             lane_index = lane_index + 1) begin : g_accept_wide_buffer
+            npu_dma_hbm_wide_control_buffer u_control_buffer (
+                .data_i(accepted_handshake[lane_index]),
+                .data_o(accepted_handshake_buffered[lane_index])
+            );
+        end
         for (genvar copy_index = 0; copy_index < CONTROL_COPIES;
              copy_index = copy_index + 1) begin : g_accept_control_copy
             for (genvar lane_index = 0; lane_index < HBM_LANES;
                  lane_index = lane_index + 1) begin : g_lane
                 npu_dma_hbm_control_buffer u_control_buffer (
-                    .data_i(accepted_handshake[lane_index]),
+                    .data_i(accepted_handshake_buffered[lane_index]),
                     .data_o(accepted_control_copy[
                         lane_index*CONTROL_COPIES + copy_index])
                 );
@@ -194,6 +206,43 @@ module npu_dma_hbm_response_router #(
         |(hbm_response_valid_i & ~hbm_response_ready_o) ||
         |(channel_response_valid_o & ~channel_response_ready_i);
 
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_accepted_responses_adder (
+        .a_i(accepted_responses_o),
+        .b_i({{61{1'b0}}, accepted_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(accepted_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_delivered_responses_adder (
+        .a_i(delivered_responses_o),
+        .b_i({{59{1'b0}}, delivered_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(delivered_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_dropped_responses_adder (
+        .a_i(dropped_responses_o),
+        .b_i({{61{1'b0}}, dropped_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(dropped_responses_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_backpressure_cycles_adder (
+        .a_i(backpressure_cycles_o),
+        .b_i({{63{1'b0}}, backpressure_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(backpressure_cycles_next)
+    );
+
     always_comb begin
         integer lane_index;
 
@@ -230,17 +279,13 @@ module npu_dma_hbm_response_router #(
             delivered_increment_q <= delivered_increment;
             dropped_increment_q <= dropped_increment;
             backpressure_increment_q <= backpressure_increment;
-            accepted_responses_o <= accepted_responses_o +
-                {{61{1'b0}}, accepted_increment_q};
-            delivered_responses_o <= delivered_responses_o +
-                {{59{1'b0}}, delivered_increment_q};
-            dropped_responses_o <= dropped_responses_o +
-                {{61{1'b0}}, dropped_increment_q};
+            accepted_responses_o <= accepted_responses_next;
+            delivered_responses_o <= delivered_responses_next;
+            dropped_responses_o <= dropped_responses_next;
             if (|lane_protocol_error) begin
                 protocol_error_o <= 1'b1;
             end
-            backpressure_cycles_o <= backpressure_cycles_o +
-                {{63{1'b0}}, backpressure_increment_q};
+            backpressure_cycles_o <= backpressure_cycles_next;
 
             for (int lane_index = 0; lane_index < HBM_LANES;
                  lane_index = lane_index + 1) begin

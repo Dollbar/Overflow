@@ -32,10 +32,12 @@ module npu_dma_local_tag_allocator #(
     logic [TOTAL_TAGS-1:0] free_q;
     logic [TOTAL_TAGS-1:0] release_onehot;
     logic [TOTAL_TAGS-1:0] allocation_candidate;
+    logic [TOTAL_TAGS-1:0] group_first_onehot;
     logic [TOTAL_TAGS-1:0] allocation_selected_onehot;
     logic [CHANNELS*PRIORITY_GROUPS-1:0] priority_group_nonempty;
     logic [CHANNELS*PRIORITY_GROUPS-1:0] priority_group_selected;
-    logic [CHANNELS*4*PRIORITY_GROUPS-1:0] low_tag_bit_partial;
+    logic [CHANNELS-1:0] encoder_valid;
+    logic [CHANNELS*LOCAL_TAG_WIDTH-1:0] encoder_index;
     logic [CHANNELS*STATE_CONTROL_COPIES-1:0] allocation_control_copy;
     logic [CHANNELS*STATE_CONTROL_COPIES-1:0] release_control_copy;
     logic [CHANNELS-1:0] protocol_error_event_q;
@@ -45,6 +47,8 @@ module npu_dma_local_tag_allocator #(
              channel_index = channel_index + 1) begin : g_channel
             logic [15:0] release_low_decode;
             logic [15:0] release_high_decode;
+            logic [15:0] release_low_decode_buffered;
+            logic [15:0] release_high_decode_buffered;
 
             for (genvar nibble_value = 0; nibble_value < 16;
                  nibble_value = nibble_value + 1) begin : g_release_decode
@@ -55,14 +59,22 @@ module npu_dma_local_tag_allocator #(
                     release_local_tag_i[
                         channel_index*LOCAL_TAG_WIDTH + 4 +: 4] ==
                     4'(nibble_value);
+                npu_dma_hbm_control_buffer u_release_low_buffer (
+                    .data_i(release_low_decode[nibble_value]),
+                    .data_o(release_low_decode_buffered[nibble_value])
+                );
+                npu_dma_hbm_control_buffer u_release_high_buffer (
+                    .data_i(release_high_decode[nibble_value]),
+                    .data_o(release_high_decode_buffered[nibble_value])
+                );
             end
 
             for (genvar tag_index = 0; tag_index < TAGS_PER_CHANNEL;
                  tag_index = tag_index + 1) begin : g_release_onehot
                 assign release_onehot[
                     channel_index*TAGS_PER_CHANNEL + tag_index] =
-                    release_high_decode[tag_index/16] &&
-                    release_low_decode[tag_index%16];
+                    release_high_decode_buffered[tag_index/16] &&
+                    release_low_decode_buffered[tag_index%16];
             end
 
             assign release_known_o[channel_index] =
@@ -77,6 +89,14 @@ module npu_dma_local_tag_allocator #(
             assign allocation_candidate[
                 channel_index*TAGS_PER_CHANNEL +: TAGS_PER_CHANNEL] =
                 free_q[channel_index*TAGS_PER_CHANNEL +: TAGS_PER_CHANNEL];
+
+            npu_dma_priority_encoder256 u_priority_encoder (
+                .bits_i(allocation_candidate[
+                    channel_index*TAGS_PER_CHANNEL +: TAGS_PER_CHANNEL]),
+                .valid_o(encoder_valid[channel_index]),
+                .index_o(encoder_index[
+                    channel_index*LOCAL_TAG_WIDTH +: LOCAL_TAG_WIDTH])
+            );
 
             for (genvar group_index = 0; group_index < PRIORITY_GROUPS;
                  group_index = group_index + 1) begin : g_priority_group
@@ -105,23 +125,19 @@ module npu_dma_local_tag_allocator #(
                      group_tag_index < TAGS_PER_PRIORITY_GROUP;
                      group_tag_index = group_tag_index + 1) begin : g_group_tag
                     if (group_tag_index == 0) begin : g_first_tag
-                        assign allocation_selected_onehot[
+                        assign group_first_onehot[
                             channel_index*TAGS_PER_CHANNEL +
                             group_index*TAGS_PER_PRIORITY_GROUP +
                             group_tag_index] =
-                            priority_group_selected[
-                                channel_index*PRIORITY_GROUPS + group_index] &&
                             allocation_candidate[
                                 channel_index*TAGS_PER_CHANNEL +
                                 group_index*TAGS_PER_PRIORITY_GROUP +
                                 group_tag_index];
                     end else begin : g_later_tag
-                        assign allocation_selected_onehot[
+                        assign group_first_onehot[
                             channel_index*TAGS_PER_CHANNEL +
                             group_index*TAGS_PER_PRIORITY_GROUP +
                             group_tag_index] =
-                            priority_group_selected[
-                                channel_index*PRIORITY_GROUPS + group_index] &&
                             allocation_candidate[
                                 channel_index*TAGS_PER_CHANNEL +
                                 group_index*TAGS_PER_PRIORITY_GROUP +
@@ -131,37 +147,22 @@ module npu_dma_local_tag_allocator #(
                                 group_index*TAGS_PER_PRIORITY_GROUP +:
                                 group_tag_index]);
                     end
+                    assign allocation_selected_onehot[
+                        channel_index*TAGS_PER_CHANNEL +
+                        group_index*TAGS_PER_PRIORITY_GROUP +
+                        group_tag_index] =
+                        priority_group_selected[
+                            channel_index*PRIORITY_GROUPS + group_index] &&
+                        group_first_onehot[
+                            channel_index*TAGS_PER_CHANNEL +
+                            group_index*TAGS_PER_PRIORITY_GROUP +
+                            group_tag_index];
                 end
 
-                assign low_tag_bit_partial[
-                    (channel_index*4 + 0)*PRIORITY_GROUPS + group_index] =
-                    |(allocation_selected_onehot[
-                          channel_index*TAGS_PER_CHANNEL +
-                          group_index*TAGS_PER_PRIORITY_GROUP +:
-                          TAGS_PER_PRIORITY_GROUP] & 16'haaaa);
-                assign low_tag_bit_partial[
-                    (channel_index*4 + 1)*PRIORITY_GROUPS + group_index] =
-                    |(allocation_selected_onehot[
-                          channel_index*TAGS_PER_CHANNEL +
-                          group_index*TAGS_PER_PRIORITY_GROUP +:
-                          TAGS_PER_PRIORITY_GROUP] & 16'hcccc);
-                assign low_tag_bit_partial[
-                    (channel_index*4 + 2)*PRIORITY_GROUPS + group_index] =
-                    |(allocation_selected_onehot[
-                          channel_index*TAGS_PER_CHANNEL +
-                          group_index*TAGS_PER_PRIORITY_GROUP +:
-                          TAGS_PER_PRIORITY_GROUP] & 16'hf0f0);
-                assign low_tag_bit_partial[
-                    (channel_index*4 + 3)*PRIORITY_GROUPS + group_index] =
-                    |(allocation_selected_onehot[
-                          channel_index*TAGS_PER_CHANNEL +
-                          group_index*TAGS_PER_PRIORITY_GROUP +:
-                          TAGS_PER_PRIORITY_GROUP] & 16'hff00);
             end
 
             assign allocation_available_o[channel_index] =
-                |priority_group_nonempty[
-                    channel_index*PRIORITY_GROUPS +: PRIORITY_GROUPS];
+                encoder_valid[channel_index];
             assign allocation_grant_o[channel_index] =
                 allocation_request_i[channel_index] &&
                 allocation_available_o[channel_index];
@@ -170,54 +171,21 @@ module npu_dma_local_tag_allocator #(
                 !allocation_available_o[channel_index];
 
             assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 0] =
-                |low_tag_bit_partial[
-                    (channel_index*4 + 0)*PRIORITY_GROUPS +: PRIORITY_GROUPS];
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 1] =
-                |low_tag_bit_partial[
-                    (channel_index*4 + 1)*PRIORITY_GROUPS +: PRIORITY_GROUPS];
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 2] =
-                |low_tag_bit_partial[
-                    (channel_index*4 + 2)*PRIORITY_GROUPS +: PRIORITY_GROUPS];
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 3] =
-                |low_tag_bit_partial[
-                    (channel_index*4 + 3)*PRIORITY_GROUPS +: PRIORITY_GROUPS];
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 4] =
-                |(priority_group_selected[
-                       channel_index*PRIORITY_GROUPS +: PRIORITY_GROUPS] &
-                  16'haaaa);
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 5] =
-                |(priority_group_selected[
-                       channel_index*PRIORITY_GROUPS +: PRIORITY_GROUPS] &
-                  16'hcccc);
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 6] =
-                |(priority_group_selected[
-                       channel_index*PRIORITY_GROUPS +: PRIORITY_GROUPS] &
-                  16'hf0f0);
-            assign allocation_local_tag_o[
-                channel_index*LOCAL_TAG_WIDTH + 7] =
-                |(priority_group_selected[
-                       channel_index*PRIORITY_GROUPS +: PRIORITY_GROUPS] &
-                  16'hff00);
+                channel_index*LOCAL_TAG_WIDTH +: LOCAL_TAG_WIDTH] =
+                encoder_index[
+                    channel_index*LOCAL_TAG_WIDTH +: LOCAL_TAG_WIDTH];
 
             for (genvar control_copy_index = 0;
                  control_copy_index < STATE_CONTROL_COPIES;
                  control_copy_index = control_copy_index + 1) begin : g_state_control
                 npu_dma_hbm_control_buffer u_allocation_control_buffer (
-                    .data_i(allocation_grant_o[channel_index]),
+                    .data_i(allocation_request_i[channel_index]),
                     .data_o(allocation_control_copy[
                         channel_index*STATE_CONTROL_COPIES + control_copy_index])
                 );
 
                 npu_dma_hbm_control_buffer u_release_control_buffer (
-                    .data_i(release_commit_i[channel_index] &&
-                            release_known_o[channel_index]),
+                    .data_i(release_commit_i[channel_index]),
                     .data_o(release_control_copy[
                         channel_index*STATE_CONTROL_COPIES + control_copy_index])
                 );

@@ -26,6 +26,7 @@ module npu_dma_hbm_response_channel #(
     localparam int unsigned SELECT_COPIES = DATA_CHUNKS + 1;
 
     logic [SELECT_COPIES*HBM_LANES-1:0] lane_select_buffered;
+    logic [HBM_LANES-1:0] lane_select_staged;
     logic [DATA_CHUNKS-1:0] chunk_selected;
     logic metadata_selected;
     logic [HBM_LANES*DATA_WIDTH-1:0] masked_data;
@@ -41,12 +42,20 @@ module npu_dma_hbm_response_channel #(
     logic [1:0] selected_status;
 
     generate
+        for (genvar lane_index = 0; lane_index < HBM_LANES;
+             lane_index = lane_index + 1) begin : g_select_stage
+            npu_dma_hbm_wide_control_buffer u_wide_control_buffer (
+                .data_i(lane_select_i[lane_index]),
+                .data_o(lane_select_staged[lane_index])
+            );
+        end
+
         for (genvar copy_index = 0; copy_index < SELECT_COPIES;
              copy_index = copy_index + 1) begin : g_select_copy
             for (genvar lane_index = 0; lane_index < HBM_LANES;
                  lane_index = lane_index + 1) begin : g_lane
                 npu_dma_hbm_control_buffer u_control_buffer (
-                    .data_i(lane_select_i[lane_index]),
+                    .data_i(lane_select_staged[lane_index]),
                     .data_o(lane_select_buffered[
                         copy_index*HBM_LANES + lane_index])
                 );

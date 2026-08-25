@@ -10,3 +10,5 @@ logical ports and PCS, compiler IR, and simulator timing model.
   calculation clock.
 - [`ADR-0002`](ADR-0002-npu-hbm-egress-lane-geometry.md) derives the five-lane per-pod NPU HBM egress
   geometry from the baselined partition bandwidth and beat size.
+- [`ADR-0003`](ADR-0003-npu-local-dma-mover-contract.md) fixes the NPU-owned, already-translated local DMA
+  command and HBM-to-SRAM completion boundary without defining KD-ISA or runtime ABI fields.

@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 `default_nettype none
 
+(* keep_hierarchy = "true" *)
 module npu_dma_hbm_egress #(
     parameter int unsigned CHANNELS = 16,
     parameter int unsigned HBM_LANES = 5,
@@ -80,6 +81,7 @@ module npu_dma_hbm_egress #(
     logic [1:0] available_pair23;
     logic [2:0] available_count;
     logic [HBM_LANES*CHANNELS-1:0] lane_channel_select;
+    logic [HBM_LANES*CHANNELS-1:0] lane_channel_select_buffered;
     logic [CHANNELS-1:0] last_grant_channel;
     logic [CHANNELS-1:0] last_grant_channel_q;
     logic [CHANNEL_INDEX_WIDTH-1:0] last_selected_channel;
@@ -96,16 +98,19 @@ module npu_dma_hbm_egress #(
     logic [2:0] issued_increment_q;
     logic backpressure_increment;
     logic backpressure_increment_q;
+    logic [63:0] accepted_beats_next;
+    logic [63:0] issued_beats_next;
+    logic [63:0] backpressure_cycles_next;
 
     generate
         for (genvar channel_index = 0; channel_index < CHANNELS;
              channel_index = channel_index + 1) begin : g_channel_rank
             assign channel_dequeue[channel_index] =
-                lane_channel_select[0*CHANNELS + channel_index] |
-                lane_channel_select[1*CHANNELS + channel_index] |
-                lane_channel_select[2*CHANNELS + channel_index] |
-                lane_channel_select[3*CHANNELS + channel_index] |
-                lane_channel_select[4*CHANNELS + channel_index];
+                lane_channel_select_buffered[0*CHANNELS + channel_index] |
+                lane_channel_select_buffered[1*CHANNELS + channel_index] |
+                lane_channel_select_buffered[2*CHANNELS + channel_index] |
+                lane_channel_select_buffered[3*CHANNELS + channel_index] |
+                lane_channel_select_buffered[4*CHANNELS + channel_index];
             assign request_ready_o[channel_index] = channel_dequeue[channel_index];
             assign rank_valid_d[channel_index] =
                 request_valid_i[channel_index] && request_seen_q[channel_index];
@@ -197,6 +202,12 @@ module npu_dma_hbm_egress #(
                     request_valid_i[channel_index] &&
                     (channel_rank_q[channel_index*5 +: 5] ==
                      {2'b00, lane_available_rank[lane_index*3 +: 3]});
+                npu_dma_hbm_wide_control_buffer u_control_buffer (
+                    .data_i(lane_channel_select[
+                        lane_index*CHANNELS + channel_index]),
+                    .data_o(lane_channel_select_buffered[
+                        lane_index*CHANNELS + channel_index])
+                );
             end
             npu_dma_hbm_request_slot #(
                 .CHANNELS(CHANNELS),
@@ -205,7 +216,7 @@ module npu_dma_hbm_egress #(
             ) u_request_slot (
                 .clk_i,
                 .rst_i,
-                .channel_select_i(lane_channel_select[
+                .channel_select_i(lane_channel_select_buffered[
                     lane_index*CHANNELS +: CHANNELS]),
                 .channel_payload_i(channel_payload),
                 .slot_ready_i(hbm_request_ready_i[lane_index]),
@@ -279,6 +290,34 @@ module npu_dma_hbm_egress #(
     assign backpressure_increment = |(request_valid_i & ~request_ready_o);
     assign busy_o = |hbm_request_valid_o;
 
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_accepted_beats_adder (
+        .a_i(accepted_beats_o),
+        .b_i({{59{1'b0}}, accepted_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(accepted_beats_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_issued_beats_adder (
+        .a_i(issued_beats_o),
+        .b_i({{61{1'b0}}, issued_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(issued_beats_next)
+    );
+    npu_dma_carry_select_adder #(
+        .WIDTH(64),
+        .BLOCK_WIDTH(10)
+    ) u_backpressure_cycles_adder (
+        .a_i(backpressure_cycles_o),
+        .b_i({{63{1'b0}}, backpressure_increment_q}),
+        .cin_i(1'b0),
+        .sum_o(backpressure_cycles_next)
+    );
+
     always_ff @(posedge clk_i) begin
         if (rst_i) begin
             round_robin_q <= '0;
@@ -312,12 +351,9 @@ module npu_dma_hbm_egress #(
             accepted_increment_q <= accepted_increment;
             issued_increment_q <= issued_increment;
             backpressure_increment_q <= backpressure_increment;
-            accepted_beats_o <= accepted_beats_o +
-                {{59{1'b0}}, accepted_increment_q};
-            issued_beats_o <= issued_beats_o +
-                {{61{1'b0}}, issued_increment_q};
-            backpressure_cycles_o <= backpressure_cycles_o +
-                {{63{1'b0}}, backpressure_increment_q};
+            accepted_beats_o <= accepted_beats_next;
+            issued_beats_o <= issued_beats_next;
+            backpressure_cycles_o <= backpressure_cycles_next;
 
             for (int channel_index = 0; channel_index < CHANNELS;
                  channel_index = channel_index + 1) begin

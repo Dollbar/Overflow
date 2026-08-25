@@ -27,13 +27,33 @@ the router, checks every tag and payload field, validates all four delivered-sta
 drains during active traffic, resumes admission, checks the outstanding high-watermark, and requires
 complete final drain.
 
+The DMA address-generator test checks ready/valid-stable linear, two-dimensional, three-dimensional, and
+overlapping-stride sequences plus malformed version, alignment, capacity-overflow, completion-backpressure,
+clear, and reset behavior against the versioned NPU-local DMA command contract.
+
+The channel-mover test covers both transfer directions, tag metadata, HBM and SRAM stalls, completion
+backpressure, and error drain. The engine test exercises all sixteen movers, four total contexts per
+channel, five-lane issue, quiesce, and completion routing. The shared-SRAM and Pod tests cover bank
+conflicts, read-before-write behavior, end-to-end HBM/SRAM round trips, and exact synthesis mapping to 256
+`KD28_SRAM_SDP_2048X256` macros.
+
 Run the mapped generic pre-layout STA gate with a readable Liberty path supplied by the caller:
 
 ```sh
 make npu-system-sta LIBERTY=/path/to/standard_cells.lib
 ```
 
-No repository target contains a workstation-specific Liberty path. The gate constrains all six production
+The checked Nangate45 adapter can be selected without a workstation-specific path:
+
+```sh
+make npu-system-sta \
+  LIBERTY=/path/to/NangateOpenCellLibrary_typical.lib \
+  CELL_MAP=verification/npu/system/STA/scripts/nangate45_cells_map.v \
+  ABC_CONSTR=verification/npu/system/STA/scripts/abc_nangate45.constr \
+  DRIVING_CELL=BUF_X1 DRIVING_PIN=Z
+```
+
+No repository target contains a workstation-specific Liberty path. The gate constrains all eight production
 tops at 1.000 ns with 0.030 ns uncertainty, 0.050 ns input/output delays, and 0.005 pF output load. It fails
 on setup, max slew, max capacitance, or max fanout violations. Passing evidence is `GENERIC_SYNTH`; it is
 not HBM controller bandwidth, post-layout closure, or KD28 foundry signoff.

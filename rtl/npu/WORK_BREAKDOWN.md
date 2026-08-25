@@ -21,11 +21,11 @@ A task is complete only after its listed documentation, tests, and traceability 
 | NPU-VEC-002 | `scheduler/`, `vector/` | Independent Vector issue and memory flow | operator and descriptor vNext contracts | HOLD: specs | bit-exact continuous RTL_SIM |
 | NPU-SRM-001 | `sram/` | Current local Tensor/Vector storage boundary | NPU core v0.2 contract | VERIFIED: NPU-009 and NPU-014 | RTL_SIM macro contract |
 | NPU-SRM-003 | `sram/`, `Library/models/kd28/` | Map NPU SRAM boundaries onto fixed KD28 TDP/SDP cells | KD28 and NPU local SRAM contracts | VERIFIED: NPU-016 | exact macro counts + no inferred memory + synthetic STA |
-| NPU-SRM-002 | `sram/` | 16 MiB pod-shared scratchpad and arbitration | NoC/DMA clients | HOLD: client contract | RTL_SIM + starvation assertions |
+| NPU-SRM-002 | `sram/` | 16 MiB pod-shared scratchpad and sixteen-client DMA arbitration | NPU pod-shared SRAM v0.1 contract | VERIFIED: NPU-026 | RTL_SIM + exact KD28 macro mapping |
 | NPU-NOC-001 | `noc/` | Credit-based router with deterministic escape VC | routing/packet fields | HOLD: interface spec | FORMAL deadlock obligations |
 | NPU-NOC-002 | `noc/` | Proposed 2 x 4 pod mesh integration | NPU-NOC-001 | HOLD: NPU-NOC-001 | RTL_SIM congestion regression |
-| NPU-DMA-001 | `dma/` | Descriptor scheduler and scratchpad mover | descriptor fields | HOLD: interface spec | RTL_SIM backpressure |
-| NPU-DMA-002 | `dma/` | NPU-side HBM response retirement and finite DMA mover; no HBM controller or PHY | NPU HBM RTL beat and DMA descriptor contracts | HOLD: DMA descriptor/translation contract | FUNCTIONAL_SIM equivalence + RTL_SIM |
+| NPU-DMA-001 | `dma/` | Finite command queues, address generation, and scratchpad movers | NPU-local DMA command and SRAM client contracts | VERIFIED: NPU-024..025 | RTL_SIM backpressure and generic STA |
+| NPU-DMA-002 | `dma/` | NPU-side HBM response retirement and finite DMA mover; no HBM controller or PHY | NPU HBM RTL beat and DMA command contracts | VERIFIED: NPU-018..025 | RTL_SIM + generic STA |
 | NPU-DMA-003 | `dma/` | Sixteen-channel QoS/age arbiter and five-lane elastic HBM request egress | ADR-0002 and NPU HBM RTL beat contract | VERIFIED: NPU-017 | zero-warning lint + no-loss saturation/backpressure RTL_SIM |
 | NPU-DMA-004 | `dma/` | Five-lane HBM response buffering, ordered tag routing, and sixteen-channel elastic retirement | ADR-0002 and NPU HBM RTL beat contract | VERIFIED: NPU-018 | zero-warning lint + no-loss/order/error RTL_SIM + generic 1 GHz STA |
 | NPU-TOP-001 | `rtl/npu/` | One-pod top-level integration | decoded-command sink, DMA, scratchpad, scheduler contracts | HOLD: specs | RTL_SIM integration |

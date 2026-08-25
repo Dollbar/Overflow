@@ -8,6 +8,11 @@ module generic_control_buffer_map(input wire data_i, output wire data_o);
     BUFX1 _TECHMAP_REPLACE_ (.A(data_i), .Y(data_o));
 endmodule
 
+(* techmap_celltype = "npu_dma_hbm_wide_control_buffer" *)
+module generic_wide_control_buffer_map(input wire data_i, output wire data_o);
+    BUFX1 _TECHMAP_REPLACE_ (.A(data_i), .Y(data_o));
+endmodule
+
 (* techmap_celltype = "$_NOT_" *)
 module generic_not_map(input wire A, output wire Y);
     INVX1 _TECHMAP_REPLACE_ (.A(A), .Y(Y));
