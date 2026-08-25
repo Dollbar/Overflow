@@ -1,0 +1,95 @@
+# NPU DMA Internal Data Path v0.1
+
+Status: controlled NPU-internal leaf contract. Descriptor, shared-SRAM client, address-translation, and
+NoC packet fields remain `HOLD` until their producing specifications are approved.
+
+## 1. Scope
+
+This contract separates the NPU-owned DMA data path from the externally owned KD-ISA and runtime ABI.
+The NPU consumes an already-decoded internal DMA descriptor and produces an internal completion event.
+It does not decode KD-ISA, read host submission queues, write runtime completion queues, or assign ABI
+error encodings.
+
+The currently admitted RTL scope is the finite HBM beat boundary, local-tag allocation, outstanding-tag
+lifetime checking, and verification-only integration logic that does not invent held descriptor or
+memory-client fields.
+
+## 2. Local and NoC Paths
+
+The default data path is pod-local:
+
+```text
+local HBM partition <-> pod DMA <-> pod/shared or tile staging SRAM <-> Tensor/Vector
+```
+
+The local HBM partition is directly attached to its owning pod DMA. Data destined for compute is written
+into software-managed SRAM and becomes visible through an explicit producer-consumer ownership/barrier
+transition. Tensor and Vector engines read SRAM; they do not consume an unbuffered HBM response stream.
+The pod-local path uses a local SRAM client arbiter or crossbar and does not traverse the global pod NoC.
+
+The NoC is required only when the source or destination is outside the owning pod, or when an approved
+operation explicitly requests cross-pod distribution:
+
+```text
+source pod DMA/SRAM -> NoC injection -> pod mesh -> destination ejection -> destination SRAM
+```
+
+The NoC owns routing, virtual-channel selection, credits, congestion backpressure, packet ordering, and
+deadlock avoidance after injection. The DMA owns beat generation, source/destination bounds, reservation
+of destination resources, and completion accounting before and after that boundary. No remote mover RTL
+may be implemented until the NoC flit, VC, credit, reset, and error contract is versioned.
+
+The architecture proposal requires at least 80 percent pod-local HBM traffic because the proposed mesh
+cannot redistribute the complete 5 TB/s NPU HBM stream. That locality ratio remains `ANALYTICAL` and is
+not an RTL guarantee.
+
+## 3. Local-Tag Allocation
+
+Each pod DMA has sixteen logical channels. Each channel owns 256 eight-bit local tags, producing the
+twelve-bit HBM identity `{channel[3:0], local_tag[7:0]}` frozen by ADR-0002.
+
+`npu_dma_local_tag_allocator` exposes one claim and one release opportunity per channel per service-clock
+cycle. `allocation_request_i` is a commit pulse, not an unconstrained ready/valid level; the producer must
+assert it only while `allocation_available_o` is high and must capture `allocation_local_tag_o` on the
+same edge as `allocation_grant_o`. A successful claim immediately reserves the selected lowest-numbered
+free tag. Requesting while no tag is available produces `allocation_failure_o` and is a producer protocol
+error.
+
+A release is committed only after the matching HBM response has been consumed by the destination DMA
+channel. Releasing a free tag produces `unknown_release_o`. A released tag enters the free pool on the
+following cycle; after the one-cycle full-pool turnover, release and allocation can continue every cycle.
+The sticky local protocol-error diagnostic is asserted one cycle after the first allocation failure or
+unknown release.
+
+The allocator reserves a tag when a channel beat buffer is created. The independent outstanding tracker
+records that tag only when the HBM request egress actually accepts the beat, then retires it when the
+response is consumed. Integration must preserve both stages:
+
+```text
+beat-buffer claim -> allocator reservation -> HBM egress acceptance -> tracker allocation
+HBM response consumption -> tracker retirement -> allocator release
+```
+
+Cancellation and reset-abort reclamation remain `HOLD`; until that contract is approved, an admitted beat
+buffer may not silently discard a reserved tag.
+
+## 4. Remaining Holds
+
+The following are not defined by this revision:
+
+- DMA descriptor packing, IOVA width, protection domain, chaining, and completion identity;
+- local/shared SRAM client address, bank, byte-enable, arbitration, ECC, and ownership fields;
+- linear/strided address-generator RTL fields beyond the frozen 128-byte HBM beat;
+- scatter-gather, indexed gather/scatter, multicast, and zero-fill command encodings;
+- NoC packet, virtual-channel, credit, ordering, retry, and reset behavior; and
+- runtime status, cancellation, interrupt, timeout, and recovery semantics.
+
+These fields require their producing contract, this consuming contract, compatibility tests, and updated
+traceability before production mover or remote-path RTL is admitted.
+
+## 5. Required Evidence
+
+The local-tag allocator requires zero-warning lint, synthesis-readiness, exhaustive allocation of all
+4,096 identities, full-pool failure injection, release/reclaim turnover, unknown-release injection,
+randomized free-bitmap scoreboarding, complete drain, and mapped 1 GHz generic STA with no setup, slew,
+capacitance, or fanout violation. Generic-cell evidence is not KD28 signoff.

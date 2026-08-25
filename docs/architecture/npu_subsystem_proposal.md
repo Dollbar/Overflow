@@ -86,6 +86,10 @@ support arbitrary redistribution of the full 5 TB/s HBM stream. Instead, compile
 mapping must keep at least 80 percent of HBM traffic pod-local; traces that exceed the 20 percent nonlocal
 budget are a placement failure or require a topology revision.
 
+The global pod mesh is not placed on the default HBM-to-compute path. A pod DMA stages data from its local
+HBM partition into local/shared SRAM, and Tensor/Vector clients consume that SRAM through local arbitration.
+Only cross-pod source/destination traffic and approved multicast operations enter the NoC injection path.
+
 Four virtual channels are proposed: one deterministic XY escape VC, bulk read response, bulk write, and
 KDLink/collective traffic. Adaptive routing may be used only outside the escape VC. Deadlock freedom is a
 future `FORMAL` obligation and is not established by this proposal.
