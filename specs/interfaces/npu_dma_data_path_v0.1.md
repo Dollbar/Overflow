@@ -98,6 +98,13 @@ protocol diagnostic, but it cannot release an allocator entry. `busy_o` remains 
 buffer, egress lane, response buffer, or tracked HBM request is occupied. The integration top does not
 generate addresses, access SRAM, interpret completion status, or select a NoC route.
 
+The integrated status monitor observes the same response-consumption pulse used for retirement. It counts
+the frozen `OK`, `ECC_CORRECTED`, `ECC_UNCORRECTABLE`, and `DATA_ERROR` values independently in 64-bit
+modulo counters and latches local seen bits for the three non-OK classes. Aggregate counters lag the commit
+by two service-clock cycles and sticky observations lag by one cycle. These outputs are diagnostic
+telemetry only: status never changes retirement or allocator release, and this revision defines no replay,
+retryability, interrupt, completion record, or ABI error conversion.
+
 ## 5. Remaining Holds
 
 The following are not defined by this revision:
@@ -124,3 +131,7 @@ independently backpressured request lanes, ordered HBM response generation, inde
 consumers, full tag/address/data/byte-enable/status scoreboarding, telemetry checks, complete drain, and
 mapped 1 GHz generic STA. The regression must demonstrate aggregate request issue without relying on
 same-cycle channel-buffer dequeue/refill.
+
+The response-status monitor additionally requires all four status classes in directed and randomized
+sixteen-channel commit traffic, exact counter checks after pipeline drain, sticky-bit and reset checks,
+zero-warning lint, synthesis-readiness, and the same mapped 1 GHz generic STA gate.

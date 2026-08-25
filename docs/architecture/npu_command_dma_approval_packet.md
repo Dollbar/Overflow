@@ -63,10 +63,11 @@ They do not close the upstream DMA descriptor, IOVA translation, cancellation, o
 The beat-interface leaves, local-tag allocator, independent outstanding-tag lifetime tracker, and their
 sixteen-channel integrated boundary are now implemented and verified. The allocator reserves and releases
 all 4,096 beat identities; the tracker independently detects duplicate HBM allocation and unknown
-retirement; the boundary enforces the reserve/egress/retire/release commit sequence. The remaining DMA
+retirement; the boundary enforces the reserve/egress/retire/release commit sequence; and the local status
+monitor counts only consumed responses across all four frozen status classes. The remaining DMA
 approval gate still covers descriptor fields, IOVA translation, scratchpad movement, cancellation
 reclamation, and conversion of beat status into an externally owned completion ABI. NPU-017 through
-NPU-021 do not approve or infer those contracts.
+NPU-022 do not approve or infer those contracts.
 
 ## 4. External Inputs Required Before General Compute Issue
 
