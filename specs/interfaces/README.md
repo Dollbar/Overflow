@@ -17,7 +17,8 @@ and tests must not depend on behavior absent from these contracts.
 - [`npu_hbm_rtl.md`](npu_hbm_rtl.md) freezes the finite five-lane per-pod NPU HBM beat interface, its
   NPU-local DMA arbitration contract, and the 4,096-identity tag-lifetime tracker behavior.
 - [`npu_dma_data_path_v0.1.md`](npu_dma_data_path_v0.1.md) defines the admitted local-tag allocator and
-  separates the pod-local HBM/SRAM path from the held cross-pod NoC mover path.
+  integrated beat boundary, and separates the pod-local HBM/SRAM path from the held cross-pod NoC mover
+  path.
 - [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 

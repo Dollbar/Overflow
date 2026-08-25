@@ -19,6 +19,9 @@ tag-tracker test exhaustively fills and drains all 4,096 identities, checks same
 injects duplicate and unknown events, and runs a randomized bitmap and telemetry scoreboard.
 The local-tag allocator test exhaustively claims and releases the same identity space, checks full-pool
 failure, release/reclaim turnover, unknown release, and a randomized free-bitmap scoreboard.
+The integrated-boundary test submits 1,536 mixed read/write beats across all sixteen channels, randomizes
+five request lanes and sixteen response consumers independently, loops ordered HBM responses back through
+the router, checks every tag and payload field, validates counters, and requires complete drain.
 
 Run the mapped generic pre-layout STA gate with a readable Liberty path supplied by the caller:
 
@@ -26,7 +29,7 @@ Run the mapped generic pre-layout STA gate with a readable Liberty path supplied
 make npu-system-sta LIBERTY=/path/to/standard_cells.lib
 ```
 
-No repository target contains a workstation-specific Liberty path. The gate constrains all four production
+No repository target contains a workstation-specific Liberty path. The gate constrains all five production
 tops at 1.000 ns with 0.030 ns uncertainty, 0.050 ns input/output delays, and 0.005 pF output load. It fails
 on setup, max slew, max capacitance, or max fanout violations. Passing evidence is `GENERIC_SYNTH`; it is
 not HBM controller bandwidth, post-layout closure, or KD28 foundry signoff.

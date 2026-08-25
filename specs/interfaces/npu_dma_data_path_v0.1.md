@@ -11,8 +11,7 @@ It does not decode KD-ISA, read host submission queues, write runtime completion
 error encodings.
 
 The currently admitted RTL scope is the finite HBM beat boundary, local-tag allocation, outstanding-tag
-lifetime checking, and verification-only integration logic that does not invent held descriptor or
-memory-client fields.
+lifetime checking, and their production integration without held descriptor or memory-client fields.
 
 ## 2. Local and NoC Paths
 
@@ -73,7 +72,33 @@ HBM response consumption -> tracker retirement -> allocator release
 Cancellation and reset-abort reclamation remain `HOLD`; until that contract is approved, an admitted beat
 buffer may not silently discard a reserved tag.
 
-## 4. Remaining Holds
+## 4. Integrated Beat Boundary
+
+`npu_dma_hbm_boundary` is the admitted integration top between sixteen already-decoded channel beat
+producers and the frozen five-lane HBM service. Each producer supplies the frozen write, partition-local
+address, write-data, byte-enable, and QoS fields without a tag. On `channel_request_valid_i &&
+channel_request_ready_o`, the boundary reserves a local tag, returns that tag on
+`channel_request_local_tag_o`, and captures the complete beat in a one-entry channel buffer.
+
+The channel buffer is deliberately non-fall-through: a channel dequeued into the egress becomes ready for
+its next beat on the following cycle. This removes the egress arbitration return path from the tag-claim
+and 1,199-bit buffer-capture path. Sixteen channel buffers feeding five HBM lanes preserve the aggregate
+five-beat-per-cycle saturation target even though one channel cannot dequeue and refill on the same edge.
+Capture enables are replicated in 32-bit groups for timing and capacitance control.
+
+The boundary connects the lifetime stages as follows:
+
+- channel input acceptance reserves a tag and captures the beat;
+- egress acceptance registers that tag in the independent outstanding tracker;
+- HBM response delivery retires the tracker entry; and
+- only a tracker-known retirement releases the allocator entry.
+
+An unknown response is still consumed through the finite response boundary and raises the sticky local
+protocol diagnostic, but it cannot release an allocator entry. `busy_o` remains asserted while a channel
+buffer, egress lane, response buffer, or tracked HBM request is occupied. The integration top does not
+generate addresses, access SRAM, interpret completion status, or select a NoC route.
+
+## 5. Remaining Holds
 
 The following are not defined by this revision:
 
@@ -87,9 +112,15 @@ The following are not defined by this revision:
 These fields require their producing contract, this consuming contract, compatibility tests, and updated
 traceability before production mover or remote-path RTL is admitted.
 
-## 5. Required Evidence
+## 6. Required Evidence
 
 The local-tag allocator requires zero-warning lint, synthesis-readiness, exhaustive allocation of all
 4,096 identities, full-pool failure injection, release/reclaim turnover, unknown-release injection,
 randomized free-bitmap scoreboarding, complete drain, and mapped 1 GHz generic STA with no setup, slew,
 capacitance, or fanout violation. Generic-cell evidence is not KD28 signoff.
+
+The integrated boundary additionally requires a sixteen-channel mixed read/write regression with five
+independently backpressured request lanes, ordered HBM response generation, independently stalled channel
+consumers, full tag/address/data/byte-enable/status scoreboarding, telemetry checks, complete drain, and
+mapped 1 GHz generic STA. The regression must demonstrate aggregate request issue without relying on
+same-cycle channel-buffer dequeue/refill.
