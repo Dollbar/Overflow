@@ -67,7 +67,9 @@ retirement; the boundary enforces the reserve/egress/retire/release commit seque
 monitor counts only consumed responses across all four frozen status classes. The remaining DMA
 approval gate still covers descriptor fields, IOVA translation, scratchpad movement, cancellation
 reclamation, and conversion of beat status into an externally owned completion ABI. NPU-017 through
-NPU-022 do not approve or infer those contracts.
+NPU-023 do not approve or infer those contracts. The verified quiesce path stops new beat admission and
+drains accepted work, but it deliberately does not define cancellation, timeout, abrupt-reset reclamation,
+or replay.
 
 ## 4. External Inputs Required Before General Compute Issue
 

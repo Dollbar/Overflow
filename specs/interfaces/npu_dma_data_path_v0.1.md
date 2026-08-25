@@ -105,6 +105,13 @@ by two service-clock cycles and sticky observations lag by one cycle. These outp
 telemetry only: status never changes retirement or allocator release, and this revision defines no replay,
 retryability, interrupt, completion record, or ABI error conversion.
 
+The boundary also supports lossless local quiesce. Assertion closes all sixteen channel admission points
+without modifying requests already accepted. Buffered and outstanding work continues to retirement, and
+`quiesced_o` asserts after three consecutive idle service-clock cycles so the two-cycle count/status
+telemetry pipelines have settled. Deassertion re-enables ordinary allocation-based admission. The
+outstanding high-watermark records the maximum delayed aggregate count since reset. Neither mechanism
+cancels work, frees an unretired tag, imposes a timeout, or defines reset-abort recovery.
+
 ## 5. Remaining Holds
 
 The following are not defined by this revision:
@@ -135,3 +142,7 @@ same-cycle channel-buffer dequeue/refill.
 The response-status monitor additionally requires all four status classes in directed and randomized
 sixteen-channel commit traffic, exact counter checks after pipeline drain, sticky-bit and reset checks,
 zero-warning lint, synthesis-readiness, and the same mapped 1 GHz generic STA gate.
+
+The integrated boundary must also be quiesced during active randomized traffic, prove that admission stops
+while accepted traffic drains without loss, hold the settled indication until control deassertion, resume
+to full completion, and compare the reported outstanding high-watermark against an independent scoreboard.

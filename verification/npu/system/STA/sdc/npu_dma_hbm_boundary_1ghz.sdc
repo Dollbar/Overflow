@@ -16,7 +16,7 @@ set synchronous_inputs [get_ports {
     hbm_request_ready_i* hbm_response_valid_i* hbm_response_write_i*
     hbm_response_partition_i* hbm_response_tag_i*
     hbm_response_read_data_i* hbm_response_status_i*
-    channel_response_ready_i*
+    channel_response_ready_i* quiesce_i
 }]
 set_input_delay $input_delay -clock clk_i $synchronous_inputs
 set_driving_cell -lib_cell BUFX1 -pin Y $synchronous_inputs

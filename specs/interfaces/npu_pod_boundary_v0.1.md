@@ -58,6 +58,7 @@ pod and the eight-pod organization remain `PROPOSED`; neither may be hard-coded 
 | HBM RTL request lanes | DMA frontend | memory attachment | `BASELINED` | ADR-0002 and `npu_hbm_rtl.md` freeze five 128-byte lanes, finite address/tag fields, stable backpressure, ordering, and reset |
 | HBM RTL response retirement | memory attachment | DMA frontend | `BASELINED / VERIFIED LEAF` | Five-lane elastic capture, ordered tag routing, malformed-partition drop, and sixteen channel outputs are verified by NPU-018 |
 | HBM response status telemetry | DMA response consumers | local diagnostics | `BASELINED / VERIFIED LEAF` | Four frozen beat-status counters and three non-OK sticky observations are verified by NPU-022; retry and runtime ABI conversion remain held |
+| DMA lossless quiesce | local reset/maintenance sequencing | DMA beat admission | `BASELINED / VERIFIED LEAF` | NPU-023 closes new admission and drains accepted beats before a settled indication; cancellation, timeout, abrupt reset, and ABI behavior remain held |
 | DMA local-tag allocation and lifetime | DMA beat buffers and response consumers | HBM egress and DMA scheduler | `BASELINED / VERIFIED LEAF` | ADR-0002 tag geometry plus NPU DMA data-path contract; allocator and tracker are verified by NPU-019..020; cancellation reclamation remains held |
 | Integrated DMA HBM beat boundary | decoded beat producers | memory attachment and decoded response consumers | `BASELINED / VERIFIED LEAF` | Sixteen channel buffers integrate allocation, egress, routing, retirement, and tag reclamation under NPU-021; descriptor and SRAM-client semantics remain held |
 | Pod-shared SRAM client request | DMA/compute/NoC | shared SRAM | `HOLD` | Arbitration, ownership, ECC, byte enables, ordering, and starvation policy are not frozen |
@@ -121,8 +122,8 @@ The following work is admitted now:
 - assertions and counters that do not escape the current compute contract;
 - the frozen HBM request egress and response-routing leaves, without descriptor, translation, or ABI
   semantics; and
-- local-tag allocation, outstanding-lifetime, status telemetry, and integrated beat-boundary leaves using
-  only the frozen ADR-0002 geometry and HBM beat fields; and
+- local-tag allocation, outstanding-lifetime, status telemetry, lossless quiesce, and integrated
+  beat-boundary leaves using only the frozen ADR-0002 geometry and HBM beat fields; and
 - NPU consuming-specification and functional-model work for the decoded-command sink, DMA,
   shared-SRAM, and NoC channels.
 

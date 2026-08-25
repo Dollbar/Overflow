@@ -23,8 +23,9 @@ The status-monitor test drives all four frozen response classes across sixteen s
 checks randomized per-class accumulation, sticky non-OK observations, pipeline drain, and reset clearing.
 The integrated-boundary test submits 1,536 mixed read/write beats across all sixteen channels, randomizes
 five request lanes and sixteen response consumers independently, loops ordered HBM responses back through
-the router, checks every tag and payload field, validates all four delivered-status counters, and requires
-complete drain.
+the router, checks every tag and payload field, validates all four delivered-status counters, quiesces and
+drains during active traffic, resumes admission, checks the outstanding high-watermark, and requires
+complete final drain.
 
 Run the mapped generic pre-layout STA gate with a readable Liberty path supplied by the caller:
 

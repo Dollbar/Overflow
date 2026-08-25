@@ -19,6 +19,7 @@ module npu_dma_hbm_boundary #(
 ) (
     input  logic clk_i,
     input  logic rst_i,
+    input  logic quiesce_i,
 
     input  logic [CHANNELS-1:0] channel_request_valid_i,
     output logic [CHANNELS-1:0] channel_request_ready_o,
@@ -57,9 +58,12 @@ module npu_dma_hbm_boundary #(
     output logic [CHANNELS*2-1:0] channel_response_status_o,
 
     output logic busy_o,
+    output logic quiesced_o,
     output logic protocol_error_o,
     output logic outstanding_full_o,
     output logic [OUTSTANDING_COUNT_WIDTH-1:0] outstanding_count_o,
+    output logic [OUTSTANDING_COUNT_WIDTH-1:0]
+        outstanding_high_watermark_o,
     output logic [63:0] accepted_beats_o,
     output logic [63:0] issued_beats_o,
     output logic [63:0] request_backpressure_cycles_o,
@@ -89,6 +93,7 @@ module npu_dma_hbm_boundary #(
         ENABLE_CAPTURE_GROUP_BASE + ENABLE_CAPTURE_GROUPS;
     localparam int unsigned CAPTURE_CONTROL_COPIES =
         ALLOCATOR_CAPTURE_GROUP + 1;
+    localparam logic [1:0] QUIESCE_SETTLE_CYCLES = 2'd3;
 
     logic [CHANNELS-1:0] buffer_valid_q;
     logic [CHANNELS-1:0] buffer_write_q;
@@ -136,8 +141,10 @@ module npu_dma_hbm_boundary #(
     logic [CHANNELS-1:0] unknown_release_q;
     logic [CHANNELS-1:0] duplicate_allocation_q;
     logic [CHANNELS-1:0] unknown_retirement_q;
+    logic [1:0] quiesce_idle_count_q;
 
-    assign channel_request_ready_o = allocation_available & ~buffer_valid_q;
+    assign channel_request_ready_o = allocation_available & ~buffer_valid_q &
+                                     {CHANNELS{~quiesce_i}};
     assign buffer_accept = channel_request_valid_i & channel_request_ready_o;
     assign channel_request_local_tag_o = allocation_local_tag;
     assign response_delivered = channel_response_valid_o &
@@ -362,11 +369,32 @@ module npu_dma_hbm_boundary #(
 
     assign busy_o = (|buffer_valid_q) || egress_busy || response_busy ||
                     !tracker_empty;
+    assign quiesced_o = quiesce_i &&
+                        (quiesce_idle_count_q == QUIESCE_SETTLE_CYCLES);
     assign outstanding_full_o = tracker_full;
     assign protocol_error_o = allocator_protocol_error ||
                               response_protocol_error ||
                               tracker_protocol_error ||
                               boundary_consistency_error_q;
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            quiesce_idle_count_q <= '0;
+        end else if (!quiesce_i || busy_o) begin
+            quiesce_idle_count_q <= '0;
+        end else if (quiesce_idle_count_q != QUIESCE_SETTLE_CYCLES) begin
+            quiesce_idle_count_q <= quiesce_idle_count_q + 2'd1;
+        end
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i) begin
+            outstanding_high_watermark_o <= '0;
+        end else if (outstanding_count_o >
+                     outstanding_high_watermark_o) begin
+            outstanding_high_watermark_o <= outstanding_count_o;
+        end
+    end
 
     always_ff @(posedge clk_i) begin
         if (rst_i) begin

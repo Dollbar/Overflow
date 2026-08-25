@@ -45,9 +45,14 @@ change tag retirement, or define a runtime completion status.
 `npu_dma_hbm_boundary` integrates the request egress, response router, allocator, tracker, and one complete
 beat buffer per logical channel. A source handshake reserves and returns a tag; egress acceptance records
 it as outstanding; response consumption retires it, records its frozen two-bit status, and releases only a
-tracker-known identity. Channel
-buffers use a one-cycle non-fall-through turnover and replicated 32-bit capture enables so the combined
+tracker-known identity. Channel buffers use a one-cycle non-fall-through turnover and replicated 32-bit
+capture enables so the combined
 top closes the logical 1 GHz generic-cell gate without a high-fanout ready-to-capture path.
+
+The integrated boundary also provides synchronous lossless quiesce. Quiesce closes new channel admission
+while all accepted work drains normally, then reports a settled state after three idle cycles so delayed
+telemetry is complete. A reset-cleared outstanding high-watermark records observed pressure. These local
+mechanisms do not cancel, replay, time out, or discard a transaction.
 
 The default HBM-to-compute path stages through SRAM inside the owning pod and does not traverse the global
 NoC. Cross-pod DMA and multicast require the future NoC injection/ejection path. Descriptor address
