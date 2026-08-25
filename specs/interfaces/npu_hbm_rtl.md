@@ -74,8 +74,8 @@ independently.
 
 A response carrying a partition other than the owning pod's configured partition is accepted and
 dropped, increments the dropped-response counter, and sets the sticky local `protocol_error_o` diagnostic.
-This diagnostic is not a runtime ABI status. Tag lifetime remains owned by the future DMA transaction
-tracker, which is outside this leaf router.
+This diagnostic is not a runtime ABI status. The response router reports retirement events; tag lifetime
+is enforced by the separate DMA transaction tracker described below.
 
 ## 5. NPU Request Arbitration
 
@@ -96,7 +96,29 @@ payload/QoS field stable until `request_ready_o` completes the transfer. `reques
 request was loaded into one physical HBM lane; speculative queue admission is prohibited at this boundary.
 Pipelining may delay an eligible request but must not reduce the five-beat-per-cycle saturated issue rate.
 
-## 6. Ordering, Faults, and Exclusions
+## 6. Outstanding-Tag Tracker
+
+The NPU DMA tag tracker implements the ADR-0002 identity space as sixteen independent sets of 256
+channel-local tags. An allocation is committed only after the corresponding request is accepted by the
+HBM request egress. A retirement is committed only after a response is consumed by its destination DMA
+channel. The tracker accepts one allocation and one retirement event per logical channel per cycle, which
+is greater than the five request and five response events available at the external beat boundary.
+
+Allocation of an already-outstanding tag is rejected and emits a one-cycle duplicate-allocation pulse.
+Retirement of a tag that is not outstanding emits a one-cycle unknown-retirement pulse. Retiring and
+reallocating the same tag in the same cycle is legal and leaves that tag outstanding. `empty_o` and
+`full_o` are derived from the authoritative 4,096-bit state. The aggregate outstanding-count telemetry
+lags accepted state changes by two service-clock cycles; it is not an admission-control input. The sticky
+protocol-error diagnostic lags the first error event by one service-clock cycle.
+
+The tracker records lifetime but does not choose channel-local tag numbers, define descriptor fields,
+perform address translation, or convert beat status into the runtime completion ABI. Its 512-byte state
+is implemented as a concurrent bitmap with grouped write-enable buffering. Mapping it onto the current
+minimum 256-by-32 KD28 true-dual-port macro would waste 31 of 32 bits per entry and require a synchronous
+read-modify-write schedule that cannot preserve the required per-channel allocation-plus-retirement
+throughput.
+
+## 7. Ordering, Faults, and Exclusions
 
 Reads and writes share request lanes and the 625-byte/cycle long-run service budget. No implicit coherence,
 barrier, atomic operation, retry, cancellation, or address translation exists at this boundary. A status
@@ -107,7 +129,7 @@ This revision excludes burst headers, gather/scatter descriptors, protection dom
 completion ABI, HBM controller timing, and PHY behavior. Multi-beat DMA operations are sequences of tagged
 single-beat transfers.
 
-## 7. Required Evidence
+## 8. Required Evidence
 
 The NPU request egress requires:
 
@@ -131,3 +153,8 @@ uses a 1.000 ns period, 0.030 ns clock uncertainty, 0.050 ns input/output delays
 and fails on negative setup slack or any max slew, capacitance, or fanout violation. Generic-cell evidence
 does not constitute KD28 signoff; selected KD28 standard-cell Liberty views, RC corners, clock-tree
 assumptions, and post-route parasitics are required for that claim.
+
+The outstanding-tag tracker additionally requires exhaustive fill and drain of all 4,096 identities,
+duplicate-allocation and unknown-retirement injection, same-cycle retirement and reuse, randomized
+bitmap scoreboarding, telemetry-pipeline checks, zero-warning lint and synthesis-readiness, and the same
+mapped 1 GHz generic STA gate.

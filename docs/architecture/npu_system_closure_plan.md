@@ -40,7 +40,7 @@ external dependencies of this NPU RTL workstream, not NPU RTL deliverables:
 | MX Tensor/Vector compute | NPU core v0.2 contract; NPU-007..015 | `VERIFIED` in declared scope | Preserve behavior and extend only through a versioned contract | Existing bit-exact and continuous-flow regressions |
 | KD28 SRAM/FIFO models | KD28 SRAM/FIFO v0.1 contract | `RTL_SIM`; synthetic technology collateral | Bind logical NPU 1W/1R banks through explicit adapters | Macro-count, no residual inferred memory, three-corner synthetic STA |
 | KD-ISA and software ABI | External ISA, compiler, runtime, driver, and firmware owners | `EXTERNAL / HOLD` | External owners publish versioned command and queue/completion contracts; NPU consumes an already-decoded internal command | External encode/decode and software compatibility evidence; NPU sink backpressure tests |
-| DMA and HBM RTL | ADR-0002 and NPU HBM RTL beat contract; NPU-017..018 | Request egress and response-routing leaves `VERIFIED`; mover `HOLD` | Implement outstanding-tag tracking, address generation, translation boundary, and scratchpad movement without changing the frozen beat fields | Functional-model equivalence plus RTL backpressure/saturation |
+| DMA and HBM RTL | ADR-0002 and NPU HBM RTL beat contract; NPU-017..019 | Request egress, response routing, and tag-lifetime leaves `VERIFIED`; mover `HOLD` | Implement address generation, translation boundary, local-tag allocation, and scratchpad movement without changing the frozen beat fields | Functional-model equivalence plus RTL backpressure/saturation |
 | Scratchpad system | Capacity targets are proposed; local compute stores are verified | Mixed | Specify clients, arbitration, ownership, ECC, and reset before pod-shared RTL | Collision, starvation, ECC injection, capacity, and bandwidth tests |
 | Independent Vector/general Tensor issue | Existing ABI supports square GEMM with optional Vector post-processing | `HOLD` outside v0.2 | Version compiler/operator and descriptor contracts | Bit-exact, edge-mask, arbitrary M/N/K, and independent issue tests |
 | Eight-pod organization | NPU P0 sizing proposal | `PROPOSED` | Create an ADR after workload/locality evidence | Checked sizing and one-pod evidence before replication |
@@ -71,9 +71,8 @@ The unresolved cross-owner choices and recommended approval order are maintained
 
 ### Phase C: One-pod closure
 
-1. Complete outstanding-tag tracking, the finite DMA mover, and translation boundary against the approved
-   beat contract. The five-lane request egress and response-routing leaves are verified by NPU-017 and
-   NPU-018.
+1. Complete the finite DMA mover and translation boundary against the approved beat contract. The five-lane
+   request egress, response-routing, and tag-lifetime leaves are verified by NPU-017 through NPU-019.
 2. Implement the decoded-command sink, internal completion aggregation, resource scoreboard, and
    independent compute issue. Do not implement KD-ISA decode or runtime queue logic in this workstream.
 3. Integrate one pod and prove reset, backpressure, faults, and sustained local data flow.

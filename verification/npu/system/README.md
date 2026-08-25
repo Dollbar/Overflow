@@ -14,7 +14,9 @@ The request test drives all sixteen DMA channels and checks five-beat-per-cycle 
 HBM lane backpressure, stalled-payload stability, tag/data scoreboarding, simultaneous retire/refill, QoS
 age promotion, counters, and reset-visible empty state. The response test checks five simultaneous
 same-channel responses, five-lane acceptance, random independent destination stalls, stable output payload,
-per-channel ordering, no loss/duplication, malformed-partition drop, sticky error, counters, and drain.
+per-channel ordering, no loss/duplication, malformed-partition drop, sticky error, counters, and drain. The
+tag-tracker test exhaustively fills and drains all 4,096 identities, checks same-cycle retirement/reuse,
+injects duplicate and unknown events, and runs a randomized bitmap and telemetry scoreboard.
 
 Run the mapped generic pre-layout STA gate with a readable Liberty path supplied by the caller:
 
@@ -22,7 +24,7 @@ Run the mapped generic pre-layout STA gate with a readable Liberty path supplied
 make npu-system-sta LIBERTY=/path/to/standard_cells.lib
 ```
 
-No repository target contains a workstation-specific Liberty path. The gate constrains both production
+No repository target contains a workstation-specific Liberty path. The gate constrains all three production
 tops at 1.000 ns with 0.030 ns uncertainty, 0.050 ns input/output delays, and 0.005 pF output load. It fails
 on setup, max slew, max capacitance, or max fanout violations. Passing evidence is `GENERIC_SYNTH`; it is
 not HBM controller bandwidth, post-layout closure, or KD28 foundry signoff.
