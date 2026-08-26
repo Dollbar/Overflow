@@ -4,6 +4,9 @@ This directory owns self-checking RTL tests for NPU integration blocks outside t
 compute leaf. Production sources remain under `rtl/npu/`; this tree contains testbenches and generated
 build output only.
 
+The required module-to-evidence matrix and clean-checkout acceptance criteria are maintained in
+[`TEST_PLAN.md`](TEST_PLAN.md).
+
 Run the DMA HBM request/response lint, synthesis-readiness, and simulation gate from the repository root:
 
 ```sh
@@ -40,17 +43,19 @@ conflicts, read-before-write behavior, end-to-end HBM/SRAM round trips, and exac
 Run the mapped generic pre-layout STA gate with a readable Liberty path supplied by the caller:
 
 ```sh
-make npu-system-sta LIBERTY=/path/to/standard_cells.lib
+make npu-system-sta LIBERTY="${LIBERTY:?set LIBERTY to a readable standard-cell file}"
 ```
 
-The checked Nangate45 adapter can be selected without a workstation-specific path:
+The checked Nangate45 adapter uses the open-source OpenROAD Flow Scripts tree. By default the root
+Makefile resolves it below the repository at `third_party/OpenROAD-flow-scripts`; callers may override
+`OPENROAD_FLOW_ROOT` with another checkout without editing tracked files:
 
 ```sh
-make npu-system-sta \
-  LIBERTY=/path/to/NangateOpenCellLibrary_typical.lib \
-  CELL_MAP=verification/npu/system/STA/scripts/nangate45_cells_map.v \
-  ABC_CONSTR=verification/npu/system/STA/scripts/abc_nangate45.constr \
-  DRIVING_CELL=BUF_X1 DRIVING_PIN=Z
+git clone https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git \
+  third_party/OpenROAD-flow-scripts
+git -C third_party/OpenROAD-flow-scripts checkout \
+  7ff3adf8eda37712a40591dbd8ec3bef449e6fee
+make npu-system-sta-nangate45
 ```
 
 No repository target contains a workstation-specific Liberty path. The gate constrains all eight production

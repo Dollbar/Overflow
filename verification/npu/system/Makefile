@@ -2,6 +2,11 @@ VERILATOR ?= verilator
 YOSYS ?= yosys
 OPENSTA ?= sta
 LIBERTY ?=
+OPENSTA_BIN := $(shell command -v $(OPENSTA) 2>/dev/null)
+ifneq ($(OPENSTA_BIN),)
+OPENSTA_LIBRARY_PATH ?= $(abspath $(dir $(OPENSTA_BIN))/../lib)
+export LD_LIBRARY_PATH := $(OPENSTA_LIBRARY_PATH):$(LD_LIBRARY_PATH)
+endif
 CLOCK_PERIOD_NS ?= 1.000
 CLOCK_UNCERTAINTY_NS ?= 0.030
 INPUT_DELAY_NS ?= 0.050

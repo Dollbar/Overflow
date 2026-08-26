@@ -84,6 +84,7 @@ def run_verilator() -> None:
             "-Wno-DECLFILENAME",
             "-Wno-WIDTHEXPAND",
             "-Wno-WIDTHTRUNC",
+            "-Wno-BLKSEQ",
             "--top-module",
             top,
             "-Mdir",
