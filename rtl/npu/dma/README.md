@@ -1,13 +1,68 @@
 # NPU DMA Front End
 
-Owns the NPU-side descriptor scheduler, address generation, scratchpad mover, coalescing requests, QoS tags,
-and data credits. `rtl/memory/` owns the abstract HBM transaction machinery and external-memory behavior.
-The boundary between these directories must be versioned in `specs/interfaces/`.
+Owns the NPU-side already-decoded command queues, address generation, scratchpad mover, QoS tags, and data
+credits. `rtl/memory/` owns the abstract HBM transaction machinery and external-memory behavior. The
+boundary between these directories is versioned in `specs/interfaces/`.
 
-The v0.1 implementation provisions one engine per pod, 16 logical channels, 64 total command contexts, and 4096 x
-128-byte in-flight data beats. At 625 GB/s this 512 KiB window covers the declared 800 ns stress latency
-(`ANALYTICAL`). Descriptor/address widths, ordering, cancellation, protection, and errors remain `HOLD`.
-Acceptance requires stride, gather/scatter, alignment, backpressure, fault, QoS, and saturation RTL tests.
+The v0.1 implementation provisions one engine per pod, 16 logical channels, 64 total command contexts, and
+4096 x 128-byte in-flight data beats. At 625 GB/s this 512 KiB window covers the declared 800 ns stress
+latency (`ANALYTICAL`). The internal command and completion widths are frozen; KD-ISA descriptors, IOVA
+translation, cancellation, protection, runtime completion ABI, gather/scatter, and partial beats remain
+`HOLD`.
+
+## Directory Layout
+
+```text
+rtl/npu/dma/
+  npu_dma_pkg.sv                    Internal command/completion types
+  npu_dma_command_queue.sv          Four-context-per-channel finite queue
+  npu_dma_address_generator.sv      Aligned 1D/2D/3D address expansion
+  npu_dma_channel_mover.sv          One bidirectional HBM/SRAM mover
+  npu_dma_engine.sv                 Sixteen movers plus five-lane boundary
+  npu_dma_pod.sv                    DMA engine plus pod-shared SRAM integration
+  npu_dma_hbm_*.sv                  HBM egress, response, tracking, and telemetry
+  npu_dma_local_tag_allocator.sv    Per-channel 256-tag allocator
+  npu_dma_tag_metadata_bank.sv      Outstanding read destination metadata
+
+rtl/npu/sram/
+  npu_pod_shared_sram.sv            16 MiB, eight-bank, sixteen-client SRAM
+  npu_round_robin_arbiter16.sv      Per-bank client arbitration
+
+specs/interfaces/
+  npu_dma_command_v0.1.md           Internal command and completion contract
+  npu_dma_data_path_v0.1.md         Beat, tag, response, and quiesce contract
+  npu_hbm_rtl.md                    Five-lane HBM service contract
+  npu_pod_shared_sram_v0.1.md       Pod SRAM client and mapping contract
+
+docs/adr/
+  ADR-0002-npu-hbm-egress-lane-geometry.md
+  ADR-0003-npu-local-dma-mover-contract.md
+
+verification/npu/system/
+  Makefile                          Portable lint/synth/sim/STA entry points
+  tb/                               Self-checking unit and Pod tests
+  STA/scripts/                      Generic and Nangate45 mapping scripts
+  STA/sdc/                          One-gigahertz production-top constraints
+
+requirements/traceability.csv       NPU-017 through NPU-027 evidence links
+```
+
+Generated artifacts stay below `verification/npu/system/build/` (or a caller-provided `BUILD_DIR`) and are
+not source-controlled. Makefiles derive the repository root from their own location; no workstation path
+is embedded in a source list, constraint, or tool target.
+
+The production integration hierarchy is:
+
+```text
+npu_dma_pod
+  npu_dma_engine
+    16 x npu_dma_command_queue
+    16 x npu_dma_channel_mover
+    1 x npu_dma_hbm_boundary
+  npu_pod_shared_sram
+    8 logical banks
+    256 x KD28_SRAM_SDP_2048X256 fixed macros
+```
 
 ## Implemented NPU Egress
 
