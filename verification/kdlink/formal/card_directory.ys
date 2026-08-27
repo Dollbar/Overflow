@@ -1,0 +1,7 @@
+read_verilog -formal -sv rtl/kdlink/kdlink_card_directory.v
+read_verilog -formal -sv verification/kdlink/formal/formal_card_directory.sv
+prep -top formal_card_directory -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 8 -set-init-zero

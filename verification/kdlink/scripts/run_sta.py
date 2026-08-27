@@ -12,6 +12,7 @@ licensed macro timing views before implementation or signoff.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -64,7 +65,31 @@ PARTITIONS = {
     "kdlink_global_commit_tracker": ["kdlink_global_commit_tracker.v"],
     "kdlink_group_table": ["kdlink_group_table.v"],
     "kdlink_hierarchical_collective_ctrl": ["kdlink_hierarchical_collective_ctrl.v"],
+    "kdlink_scale_route_stage": [
+        "kdlink_scale_route_context.v",
+        "kdlink_route_digit_selector.v",
+        "kdlink_scale_route_stage.v",
+    ],
+    "kdlink_transaction_window": ["kdlink_transaction_window.v"],
+    "kdlink_commit_window": ["kdlink_commit_window.v"],
+    "kdlink_group_directory": ["kdlink_group_directory.v"],
+    "kdlink_collective_tree_ctrl": ["kdlink_collective_tree_ctrl.v"],
+    "kdlink_route_epoch_manager": ["kdlink_route_epoch_manager.v"],
+    "kdlink_card_directory": ["kdlink_card_directory.v"],
 }
+PARAMETER_OVERRIDES = {  # Freeze the implementation profile verified by maximum-scale RTL tests.
+    "kdlink_transaction_window": {"ENTRY_COUNT": 20, "REPLAY_GRACE_CYCLES": 8},
+    "kdlink_commit_window": {"ENTRY_COUNT": 20, "REPLAY_GRACE_CYCLES": 100},
+}
+
+
+def file_sha256(path: Path) -> str:
+    """Return a stable content identity without recording a host-specific path."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def run(command: list[str], log: Path) -> str:
@@ -88,14 +113,19 @@ def yosys_script(
     top: str,
     sources: list[str],
     liberty: Path,
-    period_ns: float,
+    mapping_delay_ns: float,
     corner_work: Path,
 ) -> str:
     reads = "\n".join(f"read_verilog -Irtl/kdlink rtl/kdlink/{source}" for source in sources)
-    delay_ps = max(1, int(period_ns * 250.0))
+    parameter_commands = "\n".join(  # Apply reproducible partition parameters before hierarchy.
+        f"chparam -set {name} {value} {top}"
+        for name, value in PARAMETER_OVERRIDES.get(top, {}).items()
+    )
+    delay_ps = max(1, round(mapping_delay_ns * 1000.0))
     return "\n".join(
         [
             reads,
+            parameter_commands,
             f"hierarchy -check -top {top}",
             "proc; opt; fsm; opt; check -assert; async2sync; opt; memory; opt",
             "flatten; opt",
@@ -209,6 +239,7 @@ def validate_interface_corners(make: str) -> list[dict[str, object]]:
             {
                 "corner": corner,
                 "library_label": liberty.name,
+                "library_sha256": file_sha256(liberty),
                 "library_file_distributed": True,
                 "status": "PASS",
             }
@@ -219,6 +250,12 @@ def validate_interface_corners(make: str) -> list[dict[str, object]]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--period-ns", type=float, default=1.000)
+    parser.add_argument(
+        "--mapping-delay-ns",
+        type=float,
+        default=0.100,
+        help="ABC timing-driven mapping target; final timing is still checked at --period-ns",
+    )
     parser.add_argument("--setup-uncertainty-ns", type=float, default=0.100)
     parser.add_argument("--hold-uncertainty-ns", type=float, default=0.020)
     parser.add_argument(
@@ -236,8 +273,8 @@ def main() -> None:
     )
     parser.add_argument("--driving-cell", default=os.environ.get("KDLINK_DRIVING_CELL"))
     args = parser.parse_args()
-    if args.period_ns <= 0.0:
-        raise SystemExit("--period-ns must be greater than zero")
+    if args.period_ns <= 0.0 or args.mapping_delay_ns <= 0.0:
+        raise SystemExit("--period-ns and --mapping-delay-ns must be greater than zero")
     if args.setup_uncertainty_ns < 0.0 or args.hold_uncertainty_ns < 0.0:
         raise SystemExit("clock uncertainty values must be nonnegative")
     if args.corner and args.liberty:
@@ -282,7 +319,13 @@ def main() -> None:
         for top, sources in PARTITIONS.items():
             synth_script = corner_work / f"{top}.ys"
             synth_script.write_text(
-                yosys_script(top, sources, liberty, args.period_ns, corner_work),
+                yosys_script(
+                    top,
+                    sources,
+                    liberty,
+                    args.mapping_delay_ns,
+                    corner_work,
+                ),
                 encoding="utf-8",
             )
             run([yosys, "-s", str(synth_script)], corner_work / f"{top}_synth.log")
@@ -318,6 +361,7 @@ def main() -> None:
             partitions.append(
                 {
                     "module": top,
+                    "parameter_overrides": PARAMETER_OVERRIDES.get(top, {}),
                     "period_ns": args.period_ns,
                     "setup_slack_ns": setup_slack,
                     "hold_slack_ns": hold_slack,
@@ -334,8 +378,10 @@ def main() -> None:
             {
                 "corner": corner,
                 "standard_cell_library_label": liberty.name,
+                "standard_cell_library_sha256": file_sha256(liberty),
                 "standard_cell_library_distributed": False,
                 "interface_library_label": interface_liberty.name,
+                "interface_library_sha256": file_sha256(interface_liberty),
                 "interface_library_distributed": True,
                 "partitions": partitions,
                 "status": "PASS" if all(item["status"] == "PASS" for item in partitions) else "FAIL",
@@ -347,6 +393,7 @@ def main() -> None:
         "evidence": "STA_PRE_LAYOUT_CELL_DELAY",
         "target_period_ns": args.period_ns,
         "target_frequency_mhz": round(1000.0 / args.period_ns, 1),
+        "mapping_delay_target_ns": args.mapping_delay_ns,
         "setup_clock_uncertainty_ns": args.setup_uncertainty_ns,
         "hold_clock_uncertainty_ns": args.hold_uncertainty_ns,
         "driving_cell": args.driving_cell,
@@ -360,6 +407,7 @@ def main() -> None:
             "no extracted interconnect parasitics or clock tree",
             "synthetic HBM/SerDes interface views are not vendor macro characterization",
             "memory arrays, switch VOQs, PHY hard macros, and analog SerDes excluded",
+            "window STA uses the verified 20-entry register profile; larger windows require SRAM/CAM implementation timing",
             "no flat endpoint, fabric, or chip timing claim",
         ],
         "pass": passed,

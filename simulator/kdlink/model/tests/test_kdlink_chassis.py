@@ -59,9 +59,12 @@ def test_training_and_admin_state() -> None:
 def test_versioned_chassis_configuration_matches_model() -> None:
     config_path = Path(__file__).parents[2] / "config" / "chassis32.json"
     config = json.loads(config_path.read_text(encoding="utf-8"))
-    assert config["schema_version"] == 1
-    assert config["card_slots"] == 8
-    assert config["npus_per_card"] == 4
+    assert config["schema_version"] == 2
+    assert config["maximum_card_slots"] == 32
+    assert config["default_card_slots"] == 8
+    assert config["default_npus_per_card"] == 4
+    assert config["supported_npus_per_card"] == [1, 2, 4, 8, 16, 32]
+    assert config["mixed_card_profiles_supported"] is True
     assert config["nodes"] == 32
     assert config["planes"] == 8
     assert config["pcs"]["lanes_per_slice"] == 10

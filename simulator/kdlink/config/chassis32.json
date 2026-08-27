@@ -1,8 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "kdlink-chassis32",
-  "card_slots": 8,
-  "npus_per_card": 4,
+  "maximum_card_slots": 32,
+  "default_card_slots": 8,
+  "default_npus_per_card": 4,
+  "supported_npus_per_card": [1, 2, 4, 8, 16, 32],
+  "mixed_card_profiles_supported": true,
   "nodes": 32,
   "planes": 8,
   "slices_per_port": 2,
@@ -15,8 +18,13 @@
     "payload_bits": 512
   },
   "mapping": {
-    "node_id": "slot_id * 4 + local_npu",
+    "node_id": "base_node_id + local_npu",
     "endpoint_index": "node_id * 16 + plane_id * 2 + slice_id"
+  },
+  "legacy_layout": {
+    "card_slots": 8,
+    "npus_per_card": 4,
+    "base_node_id": "slot_id * 4"
   },
   "behavioral_boundary": "digital_pcs_pma"
 }

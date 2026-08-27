@@ -1,5 +1,182 @@
 # Upload Manifest
 
+## KDLink v0.4 million-scale candidate delta
+
+- Prepared: 2026-08-27
+- State: `ENGINEERING_SIGNOFF_PASS_APPROVED_FOR_NEW_PR`
+- Base for review: `origin/main` at `ac71fe8fca39130c6b0e22bc44ea3106c3175af8`
+- Candidate files: 139
+- Development branch: `feat/kdlink-million-scale`
+- Inherited branch head: `4bd201f54e7b1fa133b56af01be776432f57918e`, containing the rebased previously
+  committed KDLink v0.3 base
+- Publication state: the user approved a new PR and the v0.4 increment is committed locally; it is not yet
+  pushed, submitted as a PR, merged, or tagged. The final-tree candidate relative to `origin/main` also
+  contains the inherited v0.3 commits.
+
+Exact candidate whitelist relative to the stated base:
+
+- `Library/models/kdlink/serdes/README.md`
+- `Makefile`
+- `README.md`
+- `config/kdlink_toolchain.json`
+- `docs/releases/KDLINK_ACCEPTANCE.json`
+- `docs/releases/RELEASE_NOTES.md`
+- `docs/releases/UPLOAD_MANIFEST.md`
+- `requirements/kdlink_traceability.csv`
+- `requirements/traceability.csv`
+- `rtl/kdlink/README.md`
+- `rtl/kdlink/coll_fp32_add_lane.v`
+- `rtl/kdlink/kdlink_card_directory.v`
+- `rtl/kdlink/kdlink_collective_tree_ctrl.v`
+- `rtl/kdlink/kdlink_commit_window.v`
+- `rtl/kdlink/kdlink_deadlock_guard.v`
+- `rtl/kdlink/kdlink_defs.vh`
+- `rtl/kdlink/kdlink_domain_adapter.v`
+- `rtl/kdlink/kdlink_global_commit_codec.v`
+- `rtl/kdlink/kdlink_global_commit_tracker.v`
+- `rtl/kdlink/kdlink_global_transaction_source.v`
+- `rtl/kdlink/kdlink_group_directory.v`
+- `rtl/kdlink/kdlink_group_table.v`
+- `rtl/kdlink/kdlink_header_checker.v`
+- `rtl/kdlink/kdlink_hierarchical_collective_ctrl.v`
+- `rtl/kdlink/kdlink_link_manager.v`
+- `rtl/kdlink/kdlink_packetizer.v`
+- `rtl/kdlink/kdlink_plane_selector.v`
+- `rtl/kdlink/kdlink_reliable_bonded_endpoint.v`
+- `rtl/kdlink/kdlink_reliable_endpoint.v`
+- `rtl/kdlink/kdlink_route_context_encoder.v`
+- `rtl/kdlink/kdlink_route_digit_selector.v`
+- `rtl/kdlink/kdlink_route_epoch_manager.v`
+- `rtl/kdlink/kdlink_route_pair_tx.v`
+- `rtl/kdlink/kdlink_route_stage.v`
+- `rtl/kdlink/kdlink_rx_commit.v`
+- `rtl/kdlink/kdlink_scale_global_commit.v`
+- `rtl/kdlink/kdlink_scale_route_context.v`
+- `rtl/kdlink/kdlink_scale_route_stage.v`
+- `rtl/kdlink/kdlink_spine_router.v`
+- `rtl/kdlink/kdlink_transaction_window.v`
+- `scripts/check_kdlink_release.py`
+- `simulator/kdlink/Makefile`
+- `simulator/kdlink/README.md`
+- `simulator/kdlink/config/chassis32.json`
+- `simulator/kdlink/config/inference_dense.json`
+- `simulator/kdlink/config/inference_failure.json`
+- `simulator/kdlink/config/inference_moe.json`
+- `simulator/kdlink/config/inference_serving.json`
+- `simulator/kdlink/config/million_scale.json`
+- `simulator/kdlink/config/multidomain.json`
+- `simulator/kdlink/manifest.json`
+- `simulator/kdlink/model/kdlink_model/__init__.py`
+- `simulator/kdlink/model/kdlink_model/bandwidth.py`
+- `simulator/kdlink/model/kdlink_model/card_topology.py`
+- `simulator/kdlink/model/kdlink_model/chassis.py`
+- `simulator/kdlink/model/kdlink_model/cluster_simulator.py`
+- `simulator/kdlink/model/kdlink_model/inference_workload.py`
+- `simulator/kdlink/model/kdlink_model/multidomain.py`
+- `simulator/kdlink/model/kdlink_model/network_resources.py`
+- `simulator/kdlink/model/kdlink_model/parallel_mapping.py`
+- `simulator/kdlink/model/kdlink_model/scale.py`
+- `simulator/kdlink/model/kdlink_model/simulation_metrics.py`
+- `simulator/kdlink/model/kdlink_model/traffic_graph.py`
+- `simulator/kdlink/model/system/kdlink_leaf_domain_model.sv`
+- `simulator/kdlink/model/tests/test_kdlink_bandwidth.py`
+- `simulator/kdlink/model/tests/test_kdlink_card_topology.py`
+- `simulator/kdlink/model/tests/test_kdlink_chassis.py`
+- `simulator/kdlink/model/tests/test_kdlink_cluster_cli.py`
+- `simulator/kdlink/model/tests/test_kdlink_cluster_simulator.py`
+- `simulator/kdlink/model/tests/test_kdlink_inference_workload.py`
+- `simulator/kdlink/model/tests/test_kdlink_multidomain.py`
+- `simulator/kdlink/model/tests/test_kdlink_parallel_mapping.py`
+- `simulator/kdlink/model/tests/test_kdlink_release_gate.py`
+- `simulator/kdlink/model/tests/test_kdlink_scale.py`
+- `simulator/kdlink/model/tests/test_kdlink_traffic_graph.py`
+- `simulator/kdlink/pkg/kdlink_env_pkg.sv`
+- `simulator/kdlink/pkg/kdlink_tb_pkg.sv`
+- `simulator/kdlink/scripts/report_bandwidth.py`
+- `simulator/kdlink/scripts/run_cluster_inference.py`
+- `simulator/kdlink/tb/subsystem/tb_kdlink_reduction_dtype_ii1.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_card_profiles.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_collective32_int32.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_distributed_collective.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_global_recovery.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_global_transaction_stress.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_hierarchical_collective.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_multidomain_bonded.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_reliable_bonded_endpoint.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_route_context_reliable.sv`
+- `simulator/kdlink/tb/system/tb_kdlink_scale_transaction.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_card_directory.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_domain_adapter.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_env_pkg.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_global_commit_codec.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_global_commit_window.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_context_codec.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_control.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_pair_tx.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_rx_commit_stress.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_stage_profiles.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_route_stage_scale.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_scale_route_codec.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_scale_route_stage.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_vip_stream.sv`
+- `simulator/kdlink/vip/kdlink_stream_monitor.sv`
+- `simulator/kdlink/tb/unit/tb_kdlink_spine_router.sv`
+- `specs/kdlink/README.md`
+- `specs/kdlink/kdlink_requirements.md`
+- `specs/kdlink/multidomain_architecture.md`
+- `specs/kdlink/scale_architecture.md`
+- `specs/kdlink/simulation_environment.md`
+- `verification/kdlink/README.md`
+- `verification/kdlink/cdc/summary.json`
+- `verification/kdlink/coverage/README.md`
+- `verification/kdlink/coverage/summary.json`
+- `verification/kdlink/formal/README.md`
+- `verification/kdlink/formal/card_directory.ys`
+- `verification/kdlink/formal/coverage_reachability.ys`
+- `verification/kdlink/formal/formal_card_directory.sv`
+- `verification/kdlink/formal/formal_coverage_reachability.sv`
+- `verification/kdlink/formal/formal_global_commit_exact_once.sv`
+- `verification/kdlink/formal/formal_hierarchical_membership.sv`
+- `verification/kdlink/formal/formal_route_pair_order.sv`
+- `verification/kdlink/formal/formal_route_stage_scale.sv`
+- `verification/kdlink/formal/formal_scale_route_control.sv`
+- `verification/kdlink/formal/formal_spine_escape.sv`
+- `verification/kdlink/formal/global_commit_exact_once.ys`
+- `verification/kdlink/formal/hierarchical_membership.ys`
+- `verification/kdlink/formal/route_pair_order.ys`
+- `verification/kdlink/formal/route_stage_scale.ys`
+- `verification/kdlink/formal/scale_route_control.ys`
+- `verification/kdlink/formal/spine_escape.ys`
+- `verification/kdlink/formal/summary.json`
+- `verification/kdlink/scripts/run_coverage.py`
+- `verification/kdlink/scripts/run_formal.py`
+- `verification/kdlink/scripts/run_sta.py`
+- `verification/kdlink/scripts/run_static.py`
+- `verification/kdlink/sta/README.md`
+- `verification/kdlink/sta/summary.json`
+
+Explicit exclusions for this candidate:
+
+- `Library/models/kdlink/serdes/*.sv`, profile YAML, file lists, and model data are reused unchanged from
+  `origin/main`. The candidate changes only the directory README's test-count statement.
+- `Library/timing/**` and `technology/**` are unchanged. Repository synthetic HBM/SerDes interface Liberty
+  views are consumed by STA but are not candidate files.
+- External standard-cell Liberty, PDK, vendor macro, and analog models are consumed locally and never
+  distributed or recorded with a host path.
+- NPU, compiler, runtime, HBM model, and all other source trees outside the stated KDLink scope.
+- Generated `simulator/kdlink/work/**`, `verification/kdlink/*/work/**`, `technology/work/**`, coverage raw
+  databases, logs, waveforms, compiled objects, caches, and Python bytecode.
+- Credentials, private data, proprietary license files, and non-redistributable binaries.
+
+Portability and evidence boundary:
+
+- `make kdlink-release-check` runs the complete portable gate without a PDK, Vivado installation, or
+  developer-local path.
+- Optional external-Liberty STA is invoked through `make kdlink-sta KDLINK_STA_ARGS='...'`. Its summary
+  records library labels and SHA-256 digests but not caller paths.
+- The machine-readable engineering result is `docs/releases/KDLINK_ACCEPTANCE.json`. It is RTL
+  release-candidate evidence and explicitly excludes physical, analog, package, board, and tapeout signoff.
+
 ## KDLink v0.3 multidomain candidate delta
 
 - Prepared: 2026-08-24

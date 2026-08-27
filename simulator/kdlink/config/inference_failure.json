@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "planning_example_only": true,
+  "workload": {
+    "name": "irregular_population_plane_degraded_inference",
+    "total_npus": 15132,
+    "npus_per_card": 4,
+    "layers": 130,
+    "hidden_size": 8192,
+    "activation_bytes": 2,
+    "prompt_tokens": 1024,
+    "generation_tokens": 128,
+    "batch_size": 32,
+    "microbatch_size": 4,
+    "tensor_parallel": 3,
+    "pipeline_parallel": 13,
+    "expert_parallel": 1,
+    "data_parallel": 388,
+    "axis_order": ["tensor", "expert", "pipeline", "data"],
+    "experts": 1,
+    "expert_top_k": 1,
+    "moe_layer_count": 0,
+    "tensor_collective": "all_gather",
+    "tp_collectives_per_layer": 2,
+    "prefill_compute_us_per_layer": 4.0,
+    "decode_compute_us_per_layer": 1.0,
+    "moe_imbalance_factor": 1.0,
+    "remote_kv_fraction": 0.25,
+    "remote_kv_bytes_per_token": 32768,
+    "remote_kv_axis": "data",
+    "compute_network_overlap": 0.25,
+    "planning_example_only": true
+  },
+  "network": {
+    "profile": "balanced",
+    "active_planes": 7,
+    "active_slices_per_port": 1,
+    "logical_clock_hz": 1000000000,
+    "leaf_rtt_cycles": 8,
+    "rtt_cycles": [14, 24, 34, 44, 54]
+  }
+}

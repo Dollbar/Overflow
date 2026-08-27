@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "name": "kdlink-million-scale",
+  "local_schema": 2,
+  "multidomain_schema": 3,
+  "scale_schema": 4,
+  "route_context_message_type": 8,
+  "global_commit_message_type": 9,
+  "nodes_per_domain": 32,
+  "maximum_card_slots_per_domain": 32,
+  "default_npus_per_card": 4,
+  "supported_npus_per_card": [1, 2, 4, 8, 16, 32],
+  "mixed_card_profiles_supported": true,
+  "partial_leaf_population_supported": true,
+  "domain_identifier_bits": 15,
+  "global_endpoint_bits": 20,
+  "maximum_domains": 32768,
+  "maximum_global_endpoints": 1048576,
+  "minimum_global_endpoints": 1,
+  "maximum_route_stages": 5,
+  "radix": 8,
+  "validated_domain_profiles": [512, 1024, 2048, 4096, 8192, 16384, 32768],
+  "validated_irregular_total_npus": [2, 3, 33, 78, 15132],
+  "topology_epoch_bits": 16,
+  "logical_planes": 8,
+  "escape_plane": 0,
+  "distributed_group_child_mask_bits": 8,
+  "leaf_group_member_mask_bits": 32,
+  "subtree_member_count_bits": 21,
+  "hierarchical_bandwidth_contract": {
+    "evidence_level": "ANALYTICAL",
+    "logical_interface_clock_hz": 1000000000,
+    "payload_bits_per_slice_cycle": 512,
+    "slice_payload_gbyte_s_per_direction": 64,
+    "default_active_slices_per_port": 2,
+    "bonded_port_payload_gbyte_s_per_direction": 128,
+    "active_planes": 8,
+    "npu_payload_gbyte_s_per_direction": 1024,
+    "tier_radix": 8,
+    "maximum_tiers": 5,
+    "tier_leaf_capacity": [8, 64, 512, 4096, 32768],
+    "mandatory_dimensioning_traffic": "worst_case_cross_tier",
+    "traffic_profiles": {
+      "worst_case_cross_tier": {
+        "cross_tier_fraction": [1, 1, 1, 1, 1],
+        "reduction_factor": [1, 1, 1, 1, 1]
+      },
+      "locality_example": {
+        "cross_tier_fraction": [1, 0.5, 0.25, 0.125, 0.0625],
+        "reduction_factor": [1, 1, 1, 1, 1],
+        "planning_example_only": true
+      },
+      "ideal_in_network_reduce_example": {
+        "cross_tier_fraction": [1, 1, 1, 1, 1],
+        "reduction_factor": [256, 2048, 16384, 131072, 1048576],
+        "planning_example_only": true,
+        "requires_unimplemented_physical_aggregation_capacity": true
+      }
+    },
+    "oversubscription_profiles": {
+      "nonblocking": [1, 1, 1, 1, 1],
+      "balanced_example": [1, 2, 4, 8, 16]
+    },
+    "reference_rtt_cycles_by_tier": [14, 24, 34, 44, 54],
+    "spare_link_equivalents_per_plane_per_group": 1,
+    "physical_deployment_must_override_reference_rtt": true,
+    "balanced_profile_is_a_planning_example": true
+  },
+  "cluster_inference_simulation_contract": {
+    "evidence_level": "FUNCTIONAL_SIM",
+    "capacity_evidence_level": "ANALYTICAL",
+    "maximum_npu_endpoints": 1048576,
+    "maximum_single_npu_cards": 1048576,
+    "parallel_axes": ["tensor", "expert", "pipeline", "data"],
+    "axis_order_is_explicit": true,
+    "communication_operations": [
+      "all_reduce",
+      "reduce_scatter",
+      "all_gather",
+      "all_to_all_v",
+      "point_to_point"
+    ],
+    "resource_classes": ["leaf", "tier_1", "tier_2", "tier_3", "tier_4", "tier_5"],
+    "leaf_group_endpoints": 32,
+    "leaf_reference_rtt_cycles": 8,
+    "interdomain_group_counts_at_maximum": [4096, 512, 64, 8, 1],
+    "per_endpoint_packet_objects_at_maximum": false,
+    "crossing_calculation": "exact_dense_rank_membership",
+    "traffic_representation": "compressed_communication_cohorts",
+    "resource_schedule_key": ["tier", "group", "plane", "direction"],
+    "logical_vc_accounting": true,
+    "logical_vcs_share_physical_capacity": true,
+    "vc_priority_arbitration_modelled": false,
+    "plane_striping": "even",
+    "stage_schedule": "dependency_ordered_with_explicit_compute_network_overlap",
+    "serving_schedule": "FCFS_CLUSTER_BATCH",
+    "serving_tail_percentiles": [50, 95, 99],
+    "zero_interval_burst_offered_load": null,
+    "throughput_scopes": ["per_data_parallel_replica", "cluster_total"],
+    "utilization_is_unclamped": true,
+    "independent_tier_policy_inputs": [
+      "active_planes",
+      "active_slices_per_port",
+      "oversubscription_ratio"
+    ],
+    "default_current_baseline_active_slices": 1,
+    "example_configs": [
+      "simulator/kdlink/config/inference_dense.json",
+      "simulator/kdlink/config/inference_moe.json",
+      "simulator/kdlink/config/inference_failure.json",
+      "simulator/kdlink/config/inference_serving.json"
+    ],
+    "million_multinpu_card_population_requires_later_address_extension": true,
+    "not_packet_or_cycle_accurate_at_full_scale": true,
+    "not_request_stage_interleaved": true,
+    "physical_rtt_and_switch_capacity_require_deployment_calibration": true
+  },
+  "legacy_schema_3_compatible": true,
+  "monolithic_million_endpoint_rtl": false
+}

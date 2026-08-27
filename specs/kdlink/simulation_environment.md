@@ -5,9 +5,11 @@ KDLink logical-flit boundary and above any analog channel or implementation-spec
 
 ## 1. Scope
 
-The environment represents a 32-NPU chassis as eight card slots with four NPU endpoints per card. Every
-NPU exposes eight bonded KDLink ports, each containing two independent 512-bit slices. The eight ports
-connect to eight independent 32-port KDSwitch planes on the baseboard.
+The environment represents a fixed 32-NPU leaf domain using up to 32 physical card slots. Each configured
+card contains 1, 2, 4, 8, 16, or 32 NPU endpoints, and one leaf may mix card profiles. Reset selects the
+legacy eight-card by four-NPU layout. Every NPU exposes eight bonded KDLink ports, each containing two
+independent 512-bit slices. The eight ports connect to eight independent 32-port KDSwitch planes on the
+baseboard.
 
 The simulation stack contains four explicit layers:
 
@@ -21,12 +23,14 @@ The simulation stack contains four explicit layers:
 The environment does not model analog eye opening, insertion loss, crosstalk, package parasitics, CDR
 jitter transfer, equalizer coefficients, connector S-parameters, or a foundry/vendor SerDes macro.
 
-## 2. Fixed Topology
+## 2. Configurable Leaf Topology
 
 | Parameter | Value |
 | --- | ---: |
-| Card slots | 8 |
-| NPUs per card | 4 |
+| Maximum card slots | 32 |
+| Default card slots | 8 |
+| Supported NPUs per card | 1, 2, 4, 8, 16, 32 |
+| Mixed card profiles | Supported |
 | NPU nodes | 32 |
 | Switch planes | 8 |
 | Slices per bonded port | 2 |
@@ -34,9 +38,15 @@ jitter transfer, equalizer coefficients, connector S-parameters, or a foundry/ve
 | PCS lanes per slice | 10 |
 | PCS block width | 66 bits |
 
-Node `n` belongs to slot `n / 4` and has local card index `n % 4`. Endpoint slice index is
-`node * 16 + plane * 2 + slice`. This formula is the single mapping contract shared by the SystemVerilog
-package, the Python topology model, and all scoreboards.
+A card descriptor is `{slot_id, base_node_id, npu_count_code}`. Count codes 0 through 5 represent 1, 2,
+4, 8, 16, and 32 NPUs; codes 6 and 7 are reserved. Descriptors may leave nodes unconfigured but may not
+reuse a slot, overlap node ranges, or extend beyond node 31. Node identifiers are stable across card removal
+and directory replacement. The reset-compatible mapping is `slot = node / 4`, `local_npu = node % 4`.
+
+The profile-independent endpoint slice index is `node * 16 + plane * 2 + slice`. The active card directory
+resolves `{slot, local_npu}` to `node`; the SystemVerilog package's legacy slot-based helper intentionally
+retains only the reset mapping. Shadow configuration becomes active atomically at a quiescent boundary and
+only with a newer 16-bit topology epoch.
 
 ## 3. SerDes Behavioral Contract
 
@@ -83,14 +93,15 @@ files are alternative capacity profiles, not drop-in 64 GB/s mappings.
 
 ## 4. Card and Baseboard Contract
 
-A card is online only when its slot is present and reset completion is asserted. Each of its 64 slice paths
-is independently enabled by SerDes link status. The baseboard additionally gates every path by plane
-enable. Removing a card or disabling a plane immediately blocks new ingress traffic from the affected
-paths and prevents delivery into the unavailable endpoint.
+A card is online only when its slot is present and reset completion is asserted. A card owns
+`npu_count * 16` slice paths, each independently enabled by SerDes link status. The baseboard additionally
+gates every path by plane enable. Removing a card or disabling a plane immediately blocks new ingress
+traffic from the affected paths and prevents delivery into the unavailable endpoint.
 
-The baseboard model wraps the synthesizable `kdlink_fabric32` rather than replacing its allocator or
-routing behavior. The hierarchy therefore validates slot mapping and failure isolation while retaining the
-real KDSwitch RTL data path.
+The generic leaf model composes the synthesizable `kdlink_card_directory` with `kdlink_fabric32` rather
+than replacing allocation or routing behavior. The legacy baseboard model remains as a compatibility test.
+The hierarchy validates dynamic slot mapping and failure isolation while retaining the real KDSwitch RTL
+data path.
 
 ## 5. Evidence and Acceptance
 
@@ -100,8 +111,9 @@ real KDSwitch RTL data path.
 - SerDes latency and lane-skew preservation.
 - Full-duplex PCS traffic with steady-state one block group per cycle.
 - Deterministic corruption, drop, lane-down, and retraining behavior.
-- Eight-card, 32-node baseboard permutation traffic with all 512 slice paths active.
-- Card removal and plane isolation without traffic leakage.
+- All six homogeneous card profiles and a mixed-profile 32-node directory.
+- Atomic directory commit, stale epoch, overlap, reserved-code, and control-collision rejection.
+- Legacy eight-card baseboard traffic plus configurable card removal/reset, plane, and slice isolation.
 - Two autonomous KDLink endpoints with all eight VCs, asynchronous core clocks, cumulative credit
   recovery, CRC-triggered NACK, replay through VC6, and exact-once commit.
 

@@ -1,15 +1,22 @@
-"""Versioned eight-card KDLink chassis topology and digital fault state."""
+"""Configurable-card KDLink leaf-domain topology and digital fault state."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
 
+from .card_topology import (
+    DEFAULT_NPUS_PER_CARD,
+    MAX_CARD_SLOTS,
+    CardDescriptor,
+    CardDirectory,
+    homogeneous_card_layout,
+)
 from .constants import NUM_NODES, NUM_PLANES
 
 
-CARD_SLOTS = 8
-NPUS_PER_CARD = 4
+CARD_SLOTS = MAX_CARD_SLOTS
+NPUS_PER_CARD = DEFAULT_NPUS_PER_CARD
 SLICES_PER_PORT = 2
 SLICES_PER_NPU = NUM_PLANES * SLICES_PER_PORT
 PCS_LANES = 10
@@ -62,47 +69,47 @@ class CardSlot:
 
 
 class ChassisTopology:
-    """Map 32 NPU endpoints onto eight card slots and eight switch planes."""
+    """Map 32 NPU endpoints onto configurable card slots and eight switch planes."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        npus_per_card: int = DEFAULT_NPUS_PER_CARD,
+        descriptors: tuple[CardDescriptor, ...] | None = None,
+    ) -> None:
+        layout = homogeneous_card_layout(npus_per_card) if descriptors is None else descriptors
+        self.directory = CardDirectory(layout)
         self.cards = [CardSlot(slot_id=index) for index in range(CARD_SLOTS)]
         self.plane_enable = [True] * NUM_PLANES
         self.links = [SliceLink() for _ in range(NUM_NODES * SLICES_PER_NPU)]
 
-    @staticmethod
-    def endpoint_index(slot_id: int, local_npu: int, plane_id: int, slice_id: int) -> int:
-        if not 0 <= slot_id < CARD_SLOTS:
-            raise ValueError("slot is outside the eight-card chassis")
-        if not 0 <= local_npu < NPUS_PER_CARD:
-            raise ValueError("local NPU is outside the card")
-        if not 0 <= plane_id < NUM_PLANES:
-            raise ValueError("plane is outside the baseboard")
-        if not 0 <= slice_id < SLICES_PER_PORT:
-            raise ValueError("slice is outside the bonded port")
-        node_id = slot_id * NPUS_PER_CARD + local_npu
-        return node_id * SLICES_PER_NPU + plane_id * SLICES_PER_PORT + slice_id
+    def endpoint_index(self, slot_id: int, local_npu: int, plane_id: int, slice_id: int) -> int:
+        return self.directory.endpoint_index(slot_id, local_npu, plane_id, slice_id)
 
-    @staticmethod
-    def decode_endpoint(endpoint_index: int) -> EndpointLocation:
-        if not 0 <= endpoint_index < NUM_NODES * SLICES_PER_NPU:
-            raise ValueError("endpoint slice is outside the chassis")
-        node_id, bank_id = divmod(endpoint_index, SLICES_PER_NPU)
-        plane_id, slice_id = divmod(bank_id, SLICES_PER_PORT)
-        slot_id, local_npu = divmod(node_id, NPUS_PER_CARD)
-        return EndpointLocation(slot_id, local_npu, node_id, plane_id, slice_id, endpoint_index)
+    def decode_endpoint(self, endpoint_index: int) -> EndpointLocation:
+        location, plane_id, slice_id = self.directory.decode_endpoint(endpoint_index)
+        return EndpointLocation(
+            location.slot_id,
+            location.local_npu,
+            location.node_id,
+            plane_id,
+            slice_id,
+            endpoint_index,
+        )
 
     def endpoint_available(self, endpoint_index: int) -> bool:
         location = self.decode_endpoint(endpoint_index)
         return (
-            self.cards[location.slot_id].active
+            self.directory.node_active(location.node_id)
+            and self.cards[location.slot_id].active
             and self.plane_enable[location.plane_id]
             and self.links[endpoint_index].state is LinkState.UP
         )
 
     def remove_card(self, slot_id: int) -> None:
         if not 0 <= slot_id < CARD_SLOTS:
-            raise ValueError("slot is outside the eight-card chassis")
+            raise ValueError("slot is outside the 32-slot leaf domain")
         self.cards[slot_id].present = False
+        self.directory.set_card_state(slot_id, present=False)
 
     def disable_plane(self, plane_id: int) -> None:
         if not 0 <= plane_id < NUM_PLANES:

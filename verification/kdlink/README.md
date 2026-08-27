@@ -24,16 +24,16 @@ a 1 ns testbench clock is not accepted as timing evidence.
 ## Portable Release Entry Points
 
 From any clone, run `make kdlink-preflight` to verify the tool versions in
-`config/kdlink_toolchain.json`, all 54 manifest paths, repository-contained SerDes/interface dependencies,
+`config/kdlink_toolchain.json`, all 61 manifest paths, repository-contained SerDes/interface dependencies,
 stable engineering filenames, and absence of host-specific absolute paths. Run `make kdlink-release-check`
 for the sequential functional-model, RTL, lint/CDC, formal, coverage, and repository gates. These targets
 derive every source and work path from the repository and do not consume developer-local configuration.
 
 The preflight writes no generated file and must end with `KDLINK_RELEASE_PREFLIGHT_PASS`. The complete
-release target refreshes `verification/kdlink/cdc/summary.json`, `coverage/summary.json`,
-`formal/summary.json`, and `sta/summary.json` only when the corresponding gate runs; detailed intermediate
-output remains below ignored `work/` directories. After a PASS, review `docs/releases/UPLOAD_MANIFEST.md`,
-then stage only its exact whitelist.
+portable release target refreshes `verification/kdlink/cdc/summary.json`, `coverage/summary.json`, and
+`formal/summary.json`; the separate `kdlink-sta` target refreshes `sta/summary.json` when licensed external
+libraries are supplied. Detailed intermediate output remains below ignored `work/` directories. After a
+PASS, review `docs/releases/UPLOAD_MANIFEST.md`, then stage only its exact whitelist.
 
 Technology-specific STA is intentionally separate:
 

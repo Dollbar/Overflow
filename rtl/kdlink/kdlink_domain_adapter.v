@@ -117,9 +117,11 @@ module kdlink_domain_adapter ( // 定义单流本地与跨域 packet 分类适�
                 remote_valid_o = ingress_valid_i; // 向跨域链路声明后继 packet flit 有效
                 ingress_ready_o = remote_ready_i; // 使用跨域链路许可反压后继 packet
             end // 结束跨域 packet 输出选择
+            /* verilator coverage_off */ // FORMAL: state_q remains in the three-state reachable set after reset.
             default: begin // 对非法状态保持全部输出反压
                 ingress_ready_o = 1'b0; // 阻止非法状态继续接收输入
             end // 结束非法状态保护
+            /* verilator coverage_on */
         endcase // 结束 Route Context 配对状态输出选择
     end // 结束本地与跨域输出组合逻辑
     always @(posedge clk_i or negedge rst_n_i) begin // 更新 Route Context 配对、packet 计数和 sticky 错误
@@ -167,13 +169,18 @@ module kdlink_domain_adapter ( // 定义单流本地与跨域 packet 分类适�
                     end else if (accepted_flit_count_q < 5'd31) accepted_flit_count_q <= accepted_flit_count_q + 5'd1; // 未到 EOP 时推进有界 flit 计数
                     else protocol_error_o <= 1'b1; // 超出计数范围时保持状态并报告错误
                 end // 结束上下文绑定 packet 提交
+                /* verilator coverage_off */ // FORMAL: state_q remains in the three-state reachable set after reset.
                 default: begin // 非法状态恢复到空闲并报告错误
                     state_q <= STATE_IDLE; // 恢复到等待上下文状态
                     protocol_error_o <= 1'b1; // sticky 记录非法状态恢复
                 end // 结束非法状态恢复
+                /* verilator coverage_on */
             endcase // 结束状态提交选择
         end // 结束输入握手状态推进
     end // 结束 Route Context 配对时序逻辑
     wire unused_route_metadata; // 汇总首增量尚未消费但已验证的上下文字段
     assign unused_route_metadata = ^{route_source_domain, route_topology_epoch, route_domain_hop_limit, route_slice_mask, route_policy, route_global_transaction_id, route_group_id}; // 防止工具把合法性相关解码字段误报为悬空
+`ifdef FORMAL
+    always @(*) assert (state_q != 2'b11); // Prove the defensive illegal-state branches unreachable from the reset state.
+`endif
 endmodule // 结束 kdlink_domain_adapter

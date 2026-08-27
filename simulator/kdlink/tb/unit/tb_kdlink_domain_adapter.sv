@@ -36,6 +36,7 @@ module tb_kdlink_domain_adapter; // 定义双域 Route Context 和 packet 锁定
     integer a_local_seen; // 统计源域本地输出 flit 数
     integer b_local_seen; // 统计目标域本地输出 flit 数
     integer b_remote_seen; // 统计目标域意外跨域输出 flit 数
+    integer overlong_index; // 遍历超长 packet 的错误排空边界
     logic [31:0] b_last_marker; // 保存目标域最近接收的数据标记
     kdlink_route_context_encoder u_route_encoder ( // 实例化测试激励 Route Context 编码器
         .source_domain_i(route_source_domain), // 连接源域配置
@@ -252,6 +253,17 @@ module tb_kdlink_domain_adapter; // 定义双域 Route Context 和 packet 锁定
         send_a(make_route_flit(route_payload)); // 错误地用第二个 Route Context 替代后继数据
         repeat (2) @(posedge clk); // 等待嵌套上下文错误提交
         if (!b_protocol_error) $fatal(1, "nested Route Context was not detected"); // 要求目标域报告嵌套 Route Context
+        apply_reset(); // 复位后测试超过内部有界计数的未终止 packet
+        route_packet_flit_count = 5'd16; // 使用协议允许的最大声明长度
+        route_expected_packet_sequence = 12'd80; // 配置超长排空场景 packet 序号
+        #0.1; // 等待编码器传播最大长度字段
+        send_a(make_route_flit(route_payload)); // 发送最大长度 Route Context
+        for (overlong_index = 0; overlong_index < 32; overlong_index = overlong_index + 1) begin // 连续发送三十二拍且故意不声明 EOP
+            send_a(make_data_flit(12'd80, overlong_index[5:0], overlong_index == 0, 1'b0, 32'h8000_0000 | overlong_index)); // 覆盖计数饱和错误路径
+        end // 结束超长 packet 非末拍发送
+        send_a(make_data_flit(12'd80, 6'd32, 1'b0, 1'b1, 32'h8000_0020)); // 最终用 EOP 释放两个 adapter 的 packet 所有权
+        repeat (2) @(posedge clk); // 等待超长错误和恢复提交
+        if (!a_protocol_error || !b_protocol_error) $fatal(1, "overlong packet count saturation was not detected a=%b b=%b", a_protocol_error, b_protocol_error); // 要求源域和目标域都报告超长 packet
         apply_reset(); // 复位后测试非法 slice mask
         route_slice_mask = 2'b00; // 配置禁止全部 bonded slice 的非法上下文
         route_packet_flit_count = 5'd1; // 保持其他 packet 长度字段合法
@@ -260,7 +272,7 @@ module tb_kdlink_domain_adapter; // 定义双域 Route Context 和 packet 锁定
         send_a(make_route_flit(route_payload)); // 发送应在源域被消费的非法 Route Context
         repeat (2) @(posedge clk); // 等待源域 sticky 错误提交
         if (!a_protocol_error || b_protocol_error) $fatal(1, "invalid context isolation mismatch a=%b b=%b", a_protocol_error, b_protocol_error); // 检查非法上下文未泄漏到目标域
-        $display("TB_KDLINK_DOMAIN_ADAPTER_PASS local=1 remote_packet=3 backpressure=1 sequence_error=1 early_eop=1 late_eop=1 nested_context=1 malformed_context=1"); // 输出严格 PASS 签名和覆盖场景
+        $display("TB_KDLINK_DOMAIN_ADAPTER_PASS local=1 remote_packet=3 backpressure=1 sequence_error=1 early_eop=1 late_eop=1 nested_context=1 overlong_packet=1 malformed_context=1"); // 输出严格 PASS 签名和覆盖场景
         $finish; // 正常结束自校验仿真
     end // 结束主测试激励序列
     initial begin // 提供测试超时保护

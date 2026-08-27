@@ -1,0 +1,12 @@
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_route_context_encoder.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_domain_adapter.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_collective_tree_ctrl.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_link_manager.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/coll_lzc24.v
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/coll_fp32_add_lane.v
+read_verilog -formal -sv -Irtl/kdlink verification/kdlink/formal/formal_coverage_reachability.sv
+prep -top formal_coverage_reachability -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 25 -set-init-zero

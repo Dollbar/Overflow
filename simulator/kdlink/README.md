@@ -1,7 +1,7 @@
 # KDLink Simulator
 
 This package contains the portable KDLink simulation sources. It verifies the logical link, bonded
-port, digital PCS, behavioral SerDes channels, card slots, baseboard fabric, NIC/CDC boundary, 32-port
+port, digital PCS, behavioral SerDes channels, configurable card slots, baseboard fabric, NIC/CDC boundary, 32-port
 switch, 32-node fabric, and collective data path against the synthesizable RTL in `rtl/kdlink/`.
 
 ## Directory Layout
@@ -13,7 +13,7 @@ simulator/kdlink/
 ├── pkg/                   # Shared protocol types, pack/unpack, and CRC helpers
 ├── model/                 # Bit-exact protocol and analytical fabric reference
 │   ├── collective_model/  # Shared bit-field and CRC primitives
-│   ├── kdlink_model/      # KDLink protocol, PCS, topology, and bonding model
+│   ├── kdlink_model/      # Protocol, topology, bandwidth, and cluster-inference models
 │   ├── system/             # Card-slot and baseboard behavioral wrappers
 │   └── tests/             # Functional-model tests
 ├── config/                # Stable chassis and channel configurations
@@ -66,7 +66,7 @@ make -C simulator/kdlink system
 make -C simulator/kdlink all
 ```
 
-The complete manifest contains 54 RTL tests. `JOBS` and `TIMEOUT` are portable Make variables rather than
+The complete manifest contains 61 RTL tests. `JOBS` and `TIMEOUT` are portable Make variables rather than
 host-specific settings, for example `make -C simulator/kdlink rtl JOBS=2 TIMEOUT=1800`.
 
 Run one RTL test by its manifest name:
@@ -81,11 +81,54 @@ Limit Verilator build parallelism when memory is constrained:
 python3 simulator/kdlink/scripts/run.py --group all --jobs 2
 ```
 
+Report the analytical per-tier bandwidth, link-equivalent, failure-headroom, and BDP contract for one
+deployment. The default is the worst-case 1:1 nonblocking profile with both slices active:
+
+```bash
+python3 simulator/kdlink/scripts/report_bandwidth.py 15132 --profile nonblocking
+python3 simulator/kdlink/scripts/report_bandwidth.py 1048576 --profile balanced --json
+python3 simulator/kdlink/scripts/report_bandwidth.py 15132 --profile balanced \
+  --cross-tier-fractions 1,0.5,0.25,0.125,0.0625 \
+  --reduction-factors 1,1,1,1,1
+```
+
+Run compressed cluster-inference simulation. The example inputs are explicitly analytical planning
+workloads; the current baseline uses one active slice. Uniform overrides use `--active-slices 2` or
+`--active-planes 7`. Six-entry leaf-through-T5 vectors allow local changes without silently modifying
+unrelated tiers:
+
+```bash
+python3 simulator/kdlink/scripts/run_cluster_inference.py \
+  simulator/kdlink/config/inference_dense.json
+python3 simulator/kdlink/scripts/run_cluster_inference.py \
+  simulator/kdlink/config/inference_moe.json --json
+python3 simulator/kdlink/scripts/run_cluster_inference.py \
+  simulator/kdlink/config/inference_failure.json --active-slices 2
+python3 simulator/kdlink/scripts/run_cluster_inference.py \
+  simulator/kdlink/config/inference_moe.json \
+  --slices-by-tier 2,1,1,1,1,1 --planes-by-tier 8,8,8,8,8,8
+python3 simulator/kdlink/scripts/run_cluster_inference.py \
+  simulator/kdlink/config/inference_serving.json
+```
+
+`--oversubscription-by-tier` accepts five T1-through-T5 ratios. `--requests` and
+`--arrival-interval-us` override the serving section and produce deterministic FCFS cluster-batch P50/P95/P99
+latency, TTFT, queue, throughput, and offered-load metrics. Single-run throughput is explicitly emitted both
+per DP replica and for the whole cluster; the compatibility `generated_tokens_per_second` JSON field remains
+the per-DP-replica value. Utilization is not clipped at one, so offered-load overload remains visible.
+
+The optional `--output simulator/kdlink/work/<name>.json` writes a generated report below the ignored work
+directory. A maximum-scale run retains compressed communication cohorts and sparse
+tier/group/plane/direction resources; it does not create one Python or RTL object per NPU, token, or packet.
+
 ## Evidence Boundary
 
 - Model tests produce `FUNCTIONAL_SIM` evidence for packet fields, CRC, PCS transforms, bonding order,
-  topology routing, chassis mapping, link state, multidomain route contexts, and analytical capacity
-  calculations.
+  topology routing, homogeneous and mixed card-directory mapping, link state, multidomain route contexts,
+  analytical capacity calculations, per-tier bandwidth/oversubscription/N+1/BDP dimensioning, exact
+  TP/EP/PP/DP hierarchy crossings, independent tier/group/plane/direction contention, logical-VC byte
+  attribution, per-tier capacity policy, and compressed dense/MoE cluster-inference traffic propagation with
+  deterministic serving-tail evaluation.
 - SystemVerilog testbenches produce `RTL_SIM` evidence only after the compiled RTL emits the exact pass
   signature recorded in `manifest.json`. The added `serdes_pcs_link` test covers full-duplex PCS traffic
   through a skewed channel; `baseboard32` covers eight cards, 32 nodes, card removal, plane isolation,
@@ -129,9 +172,23 @@ python3 simulator/kdlink/scripts/run.py --group all --jobs 2
   an independent delayed reverse-channel model. The test covers credit exhaustion and cumulative recovery,
   an injected forward CRC fault, autonomous NACK, VC6 replay, exact-once commit, duplicate suppression,
   and replay-window release in both directions.
-- The reusable VIP is dependency-free SystemVerilog: `kdlink_stream_if` supplies valid/ready source
-  tasks and modports, while `kdlink_stream_monitor` checks header legality, CRC, flit count, and packet
-  completion.
+  `card_directory` exhaustively checks 1/2/4/8/16/32-NPU homogeneous layouts, a mixed layout, atomic
+  shadow commit, epoch and descriptor rejection, card isolation, control-phase collision recovery, and
+  2/3/1/14/28-node partial leaves corresponding to 2/3/33/78/15,132 total-NPU deployments.
+  `card_profiles` composes that directory with the real 32-node fabric and checks card removal/reset plus
+  plane and slice isolation without changing the logical node or wire encodings.
+  `scale_route_codec` checks the 2-, 3-, and 473-leaf route profiles used by 33-, 78-, and 15,132-NPU
+  deployments, including the first inactive domain. `distributed_collective` checks that the matching
+  partial-leaf masks survive directory commit and remain unchanged through collective command issue.
+- The reusable VIP is dependency-free SystemVerilog. `kdlink_tb_pkg` supplies bit-exact schema-2/3/4
+  header, Route Context, and Global Commit codecs plus capability-aware legality helpers;
+  `kdlink_stream_if` supplies valid/ready source tasks and modports. `kdlink_stream_monitor` checks CRC,
+  capability gates, control-payload legality, packet ownership, flit sequence, completion, and Route
+  Context pairing with the declared following-packet identity and length. Extension acceptance is disabled
+  by default and enabled explicitly through monitor parameters. `vip_stream` self-checks backpressure,
+  normal and corrupted traffic, both extension schemas, malformed reserved fields, multi-flit traffic, and
+  sequence-error recovery. `env_pkg` exhaustively round-trips all 512 legacy endpoint slices and checks all
+  six 1/2/4/8/16/32-NPU card codes; `serial_if` separately checks the vendor-neutral digital lane boundary.
 - A declared bandwidth, clock, or latency formula remains `ANALYTICAL` unless the corresponding RTL test
   measures it. Simulation does not establish post-layout frequency or physical SerDes performance.
   The full-duplex result is therefore a logical-interface `RTL_SIM` measurement, not a PHY or STA claim.

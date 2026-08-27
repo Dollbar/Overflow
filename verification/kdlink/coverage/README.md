@@ -23,8 +23,14 @@ timing gates. This exclusion prevents data values and memory capacity from being
 coverage.
 
 Testbench and behavioral-model source paths are removed from the release metric. Reset-only implementation
-nodes and tool-generated temporary signals are not enabled with `--coverage-underscore`. No production
-control branch or state register is excluded by source pragma.
+nodes and tool-generated temporary signals are not enabled with `--coverage-underscore`.
+
+Source pragmas exclude only reviewed defensive branches that cannot be reached by the legal transition
+relation: unused encodings of multi-bit state registers, exhaustive one-bit-state defaults, the compile-time
+`STAGE_COUNT` default, reserved RX response-event combinations, and the FP32 minimum-normal promotion guard.
+The `coverage_reachability`, `route_pair_order`, `route_stage_scale`, `spine_escape`, and `rx_exact_once`
+formal jobs record the corresponding reachability evidence. The recovery logic remains present in synthesized
+RTL; only its source coverage points are removed from the denominator.
 
 Raw databases and compiler objects are written below `verification/kdlink/coverage/work/`. The checked
 summary is written to `verification/kdlink/coverage/summary.json`.

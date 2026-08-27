@@ -136,9 +136,11 @@ module kdlink_spine_router ( // 定义支持四域和八域 profile 的单入口
                     ingress_ready_o = egress_ready_i[selected_egress_q]; // 使用锁定出口许可反压输入
                 end else ingress_ready_o = 1'b1; // 消费非法数据并报告协议错误
             end // 结束 packet 锁定转发
+            /* verilator coverage_off */ // STRUCTURAL: the one-bit state exhaustively encodes context and packet.
             default: begin // 保护非法状态
                 ingress_ready_o = 1'b0; // 非法状态禁止继续消费
             end // 结束非法状态保护
+            /* verilator coverage_on */
         endcase // 结束 spine 出口状态选择
     end // 结束 spine 路由组合逻辑
     always @(posedge clk_i or negedge rst_n_i) begin // 更新出口锁定、packet 计数和 sticky 错误

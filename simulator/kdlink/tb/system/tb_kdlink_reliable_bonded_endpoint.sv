@@ -3,7 +3,9 @@ module tb_kdlink_reliable_bonded_endpoint;
     localparam integer NORMAL_PACKETS_PER_SLICE = 8;
     localparam integer BUBBLE_FREE_PACKETS_PER_SLICE = 64;
     localparam integer DEGRADED_PACKETS_PER_SLICE = 512;
-    localparam integer EXPECTED_COMMIT_FLITS = 2*NORMAL_PACKETS_PER_SLICE + 4 + 2*DEGRADED_PACKETS_PER_SLICE;
+    localparam integer SECONDARY_DEGRADED_PACKETS_PER_SLICE = 8;
+    localparam integer EXPECTED_FIRST_DEGRADED_COMMIT_FLITS = 2*NORMAL_PACKETS_PER_SLICE + 4 + 2*DEGRADED_PACKETS_PER_SLICE;
+    localparam integer EXPECTED_COMMIT_FLITS = EXPECTED_FIRST_DEGRADED_COMMIT_FLITS + 2*SECONDARY_DEGRADED_PACKETS_PER_SLICE;
     reg clk;
     reg rst_n;
     reg [1:0] slice_fault;
@@ -59,6 +61,7 @@ module tb_kdlink_reliable_bonded_endpoint;
     integer stage;
     reg degraded_monitor;
     reg degraded_started;
+    reg degraded_physical_slice;
     bit [4095:0] sequence_seen;
 
     always #0.5 clk = ~clk;
@@ -158,9 +161,9 @@ module tb_kdlink_reliable_bonded_endpoint;
             end
         end
         if (rst_n && degraded_monitor) begin
-            if (a_forward_tx_valid[1]) $fatal(1, "failed physical slice transmitted in degraded mode");
+            if (a_forward_tx_valid[!degraded_physical_slice]) $fatal(1, "failed physical slice transmitted in degraded mode");
             if (degraded_started) begin
-                if (a_forward_tx_valid[0]) begin
+                if (a_forward_tx_valid[degraded_physical_slice]) begin
                     degraded_physical_flits <= degraded_physical_flits + 1;
                     if (degraded_gap_length != 0) begin
                         degraded_gap_length <= 0;
@@ -169,7 +172,7 @@ module tb_kdlink_reliable_bonded_endpoint;
                     degraded_bubbles <= degraded_bubbles + 1;
                     degraded_gap_length <= degraded_gap_length + 1;
                 end
-            end else if (a_forward_tx_valid[0]) begin
+            end else if (a_forward_tx_valid[degraded_physical_slice]) begin
                 degraded_started <= 1'b1;
                 degraded_physical_flits <= 1;
             end
@@ -205,14 +208,16 @@ module tb_kdlink_reliable_bonded_endpoint;
 
     task automatic drive_degraded_lane;
         input integer lane;
+        input integer packet_count;
+        input integer sequence_base;
         integer packet_index;
         reg [11:0] sequence_value;
         begin
             packet_index = 0;
-            while (packet_index < DEGRADED_PACKETS_PER_SLICE) begin
+            while (packet_index < packet_count) begin
                 @(negedge clk);
                 if (a_tx_ready[lane]) begin
-                    sequence_value = 12'(200 + packet_index*2 + lane);
+                    sequence_value = 12'(sequence_base + packet_index*2 + lane);
                     build_header(lane, sequence_value, 6'd0, 1'b1, 1'b1);
                     a_tx_payload[lane*512 +: 512] = 512'd0;
                     a_tx_payload[lane*512 +: 32] = {20'd0, sequence_value};
@@ -254,6 +259,7 @@ module tb_kdlink_reliable_bonded_endpoint;
         cycle_count = 0;
         degraded_monitor = 1'b0;
         degraded_started = 1'b0;
+        degraded_physical_slice = 1'b0;
         sequence_seen = '0;
         stage = 0;
         repeat (12) @(posedge clk);
@@ -307,22 +313,47 @@ module tb_kdlink_reliable_bonded_endpoint;
 
         degraded_monitor = 1'b1;
         fork
-            drive_degraded_lane(0);
-            drive_degraded_lane(1);
+            drive_degraded_lane(0, DEGRADED_PACKETS_PER_SLICE, 200);
+            drive_degraded_lane(1, DEGRADED_PACKETS_PER_SLICE, 200);
         join
         stage = 8;
         timeout_cycles = 0;
-        while ((commit_flits < EXPECTED_COMMIT_FLITS) && (timeout_cycles < 20000)) begin
+        while ((commit_flits < EXPECTED_FIRST_DEGRADED_COMMIT_FLITS) && (timeout_cycles < 20000)) begin
             @(posedge clk);
             timeout_cycles = timeout_cycles + 1;
         end
         degraded_monitor = 1'b0;
-        if (commit_flits != EXPECTED_COMMIT_FLITS) $fatal(1, "bonded commit count mismatch got %0d", commit_flits);
+        if (commit_flits != EXPECTED_FIRST_DEGRADED_COMMIT_FLITS) $fatal(1, "first degraded commit count mismatch got %0d", commit_flits);
         if (degraded_physical_flits != 2*DEGRADED_PACKETS_PER_SLICE || degraded_bubbles != 0)
             $fatal(1, "degraded stream mismatch flits=%0d initial_burst_bubbles=%0d", degraded_physical_flits, degraded_bubbles);
         if (a_reliability_error || b_reliability_error || a_mapping_error || b_mapping_error)
             $fatal(1, "unexpected bonded reliability or mapping error");
-        $display("TB_KDLINK_RELIABLE_BONDED_ENDPOINT_PASS normal_dual_slice=1 active_packet_loss=1 replay_migration=1 exact_once=1 degraded_flits=%0d initial_burst_bubbles=0", degraded_physical_flits);
+        stage = 9;
+        @(negedge clk); degraded_monitor = 1'b0; slice_fault = 2'b01;
+        wait (a_active_mask == 2'b10 && b_active_mask == 2'b10);
+        repeat (2) @(posedge clk);
+        if (!a_epoch_recovery_required || !b_epoch_recovery_required) $fatal(1, "opposite slice-map change did not request epoch recovery");
+        repeat (32) @(posedge clk);
+        @(negedge clk); link_epoch = link_epoch + 1'b1;
+        wait (!(&a_link_up) && !(&b_link_up));
+        wait (&a_link_up && &b_link_up);
+        if (a_epoch_recovery_required || b_epoch_recovery_required) $fatal(1, "opposite slice epoch recovery did not clear");
+        @(negedge clk); degraded_physical_flits = 0; degraded_bubbles = 0; degraded_gap_length = 0; degraded_started = 1'b0; degraded_physical_slice = 1'b1; degraded_monitor = 1'b1;
+        fork
+            drive_degraded_lane(0, SECONDARY_DEGRADED_PACKETS_PER_SLICE, 2000);
+            drive_degraded_lane(1, SECONDARY_DEGRADED_PACKETS_PER_SLICE, 2000);
+        join
+        stage = 10;
+        timeout_cycles = 0;
+        while ((commit_flits < EXPECTED_COMMIT_FLITS) && (timeout_cycles < 4000)) begin
+            @(posedge clk);
+            timeout_cycles = timeout_cycles + 1;
+        end
+        degraded_monitor = 1'b0;
+        if (commit_flits != EXPECTED_COMMIT_FLITS) $fatal(1, "second degraded commit count mismatch got %0d", commit_flits);
+        if (degraded_physical_flits != 2*SECONDARY_DEGRADED_PACKETS_PER_SLICE) $fatal(1, "physical-one degraded stream mismatch flits=%0d", degraded_physical_flits);
+        if (a_reliability_error || b_reliability_error || a_mapping_error || b_mapping_error) $fatal(1, "unexpected opposite-slice reliability or mapping error");
+        $display("TB_KDLINK_RELIABLE_BONDED_ENDPOINT_PASS normal_dual_slice=1 active_packet_loss=1 replay_migration=1 exact_once=1 degraded_physical_zero=1 degraded_physical_one=1 initial_burst_bubbles=0");
         $finish;
     end
 

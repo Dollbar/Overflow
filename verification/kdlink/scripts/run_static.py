@@ -30,6 +30,18 @@ TOPS = (
     "kdlink_group_table",
     "kdlink_hierarchical_collective_ctrl",
     "kdlink_global_commit_codec",
+    "kdlink_scale_route_context_encoder",
+    "kdlink_route_digit_selector",
+    "kdlink_scale_route_stage",
+    "kdlink_scale_global_commit_encoder",
+    "kdlink_transaction_window",
+    "kdlink_commit_window",
+    "kdlink_group_directory",
+    "kdlink_collective_tree_ctrl",
+    "kdlink_plane_selector",
+    "kdlink_route_epoch_manager",
+    "kdlink_deadlock_guard",
+    "kdlink_card_directory",
 )
 MULTICLOCK_CONTRACT = {
     "coll_async_fifo.v": ("gray", "sync1", "sync2"),

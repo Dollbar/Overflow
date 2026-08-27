@@ -34,6 +34,12 @@ module kdlink_global_commit_tracker #( // 定义带输入流水和重放保护�
     wire [89:0] current_identity; // 拼接当前输入完整端点事务身份
     wire [3:0] current_history_index; // 解码当前输入直接映射历史槽
     wire [3:0] pending_history_index; // 解码输入流水直接映射历史槽
+    wire [15:0] current_slot_select_w; // 并行解码当前输入映射历史槽
+    wire [15:0] pending_slot_select_w; // 并行解码流水输入映射历史槽
+    wire [15:0] current_slot_match_w; // 并行比较当前输入与选中历史身份
+    wire [15:0] current_slot_expired_w; // 并行检查当前输入选中历史保护期
+    wire [15:0] pending_slot_match_w; // 并行比较流水输入与选中历史身份
+    wire [15:0] pending_slot_expired_w; // 并行检查流水输入选中历史保护期
     wire current_history_match; // 标记当前输入匹配已提交历史身份
     wire current_history_expired; // 标记当前输入映射历史槽已经超过保护期
     wire current_conflicts_pending; // 标记当前输入与流水提交竞争同一直接映射槽
@@ -46,14 +52,14 @@ module kdlink_global_commit_tracker #( // 定义带输入流水和重放保护�
     assign current_identity = {source_domain_i, destination_domain_i, source_node_i, destination_node_i, global_transaction_id_i}; // 拼接当前完整端点事务身份
     assign current_history_index = global_transaction_id_i[3:0]; // 使用当前事务标识低四位选择历史槽
     assign pending_history_index = pending_identity_q[3:0]; // 使用流水事务标识低四位选择历史槽
-    assign current_history_match = history_valid_q[current_history_index] && (history_identity_q[current_history_index] == current_identity); // 比较当前输入与已提交完整身份
-    assign current_history_expired = history_age_q[current_history_index] >= REPLAY_GRACE_CYCLES; // 检查当前输入映射槽是否允许新身份复用
+    assign current_history_match = |current_slot_match_w; // 平衡归约选中槽的当前输入完整身份比较
+    assign current_history_expired = |current_slot_expired_w; // 平衡归约选中槽的当前输入保护期检查
     assign current_conflicts_pending = pending_valid_q && (current_history_index == pending_history_index); // 检查当前输入是否命中尚未写入历史的流水槽
     assign current_matches_pending = current_conflicts_pending && (current_identity == pending_identity_q); // 允许同一身份背靠背进入流水并由历史旁路去重
     assign commit_ready_o = current_conflicts_pending ? current_matches_pending : (!history_valid_q[current_history_index] || current_history_match || current_history_expired); // 对流水同槽冲突优先执行身份旁路否则检查已提交历史
     assign commit_fire = commit_valid_i && commit_ready_o; // 汇总当前提交输入握手事件
-    assign pending_history_match = history_valid_q[pending_history_index] && (history_identity_q[pending_history_index] == pending_identity_q); // 比较流水提交与已提交完整身份
-    assign pending_history_expired = history_age_q[pending_history_index] >= REPLAY_GRACE_CYCLES; // 检查流水提交映射槽保护期
+    assign pending_history_match = |pending_slot_match_w; // 平衡归约选中槽的流水提交完整身份比较
+    assign pending_history_expired = |pending_slot_expired_w; // 平衡归约选中槽的流水提交保护期检查
     assign pending_is_duplicate = pending_history_match && !pending_history_expired; // 仅保护期内的完整身份匹配按重复提交处理
     always @(posedge clk_i or negedge rst_n_i) begin // 更新输入流水、本地交付、全局确认和 sticky 状态
         if (!rst_n_i) begin // 硬复位重新建立提交协议会话
@@ -98,6 +104,12 @@ module kdlink_global_commit_tracker #( // 定义带输入流水和重放保护�
         /* verilator lint_off WIDTHTRUNC */ // 生成常量范围已经证明适合四位提交历史槽编号
         for (history_g = 32'd0; history_g < 32'd16; history_g = history_g + 32'd1) begin : g_commit_history // 展开十六个独立提交历史槽
             localparam [3:0] HISTORY_INDEX = history_g; // 将当前生成历史槽编号冻结为四位常量
+            assign current_slot_select_w[history_g] = current_history_index == HISTORY_INDEX; // 将当前输入索引并行解码为独热选择
+            assign pending_slot_select_w[history_g] = pending_history_index == HISTORY_INDEX; // 将流水输入索引并行解码为独热选择
+            assign current_slot_match_w[history_g] = current_slot_select_w[history_g] && history_valid_q[history_g] && (history_identity_q[history_g] == current_identity); // 在固定槽内并行比较当前身份
+            assign current_slot_expired_w[history_g] = current_slot_select_w[history_g] && (history_age_q[history_g] >= REPLAY_GRACE_CYCLES); // 在固定槽内并行比较当前保护年龄
+            assign pending_slot_match_w[history_g] = pending_slot_select_w[history_g] && history_valid_q[history_g] && (history_identity_q[history_g] == pending_identity_q); // 在固定槽内并行比较流水身份
+            assign pending_slot_expired_w[history_g] = pending_slot_select_w[history_g] && (history_age_q[history_g] >= REPLAY_GRACE_CYCLES); // 在固定槽内并行比较流水保护年龄
             always @(posedge clk_i or negedge rst_n_i) begin // 更新当前常量编号提交历史槽
                 if (!rst_n_i) begin // 硬复位清除当前提交历史槽
                     history_valid_q[history_g] <= 1'b0; // 清除提交历史槽有效位

@@ -52,6 +52,21 @@
       "status": "PASS",
       "script": "verification/kdlink/formal/hierarchical_membership.ys",
       "log": "verification/kdlink/formal/work/hierarchical_membership.log"
+    },
+    "scale_route_control": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/scale_route_control.ys",
+      "log": "verification/kdlink/formal/work/scale_route_control.log"
+    },
+    "card_directory": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/card_directory.ys",
+      "log": "verification/kdlink/formal/work/card_directory.log"
+    },
+    "coverage_reachability": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/coverage_reachability.ys",
+      "log": "verification/kdlink/formal/work/coverage_reachability.log"
     }
   },
   "pass": true

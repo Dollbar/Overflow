@@ -2,6 +2,7 @@
 `define KDLINK_DEFS_VH // 声明 KDLink 常量保护宏
 `define KDL_SCHEMA_VERSION 2 // 固定协议 schema 版本
 `define KDL_ROUTE_SCHEMA 3 // 固定层次路由上下文 schema 版本
+`define KDL_SCALE_SCHEMA 4 // 固定百万端点扩展 schema 版本
 `define KDL_NUM_NODES 32 // 固定 KDLink 架构参数
 `define KDL_NUM_PLANES 8 // 固定 KDLink 架构参数
 `define KDL_SLICES_PER_PORT 2 // 固定 KDLink 架构参数

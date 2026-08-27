@@ -55,6 +55,12 @@ DEFAULT_TESTS = (
     "global_recovery",
     "global_transaction_stress",
     "hierarchical_collective",
+    "scale_route_codec",
+    "scale_route_stage",
+    "scale_transaction",
+    "distributed_collective",
+    "route_control",
+    "card_directory",
     "reliable_reset_recovery",
     "reliable_bonded_endpoint",
     "reliable_nic8_fabric",
@@ -66,6 +72,15 @@ CRITICAL_MODULES = (
     "kdlink_global_commit_codec.v",
     "kdlink_group_table.v",
     "kdlink_hierarchical_collective_ctrl.v",
+    "kdlink_scale_route_stage.v",
+    "kdlink_transaction_window.v",
+    "kdlink_commit_window.v",
+    "kdlink_group_directory.v",
+    "kdlink_collective_tree_ctrl.v",
+    "kdlink_plane_selector.v",
+    "kdlink_route_epoch_manager.v",
+    "kdlink_deadlock_guard.v",
+    "kdlink_card_directory.v",
 )
 
 
@@ -262,6 +277,8 @@ def main() -> None:
             "signals and memories wider than 64 bits for toggle coverage",
             "Route Context reserved bits [511:166], which the protocol requires to remain zero",
             "tool-generated underscore-prefixed implementation signals",
+            "the defensive default of the fully enumerated one-bit scale route state",
+            "deterministic timing-decomposition query nets in group table and group directory; externally visible lookup behavior remains covered by directed, bulk, random, and irregular-membership tests",
         ],
         "pass": passed,
     }
