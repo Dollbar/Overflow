@@ -3,9 +3,8 @@
 ## KDLink v0.4 million-scale release candidate
 
 - Prepared: 2026-08-27
-- State: `ENGINEERING_SIGNOFF_PASS_APPROVED_FOR_NEW_PR`
-- Review gate: the user approved staging, committing, pushing, and opening a new PR; merge and tagging remain
-  separately gated
+- State: `PUSHED_AS_OPEN_PR`
+- Review gate: new PR #20 is open for review; merge and tagging remain separately gated
 - Candidate base: `origin/main` at `ac71fe8fca39130c6b0e22bc44ea3106c3175af8`
 - Development isolation: `feat/kdlink-million-scale`
 - Inherited branch head: `4bd201f54e7b1fa133b56af01be776432f57918e`, containing the rebased previously
@@ -60,10 +59,9 @@ clock-tree and extracted-parasitic timing, package/PCB analysis, place-and-route
 and tapeout signoff remain outside this result. SerDes behavioral-model sources and HBM/SerDes Liberty
 sources are unchanged from `origin/main` and are not part of this candidate delta.
 
-The machine-readable acceptance result is `docs/releases/KDLINK_ACCEPTANCE.json`. The v0.4 increment is
-committed locally following user approval and awaits push and creation of a new PR; it is not merged or
-tagged. The exact final-tree candidate relative to `origin/main` intentionally also includes the inherited
-v0.3 branch commits.
+The machine-readable acceptance result is `docs/releases/KDLINK_ACCEPTANCE.json`. The v0.4 branch is pushed
+and new PR #20 is open against `main`; it is not merged or tagged. The exact final-tree candidate relative
+to `origin/main` intentionally also includes the inherited v0.3 branch commits.
 
 ## KDLink v0.3 multidomain release candidate
 

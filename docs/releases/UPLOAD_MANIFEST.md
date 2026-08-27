@@ -3,15 +3,15 @@
 ## KDLink v0.4 million-scale candidate delta
 
 - Prepared: 2026-08-27
-- State: `ENGINEERING_SIGNOFF_PASS_APPROVED_FOR_NEW_PR`
+- State: `PUSHED_AS_OPEN_PR`
 - Base for review: `origin/main` at `ac71fe8fca39130c6b0e22bc44ea3106c3175af8`
 - Candidate files: 139
 - Development branch: `feat/kdlink-million-scale`
 - Inherited branch head: `4bd201f54e7b1fa133b56af01be776432f57918e`, containing the rebased previously
   committed KDLink v0.3 base
-- Publication state: the user approved a new PR and the v0.4 increment is committed locally; it is not yet
-  pushed, submitted as a PR, merged, or tagged. The final-tree candidate relative to `origin/main` also
-  contains the inherited v0.3 commits.
+- Publication state: the user approved publication, the branch is pushed, and new PR #20 is open against
+  `main`; it is not merged or tagged. The final-tree candidate relative to `origin/main` also contains the
+  inherited v0.3 commits.
 
 Exact candidate whitelist relative to the stated base:
 
