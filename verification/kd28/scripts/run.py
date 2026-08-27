@@ -21,6 +21,7 @@ COMMON_SOURCES = [
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_tdp_model.v",
     ROOT / "Library" / "models" / "kd28" / "sram" / "rtl" / "kd28_sram_cells.v",
     ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_fifo_sdp_storage_map.v",
+    ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_adapter.sv",
     ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_sync_fifo.v",
     ROOT / "Library" / "models" / "kd28" / "fifo" / "rtl" / "kd28_async_fifo.v",
 ]
@@ -36,6 +37,18 @@ VERILATOR_CASES = [
         ROOT / "verification" / "kd28" / "tb" / "tb_kd28_fifo_storage_map.v",
         MAPPING_WORK,
         "[RTL_SIM PASS] kd28_fifo_storage_map",
+    ),
+    (
+        "tb_npu_kd28_sram_adapter",
+        ROOT / "verification" / "kd28" / "tb" / "tb_npu_kd28_sram_adapter.sv",
+        WORK / "npu_adapter",
+        "[RTL_SIM PASS] npu_kd28_sram_adapter",
+    ),
+    (
+        "tb_sram_macro_contract",
+        ROOT / "verification" / "npu" / "compute" / "tb" / "tb_sram_macro_contract.sv",
+        WORK / "npu_tdp_adapter",
+        "PASS: SRAM 32x32/64/128 one-cycle dual-port contract",
     ),
 ]
 
@@ -71,6 +84,7 @@ def run_verilator() -> None:
             "-Wno-DECLFILENAME",
             "-Wno-WIDTHEXPAND",
             "-Wno-WIDTHTRUNC",
+            "-Wno-BLKSEQ",
             "--top-module",
             top,
             "-Mdir",
@@ -136,6 +150,32 @@ def run_yosys_link() -> None:
             f"KD28 mapped FIFO synthesis failed; inspect {(YOSYS_WORK / 'fifo_mapping.log').relative_to(ROOT)}"
         )
     print("[GENERIC_SYNTH PASS] kd28_fifo_fixed_macro_mapping")
+
+    npu_adapter = ROOT / "rtl" / "npu" / "sram" / "kd28_npu_sram_adapter.sv"
+    npu_smoke = ROOT / "technology" / "kd28" / "smoke" / "npu_kd28_sram_mapping_smoke_top.sv"
+    npu_mapping_script = (
+        f"read_verilog -lib {blackboxes}; "
+        f"read_verilog -sv {mapper} {npu_adapter} {npu_smoke}; "
+        "hierarchy -check -top npu_kd28_sram_mapping_smoke_top; "
+        "proc; flatten; opt_clean; "
+        "select -assert-count 18 t:KD28_SRAM_SDP_256X32; "
+        "select -assert-count 16 t:KD28_SRAM_SDP_2048X256; "
+        "select -assert-count 1 t:KD28_SRAM_TDP_32X32; "
+        "select -assert-count 1 t:KD28_SRAM_TDP_32X64; "
+        "select -assert-count 1 t:KD28_SRAM_TDP_32X128; "
+        "select -assert-none t:$mem_v2; "
+        "check -assert"
+    )
+    npu_mapping_result = run_logged(
+        [yosys, "-q", "-p", npu_mapping_script],
+        YOSYS_WORK / "npu_sram_mapping.log",
+    )
+    if npu_mapping_result.returncode:
+        raise SystemExit(
+            "KD28 mapped NPU SRAM synthesis failed; inspect "
+            f"{(YOSYS_WORK / 'npu_sram_mapping.log').relative_to(ROOT)}"
+        )
+    print("[GENERIC_SYNTH PASS] npu_kd28_fixed_macro_mapping")
 
 
 def main() -> int:

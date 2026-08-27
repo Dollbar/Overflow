@@ -51,7 +51,7 @@ per-burst command trace.
 ## Python Use
 
 ```bash
-PYTHONPATH=Library/models/hbm .venv/bin/python - <<'PY'
+PYTHONPATH=Library/models/hbm python3 - <<'PY'
 from hbm_model import HBMConfig, HBMModel
 
 cfg = HBMConfig.from_yaml(

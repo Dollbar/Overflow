@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run multi-corner KDLink partition and HBM/SerDes interface STA.
 
-Command: pass one ``--corner name=/absolute/path/to/stdcells.lib`` per
+Command: pass one ``--corner name=LIBERTY_FILE`` per
 standard-cell PVT corner, plus ``--driving-cell`` and ``--period-ns``.
 Outputs: ``verification/kdlink/sta/summary.json`` and reports below the local
 ``work/`` directories. Next: replace the synthetic interface views with
@@ -206,7 +206,7 @@ def main() -> None:
         action="append",
         type=parse_corner,
         default=[],
-        metavar="NAME=/ABSOLUTE/PATH.lib",
+        metavar="NAME=LIBERTY_FILE",
         help="repeat for fast, typical, and slow standard-cell PVT corners",
     )
     parser.add_argument(

@@ -65,6 +65,19 @@ def main() -> int:
     mesh_bisection_gbs = org["pod_rows"] * interpod_edge_gbs
 
     target_partition_gbs = hbm["target_payload_gbyte_per_second_per_partition"]
+    physical_hbm = hbm["physical_mapping"]
+    physical_capacity_gbyte = (
+        physical_hbm["stacks_per_npu"]
+        * physical_hbm["capacity_gbyte_per_stack"]
+    )
+    physical_bandwidth_floor_tbps = (
+        physical_hbm["stacks_per_npu"]
+        * physical_hbm["advertised_bandwidth_floor_tbyte_per_second_per_stack"]
+    )
+    logical_to_physical_bandwidth_fraction = (
+        hbm["target_aggregate_tbyte_per_second"]
+        / physical_bandwidth_floor_tbps
+    )
     stress_bdp_bytes = (
         target_partition_gbs
         * 1e9
@@ -95,6 +108,9 @@ def main() -> int:
     assert org["pods_per_npu"] == org["pod_rows"] * org["pod_columns"]
     assert tiles == org["pods_per_npu"] * org["tensor_tiles_per_pod"]
     assert org["hbm_partitions_per_npu"] == org["pods_per_npu"]
+    assert physical_hbm["status"] == "proposed_not_frozen"
+    assert physical_hbm["stacks_per_npu"] == org["hbm_partitions_per_npu"]
+    assert physical_capacity_gbyte == system["system"]["logical_hbm_gbyte_per_npu"]
     assert tensor_pflops >= tensor["target_pflops_equivalent"]
     assert pod_hbm_port_gbs >= target_partition_gbs
     assert provisioned_bytes >= stress_bdp_bytes
@@ -115,6 +131,13 @@ def main() -> int:
     print(
         f"DMA_STRESS_BDP_BYTES={stress_bdp_bytes:.0f} "
         f"REQUIRED_BEATS={required_beats} PROVISIONED_BYTES={provisioned_bytes}"
+    )
+    print(
+        f"HBM_PHYSICAL_MAPPING_STATUS={physical_hbm['status']} "
+        f"STACKS_PER_NPU={physical_hbm['stacks_per_npu']} "
+        f"CAPACITY_GB={physical_capacity_gbyte} "
+        f"REFERENCE_FLOOR_TBPS={physical_bandwidth_floor_tbps:.1f} "
+        f"LOGICAL_TARGET_FRACTION={logical_to_physical_bandwidth_fraction:.6f}"
     )
     print(
         f"OF5P6T_50TOK_SYSTEM_TOPS={system_tops:.3f} "

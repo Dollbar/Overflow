@@ -9,8 +9,21 @@ and tests must not depend on behavior absent from these contracts.
 - [`npu_gemm_vector_core.md`](npu_gemm_vector_core.md) defines the current MX-only post-transfer
   descriptor, local tensor-buffer, vector-operand, result-route, feedback, and SRAM replacement boundary
   for the GEMM/vector core.
+- [`npu_pod_boundary_v0.1.md`](npu_pod_boundary_v0.1.md) defines the controlled single-pod admission
+  boundary, inherited compute/SRAM contracts, and explicit holds for command, DMA, completion, NoC, and
+  clock/reset fields.
 - [`hbm_transaction.md`](hbm_transaction.md) defines the vendor-neutral logical HBM transaction and
   backpressure boundary used by the portable system model.
+- [`npu_hbm_rtl.md`](npu_hbm_rtl.md) freezes the finite five-lane per-pod NPU HBM beat interface, its
+  NPU-local DMA arbitration contract, the 4,096-identity tag-lifetime tracker behavior, and delivered-beat
+  status telemetry plus lossless local quiesce.
+- [`npu_dma_data_path_v0.1.md`](npu_dma_data_path_v0.1.md) defines the admitted local-tag allocator and
+  integrated beat boundary, and separates the pod-local HBM/SRAM path from the held cross-pod NoC mover
+  path.
+- [`npu_dma_command_v0.1.md`](npu_dma_command_v0.1.md) freezes the already-decoded and translated local DMA
+  command, 1D/2D/3D address generation, HBM-to-SRAM movement, and internal completion contract.
+- [`npu_pod_shared_sram_v0.1.md`](npu_pod_shared_sram_v0.1.md) defines the 16 MiB, eight-bank, sixteen-client
+  pod-local DMA scratchpad and its fixed KD28 SDP macro mapping.
 - [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 

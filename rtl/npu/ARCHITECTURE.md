@@ -6,7 +6,7 @@ Status: implementation allocation baseline. Current performance evidence: `ANALY
 
 ```text
 npu_top
-  command_frontend
+  decoded_command_ingress    # consumes external-owner output; no KD-ISA decoder here
   global_scheduler
   pod[0..7]
     pod_scheduler
@@ -32,21 +32,31 @@ clock, the peak is 2.097152 PFLOPS-equivalent (`ANALYTICAL`).
 | --- | --- | --- |
 | Tensor array geometry: 256 x 256 | BASELINED | ADR-0001 |
 | Tensor logical clock: 1 GHz | BASELINED assumption | ADR-0001 |
+| One MX-only square-GEMM array and sixteen Vector channels | VERIFIED in v0.2 scope | NPU core contract; NPU-007..015 |
+| Local Tensor/Vector registered SRAM replacement boundary | VERIFIED in v0.2 scope | NPU core contract; NPU-009 and NPU-014 |
 | 16 tensor tiles and 8 pods | PROPOSED | NPU P0 sizing proposal |
 | MXFP4 x MXFP8 peak: 2.097152 PFLOPS-equivalent | ANALYTICAL | checked calculator |
 | 2 x 4 inter-pod mesh | PROPOSED | NPU P0 sizing proposal |
 | NoC logical clock and port widths | PROPOSED | NPU P0 sizing proposal |
-| Command, DMA, address, and error fields | HOLD | missing interface specifications |
+| Five 128-byte HBM request/response lanes per pod | BASELINED | ADR-0002 and NPU HBM RTL beat contract |
+| KD-ISA and software ABI fields | EXTERNAL / HOLD | external ISA and software-owner specifications |
+| Decoded-command, DMA descriptor/translation, and internal error fields | HOLD | missing NPU consuming-interface specifications |
 | FP8 and BF16 tensor issue rates | HOLD | missing multiplier-sharing decision |
 | Reset and CDC protocol | HOLD | missing clock/reset interface specification |
 
 `BASELINED assumption` means downstream analytical work may rely on the value. It does not claim
 `RTL_SIM`, `GENERIC_SYNTH`, or implementation timing closure.
 
+The verified v0.2 compute boundary accepts descriptors and data already resident in local SRAM. It does
+not promote the proposed pod count, shared-SRAM organization, DMA, NoC, or external command fields to an
+implementation contract. Follow the gated sequence in
+[`NPU System Closure Plan`](../../docs/architecture/npu_system_closure_plan.md).
+
 ## 3. Dataflow
 
-Commands enter through `command/`, become dependency-tracked work in `scheduler/`, and are issued to a
-pod. The NPU-side `dma/` front end moves tiles between abstract HBM transactions and explicit scratchpad.
+Already-decoded commands enter through the NPU sink in `command/`, become dependency-tracked work in
+`scheduler/`, and are issued to a pod. KD-ISA decoding and software queues are outside this workstream.
+The NPU-side `dma/` front end moves tiles between finite HBM transactions and explicit scratchpad.
 Tensor and vector engines consume scratchpad operands and return results to scratchpad. Only DMA, explicit
 cross-pod transfers, completion traffic, and KDLink traffic use the pod mesh.
 
@@ -57,7 +67,8 @@ scheduler barriers own producer-consumer visibility. Cache-coherent behavior mus
 
 The tensor clock is a declared logical 1 GHz baseline. Vector and tile SRAM are proposed at 1 GHz; the
 NoC is proposed at 2 GHz. Any boundary crossing requires an explicit CDC mechanism from `rtl/common/` and
-CDC evidence. Command, memory, KDLink, and reset clock relationships remain `HOLD` until specified.
+CDC evidence. Decoded-command, memory, KDLink, and reset clock relationships remain `HOLD` until
+specified.
 
 Internal implementation signals may evolve within a work package. Signals consumed outside `rtl/npu/`
 must first be defined in the owning `specs/` document, including width, ordering, backpressure, reset,

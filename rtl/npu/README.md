@@ -9,7 +9,7 @@ The authoritative system context remains in `docs/architecture/`; cross-subsyste
 | Path | Responsibility |
 | --- | --- |
 | `common/` | NPU-local numeric packages and reusable arithmetic/control primitives |
-| `command/` | KD-ISA command intake, validation, dispatch, and completion |
+| `command/` | NPU-side sink for already-decoded commands and internal completion events; KD-ISA decode and software queues are externally owned |
 | `scheduler/` | Dependency tracking, pod selection, and tile issue |
 | `tensor/` | MX processing element, Tile reduction/accumulation, and 256 x 256 GEMM array |
 | `vector/` | Vector ALU, reductions, special functions, and vector-engine groups |
