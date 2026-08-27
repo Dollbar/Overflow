@@ -6,6 +6,7 @@ module kdlink_reliable_endpoint #(
     parameter integer RESPONSE_FIFO_ADDR_BITS = 7,
     parameter integer REPLAY_SLOT_BITS = 9,
     parameter [0:0] AUTO_LINK_MANAGEMENT = 1'b1,
+    parameter [0:0] ALLOW_ROUTE_CONTEXT = 1'b0,
     parameter [15:0] REPLAY_TIMEOUT_CYCLES = 16'd4096,
     parameter integer KEEPALIVE_CYCLES = 1024,
     parameter integer LINK_TIMEOUT_CYCLES = 8192
@@ -47,6 +48,11 @@ module kdlink_reliable_endpoint #(
     output wire replay_timeout_o,
     output wire tx_service_request_o,
     output wire reverse_service_request_o,
+    output wire tx_ack_valid_o,
+    output wire [2:0] tx_ack_vc_o,
+    output wire tx_ack_phase_o,
+    output wire [11:0] tx_ack_collective_id_o,
+    output wire [11:0] tx_ack_packet_seq_o,
     output wire retry_exhausted_o,
     output wire duplicate_drop_o,
     output wire credit_error_o,
@@ -56,6 +62,7 @@ module kdlink_reliable_endpoint #(
 );
     wire [607:0] tx_fifo_write_data;
     wire [95:0] tx_normalized_header;
+    wire tx_route_context;
     wire [607:0] tx_ingress_body;
     wire tx_ingress_valid;
     wire tx_ingress_ready;
@@ -136,6 +143,12 @@ module kdlink_reliable_endpoint #(
     wire response_fifo_read_ready;
     wire response_fifo_overflow;
     wire response_fifo_underflow;
+    wire [27:0] ack_fifo_write_data;
+    wire ack_fifo_write_ready;
+    wire [27:0] ack_fifo_read_data;
+    wire ack_fifo_read_valid;
+    wire ack_fifo_overflow;
+    wire ack_fifo_underflow;
     wire commit_protocol_error;
     reg commit_protocol_sync1_q;
     reg commit_protocol_sync2_q;
@@ -165,8 +178,12 @@ module kdlink_reliable_endpoint #(
     wire reinitialize_busy;
     wire link_operational;
 
+    assign tx_route_context = ALLOW_ROUTE_CONTEXT &&
+        (tx_header_i[3:0] == `KDL_ROUTE_SCHEMA) &&
+        (tx_header_i[7:4] == `KDL_MESSAGE_TYPE_ROUTE_CONTEXT);
     assign tx_normalized_header = {1'b0, tx_payload_bytes_i,
-        tx_header_i[87:46], link_epoch_i, tx_header_i[37:4], 4'd2};
+        tx_header_i[87:46], link_epoch_i, tx_header_i[37:4],
+        tx_route_context ? 4'd3 : 4'd2};
     assign tx_fifo_write_data = {tx_normalized_header, tx_payload_i};
     assign link_operational = AUTO_LINK_MANAGEMENT ? manager_link_up : 1'b1;
     assign link_up_o = link_operational;
@@ -232,7 +249,7 @@ module kdlink_reliable_endpoint #(
         .occupancy_o(replay_occupancy_o)
     );
 
-    kdlink_packetizer u_packetizer (
+    kdlink_packetizer #(.ALLOW_ROUTE_CONTEXT(ALLOW_ROUTE_CONTEXT)) u_packetizer (
         .clk_i(phy_clk_i), .rst_n_i(phy_rst_n_i),
         .valid_i(selected_tx_valid), .header_i(selected_tx_body[607:512]),
         .payload_i(selected_tx_body[511:0]),
@@ -277,6 +294,7 @@ module kdlink_reliable_endpoint #(
     );
 
     kdlink_rx_commit #(
+        .ALLOW_ROUTE_CONTEXT(ALLOW_ROUTE_CONTEXT),
         .INITIAL_CREDIT_TOTAL(AUTO_LINK_MANAGEMENT ? INITIAL_CREDITS : 16'd0)
     ) u_rx_commit (
         .clk_i(core_clk_i), .rst_n_i(core_rst_n_i),
@@ -317,6 +335,22 @@ module kdlink_reliable_endpoint #(
         .read_ready_i(response_fifo_read_ready),
         .overflow_o(response_fifo_overflow), .underflow_o(response_fifo_underflow)
     );
+
+    assign ack_fifo_write_data = {reverse_rx_sequence,
+        reverse_rx_collective, reverse_rx_phase, reverse_rx_vc};
+    coll_async_fifo #(.WIDTH(28), .ADDR_W(RESPONSE_FIFO_ADDR_BITS)) u_ack_cdc_fifo (
+        .write_clk_i(phy_clk_i), .write_rst_n_i(phy_rst_n_i),
+        .write_data_i(ack_fifo_write_data), .write_valid_i(reverse_ack_valid),
+        .write_ready_o(ack_fifo_write_ready), .read_clk_i(core_clk_i),
+        .read_rst_n_i(core_rst_n_i), .read_data_o(ack_fifo_read_data),
+        .read_valid_o(ack_fifo_read_valid), .read_ready_i(1'b1),
+        .overflow_o(ack_fifo_overflow), .underflow_o(ack_fifo_underflow)
+    );
+    assign tx_ack_valid_o = ack_fifo_read_valid;
+    assign tx_ack_vc_o = ack_fifo_read_data[2:0];
+    assign tx_ack_phase_o = ack_fifo_read_data[3];
+    assign tx_ack_collective_id_o = ack_fifo_read_data[15:4];
+    assign tx_ack_packet_seq_o = ack_fifo_read_data[27:16];
 
     kdlink_link_manager #(
         .INITIAL_CREDITS(INITIAL_CREDITS),
@@ -425,5 +459,6 @@ module kdlink_reliable_endpoint #(
         rx_fifo_backpressure_error_q;
     assign cdc_error_o = tx_ingress_cdc_error || rx_fifo_overflow ||
         rx_fifo_underflow || response_fifo_overflow ||
-        response_fifo_underflow;
+        response_fifo_underflow || ack_fifo_overflow || ack_fifo_underflow ||
+        (reverse_ack_valid && !ack_fifo_write_ready);
 endmodule

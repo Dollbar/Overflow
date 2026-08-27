@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "release_candidate": "KDLink v0.4",
+  "prepared": "2026-08-27",
+  "candidate_base": {
+    "reference": "origin/main",
+    "commit": "ac71fe8fca39130c6b0e22bc44ea3106c3175af8"
+  },
+  "development_branch": "feat/kdlink-million-scale",
+  "inherited_branch_head": {
+    "commit": "4bd201f54e7b1fa133b56af01be776432f57918e",
+    "content": "rebased previously committed KDLink v0.3 base"
+  },
+  "engineering_signoff_status": "ENGINEERING_SIGNOFF_PASS",
+  "publication_status": "PUSHED_AS_OPEN_PR_20_NOT_MERGED_NOT_TAGGED",
+  "scope": {
+    "minimum_active_npu_endpoints": 1,
+    "maximum_active_npu_endpoints": 1048576,
+    "leaf_npu_capacity": 32,
+    "maximum_leaf_domains": 32768,
+    "route_radix": 8,
+    "maximum_route_stages": 5,
+    "supported_npus_per_card": [1, 2, 4, 8, 16, 32],
+    "validated_irregular_populations": [2, 3, 33, 78, 15132]
+  },
+  "portable_release_gates": {
+    "entry_point": "make kdlink-release-check",
+    "preflight": "PASS",
+    "functional_model": {
+      "status": "PASS",
+      "passed": 216,
+      "total": 216
+    },
+    "rtl_simulation": {
+      "status": "PASS",
+      "passed": 61,
+      "total": 61
+    },
+    "reusable_verification_ip": {
+      "status": "PASS",
+      "tests": ["env_pkg", "vip_stream", "serial_if"],
+      "supported_wire_schemas": [2, 3, 4],
+      "stream_checks": [
+        "capability_gate",
+        "header_legality",
+        "control_payload_legality",
+        "crc",
+        "valid_ready_accounting",
+        "packet_ownership",
+        "flit_sequence",
+        "route_context_packet_pairing"
+      ],
+      "card_profile_codes": [1, 2, 4, 8, 16, 32],
+      "legacy_endpoint_slices_round_tripped": 512
+    },
+    "lint": {
+      "status": "PASS",
+      "tops": 27
+    },
+    "cdc_structural": {
+      "status": "PASS",
+      "contracts": 7
+    },
+    "formal_bounded": {
+      "status": "PASS",
+      "proofs": 13
+    },
+    "coverage": {
+      "status": "PASS",
+      "instrumented_tests": 48,
+      "critical_modules_passed": 15,
+      "critical_modules_total": 15,
+      "line": {"percent": 100.0, "hit": 538, "total": 538},
+      "toggle": {"percent": 95.3, "hit": 64753, "total": 67958},
+      "branch": {"percent": 95.7, "hit": 923, "total": 964},
+      "expression": {"percent": 93.1, "hit": 6442, "total": 6922}
+    },
+    "repository_consistency": "PASS"
+  },
+  "multi_corner_partition_sta": {
+    "evidence_type": "PRE_LAYOUT_PARTITION_STA",
+    "status": "PASS",
+    "target_period_ns": 1.0,
+    "setup_uncertainty_ns": 0.1,
+    "hold_uncertainty_ns": 0.02,
+    "mapping_delay_target_ns": 0.1,
+    "partitions_per_corner": 24,
+    "passed_partitions": 72,
+    "total_partitions": 72,
+    "minimum_setup_slack_ns": 0.002,
+    "minimum_setup_partition": "slow:coll_reduction_engine",
+    "minimum_hold_slack_ns": 0.0098,
+    "minimum_hold_partition": "fast:coll_reduction_engine",
+    "corners": [
+      {
+        "corner": "fast",
+        "standard_cell_library_label": "tcbn28hpcplusbwp40p140ffg1p05vm40c.lib",
+        "standard_cell_library_sha256": "aaf88518181c0b4259f1b3efc4a5a7db88ed82b25081dd380f18aaa9ba34aa2e",
+        "interface_library_label": "overflow_hbm_serdes_abstract_fast.lib",
+        "interface_library_sha256": "e6f62cf7a9209b258d6774330d39ca81e3379fe3507be7cc1e77fc27d62b3f5a"
+      },
+      {
+        "corner": "typical",
+        "standard_cell_library_label": "tcbn28hpcplusbwp40p140tt0p9v25c.lib",
+        "standard_cell_library_sha256": "a07fbf556c5aed51e08cbf19d916371dbb1b631ca926e46893ac8781fcb707b5",
+        "interface_library_label": "overflow_hbm_serdes_abstract_typical.lib",
+        "interface_library_sha256": "7ed342dbec1fee405ff06f474f214f6e87d37916532e2d7e282a4b3677552450"
+      },
+      {
+        "corner": "slow",
+        "standard_cell_library_label": "tcbn28hpcplusbwp40p140ssg0p72v125c.lib",
+        "standard_cell_library_sha256": "e08eda5e1ed9d684a84970c29a868d54cd1b679e80452641af87868c0b35f927",
+        "interface_library_label": "overflow_hbm_serdes_abstract_slow.lib",
+        "interface_library_sha256": "5684a54f540e88344c18d441bb09421cb5b15839763bbd049067a14a11b6a7b5"
+      }
+    ]
+  },
+  "performance_functional_simulation": {
+    "status": "PASS",
+    "evidence_type": "FUNCTIONAL_SIM_WITH_ANALYTICAL_INPUTS",
+    "bandwidth_plans": [
+      {
+        "profile": "nonblocking",
+        "total_npus": 1048576,
+        "leaf_domains": 32768,
+        "active_route_tiers": 5,
+        "all_tiers_have_one_link_equivalent_failure_headroom": true
+      },
+      {
+        "profile": "balanced",
+        "total_npus": 1048576,
+        "leaf_domains": 32768,
+        "active_route_tiers": 5,
+        "all_tiers_have_one_link_equivalent_failure_headroom": true
+      }
+    ],
+    "inference_scenarios": [
+      {
+        "config": "inference_dense.json",
+        "total_npus": 1048576,
+        "bottleneck_tier": 0,
+        "cluster_generated_tokens_per_second": 372692894.191
+      },
+      {
+        "config": "inference_moe.json",
+        "total_npus": 1048576,
+        "bottleneck_tier": 5,
+        "cluster_generated_tokens_per_second": 3756266.992
+      },
+      {
+        "config": "inference_failure.json",
+        "total_npus": 15132,
+        "bottleneck_tier": 0,
+        "cluster_generated_tokens_per_second": 34916462.659
+      },
+      {
+        "config": "inference_serving.json",
+        "request_count": 16,
+        "scheduling_model": "FCFS_CLUSTER_BATCH",
+        "cluster_generated_tokens_per_second": 917703.134,
+        "latency_p99_microseconds": 127826.144,
+        "queue_p99_microseconds": 117840.960
+      }
+    ]
+  },
+  "evidence_boundaries": [
+    "Million-scale support is compositional addressing, routing, directory, traffic, and capacity evidence; no monolithic million-endpoint RTL instance is claimed.",
+    "Cluster inference results are FUNCTIONAL_SIM with ANALYTICAL rate, topology, workload, and latency inputs; they are not packet-level or hardware measurements.",
+    "STA is partitioned pre-layout mapped-cell evidence without extracted parasitics or a clock tree.",
+    "Repository HBM and SerDes interface Liberty files are synthetic constraint-plumbing views, not vendor macro characterization.",
+    "Analog SerDes, HBM PHY, package, PCB, place-and-route, hardware interoperability, and tapeout signoff remain outside this acceptance."
+  ],
+  "release_manager_approval": "PR_20_OPEN_MERGE_PENDING"
+}

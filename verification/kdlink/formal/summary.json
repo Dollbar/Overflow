@@ -27,6 +27,46 @@
       "status": "PASS",
       "script": "verification/kdlink/formal/escape_dependency.ys",
       "log": "verification/kdlink/formal/work/escape_dependency.log"
+    },
+    "route_pair_order": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/route_pair_order.ys",
+      "log": "verification/kdlink/formal/work/route_pair_order.log"
+    },
+    "spine_escape": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/spine_escape.ys",
+      "log": "verification/kdlink/formal/work/spine_escape.log"
+    },
+    "global_commit_exact_once": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/global_commit_exact_once.ys",
+      "log": "verification/kdlink/formal/work/global_commit_exact_once.log"
+    },
+    "route_stage_scale": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/route_stage_scale.ys",
+      "log": "verification/kdlink/formal/work/route_stage_scale.log"
+    },
+    "hierarchical_membership": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/hierarchical_membership.ys",
+      "log": "verification/kdlink/formal/work/hierarchical_membership.log"
+    },
+    "scale_route_control": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/scale_route_control.ys",
+      "log": "verification/kdlink/formal/work/scale_route_control.log"
+    },
+    "card_directory": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/card_directory.ys",
+      "log": "verification/kdlink/formal/work/card_directory.log"
+    },
+    "coverage_reachability": {
+      "status": "PASS",
+      "script": "verification/kdlink/formal/coverage_reachability.ys",
+      "log": "verification/kdlink/formal/work/coverage_reachability.log"
     }
   },
   "pass": true

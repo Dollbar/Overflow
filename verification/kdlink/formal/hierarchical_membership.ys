@@ -1,0 +1,7 @@
+read_verilog -formal -sv -Irtl/kdlink rtl/kdlink/kdlink_hierarchical_collective_ctrl.v
+read_verilog -formal -sv -Irtl/kdlink verification/kdlink/formal/formal_hierarchical_membership.sv
+prep -top formal_hierarchical_membership -flatten
+chformal -lower
+async2sync
+formalff -clk2ff -ff2anyinit
+sat -verify -prove-asserts -seq 20 -set-init-zero

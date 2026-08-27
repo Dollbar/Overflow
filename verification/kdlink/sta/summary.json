@@ -3,6 +3,7 @@
   "evidence": "STA_PRE_LAYOUT_CELL_DELAY",
   "target_period_ns": 1.0,
   "target_frequency_mhz": 1000.0,
+  "mapping_delay_target_ns": 0.1,
   "setup_clock_uncertainty_ns": 0.1,
   "hold_clock_uncertainty_ns": 0.02,
   "driving_cell": "BUFFD4BWP40P140",
@@ -12,18 +13,21 @@
       {
         "corner": "fast",
         "library_label": "overflow_hbm_serdes_abstract_fast.lib",
+        "library_sha256": "e6f62cf7a9209b258d6774330d39ca81e3379fe3507be7cc1e77fc27d62b3f5a",
         "library_file_distributed": true,
         "status": "PASS"
       },
       {
         "corner": "typical",
         "library_label": "overflow_hbm_serdes_abstract_typical.lib",
+        "library_sha256": "7ed342dbec1fee405ff06f474f214f6e87d37916532e2d7e282a4b3677552450",
         "library_file_distributed": true,
         "status": "PASS"
       },
       {
         "corner": "slow",
         "library_label": "overflow_hbm_serdes_abstract_slow.lib",
+        "library_sha256": "5684a54f540e88344c18d441bb09421cb5b15839763bbd049067a14a11b6a7b5",
         "library_file_distributed": true,
         "status": "PASS"
       }
@@ -34,30 +38,35 @@
     {
       "corner": "fast",
       "standard_cell_library_label": "tcbn28hpcplusbwp40p140ffg1p05vm40c.lib",
+      "standard_cell_library_sha256": "aaf88518181c0b4259f1b3efc4a5a7db88ed82b25081dd380f18aaa9ba34aa2e",
       "standard_cell_library_distributed": false,
       "interface_library_label": "overflow_hbm_serdes_abstract_fast.lib",
+      "interface_library_sha256": "e6f62cf7a9209b258d6774330d39ca81e3379fe3507be7cc1e77fc27d62b3f5a",
       "interface_library_distributed": true,
       "partitions": [
         {
           "module": "coll_sync_fifo",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.6283,
-          "hold_slack_ns": 0.0149,
-          "critical_period_ns": 0.3717,
-          "estimated_fmax_mhz": 2690.3,
+          "setup_slack_ns": 0.6392,
+          "hold_slack_ns": 0.0183,
+          "critical_period_ns": 0.3608,
+          "estimated_fmax_mhz": 2771.6,
           "status": "PASS"
         },
         {
           "module": "coll_crc32_flit_pipeline",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.6956,
+          "setup_slack_ns": 0.7199,
           "hold_slack_ns": 0.013,
-          "critical_period_ns": 0.3044,
-          "estimated_fmax_mhz": 3285.2,
+          "critical_period_ns": 0.2801,
+          "estimated_fmax_mhz": 3570.2,
           "status": "PASS"
         },
         {
           "module": "coll_reduction_engine",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.5298,
           "hold_slack_ns": 0.0098,
@@ -67,6 +76,7 @@
         },
         {
           "module": "kdlink_context_scheduler16",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.5063,
           "hold_slack_ns": 0.0233,
@@ -76,6 +86,7 @@
         },
         {
           "module": "kdlink_credit_bank8",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.5264,
           "hold_slack_ns": 0.0131,
@@ -85,47 +96,198 @@
         },
         {
           "module": "kdlink_link_manager",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.5804,
-          "hold_slack_ns": 0.0243,
-          "critical_period_ns": 0.4196,
-          "estimated_fmax_mhz": 2383.2,
+          "setup_slack_ns": 0.6091,
+          "hold_slack_ns": 0.0261,
+          "critical_period_ns": 0.3909,
+          "estimated_fmax_mhz": 2558.2,
           "status": "PASS"
         },
         {
           "module": "kdlink_reverse_ctrl",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.583,
+          "setup_slack_ns": 0.6018,
           "hold_slack_ns": 0.0123,
-          "critical_period_ns": 0.417,
-          "estimated_fmax_mhz": 2398.1,
+          "critical_period_ns": 0.3982,
+          "estimated_fmax_mhz": 2511.3,
           "status": "PASS"
         },
         {
           "module": "kdlink_pcs_deskew10",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.6016,
+          "setup_slack_ns": 0.6026,
           "hold_slack_ns": 0.0134,
-          "critical_period_ns": 0.3984,
-          "estimated_fmax_mhz": 2510.0,
+          "critical_period_ns": 0.3974,
+          "estimated_fmax_mhz": 2516.4,
           "status": "PASS"
         },
         {
           "module": "kdlink_bonded_tx_register",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.6509,
-          "hold_slack_ns": 0.0837,
-          "critical_period_ns": 0.3491,
-          "estimated_fmax_mhz": 2864.5,
+          "setup_slack_ns": 0.6924,
+          "hold_slack_ns": 0.0836,
+          "critical_period_ns": 0.3076,
+          "estimated_fmax_mhz": 3251.0,
           "status": "PASS"
         },
         {
           "module": "kdlink_switch_rr_arbiter32",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.5253,
           "hold_slack_ns": 0.0269,
           "critical_period_ns": 0.4747,
           "estimated_fmax_mhz": 2106.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.549,
+          "hold_slack_ns": 0.0188,
+          "critical_period_ns": 0.451,
+          "estimated_fmax_mhz": 2217.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4644,
+          "hold_slack_ns": 0.0266,
+          "critical_period_ns": 0.5356,
+          "estimated_fmax_mhz": 1867.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4605,
+          "hold_slack_ns": 0.0186,
+          "critical_period_ns": 0.5395,
+          "estimated_fmax_mhz": 1853.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5077,
+          "hold_slack_ns": 0.0126,
+          "critical_period_ns": 0.4923,
+          "estimated_fmax_mhz": 2031.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4897,
+          "hold_slack_ns": 0.0159,
+          "critical_period_ns": 0.5103,
+          "estimated_fmax_mhz": 1959.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4448,
+          "hold_slack_ns": 0.0261,
+          "critical_period_ns": 0.5552,
+          "estimated_fmax_mhz": 1801.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.498,
+          "hold_slack_ns": 0.0243,
+          "critical_period_ns": 0.502,
+          "estimated_fmax_mhz": 1992.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_scale_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4687,
+          "hold_slack_ns": 0.0261,
+          "critical_period_ns": 0.5313,
+          "estimated_fmax_mhz": 1882.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_transaction_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 8
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5681,
+          "hold_slack_ns": 0.0112,
+          "critical_period_ns": 0.4319,
+          "estimated_fmax_mhz": 2315.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_commit_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 100
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5179,
+          "hold_slack_ns": 0.0171,
+          "critical_period_ns": 0.4821,
+          "estimated_fmax_mhz": 2074.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4545,
+          "hold_slack_ns": 0.0242,
+          "critical_period_ns": 0.5455,
+          "estimated_fmax_mhz": 1833.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_collective_tree_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.6051,
+          "hold_slack_ns": 0.0254,
+          "critical_period_ns": 0.3949,
+          "estimated_fmax_mhz": 2532.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_epoch_manager",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.6582,
+          "hold_slack_ns": 0.0262,
+          "critical_period_ns": 0.3418,
+          "estimated_fmax_mhz": 2925.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_card_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4324,
+          "hold_slack_ns": 0.0247,
+          "critical_period_ns": 0.5676,
+          "estimated_fmax_mhz": 1761.8,
           "status": "PASS"
         }
       ],
@@ -134,21 +296,25 @@
     {
       "corner": "typical",
       "standard_cell_library_label": "tcbn28hpcplusbwp40p140tt0p9v25c.lib",
+      "standard_cell_library_sha256": "a07fbf556c5aed51e08cbf19d916371dbb1b631ca926e46893ac8781fcb707b5",
       "standard_cell_library_distributed": false,
       "interface_library_label": "overflow_hbm_serdes_abstract_typical.lib",
+      "interface_library_sha256": "7ed342dbec1fee405ff06f474f214f6e87d37916532e2d7e282a4b3677552450",
       "interface_library_distributed": true,
       "partitions": [
         {
           "module": "coll_sync_fifo",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.5542,
-          "hold_slack_ns": 0.0314,
-          "critical_period_ns": 0.4458,
-          "estimated_fmax_mhz": 2243.2,
+          "setup_slack_ns": 0.5736,
+          "hold_slack_ns": 0.0347,
+          "critical_period_ns": 0.4264,
+          "estimated_fmax_mhz": 2345.2,
           "status": "PASS"
         },
         {
           "module": "coll_crc32_flit_pipeline",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.6234,
           "hold_slack_ns": 0.028,
@@ -158,6 +324,7 @@
         },
         {
           "module": "coll_reduction_engine",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.3678,
           "hold_slack_ns": 0.0224,
@@ -167,6 +334,7 @@
         },
         {
           "module": "kdlink_context_scheduler16",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.3913,
           "hold_slack_ns": 0.0418,
@@ -176,6 +344,7 @@
         },
         {
           "module": "kdlink_credit_bank8",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.3592,
           "hold_slack_ns": 0.0274,
@@ -185,15 +354,17 @@
         },
         {
           "module": "kdlink_link_manager",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.4904,
-          "hold_slack_ns": 0.0435,
-          "critical_period_ns": 0.5096,
-          "estimated_fmax_mhz": 1962.3,
+          "setup_slack_ns": 0.5251,
+          "hold_slack_ns": 0.0445,
+          "critical_period_ns": 0.4749,
+          "estimated_fmax_mhz": 2105.7,
           "status": "PASS"
         },
         {
           "module": "kdlink_reverse_ctrl",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.4935,
           "hold_slack_ns": 0.0256,
@@ -203,6 +374,7 @@
         },
         {
           "module": "kdlink_pcs_deskew10",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.4654,
           "hold_slack_ns": 0.0283,
@@ -212,20 +384,168 @@
         },
         {
           "module": "kdlink_bonded_tx_register",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.5863,
+          "setup_slack_ns": 0.651,
           "hold_slack_ns": 0.0863,
-          "critical_period_ns": 0.4137,
-          "estimated_fmax_mhz": 2417.2,
+          "critical_period_ns": 0.349,
+          "estimated_fmax_mhz": 2865.3,
           "status": "PASS"
         },
         {
           "module": "kdlink_switch_rr_arbiter32",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.368,
           "hold_slack_ns": 0.0479,
           "critical_period_ns": 0.632,
           "estimated_fmax_mhz": 1582.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4688,
+          "hold_slack_ns": 0.0355,
+          "critical_period_ns": 0.5312,
+          "estimated_fmax_mhz": 1882.5,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3151,
+          "hold_slack_ns": 0.0497,
+          "critical_period_ns": 0.6849,
+          "estimated_fmax_mhz": 1460.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3369,
+          "hold_slack_ns": 0.036,
+          "critical_period_ns": 0.6631,
+          "estimated_fmax_mhz": 1508.1,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3894,
+          "hold_slack_ns": 0.0269,
+          "critical_period_ns": 0.6106,
+          "estimated_fmax_mhz": 1637.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.388,
+          "hold_slack_ns": 0.0318,
+          "critical_period_ns": 0.612,
+          "estimated_fmax_mhz": 1634.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3261,
+          "hold_slack_ns": 0.0465,
+          "critical_period_ns": 0.6739,
+          "estimated_fmax_mhz": 1483.9,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3519,
+          "hold_slack_ns": 0.0448,
+          "critical_period_ns": 0.6481,
+          "estimated_fmax_mhz": 1543.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_scale_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3435,
+          "hold_slack_ns": 0.0465,
+          "critical_period_ns": 0.6565,
+          "estimated_fmax_mhz": 1523.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_transaction_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 8
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.4362,
+          "hold_slack_ns": 0.025,
+          "critical_period_ns": 0.5638,
+          "estimated_fmax_mhz": 1773.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_commit_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 100
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3917,
+          "hold_slack_ns": 0.0348,
+          "critical_period_ns": 0.6083,
+          "estimated_fmax_mhz": 1643.9,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3531,
+          "hold_slack_ns": 0.0433,
+          "critical_period_ns": 0.6469,
+          "estimated_fmax_mhz": 1545.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_collective_tree_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5099,
+          "hold_slack_ns": 0.0459,
+          "critical_period_ns": 0.4901,
+          "estimated_fmax_mhz": 2040.4,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_epoch_manager",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.5867,
+          "hold_slack_ns": 0.0471,
+          "critical_period_ns": 0.4133,
+          "estimated_fmax_mhz": 2419.5,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_card_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3046,
+          "hold_slack_ns": 0.0447,
+          "critical_period_ns": 0.6954,
+          "estimated_fmax_mhz": 1438.0,
           "status": "PASS"
         }
       ],
@@ -234,12 +554,15 @@
     {
       "corner": "slow",
       "standard_cell_library_label": "tcbn28hpcplusbwp40p140ssg0p72v125c.lib",
+      "standard_cell_library_sha256": "e08eda5e1ed9d684a84970c29a868d54cd1b679e80452641af87868c0b35f927",
       "standard_cell_library_distributed": false,
       "interface_library_label": "overflow_hbm_serdes_abstract_slow.lib",
+      "interface_library_sha256": "5684a54f540e88344c18d441bb09421cb5b15839763bbd049067a14a11b6a7b5",
       "interface_library_distributed": true,
       "partitions": [
         {
           "module": "coll_sync_fifo",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.4181,
           "hold_slack_ns": 0.0745,
@@ -249,6 +572,7 @@
         },
         {
           "module": "coll_crc32_flit_pipeline",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.3799,
           "hold_slack_ns": 0.0613,
@@ -258,6 +582,7 @@
         },
         {
           "module": "coll_reduction_engine",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.002,
           "hold_slack_ns": 0.0504,
@@ -267,6 +592,7 @@
         },
         {
           "module": "kdlink_context_scheduler16",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.1017,
           "hold_slack_ns": 0.0837,
@@ -276,6 +602,7 @@
         },
         {
           "module": "kdlink_credit_bank8",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.0667,
           "hold_slack_ns": 0.0608,
@@ -285,6 +612,7 @@
         },
         {
           "module": "kdlink_link_manager",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.35,
           "hold_slack_ns": 0.0886,
@@ -294,6 +622,7 @@
         },
         {
           "module": "kdlink_reverse_ctrl",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.259,
           "hold_slack_ns": 0.0563,
@@ -303,6 +632,7 @@
         },
         {
           "module": "kdlink_pcs_deskew10",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.2069,
           "hold_slack_ns": 0.0621,
@@ -312,20 +642,168 @@
         },
         {
           "module": "kdlink_bonded_tx_register",
+          "parameter_overrides": {},
           "period_ns": 1.0,
-          "setup_slack_ns": 0.539,
-          "hold_slack_ns": 0.0918,
-          "critical_period_ns": 0.461,
-          "estimated_fmax_mhz": 2169.2,
+          "setup_slack_ns": 0.5422,
+          "hold_slack_ns": 0.0917,
+          "critical_period_ns": 0.4578,
+          "estimated_fmax_mhz": 2184.4,
           "status": "PASS"
         },
         {
           "module": "kdlink_switch_rr_arbiter32",
+          "parameter_overrides": {},
           "period_ns": 1.0,
           "setup_slack_ns": 0.0303,
           "hold_slack_ns": 0.0979,
           "critical_period_ns": 0.9697,
           "estimated_fmax_mhz": 1031.2,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_pair_tx",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.2342,
+          "hold_slack_ns": 0.0767,
+          "critical_period_ns": 0.7658,
+          "estimated_fmax_mhz": 1305.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_spine_router",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.1005,
+          "hold_slack_ns": 0.0895,
+          "critical_period_ns": 0.8995,
+          "estimated_fmax_mhz": 1111.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0781,
+          "hold_slack_ns": 0.0734,
+          "critical_period_ns": 0.9219,
+          "estimated_fmax_mhz": 1084.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_transaction_source",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0905,
+          "hold_slack_ns": 0.0611,
+          "critical_period_ns": 0.9095,
+          "estimated_fmax_mhz": 1099.5,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_global_commit_tracker",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0743,
+          "hold_slack_ns": 0.0676,
+          "critical_period_ns": 0.9257,
+          "estimated_fmax_mhz": 1080.3,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_table",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0347,
+          "hold_slack_ns": 0.0931,
+          "critical_period_ns": 0.9653,
+          "estimated_fmax_mhz": 1035.9,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_hierarchical_collective_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0175,
+          "hold_slack_ns": 0.0854,
+          "critical_period_ns": 0.9825,
+          "estimated_fmax_mhz": 1017.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_scale_route_stage",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0678,
+          "hold_slack_ns": 0.0936,
+          "critical_period_ns": 0.9322,
+          "estimated_fmax_mhz": 1072.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_transaction_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 8
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0492,
+          "hold_slack_ns": 0.0562,
+          "critical_period_ns": 0.9508,
+          "estimated_fmax_mhz": 1051.7,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_commit_window",
+          "parameter_overrides": {
+            "ENTRY_COUNT": 20,
+            "REPLAY_GRACE_CYCLES": 100
+          },
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.1141,
+          "hold_slack_ns": 0.0725,
+          "critical_period_ns": 0.8859,
+          "estimated_fmax_mhz": 1128.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_group_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0741,
+          "hold_slack_ns": 0.0879,
+          "critical_period_ns": 0.9259,
+          "estimated_fmax_mhz": 1080.0,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_collective_tree_ctrl",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.2936,
+          "hold_slack_ns": 0.0935,
+          "critical_period_ns": 0.7064,
+          "estimated_fmax_mhz": 1415.6,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_route_epoch_manager",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.3698,
+          "hold_slack_ns": 0.0927,
+          "critical_period_ns": 0.6302,
+          "estimated_fmax_mhz": 1586.8,
+          "status": "PASS"
+        },
+        {
+          "module": "kdlink_card_directory",
+          "parameter_overrides": {},
+          "period_ns": 1.0,
+          "setup_slack_ns": 0.0088,
+          "hold_slack_ns": 0.0913,
+          "critical_period_ns": 0.9912,
+          "estimated_fmax_mhz": 1008.9,
           "status": "PASS"
         }
       ],
@@ -336,6 +814,7 @@
     "no extracted interconnect parasitics or clock tree",
     "synthetic HBM/SerDes interface views are not vendor macro characterization",
     "memory arrays, switch VOQs, PHY hard macros, and analog SerDes excluded",
+    "window STA uses the verified 20-entry register profile; larger windows require SRAM/CAM implementation timing",
     "no flat endpoint, fabric, or chip timing claim"
   ],
   "pass": true

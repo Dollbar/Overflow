@@ -19,6 +19,14 @@ DEFAULT_TESTS = (
     "credit_bank8",
     "fifo_primitives",
     "vc_ingress8",
+    "route_context_codec",
+    "route_pair_tx",
+    "domain_adapter",
+    "spine_router",
+    "route_stage_scale",
+    "route_stage_profiles",
+    "global_commit_codec",
+    "global_commit_window",
     "link_manager",
     "replay_timeout",
     "rx_commit_stress",
@@ -42,9 +50,37 @@ DEFAULT_TESTS = (
     "direct32",
     "fabric32",
     "reliable_endpoint_e2e",
+    "route_context_reliable",
+    "multidomain_bonded",
+    "global_recovery",
+    "global_transaction_stress",
+    "hierarchical_collective",
+    "scale_route_codec",
+    "scale_route_stage",
+    "scale_transaction",
+    "distributed_collective",
+    "route_control",
+    "card_directory",
     "reliable_reset_recovery",
     "reliable_bonded_endpoint",
     "reliable_nic8_fabric",
+)
+CRITICAL_MODULES = (
+    "kdlink_route_stage.v",
+    "kdlink_global_transaction_source.v",
+    "kdlink_global_commit_tracker.v",
+    "kdlink_global_commit_codec.v",
+    "kdlink_group_table.v",
+    "kdlink_hierarchical_collective_ctrl.v",
+    "kdlink_scale_route_stage.v",
+    "kdlink_transaction_window.v",
+    "kdlink_commit_window.v",
+    "kdlink_group_directory.v",
+    "kdlink_collective_tree_ctrl.v",
+    "kdlink_plane_selector.v",
+    "kdlink_route_epoch_manager.v",
+    "kdlink_deadlock_guard.v",
+    "kdlink_card_directory.v",
 )
 
 
@@ -79,6 +115,15 @@ def filter_rtl_coverage(raw_path: Path, filtered_path: Path) -> None:
     filtered_path.write_text("".join(output), encoding="utf-8")
 
 
+def filter_module_coverage(raw_path: Path, filtered_path: Path, filename: str) -> None:
+    marker = f"\x01f\x02rtl/kdlink/{filename}"
+    output = ["# SystemC::Coverage-3\n"]
+    for line in raw_path.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True):
+        if line.startswith("C ") and marker in line:
+            output.append(line)
+    filtered_path.write_text("".join(output), encoding="utf-8")
+
+
 def parse_summary(report: str) -> dict[str, dict[str, float | int]]:
     metrics: dict[str, dict[str, float | int]] = {}
     pattern = re.compile(r"^\s*(line|toggle|branch|expr)\s*:\s*([0-9.]+)%\s*\(\s*(\d+)/\s*(\d+)\)", re.MULTILINE)
@@ -94,6 +139,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--test", action="append", choices=DEFAULT_TESTS)
+    parser.add_argument(
+        "--refresh-test",
+        action="append",
+        choices=DEFAULT_TESTS,
+        help="rebuild selected databases while reusing the remaining default-test databases",
+    )
     parser.add_argument("--no-gate", action="store_true")
     parser.add_argument(
         "--reuse-existing",
@@ -101,13 +152,16 @@ def main() -> None:
         help="re-aggregate existing raw databases after a reporting-only change",
     )
     args = parser.parse_args()
-    tests = tuple(args.test) if args.test else DEFAULT_TESTS
+    if args.test and args.refresh_test:
+        raise SystemExit("use either --test or --refresh-test, not both")
+    tests = DEFAULT_TESTS if args.refresh_test else (tuple(args.test) if args.test else DEFAULT_TESTS)
+    refresh_tests = set(args.refresh_test or ())
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))["tests"]
     verilator = shutil.which("verilator")
     coverage_tool = shutil.which("verilator_coverage")
     if not verilator or not coverage_tool:
         raise SystemExit("verilator and verilator_coverage must be available in PATH")
-    if WORK.exists() and not args.reuse_existing:
+    if WORK.exists() and not args.reuse_existing and not refresh_tests:
         shutil.rmtree(WORK)
     WORK.mkdir(parents=True, exist_ok=True)
     filtered_files: list[Path] = []
@@ -118,11 +172,14 @@ def main() -> None:
         object_root = test_root / "obj"
         raw_path = test_root / "coverage.dat"
         simulation_log = test_root / "simulation.log"
-        if args.reuse_existing:
+        reuse_test = args.reuse_existing or bool(refresh_tests and name not in refresh_tests)
+        if reuse_test:
             if not raw_path.is_file() or not simulation_log.is_file():
                 raise SystemExit(f"{name}: existing raw database or simulation log is missing")
             output = simulation_log.read_text(encoding="utf-8", errors="replace")
         else:
+            if test_root.exists():
+                shutil.rmtree(test_root)
             object_root.mkdir(parents=True)
             sources = [*config["rtl"], config["testbench"]]
             build_command = [
@@ -144,6 +201,8 @@ def main() -> None:
                 "-Wno-UNUSEDSIGNAL",
                 "-Wno-SYNCASYNCNET",
                 "-Wno-BLKSEQ",
+                "-Wno-COVERIGN",
+                "-Wno-UNOPTFLAT",
                 "--top-module",
                 config["top"],
                 "-Irtl/kdlink",
@@ -176,6 +235,29 @@ def main() -> None:
     metrics = parse_summary(report)
     thresholds = {"line": 95.0, "branch": 90.0, "toggle": 95.0}
     passed = all(metrics[name]["percent"] >= limit for name, limit in thresholds.items())
+    critical_thresholds = {"line": 90.0, "branch": 80.0, "toggle": 80.0}
+    critical_results: dict[str, dict[str, object]] = {}
+    for filename in CRITICAL_MODULES:
+        module_path = WORK / "per_module" / f"{Path(filename).stem}.dat"
+        module_path.parent.mkdir(parents=True, exist_ok=True)
+        filter_module_coverage(merged_path, module_path, filename)
+        module_report = run(
+            [coverage_tool, "--report", "summary", str(module_path)],
+            WORK / "per_module" / f"{Path(filename).stem}.txt",
+        )
+        module_metrics = parse_summary(module_report)
+        module_pass = all(
+            module_metrics[name]["total"] == 0
+            or module_metrics[name]["percent"] >= limit
+            for name, limit in critical_thresholds.items()
+        )
+        critical_results[filename] = {
+            "metrics": module_metrics,
+            "thresholds_percent": critical_thresholds,
+            "pass": module_pass,
+        }
+        passed &= module_pass
+        print(f"[COVERAGE MODULE {'PASS' if module_pass else 'FAIL'}] {filename}")
     summary = {
         "schema_version": 1,
         "evidence": "RTL_COVERAGE",
@@ -184,14 +266,19 @@ def main() -> None:
             "union by RTL source point across hierarchy and Verilator "
             "parameterized-page suffixes"
         ),
-        "reused_existing_raw_databases": args.reuse_existing,
+        "reused_existing_raw_databases": args.reuse_existing or bool(refresh_tests),
+        "refreshed_tests": sorted(refresh_tests),
         "tests": list(tests),
         "metrics": metrics,
         "thresholds_percent": thresholds,
+        "critical_module_results": critical_results,
         "exclusions": [
             "testbench and behavioral-model source paths",
             "signals and memories wider than 64 bits for toggle coverage",
+            "Route Context reserved bits [511:166], which the protocol requires to remain zero",
             "tool-generated underscore-prefixed implementation signals",
+            "the defensive default of the fully enumerated one-bit scale route state",
+            "deterministic timing-decomposition query nets in group table and group directory; externally visible lookup behavior remains covered by directed, bulk, random, and irregular-membership tests",
         ],
         "pass": passed,
     }

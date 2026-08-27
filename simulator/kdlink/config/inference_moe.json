@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "planning_example_only": true,
+  "workload": {
+    "name": "million_endpoint_moe_inference",
+    "total_npus": 1048576,
+    "npus_per_card": 4,
+    "layers": 128,
+    "hidden_size": 16384,
+    "activation_bytes": 2,
+    "prompt_tokens": 2048,
+    "generation_tokens": 256,
+    "batch_size": 1024,
+    "microbatch_size": 8,
+    "tensor_parallel": 8,
+    "pipeline_parallel": 128,
+    "expert_parallel": 8,
+    "data_parallel": 128,
+    "axis_order": ["tensor", "pipeline", "data", "expert"],
+    "experts": 256,
+    "expert_top_k": 2,
+    "moe_layer_count": 128,
+    "tensor_collective": "reduce_scatter",
+    "tp_collectives_per_layer": 2,
+    "prefill_compute_us_per_layer": 4.0,
+    "decode_compute_us_per_layer": 1.0,
+    "moe_imbalance_factor": 1.5,
+    "remote_kv_fraction": 0.0,
+    "remote_kv_bytes_per_token": 0,
+    "remote_kv_axis": "data",
+    "compute_network_overlap": 0.5,
+    "planning_example_only": true
+  },
+  "network": {
+    "profile": "balanced",
+    "active_planes": 8,
+    "active_slices_per_port": 1,
+    "logical_clock_hz": 1000000000,
+    "leaf_rtt_cycles": 8,
+    "rtt_cycles": [14, 24, 34, 44, 54]
+  }
+}

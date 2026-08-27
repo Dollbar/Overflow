@@ -1,6 +1,8 @@
 `ifndef KDLINK_DEFS_VH // 防止 KDLink 常量被重复包含
 `define KDLINK_DEFS_VH // 声明 KDLink 常量保护宏
 `define KDL_SCHEMA_VERSION 2 // 固定协议 schema 版本
+`define KDL_ROUTE_SCHEMA 3 // 固定层次路由上下文 schema 版本
+`define KDL_SCALE_SCHEMA 4 // 固定百万端点扩展 schema 版本
 `define KDL_NUM_NODES 32 // 固定 KDLink 架构参数
 `define KDL_NUM_PLANES 8 // 固定 KDLink 架构参数
 `define KDL_SLICES_PER_PORT 2 // 固定 KDLink 架构参数
@@ -36,6 +38,15 @@
 `define KDL_MESSAGE_TYPE_LINK_INIT 5 // 固定 KDLink 编码
 `define KDL_MESSAGE_TYPE_LINK_STATE 6 // 固定 KDLink 编码
 `define KDL_MESSAGE_TYPE_FAULT 7 // 固定 KDLink 编码
+`define KDL_MESSAGE_TYPE_ROUTE_CONTEXT 8 // 固定层次路由上下文消息编码
+`define KDL_MESSAGE_TYPE_GLOBAL_COMMIT 9 // 固定端到端全局提交确认消息编码
+`define KDL_GLOBAL_STATUS_COMMITTED 0 // 固定目的端已提交状态编码
+`define KDL_GLOBAL_STATUS_REJECTED 1 // 固定目的端拒绝提交状态编码
+`define KDL_GLOBAL_STATUS_STALE_EPOCH 2 // 固定拓扑代次过期状态编码
+`define KDL_HIER_PHASE_LEAF_PREPARE 0 // 固定分层通信 leaf 准备阶段编码
+`define KDL_HIER_PHASE_INTERDOMAIN 1 // 固定分层通信跨域阶段编码
+`define KDL_HIER_PHASE_LEAF_FINISH 2 // 固定分层通信 leaf 完成阶段编码
+`define KDL_HIER_PHASE_COMPLETE 3 // 固定分层通信全局完成阶段编码
 `define KDL_REVERSE_TYPE_CREDIT 0 // 固定 KDLink 编码
 `define KDL_REVERSE_TYPE_ACK 1 // 固定 KDLink 编码
 `define KDL_REVERSE_TYPE_NACK 2 // 固定 KDLink 编码

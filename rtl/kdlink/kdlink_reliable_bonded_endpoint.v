@@ -2,6 +2,8 @@ module kdlink_reliable_bonded_endpoint #( // Declare the canonical two-slice rel
     parameter [15:0] INITIAL_CREDITS = 16'd64, // Set each logical slice receive capacity.
     parameter integer REPLAY_SLOT_BITS = 9, // Set each logical slice replay-window size.
     parameter [15:0] REPLAY_TIMEOUT_CYCLES = 16'd4096, // Set ACK-loss replay timeout.
+    parameter [0:0] AUTO_LINK_MANAGEMENT = 1'b1, // Select managed links or an externally controlled simulation/integration link.
+    parameter [0:0] ALLOW_ROUTE_CONTEXT = 1'b0, // Preserve baseline schema-two behavior unless multidomain routing is enabled.
     parameter integer KEEPALIVE_CYCLES = 1024, // Set reverse-channel heartbeat interval.
     parameter integer LINK_TIMEOUT_CYCLES = 8192 // Set reverse-channel peer timeout.
 ) ( // Begin the bonded endpoint port list.
@@ -38,6 +40,11 @@ module kdlink_reliable_bonded_endpoint #( // Declare the canonical two-slice rel
     output wire [1:0] active_slice_mask_o, // Report configured and healthy physical slices.
     output wire degraded_o, // Report operation through exactly one physical slice.
     output wire link_down_o, // Report loss of all physical slices.
+    output wire [1:0] tx_ack_valid_o, // Export reliable ACK events in the core clock domain for both logical slices.
+    output wire [5:0] tx_ack_vc_o, // Export the acknowledged physical VC for both logical slices.
+    output wire [1:0] tx_ack_phase_o, // Export the acknowledged phase for both logical slices.
+    output wire [23:0] tx_ack_collective_id_o, // Export the acknowledged collective identity for both logical slices.
+    output wire [23:0] tx_ack_packet_seq_o, // Export the acknowledged packet sequence for both logical slices.
     output reg epoch_recovery_required_o, // Request a new epoch after the physical slice map changes.
     output reg mapping_error_o, // Latch an invalid or colliding physical-to-logical mapping.
     output wire reliability_error_o, // Combine endpoint credit replay protocol and CDC errors.
@@ -134,6 +141,8 @@ module kdlink_reliable_bonded_endpoint #( // Declare the canonical two-slice rel
             kdlink_reliable_endpoint #( // Configure one canonical reliability instance.
                 .INITIAL_CREDITS(INITIAL_CREDITS), // Apply the logical receive capacity.
                 .REPLAY_SLOT_BITS(REPLAY_SLOT_BITS), // Apply the replay window size.
+                .AUTO_LINK_MANAGEMENT(AUTO_LINK_MANAGEMENT), // Select managed or externally controlled link operation.
+                .ALLOW_ROUTE_CONTEXT(ALLOW_ROUTE_CONTEXT), // Apply the optional schema-three Route Context capability.
                 .REPLAY_TIMEOUT_CYCLES(REPLAY_TIMEOUT_CYCLES), // Apply ACK-loss timeout.
                 .KEEPALIVE_CYCLES(KEEPALIVE_CYCLES), // Apply heartbeat interval.
                 .LINK_TIMEOUT_CYCLES(LINK_TIMEOUT_CYCLES) // Apply peer watchdog interval.
@@ -171,6 +180,11 @@ module kdlink_reliable_bonded_endpoint #( // Declare the canonical two-slice rel
                 .replay_timeout_o(endpoint_replay_timeout[logical_slice]), // Observe timeout replay.
                 .tx_service_request_o(endpoint_forward_request[logical_slice]), // Export forward demand.
                 .reverse_service_request_o(endpoint_reverse_request[logical_slice]), // Export reverse demand.
+                .tx_ack_valid_o(tx_ack_valid_o[logical_slice]), // Export one core-domain ACK event.
+                .tx_ack_vc_o(tx_ack_vc_o[logical_slice*3 +: 3]), // Export the ACK VC identity.
+                .tx_ack_phase_o(tx_ack_phase_o[logical_slice]), // Export the ACK phase identity.
+                .tx_ack_collective_id_o(tx_ack_collective_id_o[logical_slice*12 +: 12]), // Export the ACK collective identity.
+                .tx_ack_packet_seq_o(tx_ack_packet_seq_o[logical_slice*12 +: 12]), // Export the ACK packet sequence.
                 .retry_exhausted_o(endpoint_retry_exhausted[logical_slice]), // Collect retry errors.
                 .duplicate_drop_o(endpoint_duplicate_drop[logical_slice]), // Observe duplicate suppression.
                 .credit_error_o(endpoint_credit_error[logical_slice]), // Collect reliability status.

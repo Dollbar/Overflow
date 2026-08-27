@@ -37,6 +37,7 @@ module tb_kdlink_rx_commit_stress;
     integer response_count;
     integer duplicate_count;
     integer timeout_count;
+    integer response_before_collision;
 
     kdlink_rx_commit u_dut (
         .clk_i(clk), .rst_n_i(rst_n), .local_node_i(local_node),
@@ -211,23 +212,61 @@ module tb_kdlink_rx_commit_stress;
         build_flit(300, 4, 1'b0, 1'b1);
         send_flit(1'b1); // 用 EOP 结束 bad-packet drain
 
-        @(negedge clk); link_reinitialize = 1'b1; local_node = 5'd0; link_epoch = 8'h5a;
+        @(negedge clk); link_reinitialize = 1'b1; commit_ready = 1'b0; response_ready = 1'b0;
         @(negedge clk); link_reinitialize = 1'b0;
+        response_before_collision = response_count;
+        build_flit(400, 0, 1'b1, 1'b1);
+        send_flit(1'b1); // 暂存一个完整 packet，等待与输入 credit 事件同拍出队
+        build_flit(401, 0, 1'b1, 1'b0);
+        @(negedge clk); commit_ready = 1'b1; flit_valid = 1'b1;
+        #0.01;
+        if (u_dut.response_push_count != 2 || u_dut.response_pop || !u_dut.input_event_valid || !u_dut.output_event_valid) $fatal(1, "two-response push without pop was not formed");
+        @(posedge clk);
+        if (!flit_ready || !commit_valid) $fatal(1, "two-response push setup did not overlap input and output events");
+        @(negedge clk); flit_valid = 1'b0; commit_ready = 1'b0;
+        #0.01;
+        if (u_dut.response_count_q != 2) $fatal(1, "two-response push without pop count mismatch count=%0d", u_dut.response_count_q);
+        build_flit(401, 1, 1'b0, 1'b1);
+        send_flit(1'b1); // 完成第二个 packet，使其成为下一次同拍出队对象
+        @(negedge clk); commit_ready = 1'b1;
+        #0.01;
+        if (!commit_valid || commit_last) $fatal(1, "multi-flit commit did not present its non-final flit first");
+        @(posedge clk);
+        @(negedge clk); commit_ready = 1'b0;
+        build_flit(402, 0, 1'b1, 1'b0);
+        @(negedge clk); commit_ready = 1'b1; response_ready = 1'b1; flit_valid = 1'b1;
+        #0.01;
+        if (u_dut.response_push_count != 2 || !u_dut.response_pop || !u_dut.input_event_valid || !u_dut.output_event_valid) $fatal(1, "two-response push with pop was not formed push=%0d input=%b output=%b pop=%b contexts=%0d", u_dut.response_push_count, u_dut.input_event_valid, u_dut.output_event_valid, u_dut.response_pop, u_dut.context_count_q);
+        @(posedge clk);
+        if (!flit_ready || !commit_valid || !response_valid) $fatal(1, "two-response push with pop setup did not overlap all events");
+        @(negedge clk); flit_valid = 1'b0; commit_ready = 1'b0; response_ready = 1'b0;
+        #0.01;
+        if (u_dut.response_count_q != 3) $fatal(1, "two-response push with pop count mismatch count=%0d push=%0d input=%b output=%b pop=%b contexts=%0d", u_dut.response_count_q, u_dut.response_push_count, u_dut.input_event_valid, u_dut.output_event_valid, u_dut.response_pop, u_dut.context_count_q);
+        @(negedge clk); response_ready = 1'b1;
+        timeout_count = 0;
+        while (response_count < response_before_collision + 4 && timeout_count < 20) begin
+            @(posedge clk);
+            timeout_count = timeout_count + 1;
+        end
+        if (response_count != response_before_collision + 4) $fatal(1, "overlapped response events did not drain exactly four responses before=%0d after=%0d", response_before_collision, response_count);
+
+        @(negedge clk); link_reinitialize = 1'b1; local_node = 5'd0; link_epoch = 8'h5a;
+        @(negedge clk); link_reinitialize = 1'b0; commit_ready = 1'b1; response_ready = 1'b1;
         for (packet_index = 0; packet_index < 4096; packet_index = packet_index + 1) begin
             build_flit(packet_index, 0, 1'b1, 1'b1);
             header[15:13] = 3'd0; // 将全序号空间累计到同一 VC 以覆盖十六位 cumulative credit
             send_flit(1'b1);
         end
         timeout_count = 0;
-        while (commit_count < 4176 && timeout_count < 500) begin
+        while (commit_count < 4179 && timeout_count < 500) begin
             @(posedge clk);
             timeout_count = timeout_count + 1;
         end
-        if (commit_count != 4176 || protocol_error)
+        if (commit_count != 4179 || protocol_error)
             $fatal(1, "link reinitialize recovery failed commits=%0d error=%b",
                 commit_count, protocol_error);
         repeat (20) @(posedge clk);
-        $display("TB_KDLINK_RX_COMMIT_STRESS_PASS contexts=64 responses=full packets=4176 sequence_space=4096 max_flits=16 duplicate=1 crc_nack=1 protocol_nack=1 drain_bad=1 reinitialize=1");
+        $display("TB_KDLINK_RX_COMMIT_STRESS_PASS contexts=64 responses=full packets=4179 sequence_space=4096 max_flits=16 duplicate=1 crc_nack=1 protocol_nack=1 overlapped_response_push=2 drain_bad=1 reinitialize=1");
         $finish;
     end
 

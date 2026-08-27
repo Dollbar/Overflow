@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "portable_release_tools": [
+    {
+      "name": "Python",
+      "executables": ["python3"],
+      "minimum_version": "3.10",
+      "validated_version": "3.12.3",
+      "validated_sha256": "1643dacd9feaedc58f3cc581e4d22577dfe25c09b10282936186ccf0f2e61118",
+      "source": "https://www.python.org/downloads/source/",
+      "license": "PSF-2.0",
+      "acquisition_method": "system package or source build discovered from PATH; binary is not redistributed"
+    },
+    {
+      "name": "pytest",
+      "python_module": "pytest",
+      "minimum_version": "8.0",
+      "validated_version": "9.1.1",
+      "validated_sha256": "78e9d67f9e30cd783341a14fe84f0288d978a58085441f9a696ad9107aa6ac1f",
+      "checksum_subject": "installed distribution RECORD",
+      "source": "https://github.com/pytest-dev/pytest",
+      "license": "MIT",
+      "acquisition_method": "requirements-dev.txt through the selected Python package installer"
+    },
+    {
+      "name": "Verilator",
+      "executables": ["verilator"],
+      "minimum_version": "5.0",
+      "validated_version": "5.050",
+      "validated_sha256": "fb2cc573b1055cf096c90e1efc9966fe56bdb4b265c83590cf2a49f7a0defcdf",
+      "source": "https://github.com/verilator/verilator",
+      "license": "LGPL-3.0-or-later OR Artistic-2.0",
+      "acquisition_method": "system package or source build discovered from PATH; binary is not redistributed"
+    },
+    {
+      "name": "verilator_coverage",
+      "executables": ["verilator_coverage"],
+      "minimum_version": "5.0",
+      "validated_version": "5.050",
+      "validated_sha256": "11d69c7bc1a99027a70fd544a22cb6e5e45caea026a85b5581b6530367fcddd5",
+      "source": "https://github.com/verilator/verilator",
+      "license": "LGPL-3.0-or-later OR Artistic-2.0",
+      "acquisition_method": "installed with Verilator and discovered from PATH; binary is not redistributed"
+    },
+    {
+      "name": "Yosys",
+      "executables": ["yosys"],
+      "minimum_version": "0.40",
+      "validated_version": "0.67",
+      "validated_sha256": "3a9c9bdf57d92b731a0715a62f04e60083d956187ac5aabb3bc32eda586f2531",
+      "source": "https://github.com/YosysHQ/yosys",
+      "license": "ISC",
+      "acquisition_method": "system package or source build discovered from PATH; binary is not redistributed"
+    },
+    {
+      "name": "GNU Make",
+      "executables": ["make"],
+      "minimum_version": "4.0",
+      "validated_version": "4.3",
+      "validated_sha256": "d78b8f1d099fbcfb6f2f49ab87223b9b68fb3956642f92d6ec6de812e8afa965",
+      "source": "https://www.gnu.org/software/make/",
+      "license": "GPL-3.0-or-later",
+      "acquisition_method": "system package or source build discovered from PATH; binary is not redistributed"
+    },
+    {
+      "name": "C++ compiler",
+      "executables": ["c++", "g++", "clang++"],
+      "validated_version": "GCC 13.3.0",
+      "validated_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+      "source": "https://gcc.gnu.org/",
+      "license": "GPL-3.0-or-later WITH GCC-exception-3.1",
+      "acquisition_method": "system package or compatible compiler discovered from PATH; binary is not redistributed"
+    }
+  ],
+  "optional_sta_tools": [
+    {
+      "name": "OpenSTA",
+      "executables": ["opensta", "sta"],
+      "minimum_version": "2.5",
+      "validated_version": "3.1.0",
+      "validated_sha256": "7cc6023918e2fd095593841da71f3fa285d3ad3a1fdfa6305d65912c5fbb5d08",
+      "source": "https://github.com/The-OpenROAD-Project/OpenSTA",
+      "license": "BSD-3-Clause",
+      "acquisition_method": "system package or source build discovered from PATH; binary is not redistributed"
+    }
+  ],
+  "repository_dependencies": {
+    "serdes_model_root": "Library/models/kdlink/serdes",
+    "interface_liberty_root": "Library/timing/interfaces",
+    "interface_liberty_files": [
+      "Library/timing/interfaces/overflow_hbm_serdes_abstract_fast.lib",
+      "Library/timing/interfaces/overflow_hbm_serdes_abstract_typical.lib",
+      "Library/timing/interfaces/overflow_hbm_serdes_abstract_slow.lib"
+    ]
+  },
+  "external_dependencies": [
+    {
+      "name": "standard-cell multi-corner Liberty",
+      "redistributed": false,
+      "source": "selected foundry or standard-cell library vendor",
+      "license": "vendor-controlled and non-redistributable",
+      "checksum": "recorded by the integrator in ignored technology/vendor/library_set.local.yaml",
+      "acquisition_method": "provided by the licensed implementation environment",
+      "provision": "run_sta.py --corner fast=<path> --corner typical=<path> --corner slow=<path>",
+      "recorded_output": "library basename and redistribution status only",
+      "required_for": "technology-specific pre-layout STA only"
+    }
+  ]
+}
