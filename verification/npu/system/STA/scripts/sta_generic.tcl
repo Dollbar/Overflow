@@ -37,15 +37,16 @@ report_tns -max -digits 4
 report_clock_min_period -clocks [get_clocks clk_i] -include_port_paths
 report_check_types -max_slew -max_capacitance -max_fanout -violators
 
-set worst_slack [sta::worst_slack_cmd max]
+set worst_slack_seconds [sta::worst_slack_cmd max]
+set worst_slack_ns [expr {$worst_slack_seconds * 1.0e9}]
 set max_slew_violations [sta::max_slew_violation_count]
 set max_capacitance_violations [sta::max_capacitance_violation_count]
 set max_fanout_violations [sta::max_fanout_violation_count]
-puts "GENERIC_1GHZ_WORST_SLACK_NS $worst_slack"
+puts "GENERIC_1GHZ_WORST_SLACK_NS $worst_slack_ns"
 puts "GENERIC_MAX_SLEW_VIOLATIONS $max_slew_violations"
 puts "GENERIC_MAX_CAPACITANCE_VIOLATIONS $max_capacitance_violations"
 puts "GENERIC_MAX_FANOUT_VIOLATIONS $max_fanout_violations"
-if {$worst_slack < 0.0} {
+if {$worst_slack_seconds < 0.0} {
     puts stderr "GENERIC_1GHZ_TIMING_FAIL"
     exit 2
 }

@@ -180,6 +180,9 @@ ADDRGEN_SDC := $(STA_DIR)/sdc/npu_dma_address_generator_1ghz.sdc
 MOVER_NETLIST := $(STA_BUILD_DIR)/npu_dma_channel_mover_mapped.v
 MOVER_JSON := $(STA_BUILD_DIR)/npu_dma_channel_mover_mapped.json
 MOVER_SDC := $(STA_DIR)/sdc/npu_dma_channel_mover_1ghz.sdc
+STA_NETLISTS := $(EGRESS_NETLIST) $(RESPONSE_NETLIST) $(TRACKER_NETLIST) \
+	$(ALLOCATOR_NETLIST) $(MONITOR_NETLIST) $(BOUNDARY_NETLIST) \
+	$(ADDRGEN_NETLIST) $(MOVER_NETLIST)
 FLAGS := --language 1800-2017 -Wall --timing
 
 .PHONY: lint lint-egress lint-response lint-tracker lint-allocator lint-monitor \
@@ -191,7 +194,11 @@ FLAGS := --language 1800-2017 -Wall --timing
 	synth-mover sim-mover lint-engine synth-engine sim-engine \
 	lint-shared-sram synth-shared-sram sim-shared-sram \
 	lint-pod synth-pod sim-pod \
-	check-liberty test clean
+	check-liberty test clean FORCE
+
+FORCE:
+
+$(STA_NETLISTS): FORCE
 
 lint: lint-egress lint-response lint-tracker lint-allocator lint-monitor \
 	lint-boundary lint-addrgen lint-mover lint-engine lint-shared-sram lint-pod
