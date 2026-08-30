@@ -487,6 +487,36 @@ module npu_gemm_vector_coupler16 #(
                  backend_response_decoded[lane].control.tag) &&
                 lane_started_q[output_index][lane];
             output_command = context_post_command_mem[output_index];
+            // Per-beat controls (notably tail lane_mask and last) travel
+            // through the Vector engine. The context copy may already have
+            // advanced to a later input beat, so it cannot drive a stalled
+            // output's control field.
+            output_command.vector_control.lane_mask =
+                backend_response_decoded[lane].control.lane_mask;
+            output_command.vector_control.tag =
+                backend_response_decoded[lane].control.tag;
+            output_command.vector_control.last =
+                backend_response_decoded[lane].control.last;
+            output_command.vector_control.operation =
+                backend_response_decoded[lane].control.operation;
+            output_command.vector_control.operand_b_source =
+                backend_response_decoded[lane].control.operand_b_source;
+            output_command.vector_control.bias_enable =
+                backend_response_decoded[lane].control.bias_enable;
+            output_command.vector_control.bias_is_scalar =
+                backend_response_decoded[lane].control.bias_is_scalar;
+            output_command.vector_control.residual_enable =
+                backend_response_decoded[lane].control.residual_enable;
+            output_command.vector_control.activation =
+                backend_response_decoded[lane].control.activation;
+            output_command.vector_control.output_format =
+                backend_response_decoded[lane].control.output_format;
+            output_command.vector_control.mx_format =
+                backend_response_decoded[lane].control.mx_format;
+            output_command.vector_control.affine_enable =
+                backend_response_decoded[lane].control.affine_enable;
+            output_command.vector_control.beta_enable =
+                backend_response_decoded[lane].control.beta_enable;
 
             output_beat = '0;
             unique case (backend_response_decoded[lane].control.result_kind)

@@ -283,7 +283,7 @@ synth-shared-sram:
 	@mkdir -p $(BUILD_DIR)
 	$(YOSYS) -p 'read_verilog -sv -lib $(SHARED_SRAM_BLACKBOX); read_verilog -sv $(SHARED_SRAM_SYNTH_RTL); hierarchy -top npu_pod_shared_sram; proc; opt; check; stat' \
 		> $(BUILD_DIR)/npu_pod_shared_sram_synth.log
-	@test "$$(awk '/KD28_SRAM_SDP_2048X256/{count=$$2} END{print count}' \
+	@test "$$(awk '/KD28_SRAM_SDP_2048X256/{count=$$1} END{print count}' \
 		$(BUILD_DIR)/npu_pod_shared_sram_synth.log)" = "256" || \
 		{ tail -80 $(BUILD_DIR)/npu_pod_shared_sram_synth.log; \
 		  echo "Expected exactly 256 KD28_SRAM_SDP_2048X256 cells"; exit 1; }
@@ -293,7 +293,7 @@ synth-pod:
 	@mkdir -p $(BUILD_DIR)
 	$(YOSYS) -p 'read_verilog -sv -lib $(SHARED_SRAM_BLACKBOX); read_verilog -sv $(POD_SYNTH_RTL); hierarchy -top npu_dma_pod; proc; opt; check; stat' \
 		> $(BUILD_DIR)/npu_dma_pod_synth.log
-	@test "$$(awk '/KD28_SRAM_SDP_2048X256/{count=$$2} END{print count}' \
+	@test "$$(awk '/KD28_SRAM_SDP_2048X256/{count=$$1} END{print count}' \
 		$(BUILD_DIR)/npu_dma_pod_synth.log)" = "256" || \
 		{ tail -80 $(BUILD_DIR)/npu_dma_pod_synth.log; \
 		  echo "Expected exactly 256 KD28_SRAM_SDP_2048X256 cells"; exit 1; }

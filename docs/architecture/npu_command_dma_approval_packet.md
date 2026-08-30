@@ -14,16 +14,18 @@ This packet records dependencies; it does not assign all of them to the NPU RTL 
 - The NPU consumes a versioned, already-decoded internal command record. It owns only the ready/valid
   sink, internal resource checks, issue, and completion-event production after that boundary.
 - The NPU owns the DMA mover, NPU-side finite HBM transaction adapter, scratchpad controller,
-  scheduler/scoreboard, pod integration, NoC, RAS/performance counters, and required CDC/RDC logic.
+  scheduler/scoreboard, Pod integration, and its internal diagnostics. The NoC router, system-visible RAS
+  mapping, and any cross-domain wrappers remain with their separately identified owners.
 - The HBM controller, PHY, and physical memory model are outside this workstream. The RTL HBM
   specification is the jointly approved interface contract used by the NPU-side adapter.
 
 ## 1. Audit Result
 
-The repository currently has no KD-ISA encoding or runtime command/completion queue ABI. It now has an
-NPU-internal DMA command contract, finite RTL HBM transaction contract, DMA mover, and DMA-to-Pod-SRAM
-integration. The owning `isa/`, `specs/isa/`, `specs/abi/`, `runtime/`, `drivers/`, `firmware/`, and
-`rtl/memory/` paths still contain scope READMEs only.
+The repository currently has no KD-ISA encoding or runtime command/completion queue ABI. It now has a
+versioned NPU-internal decoded-command gateway and unified completion, DMA command contract, finite RTL HBM
+transaction contract, DMA mover, DMA-to-Pod-SRAM integration, managed Pod, and eight-Pod structural shell.
+The owning `isa/`, `specs/isa/`, `specs/abi/`, `runtime/`, `drivers/`, `firmware/`, and `rtl/memory/` paths
+still contain scope READMEs only.
 
 The portable HBM model and beat BFM provide verification behavior, not production field authority. Their
 testbench address, tag, queue-depth, and latency parameters must not be copied into RTL interfaces.
@@ -72,20 +74,22 @@ reclamation, or replay.
 
 ## 4. External Inputs Required Before General Compute Issue
 
-The current v0.2 descriptor supports one fixed-origin square GEMM followed optionally by Vector
-post-processing. It does not authorize independent Vector commands or arbitrary M/N/K scheduling.
+The GEMM v0.2 descriptor supports one fixed-origin square GEMM followed optionally by Vector
+post-processing. ADR-0006 additionally authorizes the NPU-internal version-3 independent Vector
+interpretation at the same packed width. Neither record defines a host-visible command nor authorizes
+arbitrary M/N/K scheduling.
 
-Before those features enter RTL, the compiler/operator owners shall define:
+Before general Tensor issue or an external command adapter enters RTL, the compiler/operator owners shall define:
 
 - independent M, N, and K dimensions, batch count, strides, and edge masks;
 - block/subarray placement or an explicit decision to keep fixed-origin execution;
-- independent Vector source/destination layout, lane masks, and operator legality;
+- the mapping from any external Vector command into the frozen internal source/destination layout and operator controls;
 - attention, MoE, transpose, gather, and KV-cache lowering responsibilities; and
 - compatibility behavior for the existing descriptor version 2.
 
-The requested external-owner approach is a new command record that references the existing v0.2 compute descriptor for
-legacy square-GEMM execution and introduces separately versioned payloads for general Tensor, independent
-Vector, and DMA operations. Reinterpreting spare or reserved v0.2 bits is prohibited.
+The requested external-owner approach remains a new command record that references the existing internal
+GEMM v2, Vector v3, and DMA records. Reinterpreting spare or reserved v2 GEMM bits is prohibited; Vector v3
+is selected explicitly by its version and operation fields.
 
 ## 5. Clock and Reset Decisions
 
@@ -93,7 +97,7 @@ The only admitted synchronous boundary is the current compute-local `clk_i`, `rs
 Logical 1 GHz Tensor and HBM clocks are system/model assumptions; the proposed 2 GHz NoC clock is not
 approved implementation timing.
 
-Before a single-pod top crosses domains, an interface specification shall define:
+Before a system wrapper makes any Pod boundary cross domains, an interface specification shall define:
 
 - command-management, compute/SRAM, HBM-service, NoC, and KDLink clock relationships;
 - asynchronous assertion and domain-synchronous reset deassertion;
@@ -110,9 +114,9 @@ Before a single-pod top crosses domains, an interface specification shall define
 3. External owners publish KD-ISA and queue/completion ABI specifications in parallel; integration adds an
    adapter only after both sides are versioned.
 4. NPU owners approve additional compute/NoC shared-SRAM clients and ECC behavior before exposing them.
-5. External compiler/ISA owners approve general Tensor and independent Vector payloads; the NPU then
-   defines only their decoded internal issue records.
-6. Affected owners approve clock/reset relationships before constructing `npu_pod`.
+5. External compiler/ISA owners approve general Tensor and the host-visible mapping to independent Vector;
+   the NPU consumes only their decoded internal issue records.
+6. Affected owners approve clock/reset relationships before constructing a multi-clock system wrapper.
 
 Each approval updates its owner-controlled ADR or specification, the NPU consuming specification,
 compatibility tests, and traceability rows in the same change. These gates apply to the corresponding

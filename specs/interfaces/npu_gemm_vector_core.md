@@ -154,6 +154,14 @@ The scheduler allocates the hardware tag and copies all MX format fields into th
 GEMM, buffer-read, Vector, result, and post-route commands. The compiler remains
 responsible for format consistency and block alignment.
 
+Independent Vector issue is a compatible reinterpretation of this same packed
+descriptor width. It requires `version=3` and `operation=NPU_TASK_VECTOR`;
+GEMM remains `version=2`. The scheduler emits only Vector and post commands for
+version 3. Vector A reuses the Activation Buffer's Tile-K-major layout, while B
+and C retain the existing Vector operand stores. The detailed layout,
+arbitration, and completion contract is defined in
+[`npu_independent_vector.md`](npu_independent_vector.md).
+
 ## 5. Vector and Post Routes
 
 The Vector arithmetic pipelines remain 16-lane IEEE FP32 pipelines. MX support
@@ -168,6 +176,10 @@ Vector B and C local stores use the same 128-bit MX packing and scale convention
 as Tensor storage. A Vector command identifies their formats. GEMM-to-Vector
 traffic remains 512-bit FP32 because GEMM has already performed its one final
 matrix conversion after exact cross-block accumulation.
+
+An independent Vector frontend also decodes local MX A data into this same
+FP32 request boundary. A fair per-row arbiter merges independent and GEMM-post
+sources; it does not modify any Vector arithmetic pipeline.
 
 At the `vector_engine16` response boundary, each accepted 16-lane request still
 produces one response with its original `tag`, lane mask, and `last`. For MXFP8,

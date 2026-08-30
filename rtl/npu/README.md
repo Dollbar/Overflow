@@ -17,6 +17,7 @@ The authoritative system context remains in `docs/architecture/`; cross-subsyste
 | `compute/` | Tensor/Vector integration, result routing, feedback, and system top levels |
 | `noc/` | Pod-local and inter-pod on-chip network |
 | `dma/` | NPU-side DMA descriptor and data-movement front end |
+| `pod/` | Two-cluster Pod-local allocation, shared-to-private movement, and integration types |
 
 Read [Architecture](ARCHITECTURE.md) before changing module boundaries and use
 [Work Breakdown](WORK_BREAKDOWN.md) to assign implementation tasks. The analytical sizing source is

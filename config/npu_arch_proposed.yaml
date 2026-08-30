@@ -13,6 +13,7 @@ assumptions:
   hbm_round_trip_latency_ns_stress: 800
 
 organization:
+  decision: ADR-0004
   pod_rows: 2
   pod_columns: 4
   pods_per_npu: 8
@@ -49,6 +50,7 @@ vector:
     - reciprocal_sqrt
 
 sram:
+  private_capacity_status: compatibility_profile_not_production_frozen
   tile_private_mib: 8
   tile_bank_count: 32
   tile_bank_width_bits: 256
@@ -76,6 +78,9 @@ hbm:
 
 noc:
   topology: hierarchical_pod_mesh_2x4
+  attachment_decision: ADR-0005
+  attachment_contract: specs/interfaces/npu_pod_noc_attachment_v0.1.md
+  attachment_status: baselined_router_independent
   routing: deterministic_xy_escape_with_adaptive_non_escape
   tile_data_port_bits_per_cycle: 2048
   tile_data_ports_per_tile: 1

@@ -11,10 +11,12 @@ package npu_scheduler_pkg;
     // Some leaf environments compile the package without the scheduler.
     /* verilator lint_off UNUSEDPARAM */
     localparam logic [3:0] NPU_TASK_DESCRIPTOR_VERSION = 4'd2;
+    localparam logic [3:0] NPU_VECTOR_TASK_DESCRIPTOR_VERSION = 4'd3;
     /* verilator lint_on UNUSEDPARAM */
 
     typedef enum logic [2:0] {
-        NPU_TASK_GEMM = 3'd0
+        NPU_TASK_GEMM   = 3'd0,
+        NPU_TASK_VECTOR = 3'd1
     } npu_task_operation_e;
 
     typedef enum logic {
@@ -115,9 +117,13 @@ package npu_scheduler_pkg;
     typedef struct packed {
         logic [NPU_JOB_ID_WIDTH-1:0]        job_id;
         logic [NPU_TAG_WIDTH-1:0]           tag;
+        logic                               standalone;
         logic [NPU_DIMENSION_WIDTH-1:0]     matrix_size;
         logic [4:0]                         vectors_per_row;
         vector_pkg::vector_engine_control_t control;
+        logic [NPU_BUFFER_ID_WIDTH-1:0]     operand_a_buffer_id;
+        logic [NPU_BUFFER_OFFSET_WIDTH-1:0] operand_a_base_offset;
+        mxfp_pkg::mxfp_format_e             operand_a_format;
         logic [NPU_BUFFER_ID_WIDTH-1:0]     operand_b_buffer_id;
         logic [NPU_BUFFER_OFFSET_WIDTH-1:0] operand_b_base_offset;
         mxfp_pkg::mxfp_format_e             operand_b_format;
@@ -125,6 +131,16 @@ package npu_scheduler_pkg;
         logic [NPU_BUFFER_OFFSET_WIDTH-1:0] operand_c_base_offset;
         mxfp_pkg::mxfp_format_e             operand_c_format;
         logic [31:0]                        scalar;
+        logic [NPU_BUFFER_ID_WIDTH-1:0]     destination_buffer_id;
+        logic [NPU_BUFFER_OFFSET_WIDTH-1:0] destination_base_offset;
+        logic                               destination_operand;
+        logic                               transpose_enable;
+        mxfp_pkg::mxfp_format_e             destination_format;
+        npu_vector_result_route_e           result_route;
+        npu_output_format_e                 output_format;
+        mxfp_pkg::mxfp_format_e             output_mx_format;
+        logic                               signal_event_valid;
+        logic [NPU_EVENT_ID_WIDTH-1:0]      signal_event_id;
     } npu_vector_command_t;
 
     typedef struct packed {
@@ -147,6 +163,7 @@ package npu_scheduler_pkg;
     typedef struct packed {
         logic [NPU_JOB_ID_WIDTH-1:0]        job_id;
         logic [NPU_TAG_WIDTH-1:0]           tag;
+        logic                               standalone;
         logic [NPU_DIMENSION_WIDTH-1:0]     matrix_size;
         logic [4:0]                         vectors_per_row;
         npu_post_route_e                    route;
@@ -192,20 +209,18 @@ package npu_scheduler_pkg;
         npu_task_status_code_e       code;
     } npu_task_status_t;
 
+    // Explicit v0.2/v0.3 ABI widths keep the package consumable by the
+    // repository Yosys frontend, which cannot evaluate $bits(type_name) here.
+    // Packed struct/vector conversions remain type-checked by RTL lint.
     /* verilator lint_off UNUSEDPARAM */
-    localparam int unsigned NPU_TASK_DESCRIPTOR_WIDTH =
-        $bits(npu_task_descriptor_t);
-    localparam int unsigned NPU_GEMM_COMMAND_WIDTH = $bits(npu_gemm_command_t);
-    localparam int unsigned NPU_BUFFER_READ_COMMAND_WIDTH =
-        $bits(npu_buffer_read_command_t);
-    localparam int unsigned NPU_VECTOR_COMMAND_WIDTH =
-        $bits(npu_vector_command_t);
-    localparam int unsigned NPU_RESULT_COMMAND_WIDTH =
-        $bits(npu_result_command_t);
-    localparam int unsigned NPU_POST_COMMAND_WIDTH = $bits(npu_post_command_t);
-    localparam int unsigned NPU_POST_RESULT_WIDTH =
-        $bits(npu_post_result_beat_t);
-    localparam int unsigned NPU_TASK_STATUS_WIDTH = $bits(npu_task_status_t);
+    localparam int unsigned NPU_TASK_DESCRIPTOR_WIDTH = 342;
+    localparam int unsigned NPU_GEMM_COMMAND_WIDTH = 60;
+    localparam int unsigned NPU_BUFFER_READ_COMMAND_WIDTH = 78;
+    localparam int unsigned NPU_VECTOR_COMMAND_WIDTH = 286;
+    localparam int unsigned NPU_RESULT_COMMAND_WIDTH = 95;
+    localparam int unsigned NPU_POST_COMMAND_WIDTH = 250;
+    localparam int unsigned NPU_POST_RESULT_WIDTH = 586;
+    localparam int unsigned NPU_TASK_STATUS_WIDTH = 29;
     /* verilator lint_on UNUSEDPARAM */
 
 endpackage
