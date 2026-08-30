@@ -51,14 +51,14 @@ module tb_npu_input_scheduler;
     logic protocol_error_o;
     logic [7:0] scenario_id;
 
-    npu_gemm_command_t gemm_log [0:63];
-    npu_buffer_read_command_t activation_log [0:63];
-    npu_buffer_read_command_t weight_log [0:63];
-    npu_vector_command_t vector_log [0:63];
-    npu_result_command_t result_log [0:63];
-    npu_post_command_t post_log [0:63];
-    npu_task_status_t status_log [0:63];
-    integer gemm_cycle_log [0:63];
+    npu_gemm_command_t gemm_log [0:255];
+    npu_buffer_read_command_t activation_log [0:255];
+    npu_buffer_read_command_t weight_log [0:255];
+    npu_vector_command_t vector_log [0:255];
+    npu_result_command_t result_log [0:255];
+    npu_post_command_t post_log [0:255];
+    npu_task_status_t status_log [0:255];
+    integer gemm_cycle_log [0:255];
     integer cycle_count;
     integer gemm_count;
     integer activation_count;
@@ -203,10 +203,13 @@ module tb_npu_input_scheduler;
         integer base_weight;
         integer base_vector;
         integer base_result;
-        logic [5:0] base_post;
+        integer base_post;
         integer base_status;
         logic [7:0] first_tag;
         logic [7:0] reset_tag;
+        logic [12:0] vector_operation_seen;
+        logic [3:0] vector_source_seen;
+        logic [1:0] vector_route_seen;
 
         clk_i = 1'b0;
         rst_i = 1'b1;
@@ -237,6 +240,9 @@ module tb_npu_input_scheduler;
         post_count = 0;
         status_count = 0;
         check_count = 0;
+        vector_operation_seen = '0;
+        vector_source_seen = '0;
+        vector_route_seen = '0;
 
         repeat (3) @(negedge clk_i);
         rst_i = 1'b0;
@@ -352,7 +358,7 @@ module tb_npu_input_scheduler;
         base_weight = weight_count;
         base_vector = vector_count;
         base_result = result_count;
-        base_post = 6'(post_count);
+        base_post = post_count;
         for (integer task_number = 0; task_number < 3; task_number++) begin
             descriptor = make_descriptor(16'h0400 + 16'(task_number),
                                          16'd16);
@@ -409,6 +415,157 @@ module tb_npu_input_scheduler;
         end
         complete_task(gemm_log[base_gemm + 3].tag, 1'b1);
         wait_for_status_count(9);
+        check_count = check_count + 1;
+
+        // A v3 standalone Vector task emits only Vector and post commands. It
+        // must not allocate a synthetic GEMM, A/B feeder, or result command.
+        scenario_id = 8'd11;
+        base_gemm = gemm_count;
+        base_activation = activation_count;
+        base_weight = weight_count;
+        base_vector = vector_count;
+        base_result = result_count;
+        base_post = post_count;
+        base_status = status_count;
+        descriptor = make_descriptor(16'h0b01, 16'd18);
+        descriptor.version = NPU_VECTOR_TASK_DESCRIPTOR_VERSION;
+        descriptor.operation = NPU_TASK_VECTOR;
+        descriptor.post_route = NPU_POST_VECTOR;
+        descriptor.vector_control.operation = VECTOR_ENGINE_OP_PASS;
+        descriptor.activation_buffer_id = 4'd3;
+        descriptor.activation_base_offset = 32'h0001_2000;
+        send_task(descriptor);
+        while ((vector_count < base_vector + 1) ||
+               (post_count < base_post + 1)) @(negedge clk_i);
+        repeat (2) @(negedge clk_i);
+        if ((gemm_count != base_gemm) ||
+            (activation_count != base_activation) ||
+            (weight_count != base_weight) ||
+            (result_count != base_result) ||
+            !vector_log[base_vector].standalone ||
+            (vector_log[base_vector].job_id != 16'h0b01) ||
+            (vector_log[base_vector].matrix_size != 16'd18) ||
+            (vector_log[base_vector].vectors_per_row != 5'd2) ||
+            (vector_log[base_vector].operand_a_buffer_id != 4'd3) ||
+            (vector_log[base_vector].operand_a_base_offset != 32'h0001_2000) ||
+            (post_log[base_post].route != NPU_POST_VECTOR) ||
+            (post_log[base_post].tag != vector_log[base_vector].tag)) begin
+            $fatal(1, "FAIL: standalone Vector command split or metadata");
+        end
+        complete_task(vector_log[base_vector].tag, 1'b1);
+        wait_for_status_count(base_status + 1);
+        check_count = check_count + 1;
+
+        // Cross every architected Vector operation with every B-operand source
+        // and both result routes.  The vector-engine unit test owns arithmetic
+        // reference checking; this matrix proves descriptor-to-Vector/Post
+        // command propagation for the independent issue path.
+        scenario_id = 8'd12;
+        base_gemm = gemm_count;
+        base_activation = activation_count;
+        base_weight = weight_count;
+        base_result = result_count;
+        for (integer operation_index = 0; operation_index < 13;
+             operation_index++) begin
+            for (integer source_index = 0; source_index < 4;
+                 source_index++) begin
+                for (integer route_index = 0; route_index < 2;
+                     route_index++) begin
+                    base_vector = vector_count;
+                    base_post = post_count;
+                    base_status = status_count;
+                    descriptor = make_descriptor(
+                        16'hc000 + 16'((operation_index * 8) +
+                                      (source_index * 2) + route_index),
+                        16'd16);
+                    descriptor.version = NPU_VECTOR_TASK_DESCRIPTOR_VERSION;
+                    descriptor.operation = NPU_TASK_VECTOR;
+                    descriptor.post_route = NPU_POST_VECTOR;
+                    descriptor.vector_control.operation =
+                        vector_engine_op_e'(operation_index);
+                    descriptor.vector_control.operand_b_source =
+                        vector_operand_source_e'(source_index);
+                    descriptor.vector_result_route =
+                        npu_vector_result_route_e'(route_index);
+                    descriptor.output_format = NPU_OUTPUT_MX;
+                    descriptor.output_mx_format = MXFP8_E4M3;
+                    descriptor.activation_buffer_id = 4'd6;
+                    descriptor.activation_base_offset = 32'h0002_0000;
+                    descriptor.vector_b_buffer_id = 4'd7;
+                    descriptor.vector_b_base_offset = 32'h0002_4000;
+                    descriptor.vector_c_buffer_id = 4'd8;
+                    descriptor.vector_c_base_offset = 32'h0002_8000;
+                    descriptor.vector_scalar = 32'h3f00_0000;
+                    descriptor.output_buffer_id = 4'd9;
+                    descriptor.output_base_offset = 32'h0002_c000;
+                    descriptor.feedback_operand = route_index[0];
+                    descriptor.feedback_transpose = source_index[0];
+                    send_task(descriptor);
+                    while ((vector_count < base_vector + 1) ||
+                           (post_count < base_post + 1)) @(negedge clk_i);
+                    @(negedge clk_i);
+                    if (!vector_log[base_vector].standalone ||
+                        (vector_log[base_vector].job_id != descriptor.job_id) ||
+                        (vector_log[base_vector].control.operation !=
+                         descriptor.vector_control.operation) ||
+                        (vector_log[base_vector].control.operand_b_source !=
+                         descriptor.vector_control.operand_b_source) ||
+                        (vector_log[base_vector].result_route !=
+                         descriptor.vector_result_route) ||
+                        (vector_log[base_vector].operand_a_buffer_id != 4'd6) ||
+                        (vector_log[base_vector].operand_b_buffer_id != 4'd7) ||
+                        (vector_log[base_vector].operand_c_buffer_id != 4'd8) ||
+                        (vector_log[base_vector].scalar != 32'h3f00_0000) ||
+                        (vector_log[base_vector].destination_buffer_id != 4'd9) ||
+                        (vector_log[base_vector].destination_operand !=
+                         route_index[0]) ||
+                        (vector_log[base_vector].transpose_enable !=
+                         source_index[0]) ||
+                        (vector_log[base_vector].control.output_format !=
+                         (route_index[0] ?
+                          EPILOGUE_OUT_FP32 : EPILOGUE_OUT_MX)) ||
+                        !post_log[base_post].standalone ||
+                        (post_log[base_post].tag !=
+                         vector_log[base_vector].tag) ||
+                        (post_log[base_post].route != NPU_POST_VECTOR) ||
+                        (post_log[base_post].vector_result_route !=
+                         descriptor.vector_result_route) ||
+                        (post_log[base_post].vector_control.operation !=
+                         descriptor.vector_control.operation) ||
+                        (post_log[base_post].vector_control.operand_b_source !=
+                         descriptor.vector_control.operand_b_source) ||
+                        (post_log[base_post].scalar != 32'h3f00_0000)) begin
+                        $fatal(1,
+                               "FAIL: independent Vector matrix op=%0d source=%0d route=%0d",
+                               operation_index, source_index, route_index);
+                    end
+                    vector_operation_seen[operation_index] = 1'b1;
+                    vector_source_seen[source_index] = 1'b1;
+                    vector_route_seen[route_index] = 1'b1;
+                    complete_task(vector_log[base_vector].tag, 1'b1);
+                    wait_for_status_count(base_status + 1);
+                    if (!status_log[base_status].success ||
+                        (status_log[base_status].job_id != descriptor.job_id) ||
+                        (status_log[base_status].code != NPU_TASK_STATUS_OK)) begin
+                        $fatal(1,
+                               "FAIL: independent Vector completion op=%0d source=%0d route=%0d",
+                               operation_index, source_index, route_index);
+                    end
+                end
+            end
+        end
+        if ((vector_operation_seen != 13'h1fff) ||
+            (vector_source_seen != 4'hf) ||
+            (vector_route_seen != 2'b11) ||
+            (gemm_count != base_gemm) ||
+            (activation_count != base_activation) ||
+            (weight_count != base_weight) ||
+            (result_count != base_result)) begin
+            $fatal(1,
+                   "FAIL: independent Vector matrix coverage op=%h source=%h route=%h",
+                   vector_operation_seen, vector_source_seen,
+                   vector_route_seen);
+        end
         check_count = check_count + 1;
 
         // Four committed descriptors enter and issue on consecutive cycles.

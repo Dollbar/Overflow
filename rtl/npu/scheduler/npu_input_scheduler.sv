@@ -112,6 +112,8 @@ module npu_input_scheduler #(
     logic [TASK_INDEX_WIDTH-1:0] selected_task_index;
     npu_scheduler_pkg::npu_task_descriptor_t selected_descriptor;
     logic [4:0] selected_vectors_per_row;
+    logic selected_is_gemm;
+    logic selected_is_vector;
     logic issue_fire;
 
     npu_scheduler_pkg::npu_task_descriptor_t incoming_descriptor;
@@ -163,20 +165,36 @@ module npu_input_scheduler #(
         incoming_descriptor =
             npu_scheduler_pkg::npu_task_descriptor_t'(task_i);
         incoming_error_code = npu_scheduler_pkg::NPU_TASK_STATUS_OK;
-        if (incoming_descriptor.version !=
-            npu_scheduler_pkg::NPU_TASK_DESCRIPTOR_VERSION) begin
+        if (((incoming_descriptor.operation ==
+              npu_scheduler_pkg::NPU_TASK_GEMM) &&
+             (incoming_descriptor.version !=
+              npu_scheduler_pkg::NPU_TASK_DESCRIPTOR_VERSION)) ||
+            ((incoming_descriptor.operation ==
+              npu_scheduler_pkg::NPU_TASK_VECTOR) &&
+             (incoming_descriptor.version !=
+              npu_scheduler_pkg::NPU_VECTOR_TASK_DESCRIPTOR_VERSION))) begin
             incoming_error_code =
                 npu_scheduler_pkg::NPU_TASK_ERROR_VERSION;
-        end else if (incoming_descriptor.operation !=
-                     npu_scheduler_pkg::NPU_TASK_GEMM) begin
+        end else if ((incoming_descriptor.operation !=
+                      npu_scheduler_pkg::NPU_TASK_GEMM) &&
+                     (incoming_descriptor.operation !=
+                      npu_scheduler_pkg::NPU_TASK_VECTOR)) begin
             incoming_error_code =
                 npu_scheduler_pkg::NPU_TASK_ERROR_OPERATION;
+        end else if ((incoming_descriptor.matrix_size == 16'd0) ||
+                     (incoming_descriptor.matrix_size > 16'(ARRAY_DIM * 16))) begin
+            incoming_error_code =
+                npu_scheduler_pkg::NPU_TASK_ERROR_DIMENSION;
         end else if (!mxfp_format_supported(
                          incoming_descriptor.activation_format) ||
-                     !mxfp_format_supported(
-                         incoming_descriptor.weight_format) ||
-                     ((incoming_descriptor.post_route ==
-                       npu_scheduler_pkg::NPU_POST_VECTOR) &&
+                     ((incoming_descriptor.operation ==
+                       npu_scheduler_pkg::NPU_TASK_GEMM) &&
+                      !mxfp_format_supported(
+                           incoming_descriptor.weight_format)) ||
+                     (((incoming_descriptor.operation ==
+                        npu_scheduler_pkg::NPU_TASK_VECTOR) ||
+                       (incoming_descriptor.post_route ==
+                        npu_scheduler_pkg::NPU_POST_VECTOR)) &&
                       (!mxfp_format_supported(
                            incoming_descriptor.vector_b_format) ||
                        !mxfp_format_supported(
@@ -245,14 +263,23 @@ module npu_input_scheduler #(
             slot_dependency_met[slot] =
                 !task_mem[slot].wait_event_valid ||
                 event_done_q[task_mem[slot].wait_event_id];
-            slot_issue_ready[slot] = task_valid_q[slot] &&
-                slot_dependency_met[slot] && context_free_valid &&
-                gemm_fifo_input_ready &&
-                activation_fifo_input_ready && weight_fifo_input_ready &&
-                result_fifo_input_ready && post_fifo_input_ready &&
-                ((task_mem[slot].post_route !=
-                  npu_scheduler_pkg::NPU_POST_VECTOR) ||
-                 vector_fifo_input_ready);
+            slot_issue_ready[slot] = 1'b0;
+            if (task_mem[slot].operation ==
+                npu_scheduler_pkg::NPU_TASK_GEMM) begin
+                slot_issue_ready[slot] = task_valid_q[slot] &&
+                    slot_dependency_met[slot] && context_free_valid &&
+                    gemm_fifo_input_ready && activation_fifo_input_ready &&
+                    weight_fifo_input_ready && result_fifo_input_ready &&
+                    post_fifo_input_ready &&
+                    ((task_mem[slot].post_route !=
+                      npu_scheduler_pkg::NPU_POST_VECTOR) ||
+                     vector_fifo_input_ready);
+            end else if (task_mem[slot].operation ==
+                         npu_scheduler_pkg::NPU_TASK_VECTOR) begin
+                slot_issue_ready[slot] = task_valid_q[slot] &&
+                    slot_dependency_met[slot] && context_free_valid &&
+                    vector_fifo_input_ready && post_fifo_input_ready;
+            end
         end
     end
 
@@ -278,6 +305,10 @@ module npu_input_scheduler #(
         selected_descriptor = task_mem[selected_task_index];
         selected_vectors_per_row =
             slot_vectors_per_row[selected_task_index];
+        selected_is_gemm = selected_descriptor.operation ==
+            npu_scheduler_pkg::NPU_TASK_GEMM;
+        selected_is_vector = selected_descriptor.operation ==
+            npu_scheduler_pkg::NPU_TASK_VECTOR;
         issue_fire = selected_task_valid && !rst_i && !clear_i;
         task_consume = issue_fire;
         consumed_task_index = selected_task_index;
@@ -330,6 +361,7 @@ module npu_input_scheduler #(
         vector_command_input = '0;
         vector_command_input.job_id = selected_descriptor.job_id;
         vector_command_input.tag = issue_tag;
+        vector_command_input.standalone = selected_is_vector;
         vector_command_input.matrix_size = selected_descriptor.matrix_size;
         vector_command_input.vectors_per_row = selected_vectors_per_row;
         vector_command_input.control = selected_descriptor.vector_control;
@@ -342,6 +374,12 @@ module npu_input_scheduler #(
                 selected_descriptor.output_format);
         vector_command_input.control.mx_format =
             selected_descriptor.output_mx_format;
+        vector_command_input.operand_a_buffer_id =
+            selected_descriptor.activation_buffer_id;
+        vector_command_input.operand_a_base_offset =
+            selected_descriptor.activation_base_offset;
+        vector_command_input.operand_a_format =
+            selected_descriptor.activation_format;
         vector_command_input.operand_b_buffer_id =
             selected_descriptor.vector_b_buffer_id;
         vector_command_input.operand_b_base_offset =
@@ -355,6 +393,25 @@ module npu_input_scheduler #(
         vector_command_input.operand_c_format =
             selected_descriptor.vector_c_format;
         vector_command_input.scalar = selected_descriptor.vector_scalar;
+        vector_command_input.destination_buffer_id =
+            selected_descriptor.output_buffer_id;
+        vector_command_input.destination_base_offset =
+            selected_descriptor.output_base_offset;
+        vector_command_input.destination_operand =
+            selected_descriptor.feedback_operand;
+        vector_command_input.transpose_enable =
+            selected_descriptor.feedback_transpose;
+        vector_command_input.destination_format =
+            selected_descriptor.output_mx_format;
+        vector_command_input.result_route =
+            selected_descriptor.vector_result_route;
+        vector_command_input.output_format = selected_descriptor.output_format;
+        vector_command_input.output_mx_format =
+            selected_descriptor.output_mx_format;
+        vector_command_input.signal_event_valid =
+            selected_descriptor.signal_event_valid;
+        vector_command_input.signal_event_id =
+            selected_descriptor.signal_event_id;
 
         result_command_input = '0;
         result_command_input.job_id = selected_descriptor.job_id;
@@ -380,9 +437,11 @@ module npu_input_scheduler #(
         post_command_input = '0;
         post_command_input.job_id = selected_descriptor.job_id;
         post_command_input.tag = issue_tag;
+        post_command_input.standalone = selected_is_vector;
         post_command_input.matrix_size = selected_descriptor.matrix_size;
         post_command_input.vectors_per_row = selected_vectors_per_row;
-        post_command_input.route = selected_descriptor.post_route;
+        post_command_input.route = selected_is_vector ?
+            npu_scheduler_pkg::NPU_POST_VECTOR : selected_descriptor.post_route;
         post_command_input.vector_result_route =
             selected_descriptor.vector_result_route;
         post_command_input.vector_control = selected_descriptor.vector_control;
@@ -531,7 +590,8 @@ module npu_input_scheduler #(
         .DEPTH(COMMAND_FIFO_DEPTH)
     ) u_gemm_command_fifo (
         .clk_i(clk_i), .rst_i(rst_i), .clear_i(clear_i),
-        .input_valid_i(issue_fire), .input_ready_o(gemm_fifo_input_ready),
+        .input_valid_i(issue_fire && selected_is_gemm),
+        .input_ready_o(gemm_fifo_input_ready),
         .input_data_i(gemm_command_input),
         .output_valid_o(gemm_command_valid_o),
         .output_ready_i(gemm_command_ready_i),
@@ -543,7 +603,7 @@ module npu_input_scheduler #(
         .DEPTH(COMMAND_FIFO_DEPTH)
     ) u_activation_command_fifo (
         .clk_i(clk_i), .rst_i(rst_i), .clear_i(clear_i),
-        .input_valid_i(issue_fire),
+        .input_valid_i(issue_fire && selected_is_gemm),
         .input_ready_o(activation_fifo_input_ready),
         .input_data_i(activation_command_input),
         .output_valid_o(activation_command_valid_o),
@@ -557,7 +617,7 @@ module npu_input_scheduler #(
         .DEPTH(COMMAND_FIFO_DEPTH)
     ) u_weight_command_fifo (
         .clk_i(clk_i), .rst_i(rst_i), .clear_i(clear_i),
-        .input_valid_i(issue_fire),
+        .input_valid_i(issue_fire && selected_is_gemm),
         .input_ready_o(weight_fifo_input_ready),
         .input_data_i(weight_command_input),
         .output_valid_o(weight_command_valid_o),
@@ -571,8 +631,9 @@ module npu_input_scheduler #(
     ) u_vector_command_fifo (
         .clk_i(clk_i), .rst_i(rst_i), .clear_i(clear_i),
         .input_valid_i(issue_fire &&
-            (selected_descriptor.post_route ==
-             npu_scheduler_pkg::NPU_POST_VECTOR)),
+            (selected_is_vector ||
+             (selected_descriptor.post_route ==
+              npu_scheduler_pkg::NPU_POST_VECTOR))),
         .input_ready_o(vector_fifo_input_ready),
         .input_data_i(vector_command_input),
         .output_valid_o(vector_command_valid_o),
@@ -585,7 +646,8 @@ module npu_input_scheduler #(
         .DEPTH(COMMAND_FIFO_DEPTH)
     ) u_result_command_fifo (
         .clk_i(clk_i), .rst_i(rst_i), .clear_i(clear_i),
-        .input_valid_i(issue_fire), .input_ready_o(result_fifo_input_ready),
+        .input_valid_i(issue_fire && selected_is_gemm),
+        .input_ready_o(result_fifo_input_ready),
         .input_data_i(result_command_input),
         .output_valid_o(result_command_valid_o),
         .output_ready_i(result_command_ready_i),

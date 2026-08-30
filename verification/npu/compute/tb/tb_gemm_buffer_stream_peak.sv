@@ -4,7 +4,8 @@
 module tb_gemm_buffer_stream_peak #(
     parameter int unsigned K_ELEMENTS = 256,
     parameter logic [31:0] EXPECTED_FP32 =
-        (K_ELEMENTS == 4096) ? 32'h45800000 : 32'h43800000
+        (K_ELEMENTS == 4096) ? 32'h45800000 : 32'h43800000,
+    parameter bit STALL_ACTIVATION = 1'b0
 );
 
     localparam int unsigned ARRAY_DIM = 16;
@@ -29,6 +30,8 @@ module tb_gemm_buffer_stream_peak #(
     logic [127:0] tensor_write_data;
     logic [127:0] tensor_write_scale;
     logic activation_read_enable;
+    logic activation_read_request;
+    logic activation_read_ready;
     logic [3:0] activation_read_buffer_id;
     logic [31:0] activation_read_offset;
     logic activation_read_valid;
@@ -99,6 +102,7 @@ module tb_gemm_buffer_stream_peak #(
     logic executor_protocol_error;
 
     logic [3:0] scenario_id;
+    logic [31:0] arbitration_cycle_q;
     integer dense_input_cycles;
     integer dense_input_values;
     integer observed_result_beats;
@@ -110,6 +114,17 @@ module tb_gemm_buffer_stream_peak #(
     assign executor_result_invalid_tieoff = {NODE_COUNT{16'd0}};
     assign executor_result_tag_tieoff = {NODE_COUNT{8'd0}};
     assign executor_result_row_tieoff = {NODE_COUNT{4'd0}};
+    assign activation_read_ready = !STALL_ACTIVATION || arbitration_cycle_q[0];
+    assign activation_read_enable = activation_read_request &&
+        activation_read_ready;
+
+    always_ff @(posedge clk_i) begin
+        if (rst_i || clear_i) begin
+            arbitration_cycle_q <= '0;
+        end else begin
+            arbitration_cycle_q <= arbitration_cycle_q + 32'd1;
+        end
+    end
 
     // Initialize only the verification SRAM model so the throughput test does
     // not spend thousands of cycles evaluating an idle 65,536-PE array while
@@ -187,7 +202,8 @@ module tb_gemm_buffer_stream_peak #(
         .result_command_valid_i(result_command_valid),
         .result_command_ready_o(result_command_ready),
         .result_command_i(result_command),
-        .activation_read_enable_o(activation_read_enable),
+        .activation_read_enable_o(activation_read_request),
+        .activation_read_ready_i(activation_read_ready),
         .activation_read_buffer_id_o(activation_read_buffer_id),
         .activation_read_offset_o(activation_read_offset),
         .activation_read_valid_i(activation_read_valid),

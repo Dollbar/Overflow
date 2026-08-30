@@ -355,7 +355,10 @@ module npu_gemm_post_scheduler #(
                 expected_count_mem[command_index] <=
                     command_input.matrix_size * command_input.vectors_per_row;
                 accepted_count_q[command_index] <= '0;
-                dispatch_done_q[command_index] <= 1'b0;
+                // Standalone Vector data reaches the shared Vector backend
+                // through its own SRAM frontend, not through gemm_valid_i.
+                // Its backend completion is therefore the dispatch proof.
+                dispatch_done_q[command_index] <= command_input.standalone;
             end
 
             if (|(gemm_valid_i & ~lane_match)) begin

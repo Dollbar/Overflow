@@ -161,6 +161,8 @@ GIB_TASK_PAIRS ?= 128
 NARROW_M ?= 4
 BOUNDARY_SKEW_TOP := tb_gemm_boundary_skew
 PE_EXACT_TOP := tb_pe_mx_exact
+INDEPENDENT_VECTOR_TOP := tb_npu_independent_vector_path
+ACTIVATION_FAIRNESS_TOP := tb_npu_activation_read_fairness
 
 SCHEDULER_BIN := $(VERILATOR_DIR)/scheduler-sim/V$(SCHEDULER_TOP)
 VECTOR_BIN := $(VERILATOR_DIR)/vector-sim/V$(VECTOR_TOP)
@@ -187,12 +189,15 @@ NARROW_M_LOG := $(REPORT_DIR)/sim_m$(NARROW_M)_k8192_n8192.log
 SHAPE_SWEEP_CSV := $(REPORT_DIR)/gemm_m_k8192_n8192_sweep.csv
 SHAPE_SWEEP_MD := $(REPORT_DIR)/gemm_m_k8192_n8192_sweep.md
 BUFFER_STREAM_BIN := $(VERILATOR_DIR)/buffer-stream-sim/V$(BUFFER_STREAM_TOP)
+BUFFER_STREAM_STALL_BIN := $(VERILATOR_DIR)/buffer-stream-stall-sim/V$(BUFFER_STREAM_TOP)
 BUFFER_STREAM_LONG_BIN := $(VERILATOR_DIR)/buffer-stream-long-sim/V$(BUFFER_STREAM_TOP)
 HETERO_LONG_BIN := $(VERILATOR_DIR)/heterogeneous-long-sim/V$(HETERO_LONG_TOP)
 HETERO_GIB_BIN := $(VERILATOR_DIR)/heterogeneous-gib-sim/V$(HETERO_LONG_TOP)
 HETERO_GIB_LOG := $(REPORT_DIR)/sim_heterogeneous_gib.log
 BOUNDARY_SKEW_BIN := $(VERILATOR_DIR)/boundary-skew-sim/V$(BOUNDARY_SKEW_TOP)
 PE_EXACT_BIN := $(VERILATOR_DIR)/pe-exact-sim/V$(PE_EXACT_TOP)
+INDEPENDENT_VECTOR_BIN := $(VERILATOR_DIR)/independent-vector-sim/V$(INDEPENDENT_VECTOR_TOP)
+ACTIVATION_FAIRNESS_BIN := $(VERILATOR_DIR)/activation-fairness-sim/V$(ACTIVATION_FAIRNESS_TOP)
 SCHEDULER_WAVE_BIN := $(VERILATOR_DIR)/scheduler-waves/V$(SCHEDULER_TOP)
 VECTOR_WAVE_BIN := $(VERILATOR_DIR)/vector-waves/V$(VECTOR_TOP)
 DESCRIPTOR_WAVE_BIN := $(VERILATOR_DIR)/descriptor-waves/V$(DESCRIPTOR_TOP)
@@ -324,6 +329,16 @@ HETERO_LONG_SOURCES := \
 BOUNDARY_SKEW_SOURCES := \
 	$(TENSOR_RTL_DIR)/gemm_boundary_skew.sv \
 	$(TB_DIR)/tb_gemm_boundary_skew.sv
+INDEPENDENT_VECTOR_SOURCES := \
+	$(filter-out $(SRAM_RTL_DIR)/sram_macro_blackbox.sv,$(SYSTEM_LINT_RTL)) \
+	$(SRAM_MODEL) \
+	$(PKG_DIR)/npu_gemm_vector_tb_pkg.sv \
+	$(VIP_DIR)/npu_descriptor_source_vip.sv \
+	$(VIP_DIR)/npu_vector_result_sink_vip.sv \
+	$(TB_DIR)/tb_npu_independent_vector_path.sv
+ACTIVATION_FAIRNESS_SOURCES := \
+	$(COMPUTE_RTL_DIR)/npu_local_activation_read_arbiter.sv \
+	$(TB_DIR)/tb_npu_activation_read_fairness.sv
 PE_DATAPATH_RTL := \
 	$(COMMON_RTL_DIR)/fp8_pkg.sv \
 	$(COMMON_RTL_DIR)/mxfp_pkg.sv \
@@ -370,12 +385,13 @@ OUTPUT_STA_SYNTH_SCRIPT := $(STA_DIR)/scripts/synth_slang_ssg.tcl
 	lint-mx-convert lint-mx-accum sim sim-scheduler sim-vector sim-descriptor \
 	lint-mx-quant sim-sram sim-mx sim-mx-convert sim-mx-quant sim-mx-accum \
 	lint-mx-feedback sim-mx-feedback lint-mx-output sim-mx-output test references \
-	lint-vector-coupler sim-vector-coupler \
+	lint-vector-coupler sim-vector-coupler lint-independent-vector sim-independent-vector \
+	lint-activation-fairness sim-activation-fairness \
 	lint-local-buffer sim-local-buffer lint-tile-mx sim-tile-mx \
 	lint-tile-k4096 sim-tile-k4096 \
 		lint-array16-peak lint-m1-k8192-n8192 lint-m2-k8192-n8192 lint-narrow-m lint-narrow-m-sweep lint-buffer-stream lint-heterogeneous-long lint-heterogeneous-gib lint-boundary-skew \
 	lint-pe-exact sim-pe-exact \
-	sim-array16-peak sim-m1-k8192-n8192 sim-m2-k8192-n8192 sim-narrow-m sim-narrow-m-sweep sim-buffer-stream sim-buffer-stream-long \
+	sim-array16-peak sim-m1-k8192-n8192 sim-m2-k8192-n8192 sim-narrow-m sim-narrow-m-sweep sim-buffer-stream sim-buffer-stream-stall sim-buffer-stream-long \
 		sim-heterogeneous-long sim-heterogeneous-gib sim-boundary-skew sim-peak shape-sweep \
 	waves waves-scheduler waves-vector waves-descriptor waves-sram \
 	waves-mx-convert waves-mx-quant waves-mx-accum waves-mx-feedback waves-mx-output \
@@ -388,6 +404,9 @@ help:
 	@echo "NPU compute integration verification targets:"
 	@echo "  make lint        - run zero-warning Verilator lint for all environments"
 	@echo "  make lint-system - lint 2x2 system wiring with the verified Tile interface model"
+	@echo "  make sim-independent-vector - run standalone Vector task, SRAM, backpressure, and completion regression"
+	@echo "  make sim-activation-fairness - prove bounded GEMM/Vector Activation SRAM service"
+	@echo "  make sim-buffer-stream-stall - verify GEMM A/W pairing under Activation stalls"
 	@echo "  make sim         - build and run all deterministic self-checking tests"
 	@echo "  make test        - run lint, references, RTL regressions, and SSG 1 GHz STA"
 	@echo "  make sim-peak    - run K=4096 real-array, K=8192, and 1 GiB no-bubble regressions"
@@ -404,7 +423,7 @@ help:
 	@echo "  make references  - regenerate deterministic Python reference vectors"
 	@echo "  make clean       - remove generated build output"
 
-lint: lint-system lint-scheduler lint-vector lint-descriptor lint-sram lint-mx \
+lint: lint-system lint-independent-vector lint-activation-fairness lint-scheduler lint-vector lint-descriptor lint-sram lint-mx \
 	lint-mx-convert lint-mx-quant lint-mx-accum lint-mx-feedback \
 	lint-mx-output \
 	lint-vector-coupler \
@@ -417,6 +436,20 @@ lint-system:
 	$(VERILATOR) --lint-only $(COMMON_FLAGS) \
 		--top-module npu_square_gemm_system -GARRAY_DIM=2 \
 		--Mdir $(VERILATOR_DIR)/system-lint $(SYSTEM_LINT_RTL)
+
+lint-independent-vector:
+	mkdir -p $(VERILATOR_DIR)/independent-vector-lint
+	$(VERILATOR) --lint-only $(COMMON_FLAGS) \
+		--top-module $(INDEPENDENT_VECTOR_TOP) \
+		--Mdir $(VERILATOR_DIR)/independent-vector-lint \
+		$(INDEPENDENT_VECTOR_SOURCES)
+
+lint-activation-fairness:
+	mkdir -p $(VERILATOR_DIR)/activation-fairness-lint
+	$(VERILATOR) --lint-only $(COMMON_FLAGS) \
+		--top-module $(ACTIVATION_FAIRNESS_TOP) \
+		--Mdir $(VERILATOR_DIR)/activation-fairness-lint \
+		$(ACTIVATION_FAIRNESS_SOURCES)
 
 lint-local-buffer:
 	mkdir -p $(VERILATOR_DIR)/local-buffer-lint
@@ -553,7 +586,8 @@ lint-mx-convert:
 sim: sim-scheduler sim-vector sim-descriptor sim-sram sim-mx sim-mx-convert \
 	sim-mx-quant sim-mx-accum sim-mx-feedback sim-local-buffer \
 	sim-mx-output \
-	sim-vector-coupler \
+	sim-vector-coupler sim-independent-vector sim-activation-fairness \
+	sim-buffer-stream-stall \
 	sim-pe-exact sim-tile-mx sim-boundary-skew
 
 sim-peak: sim-tile-k4096 sim-array16-peak sim-m1-k8192-n8192 sim-narrow-m-sweep sim-buffer-stream \
@@ -664,6 +698,26 @@ $(VECTOR_COUPLER_BIN): $(VECTOR_COUPLER_SOURCES)
 sim-vector-coupler: $(VECTOR_COUPLER_BIN)
 	cd $(THIS_DIR) && $(VECTOR_COUPLER_BIN)
 
+$(INDEPENDENT_VECTOR_BIN): $(INDEPENDENT_VECTOR_SOURCES)
+	mkdir -p $(VERILATOR_DIR)/independent-vector-sim $(WAVE_DIR)
+	$(VERILATOR) --binary $(COMMON_FLAGS) -j $(JOBS) \
+		--top-module $(INDEPENDENT_VECTOR_TOP) \
+		--Mdir $(VERILATOR_DIR)/independent-vector-sim \
+		$(INDEPENDENT_VECTOR_SOURCES)
+
+sim-independent-vector: $(INDEPENDENT_VECTOR_BIN)
+	cd $(THIS_DIR) && $(INDEPENDENT_VECTOR_BIN)
+
+$(ACTIVATION_FAIRNESS_BIN): $(ACTIVATION_FAIRNESS_SOURCES)
+	mkdir -p $(VERILATOR_DIR)/activation-fairness-sim $(WAVE_DIR)
+	$(VERILATOR) --binary $(COMMON_FLAGS) -j $(JOBS) \
+		--top-module $(ACTIVATION_FAIRNESS_TOP) \
+		--Mdir $(VERILATOR_DIR)/activation-fairness-sim \
+		$(ACTIVATION_FAIRNESS_SOURCES)
+
+sim-activation-fairness: $(ACTIVATION_FAIRNESS_BIN)
+	cd $(THIS_DIR) && $(ACTIVATION_FAIRNESS_BIN)
+
 $(LOCAL_BUFFER_BIN): $(LOCAL_BUFFER_SOURCES)
 	mkdir -p $(VERILATOR_DIR)/local-buffer-sim $(WAVE_DIR)
 	$(VERILATOR) --binary $(COMMON_FLAGS) -j $(JOBS) \
@@ -761,6 +815,17 @@ $(BUFFER_STREAM_BIN): $(BUFFER_STREAM_SOURCES) $(ARRAY16_TILE_LIB_ARCHIVE)
 
 sim-buffer-stream: $(BUFFER_STREAM_BIN)
 	cd $(THIS_DIR) && $(BUFFER_STREAM_BIN)
+
+$(BUFFER_STREAM_STALL_BIN): $(BUFFER_STREAM_SOURCES) $(ARRAY16_TILE_LIB_ARCHIVE)
+	mkdir -p $(VERILATOR_DIR)/buffer-stream-stall-sim $(WAVE_DIR)
+	$(VERILATOR) --binary $(COMMON_FLAGS) $(LARGE_BUILD_FLAGS) -j $(JOBS) \
+		-GSTALL_ACTIVATION=1 -LDFLAGS $(ARRAY16_TILE_LIB_ARCHIVE) \
+		--top-module $(BUFFER_STREAM_TOP) \
+		--Mdir $(VERILATOR_DIR)/buffer-stream-stall-sim \
+		$(BUFFER_STREAM_SOURCES)
+
+sim-buffer-stream-stall: $(BUFFER_STREAM_STALL_BIN)
+	cd $(THIS_DIR) && $(BUFFER_STREAM_STALL_BIN)
 
 $(BUFFER_STREAM_LONG_BIN): $(BUFFER_STREAM_SOURCES) $(ARRAY16_TILE_LIB_ARCHIVE)
 	mkdir -p $(VERILATOR_DIR)/buffer-stream-long-sim $(WAVE_DIR)

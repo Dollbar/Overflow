@@ -1,8 +1,10 @@
 # NPU Command Front End
 
-Owns KD-ISA command intake, validation, dependency metadata extraction, dispatch, completion, and fault
-reporting inside the NPU. Inputs come from the firmware/queue boundary; outputs feed `scheduler/`.
+Owns the NPU-internal already-decoded command intake, leaf dispatch, unified completion, and local fault
+reporting. `npu_pod_command_gateway` routes versioned Task, local-transfer, and DMA records to one Pod and
+fairly aggregates their completions. Reusable source/sink VIP and self-checking tests live under
+`verification/npu/command/`.
 
-NPU-CMD-001 is `HOLD` until command encoding, queue ordering, cancellation, completion, and error semantics
-are versioned in `specs/isa/` and `specs/abi/`. RTL must not invent placeholder fields that escape a local
-testbench. Acceptance requires malformed-command, backpressure, reset, and completion-order RTL tests.
+ADR-0007 and `npu_decoded_command_v0.1.md` freeze only this internal boundary. KD-ISA encoding, firmware and
+runtime queues, cancellation, interrupts, IOVA translation, and host-visible completion/error semantics
+remain external `HOLD` items and must translate through a separately versioned adapter.

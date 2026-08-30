@@ -3,7 +3,10 @@
 	kdlink-release-check kdlink-clean npu-compute-lint npu-compute-sim \
 	npu-compute-test npu-compute-waves npu-gemm-vector-lint npu-gemm-vector-sim \
 	npu-gemm-vector-test npu-gemm-vector-waves npu-system-lint npu-system-synth \
-	npu-system-sim npu-system-sta npu-system-sta-nangate45 npu-system-test
+	npu-system-sim npu-system-sta npu-system-sta-nangate45 npu-system-test \
+	npu-pod-lint npu-pod-synth npu-pod-sim npu-pod-test npu-pod-noc-test \
+	npu-pod-array-lint npu-pod-closure npu-command-lint npu-command-synth \
+	npu-command-sim npu-command-test npu-owned-rtl-test
 
 PYTHON ?= python3
 REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -36,6 +39,12 @@ help:
 	@echo "  make npu-system-test        - run NPU integration lint, synth checks, and simulation"
 	@echo "  make npu-system-sta         - run NPU DMA 1 GHz generic STA with LIBERTY=<path>"
 	@echo "  make npu-system-sta-nangate45 - run NPU DMA STA with OpenROAD-flow-scripts Nangate45"
+	@echo "  make npu-pod-test           - verify complete Pod and router-independent NoC attachment"
+	@echo "  make npu-pod-noc-test       - verify only the fast Pod/NoC attachment handoff"
+	@echo "  make npu-pod-array-lint     - elaborate the complete 2x4 Pod/NoC shell"
+	@echo "  make npu-pod-closure        - run Pod tests, four-seed array stress, and coverage gates"
+	@echo "  make npu-command-test       - verify decoded command routing and completion aggregation"
+	@echo "  make npu-owned-rtl-test     - run all NPU-owned RTL gates (excludes external NoC/system CDC and physical signoff)"
 
 check:
 	$(PYTHON) scripts/check_repository.py
@@ -123,6 +132,48 @@ npu-system-sta-nangate45:
 
 npu-system-test:
 	$(MAKE) -C verification/npu/system test
+
+npu-pod-lint:
+	$(MAKE) -C verification/npu/pod lint
+
+npu-pod-synth:
+	$(MAKE) -C verification/npu/pod synth
+
+npu-pod-sim:
+	$(MAKE) -C verification/npu/pod sim
+
+npu-pod-test:
+	$(MAKE) -C verification/npu/pod test
+
+npu-pod-noc-test:
+	$(MAKE) -C verification/npu/pod test-noc
+
+npu-pod-array-lint:
+	$(MAKE) -C verification/npu/pod lint-array
+
+npu-pod-closure:
+	$(MAKE) -C verification/npu/pod closure
+
+npu-command-lint:
+	$(MAKE) -C verification/npu/command lint
+
+npu-command-synth:
+	$(MAKE) -C verification/npu/command synth
+
+npu-command-sim:
+	$(MAKE) -C verification/npu/command sim
+
+npu-command-test:
+	$(MAKE) -C verification/npu/command test
+
+# Complete reproducible gate for the RTL owned by the NPU workstream. Physical
+# STA and cross-owner NoC/system integration remain separate because they need
+# selected technology files and externally frozen clock/router contracts.
+npu-owned-rtl-test:
+	$(MAKE) -C verification/npu/compute lint references sim sim-peak
+	$(MAKE) -C verification/npu/system test
+	$(MAKE) -C verification/npu/command test
+	$(MAKE) -C verification/npu/pod closure
 
 # Compatibility aliases for existing automation. New integrations should use
 # the npu-compute-* names above, which match the split source hierarchy.

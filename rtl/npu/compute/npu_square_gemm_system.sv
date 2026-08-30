@@ -110,6 +110,13 @@ module npu_square_gemm_system #(
     logic vector_command_valid;
     logic vector_command_ready;
     logic [npu_scheduler_pkg::NPU_VECTOR_COMMAND_WIDTH-1:0] vector_command;
+    /* verilator lint_off UNUSEDSIGNAL */
+    npu_scheduler_pkg::npu_vector_command_t vector_command_fields;
+    /* verilator lint_on UNUSEDSIGNAL */
+    logic vector_backend_command_valid;
+    logic vector_backend_command_ready;
+    logic vector_frontend_command_valid;
+    logic vector_frontend_command_ready;
     logic result_command_valid;
     logic result_command_ready;
     logic [npu_scheduler_pkg::NPU_RESULT_COMMAND_WIDTH-1:0] result_command;
@@ -167,6 +174,20 @@ module npu_square_gemm_system #(
         post_vector_result;
     logic [ARRAY_DIM*npu_scheduler_pkg::NPU_POST_COMMAND_WIDTH-1:0]
         post_vector_command;
+    logic [ARRAY_DIM-1:0] standalone_vector_valid;
+    logic [ARRAY_DIM-1:0] standalone_vector_ready;
+    logic [ARRAY_DIM*npu_scheduler_pkg::NPU_POST_RESULT_WIDTH-1:0]
+        standalone_vector_result;
+    logic [ARRAY_DIM*npu_scheduler_pkg::NPU_POST_COMMAND_WIDTH-1:0]
+        standalone_vector_command;
+    logic [ARRAY_DIM-1:0] combined_vector_valid;
+    logic [ARRAY_DIM-1:0] combined_vector_ready;
+    logic [ARRAY_DIM*npu_scheduler_pkg::NPU_POST_RESULT_WIDTH-1:0]
+        combined_vector_result;
+    logic [ARRAY_DIM*npu_scheduler_pkg::NPU_POST_COMMAND_WIDTH-1:0]
+        combined_vector_command;
+    logic vector_frontend_busy;
+    logic vector_frontend_protocol_error;
     logic vector_completion_valid;
     logic vector_completion_ready;
     logic [npu_scheduler_pkg::NPU_TAG_WIDTH-1:0] vector_completion_tag;
@@ -269,6 +290,25 @@ module npu_square_gemm_system #(
     logic activation_read_valid;
     logic [ARRAY_DIM*128-1:0] activation_read_data;
     logic [ARRAY_DIM*128-1:0] activation_read_scale;
+    logic executor_activation_read_enable;
+    logic executor_activation_read_ready;
+    logic [npu_scheduler_pkg::NPU_BUFFER_ID_WIDTH-1:0]
+        executor_activation_read_buffer_id;
+    logic [npu_scheduler_pkg::NPU_BUFFER_OFFSET_WIDTH-1:0]
+        executor_activation_read_offset;
+    logic executor_activation_read_valid;
+    logic [ARRAY_DIM*128-1:0] executor_activation_read_data;
+    logic [ARRAY_DIM*128-1:0] executor_activation_read_scale;
+    logic vector_activation_read_valid;
+    logic vector_activation_read_ready;
+    logic [npu_scheduler_pkg::NPU_BUFFER_ID_WIDTH-1:0]
+        vector_activation_read_buffer_id;
+    logic [npu_scheduler_pkg::NPU_BUFFER_OFFSET_WIDTH-1:0]
+        vector_activation_read_offset;
+    logic vector_activation_response_valid;
+    logic [ARRAY_DIM*128-1:0] vector_activation_response_data;
+    logic [ARRAY_DIM*128-1:0] vector_activation_response_scale;
+    logic activation_arbiter_protocol_error;
     logic weight_read_enable;
     logic [npu_scheduler_pkg::NPU_BUFFER_ID_WIDTH-1:0]
         weight_read_buffer_id;
@@ -372,6 +412,19 @@ module npu_square_gemm_system #(
         .protocol_error_o(scheduler_protocol_error)
     );
 
+    always_comb begin
+        vector_command_fields =
+            npu_scheduler_pkg::npu_vector_command_t'(vector_command);
+        vector_backend_command_valid = vector_command_valid &&
+            (!vector_command_fields.standalone ||
+             vector_frontend_command_ready);
+        vector_frontend_command_valid = vector_command_valid &&
+            vector_command_fields.standalone && vector_backend_command_ready;
+        vector_command_ready = vector_backend_command_ready &&
+            (!vector_command_fields.standalone ||
+             vector_frontend_command_ready);
+    end
+
     npu_local_vector_operand_buffer #(
         .BUFFER_COUNT(BUFFER_COUNT),
         .BANKS(ARRAY_DIM),
@@ -441,6 +494,37 @@ module npu_square_gemm_system #(
         .protocol_error_o(tensor_protocol_error)
     );
 
+    npu_local_activation_read_arbiter #(
+        .DATA_WIDTH(ARRAY_DIM * 128),
+        .BUFFER_ID_WIDTH(npu_scheduler_pkg::NPU_BUFFER_ID_WIDTH),
+        .OFFSET_WIDTH(npu_scheduler_pkg::NPU_BUFFER_OFFSET_WIDTH)
+    ) u_activation_read_arbiter (
+        .clk_i(clk_i),
+        .rst_i(rst_i),
+        .clear_i(clear_i),
+        .gemm_valid_i(executor_activation_read_enable),
+        .gemm_ready_o(executor_activation_read_ready),
+        .gemm_buffer_id_i(executor_activation_read_buffer_id),
+        .gemm_offset_i(executor_activation_read_offset),
+        .gemm_response_valid_o(executor_activation_read_valid),
+        .gemm_response_data_o(executor_activation_read_data),
+        .gemm_response_scale_o(executor_activation_read_scale),
+        .vector_valid_i(vector_activation_read_valid),
+        .vector_ready_o(vector_activation_read_ready),
+        .vector_buffer_id_i(vector_activation_read_buffer_id),
+        .vector_offset_i(vector_activation_read_offset),
+        .vector_response_valid_o(vector_activation_response_valid),
+        .vector_response_data_o(vector_activation_response_data),
+        .vector_response_scale_o(vector_activation_response_scale),
+        .sram_read_enable_o(activation_read_enable),
+        .sram_read_buffer_id_o(activation_read_buffer_id),
+        .sram_read_offset_o(activation_read_offset),
+        .sram_read_valid_i(activation_read_valid),
+        .sram_read_data_i(activation_read_data),
+        .sram_read_scale_i(activation_read_scale),
+        .protocol_error_o(activation_arbiter_protocol_error)
+    );
+
     npu_square_gemm_executor #(
         .ARRAY_DIM(ARRAY_DIM)
     ) u_executor (
@@ -459,12 +543,13 @@ module npu_square_gemm_system #(
         .result_command_valid_i(result_command_valid),
         .result_command_ready_o(result_command_ready),
         .result_command_i(result_command),
-        .activation_read_enable_o(activation_read_enable),
-        .activation_read_buffer_id_o(activation_read_buffer_id),
-        .activation_read_offset_o(activation_read_offset),
-        .activation_read_valid_i(activation_read_valid),
-        .activation_read_data_i(activation_read_data),
-        .activation_read_scale_i(activation_read_scale),
+        .activation_read_enable_o(executor_activation_read_enable),
+        .activation_read_ready_i(executor_activation_read_ready),
+        .activation_read_buffer_id_o(executor_activation_read_buffer_id),
+        .activation_read_offset_o(executor_activation_read_offset),
+        .activation_read_valid_i(executor_activation_read_valid),
+        .activation_read_data_i(executor_activation_read_data),
+        .activation_read_scale_i(executor_activation_read_scale),
         .weight_read_enable_o(weight_read_enable),
         .weight_read_buffer_id_o(weight_read_buffer_id),
         .weight_read_offset_o(weight_read_offset),
@@ -666,6 +751,50 @@ module npu_square_gemm_system #(
         gemm_feedback_command_o = feedback_writer_command;
     end
 
+    npu_vector_stream_frontend16 #(
+        .CHANNELS(ARRAY_DIM)
+    ) u_vector_stream_frontend (
+        .clk_i(clk_i),
+        .rst_i(rst_i),
+        .clear_i(clear_i),
+        .command_valid_i(vector_frontend_command_valid),
+        .command_ready_o(vector_frontend_command_ready),
+        .command_i(vector_command),
+        .activation_read_valid_o(vector_activation_read_valid),
+        .activation_read_ready_i(vector_activation_read_ready),
+        .activation_read_buffer_id_o(vector_activation_read_buffer_id),
+        .activation_read_offset_o(vector_activation_read_offset),
+        .activation_response_valid_i(vector_activation_response_valid),
+        .activation_response_data_i(vector_activation_response_data),
+        .activation_response_scale_i(vector_activation_response_scale),
+        .stream_valid_o(standalone_vector_valid),
+        .stream_ready_i(standalone_vector_ready),
+        .stream_result_o(standalone_vector_result),
+        .stream_command_o(standalone_vector_command),
+        .busy_o(vector_frontend_busy),
+        .protocol_error_o(vector_frontend_protocol_error)
+    );
+
+    npu_vector_source_arbiter16 #(
+        .CHANNELS(ARRAY_DIM)
+    ) u_vector_source_arbiter (
+        .clk_i(clk_i),
+        .rst_i(rst_i),
+        .clear_i(clear_i),
+        .gemm_valid_i(post_vector_valid),
+        .gemm_ready_o(post_vector_ready),
+        .gemm_result_i(post_vector_result),
+        .gemm_command_i(post_vector_command),
+        .standalone_valid_i(standalone_vector_valid),
+        .standalone_ready_o(standalone_vector_ready),
+        .standalone_result_i(standalone_vector_result),
+        .standalone_command_i(standalone_vector_command),
+        .output_valid_o(combined_vector_valid),
+        .output_ready_i(combined_vector_ready),
+        .output_result_o(combined_vector_result),
+        .output_command_o(combined_vector_command)
+    );
+
     npu_gemm_vector_coupler16 #(
         .CHANNELS(ARRAY_DIM),
         .CONTEXTS(ACTIVE_CONTEXTS)
@@ -673,13 +802,13 @@ module npu_square_gemm_system #(
         .clk_i(clk_i),
         .rst_i(rst_i),
         .clear_i(clear_i),
-        .vector_command_valid_i(vector_command_valid),
-        .vector_command_ready_o(vector_command_ready),
+        .vector_command_valid_i(vector_backend_command_valid),
+        .vector_command_ready_o(vector_backend_command_ready),
         .vector_command_i(vector_command),
-        .gemm_valid_i(post_vector_valid),
-        .gemm_ready_o(post_vector_ready),
-        .gemm_result_i(post_vector_result),
-        .gemm_command_i(post_vector_command),
+        .gemm_valid_i(combined_vector_valid),
+        .gemm_ready_o(combined_vector_ready),
+        .gemm_result_i(combined_vector_result),
+        .gemm_command_i(combined_vector_command),
         .operand_b_read_enable_o(vector_operand_b_read_enable),
         .operand_b_read_buffer_id_o(vector_operand_b_read_buffer_id),
         .operand_b_read_offset_o(vector_operand_b_read_offset),
@@ -785,6 +914,7 @@ module npu_square_gemm_system #(
     );
 
     assign busy_o = executor_busy || post_busy || vector_backend_busy ||
+                    vector_frontend_busy ||
                     feedback_busy || external_formatter_busy ||
                     (task_level != '0) ||
                     (active_contexts != '0);
@@ -792,6 +922,7 @@ module npu_square_gemm_system #(
         scheduler_protocol_error || tensor_protocol_error ||
         executor_protocol_error || post_protocol_error ||
         vector_backend_protocol_error || vector_operand_protocol_error ||
+        vector_frontend_protocol_error || activation_arbiter_protocol_error ||
         feedback_protocol_error || external_formatter_protocol_error ||
         (|output_overflow);
 

@@ -29,6 +29,7 @@ a technology macro.
 ```text
 npu_square_gemm_system
 ├── npu_input_scheduler / npu_descriptor_buffer
+├── npu_vector_stream_frontend16 / npu_local_activation_read_arbiter
 ├── npu_square_gemm_executor
 │   └── GEMM_65536
 │       └── 16 x 16 TILE_FP8_16_FIFO tiles
@@ -37,7 +38,7 @@ npu_square_gemm_system
 │           ├── sixteen Tile reduction trees and 85-bit K accumulators
 │           └── direct A-right/B-down links
 ├── npu_gemm_post_scheduler / npu_post_output_formatter16
-├── npu_gemm_vector_coupler16
+├── npu_vector_source_arbiter16 / npu_gemm_vector_coupler16
 │   └── 16 independent vector_engine16 instances
 └── npu_gemm_feedback_writer16
 ```
@@ -73,6 +74,15 @@ default 16-row configuration accepts sixteen 512-bit vectors, or 256 FP32
 elements, per cycle at the GEMM-to-vector boundary. Results carry `job_id`,
 `tag`, row, segment, and `last` metadata through the post scheduler.
 
+`npu_vector_stream_frontend16` executes a version-3 standalone Vector task
+without synthesizing a GEMM. It reads A from the existing Tile-K-major
+Activation Buffer, decodes MX values to FP32, and joins GEMM-post traffic at a
+fair per-row arbiter before the unchanged Vector backend. The shared registered
+Activation read port also uses round-robin arbitration. GEMM holds a denied A
+request and launches its matching Weight read only after acceptance, preserving
+A/W pairing while bounding either client's wait to one competing grant. This
+path adds no SRAM and no NoC logic.
+
 `vector_engine16` contains seven independent operator pipelines: elementwise
 ALU, GEMM epilogue, reduction, softmax, LayerNorm/RMSNorm, GELU, and SiLU.
 The engine has operation-specific result FIFOs and a fair output selector;
@@ -88,8 +98,9 @@ beats continuously after pair formation.
   or output mode. Internal FP8-named helpers are implementation utilities only.
 - RNE is the only v0.2 rounding policy. No public descriptor, command, Tile
   link, or MX quantizer transports a rounding selector.
-- Descriptor version `2` is enforced at scheduler ingress. Older descriptors
-  and reserved MX format encodings are rejected before any GEMM command issues.
+- Descriptor version `2` is enforced for GEMM; version `3` with
+  `NPU_TASK_VECTOR` is enforced for standalone Vector. Other combinations and
+  reserved MX format encodings are rejected before any command issues.
 - `npu_scheduler_pkg::npu_task_descriptor_t` contains the job/event fields,
   square matrix size, local A/B/output buffer identifiers and
   offsets, vector operation/control, optional B/C vector operands, and the
