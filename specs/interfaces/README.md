@@ -37,6 +37,11 @@ and tests must not depend on behavior absent from these contracts.
   Task/local/DMA envelope, validation errors, and unified completion stream without defining KD-ISA.
 - [`npu_2x4_pod_array_v0.1.md`](npu_2x4_pod_array_v0.1.md) defines eight managed Pods, fixed HBM affinity,
   per-Pod clocks, and the array-level handoff to the externally owned NoC router.
+- [`npu_noc_router.md`](npu_noc_router.md) defines the deterministic 2 by 4 Router and Mesh port geometry,
+  internal virtual-channel credits, buffering, arbitration, ordering, quiesce, telemetry, and verification
+  obligations without changing the Pod flit format.
+- [`npu_noc_cdc.md`](npu_noc_cdc.md) defines the Gray-pointer FIFO boundary between Pod and NoC clocks,
+  including padding, depths, reset participation, drain behavior, and CDC evidence.
 - [`kd28_sram_fifo_v0.1.md`](kd28_sram_fifo_v0.1.md) defines the portable KD28 SRAM mapping cells,
   collision semantics, synthetic timing boundary, and parameterized FIFO wrapper contract.
 

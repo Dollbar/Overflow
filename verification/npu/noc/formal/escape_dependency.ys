@@ -1,0 +1,4 @@
+read_verilog -formal -sv verification/npu/noc/formal/formal_npu_noc_escape_dependency.sv
+prep -top formal_npu_noc_escape_dependency -flatten
+chformal -lower
+sat -verify -prove-asserts -set-assumes

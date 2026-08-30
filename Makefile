@@ -6,7 +6,9 @@
 	npu-system-sim npu-system-sta npu-system-sta-nangate45 npu-system-test \
 	npu-pod-lint npu-pod-synth npu-pod-sim npu-pod-test npu-pod-noc-test \
 	npu-pod-array-lint npu-pod-closure npu-command-lint npu-command-synth \
-	npu-command-sim npu-command-test npu-owned-rtl-test
+	npu-command-sim npu-command-test npu-noc-lint npu-noc-synth \
+	npu-noc-formal npu-noc-sim npu-noc-coverage npu-noc-test \
+	npu-noc-closure npu-owned-rtl-test
 
 PYTHON ?= python3
 REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
@@ -43,6 +45,7 @@ help:
 	@echo "  make npu-pod-noc-test       - verify only the fast Pod/NoC attachment handoff"
 	@echo "  make npu-pod-array-lint     - elaborate the complete 2x4 Pod/NoC shell"
 	@echo "  make npu-pod-closure        - run Pod tests, four-seed array stress, and coverage gates"
+	@echo "  make npu-noc-closure        - run the complete 2x4 NoC lint/synth/formal/sim/coverage gate"
 	@echo "  make npu-command-test       - verify decoded command routing and completion aggregation"
 	@echo "  make npu-owned-rtl-test     - run all NPU-owned RTL gates (excludes external NoC/system CDC and physical signoff)"
 
@@ -165,6 +168,27 @@ npu-command-sim:
 
 npu-command-test:
 	$(MAKE) -C verification/npu/command test
+
+npu-noc-lint:
+	$(MAKE) -C verification/npu/noc lint
+
+npu-noc-synth:
+	$(MAKE) -C verification/npu/noc synth
+
+npu-noc-formal:
+	$(MAKE) -C verification/npu/noc formal
+
+npu-noc-sim:
+	$(MAKE) -C verification/npu/noc sim
+
+npu-noc-coverage:
+	$(MAKE) -C verification/npu/noc coverage
+
+npu-noc-test:
+	$(MAKE) -C verification/npu/noc test
+
+npu-noc-closure:
+	$(MAKE) -C verification/npu/noc closure
 
 # Complete reproducible gate for the RTL owned by the NPU workstream. Physical
 # STA and cross-owner NoC/system integration remain separate because they need

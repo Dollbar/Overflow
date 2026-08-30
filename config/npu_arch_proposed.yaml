@@ -81,7 +81,12 @@ noc:
   attachment_decision: ADR-0005
   attachment_contract: specs/interfaces/npu_pod_noc_attachment_v0.1.md
   attachment_status: baselined_router_independent
-  routing: deterministic_xy_escape_with_adaptive_non_escape
+  router_decision: ADR-0008
+  router_contract: specs/interfaces/npu_noc_router.md
+  cdc_contract: specs/interfaces/npu_noc_cdc.md
+  routing: deterministic_xy
+  adaptive_routing_status: held_pending_ordering_and_congestion_evidence
+  control_fabric_separate: true
   tile_data_port_bits_per_cycle: 2048
   tile_data_ports_per_tile: 1
   pod_hbm_data_port_bits_per_cycle: 3072
@@ -91,6 +96,13 @@ noc:
   data_flit_bits: 1024
   virtual_channels: 4
   escape_virtual_channels: 1
+  data_input_flits_per_vc: 8
+  control_input_flits: 4
+  maximum_data_packet_flits: 32
+  maximum_control_packet_flits: 4
+  age_promotion_opportunities: 64
+  control_cdc_depth: 8
+  data_cdc_depth_per_lane: 16
   max_nonlocal_hbm_traffic_fraction: 0.20
 
 dma:
