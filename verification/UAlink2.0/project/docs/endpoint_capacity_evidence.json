@@ -1,0 +1,240 @@
+{
+  "scope": "RTL_SIM configurable single64B Read ownership and uniform local network reset; full IP incomplete",
+  "capacity_cases": [
+    {
+      "name": "o1_c1",
+      "passed": true,
+      "record_sha256": "7af8fba9c5d94e936d0734da93b7f060df1551d522b959d29b0d4ae570f3d31e",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o1_c2",
+      "passed": true,
+      "record_sha256": "da25c9245fe81ba84d37f652d99266486d6e0a3529d9691d3710aa0185ee35f7",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o1_c3",
+      "passed": true,
+      "record_sha256": "ece134e65c73bb45004bcf23c05c4550621ea29a8dfdb710b78d4bf951c05284",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o1_c4",
+      "passed": true,
+      "record_sha256": "3794f2e6b92048b68bc4014c6aab14dddee31a2ea23ee284dd1020a4c28f822a",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o2_c1",
+      "passed": true,
+      "record_sha256": "76671bd8335e62d5fca11f7380c8e8c7501ecbbdc19343dde5484d0b82a280d2",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o2_c2",
+      "passed": true,
+      "record_sha256": "f4eea79a2951e8a1674ffe294e9ebb563f8df4105281073a079f8331e180e1e0",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o2_c3",
+      "passed": true,
+      "record_sha256": "dd1575f3b15988484f42a4de25556a856b9c62e2467c23ae5b4e31235d8536d5",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o2_c4",
+      "passed": true,
+      "record_sha256": "ecf9880c3a14e91623490c34508f6a2cfb40f1b2f5fecce4f34e8c85dced73e0",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o3_c1",
+      "passed": true,
+      "record_sha256": "550463340d118f85a237df0336026c084f1f651fd2e27c863d8e13586ad6cc1d",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o3_c2",
+      "passed": true,
+      "record_sha256": "f45648f9478c59e52458f33e160b9b31b40da437b05255e2c269c165406db338",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o3_c3",
+      "passed": true,
+      "record_sha256": "f7846c88896b16124e531fd264d950e3e19ddd803c3f70da3e8faa1d2c6d83b4",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o3_c4",
+      "passed": true,
+      "record_sha256": "3eca2fc9066849cecb0fb7c65f60441017bc80192cde3ed95dec9e56df16d368",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o4_c1",
+      "passed": true,
+      "record_sha256": "332dfafcce260d16cac6f6bd17f05970ac472b265d7f94a05987e41f3fceaa68",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o4_c2",
+      "passed": true,
+      "record_sha256": "707114897d36907ac95dec333e2b46142eccf8a14d1dbee0bf19974360d51727",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o4_c3",
+      "passed": true,
+      "record_sha256": "2e2bb17d85e35976df16a1d1b17403f64cab515292feabfce469fb740ecc0ab9",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o4_c4",
+      "passed": true,
+      "record_sha256": "37fff8a469dbbef570e96f240146a36930f8b0593ddc4397efa7dbd9f97cfb51",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o8_c1",
+      "passed": true,
+      "record_sha256": "cbb1b747fd3492e51fac7fe3f079606e3d65e7cd5e457dd1cd4d47ca7377c4c0",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o8_c2",
+      "passed": true,
+      "record_sha256": "f04ca6bce185f68349d5c23c7250b943b9108984f1308fb4bbcf2603f2f2fc1d",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o8_c3",
+      "passed": true,
+      "record_sha256": "f07da60aa4cf21b71818cc3a85a9d249ce533c14b5a31d6dbc4bcec112ef8890",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "o8_c4",
+      "passed": true,
+      "record_sha256": "689a5d5a19c885dcecb916ddb3e4270c20230a8de11b0a05af46677a27c515be",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "default",
+      "passed": true,
+      "record_sha256": "ffcfe269433c51d0c3f8cfe6778a8d6793bb620d952de16daec83c39f07fa72f",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "default_recovery",
+      "passed": true,
+      "record_sha256": "681ca862c6efca4c68d11b61c51bce34fd844fcb4c2a2a0e513d756e44f38790",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "default_minimum",
+      "passed": true,
+      "record_sha256": "6164c6fea5dc3a91ce33c84e4408e6d9198f987bc188616aa9e23b7f99c6db3e",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "capacity_fault",
+      "passed": true,
+      "record_sha256": "4acb511f048b732b9a544ccabdf7cce0b8b98a86a9cf045e4a09f43c26218667",
+      "compile_exit": 0,
+      "run_exit": 1
+    },
+    {
+      "name": "invalid_o0_c4",
+      "passed": true,
+      "record_sha256": "ea3024401eed99fbf060d5e8fdb3846e5578c4e839bdc77649aa0ae701fe8129",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "invalid_o256_c4",
+      "passed": true,
+      "record_sha256": "a354d4854b42ae78ba8c3ead2d9e57e0d4c5eb552012a1e710f1360c1736d374",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "invalid_o4_c0",
+      "passed": true,
+      "record_sha256": "5536e522a9f0c56156b454b68ebb0ed97d761cfeaf63ca1723f5d5647ec1ac5e",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "invalid_o4_c5",
+      "passed": true,
+      "record_sha256": "336409f52a56b1c3cf63511edd2f916bb770889311465e8948a18b0e76fc6f20",
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "name": "invalid_ominus1_c3",
+      "passed": true,
+      "record_sha256": "5bea845576e8ffa418c77a0656e6e79ec3b49fb475236805cde3e626fb48480f",
+      "compile_exit": 0,
+      "run_exit": 0
+    }
+  ],
+  "reset_runs": [
+    {
+      "label": "reset_final",
+      "passed": true,
+      "cases": 3,
+      "record_sha256": "b2cc1b5c56073b84a7fda7d9e3f1793b68b662dd12634095c8bd830e147c2917"
+    },
+    {
+      "label": "reset_final_minimum",
+      "passed": true,
+      "cases": 3,
+      "record_sha256": "81b9051dd09c39f6d1cf4dadf283fb277a5b55be100ccf560173445e037954a6"
+    },
+    {
+      "label": "reset_final_memory_fault",
+      "passed": true,
+      "cases": 1,
+      "record_sha256": "27b1d316d0809d7599bb9e5576db3ccceb544a4f714dfeb1311fcc29aa058524"
+    },
+    {
+      "label": "reset_final_endpoint_fault",
+      "passed": true,
+      "cases": 1,
+      "record_sha256": "7e358de8d3740a428d3a33f483353076495fafa35f82cf1603c8ebde07067800"
+    }
+  ],
+  "rtl_sha256": {
+    "rtl/endpoint/ualink_endpoint_top.v": "9c05e865bcd700d6dcfbbd633ac1682228164e43477f4eb20a10aff66480137b",
+    "rtl/endpoint/endpoint_transaction_core.v": "3dd32324dad4aa6513137f986b348be0f04509df578b9e81d80937b8289d2e89",
+    "rtl/endpoint/endpoint_read_completer.v": "4e1fe08f12eb09aa0a875785cebce4d0020e120058e266b64b2546feaf98526f"
+  },
+  "prior_turn": "progress: partitioned publication verified at Overflow commit 5d5916b76f076e2c9019c99bac515a706e63a719"
+}

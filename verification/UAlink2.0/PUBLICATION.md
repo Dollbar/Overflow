@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 863 tracked source files from the UALink development
-repository at commit `6599e8009ab1a626825854b207a907988d6854f3`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 873 tracked source files from the UALink development
+repository at commit `7e8896ad624a4b74474ab8843f4cee9780c6db6d`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -29,12 +29,14 @@ Expected outputs are in project `build/` or `reports/`, ignored by Git. Use a fr
 its functional SRAM source hashes. The four relative directory links provide one project
 root without duplicate source files; see [layout details](project/docs/overflow_layout.md).
 
-The relocated real Endpoint→Switch→Endpoint Read/replay test, standalone VIP selftest
-and 15 exporter fixture tests passed from these actual directories. The relocated `make test`
-model/tool suite also completed successfully. Originator checks passed for 1/2/4 ports,
-and the Completer check completed 32 request/result/response chains and detected its three injected faults. Source-side extraction
-also passed three communication configurations (48/48 transactions), three injected wiring
-fault detections and the VIP holding/reset test; see [bounded evidence](project/docs/endpoint_vip_extraction_evidence.json).
+The prior directory-migration snapshot passed 665 model/tool checks and the exporter fixtures.
+This increment passes 29 actual capacity cases (20 pairs, three default regressions,
+one wiring fault and five invalid configurations) plus six uniform-network-reset cases
+and two missing-reset wiring faults. The relocated Originator8/Completer3 recovery
+and held-completion reset cases were rerun from these directories. See the
+[capacity/reset review](project/docs/endpoint_capacity_review.md) for evidence and exact scope.
+Strict static coding gates remain open; leaf-template applicability and existing lint/style
+diagnostics are recorded without suppressing failures. New-top process STA remains incomplete.
 
 The inventory remains 202 RTL entries: 66 partially implemented and 136 explicit disabled
 interface scaffolds. Current real application execution covers the documented single64B

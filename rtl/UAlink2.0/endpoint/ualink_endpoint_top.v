@@ -4,7 +4,8 @@ module ualink_endpoint_top #(
  parameter integer WIDTH=8, HEADER_DEPTH=2, BANK_DEPTH=3, RX_DEPTH=40, DL_DEPTH=3,
  parameter integer HEADER_COUNT_WIDTH=(HEADER_DEPTH<2)?1:(HEADER_DEPTH<4)?2:(HEADER_DEPTH<8)?3:(HEADER_DEPTH<16)?4:(HEADER_DEPTH<32)?5:(HEADER_DEPTH<64)?6:(HEADER_DEPTH<128)?7:(HEADER_DEPTH<256)?8:(HEADER_DEPTH<512)?9:(HEADER_DEPTH<1024)?10:(HEADER_DEPTH<2048)?11:(HEADER_DEPTH<4096)?12:(HEADER_DEPTH<8192)?13:(HEADER_DEPTH<16384)?14:(HEADER_DEPTH<32768)?15:16,
  parameter integer DATA_COUNT_WIDTH=(BANK_DEPTH<2)?1:(BANK_DEPTH<4)?2:(BANK_DEPTH<8)?3:(BANK_DEPTH<16)?4:(BANK_DEPTH<32)?5:(BANK_DEPTH<64)?6:(BANK_DEPTH<128)?7:(BANK_DEPTH<256)?8:(BANK_DEPTH<512)?9:(BANK_DEPTH<1024)?10:(BANK_DEPTH<2048)?11:(BANK_DEPTH<4096)?12:(BANK_DEPTH<8192)?13:(BANK_DEPTH<16384)?14:(BANK_DEPTH<32768)?15:16,
- parameter integer RX_COUNT_WIDTH=(RX_DEPTH<2)?1:(RX_DEPTH<4)?2:(RX_DEPTH<8)?3:(RX_DEPTH<16)?4:(RX_DEPTH<32)?5:(RX_DEPTH<64)?6:(RX_DEPTH<128)?7:(RX_DEPTH<256)?8:(RX_DEPTH<512)?9:(RX_DEPTH<1024)?10:(RX_DEPTH<2048)?11:(RX_DEPTH<4096)?12:(RX_DEPTH<8192)?13:(RX_DEPTH<16384)?14:(RX_DEPTH<32768)?15:16
+ parameter integer RX_COUNT_WIDTH=(RX_DEPTH<2)?1:(RX_DEPTH<4)?2:(RX_DEPTH<8)?3:(RX_DEPTH<16)?4:(RX_DEPTH<32)?5:(RX_DEPTH<64)?6:(RX_DEPTH<128)?7:(RX_DEPTH<256)?8:(RX_DEPTH<512)?9:(RX_DEPTH<1024)?10:(RX_DEPTH<2048)?11:(RX_DEPTH<4096)?12:(RX_DEPTH<8192)?13:(RX_DEPTH<16384)?14:(RX_DEPTH<32768)?15:16,
+ parameter integer ORIGINATOR_CAPACITY=4, COMPLETER_CAPACITY=4 // 独立预约容量追加于既有参数后，保持旧位置参数次序
 )(
  input wire i_clk,i_rstn,i_link_reset,i_start,i_auth,i_shared,
  input wire [20*WIDTH-1:0] i_capacities,
@@ -79,7 +80,7 @@ wire [3:0] selected_data_valid;
 wire selected_read_ready,transaction_error;
 generate if(TRANSACTION_MODE!=0)begin:transactions
  wire core_error;
- endpoint_transaction_core u_core(
+ endpoint_transaction_core #(.ORIGINATOR_CAPACITY(ORIGINATOR_CAPACITY),.COMPLETER_CAPACITY(COMPLETER_CAPACITY)) u_core( // 显式贯通两种所有者容量
  .i_clk(i_clk),.i_rstn(rstn&&!i_auth&&(i_port==2'd0)),.i_port(i_port),.i_local_id(i_local_id),
  .i_request_valid(i_request_valid),.o_request_ready(o_request_ready),.i_request_port(i_request_port),.i_request_tag(i_request_tag),.i_request_address(i_request_address),.i_request_dst(i_request_dst),.i_request_length(i_request_length),.i_request_attr(i_request_attr),
  .o_complete_valid(o_complete_valid),.i_complete_ready(i_complete_ready),.o_complete_port(o_complete_port),.o_complete_tag(o_complete_tag),.o_complete_status(o_complete_status),.o_complete_data(o_complete_data),.o_complete_data_valid(o_complete_data_valid),

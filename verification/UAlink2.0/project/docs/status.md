@@ -4,6 +4,8 @@
 
 优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 202 个 RTL 条目均有源码：66 个已有部分实现、136 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。新增 TRANSACTION_MODE=1 已连接真实单64B Read请求、远端内存执行、响应两半Data与Tag完成；三组正常/恢复/最小缓存配置完成48笔事务。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
 
+最新容量与复位增量：20组独立事务容量组合完成320笔真实Read，三组默认回归另完成48笔；五组非法容量和一项容量接线故障按预期检出。三种在途统一同步复位窗口在两种bank配置下通过，12笔旧预约取消后产生12笔新轮次完成，两个漏复位故障被检出。严格静态风格门限仍未闭合，新顶层工艺STA未完成，详见[增量审查](endpoint_capacity_review.md)。
+
 ```sh
 make ip-structure IP_RUN_LABEL=fresh_structure
 make ip-top-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh_system

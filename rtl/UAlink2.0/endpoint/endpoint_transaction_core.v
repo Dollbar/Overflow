@@ -1,6 +1,9 @@
 // 真实single64B Read事务总装；请求、内存执行、响应与Tag完成由独立模块持有所有权。
 `default_nettype none
-module endpoint_transaction_core(
+module endpoint_transaction_core #(
+ parameter integer ORIGINATOR_CAPACITY=4, // 应用Tag预约槽数，保持既有八位占用计数范围
+ parameter integer COMPLETER_CAPACITY=4 // 两位公开内存slot接口可寻址一至四个执行槽
+)(
  input wire i_clk,i_rstn, // 全部局部状态使用同一同步低有效复位
  input wire [1:0] i_port, // 当前集成固定物理端口零
  input wire [9:0] i_local_id, // 复位时期配置并在运行期间稳定
@@ -25,6 +28,10 @@ module endpoint_transaction_core(
  input wire [1:0] i_read_msg,input wire [5:0] i_read_classes,input wire [79:0] i_read_releases,
  output wire [7:0] o_outstanding_count,o_completer_count,output wire o_error
 );
+localparam CONFIG_LEGAL=(ORIGINATOR_CAPACITY>=1)&&(ORIGINATOR_CAPACITY<=255)&&(COMPLETER_CAPACITY>=1)&&(COMPLETER_CAPACITY<=4); // 非法本地容量不允许接纳事务
+localparam ORIGINATOR_CAPACITY_SAFE=CONFIG_LEGAL?ORIGINATOR_CAPACITY:1; // 非法参数也保持可展开的非空数组
+localparam COMPLETER_CAPACITY_SAFE=CONFIG_LEGAL?COMPLETER_CAPACITY:1; // 非法组合由统一复位封锁安全实例
+wire transaction_rstn=i_rstn&&CONFIG_LEGAL; // 局部配置错误持续清空事务所有权
 wire request_valid,request_ready,response_valid,response_ready; // 接收器向两种事务所有者分别交付
 wire [10:0] request_tag,response_tag;
 wire [9:0] request_src,request_dst,response_dst;
@@ -38,9 +45,9 @@ wire [1:0] completer_data_valid;wire originator_error,receiver_error,completer_e
 assign o_data_valid={completer_data_valid,2'd0};
 assign o_data0={completer_data[255:0],256'd0};
 assign o_data1={completer_data[511:256],256'd0};
-assign o_error=originator_error||receiver_error||completer_error;
-endpoint_read_originator #(.CAPACITY(4),.NUM_PORTS(1)) u_originator(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_local_id(i_local_id),
+assign o_error=i_rstn&&(!CONFIG_LEGAL||originator_error||receiver_error||completer_error); // 配置诊断不伪装正常满槽背压
+endpoint_read_originator #(.CAPACITY(ORIGINATOR_CAPACITY_SAFE),.NUM_PORTS(1)) u_originator(
+ .i_clk(i_clk),.i_rstn(transaction_rstn),.i_local_id(i_local_id),
  .i_request_valid(i_request_valid),.o_request_ready(o_request_ready),.i_request_port(i_request_port),
  .i_request_tag(i_request_tag),.i_request_address(i_request_address),.i_request_dst(i_request_dst),.i_request_length(i_request_length),.i_request_attr(i_request_attr),
  .o_source_valid(o_source_valid[0]),.o_source_control(o_source_control[255:0]),.i_source_captured(i_source_captured[0]),.i_header_taken(i_request_header_taken),
@@ -49,14 +56,14 @@ endpoint_read_originator #(.CAPACITY(4),.NUM_PORTS(1)) u_originator(
  .o_complete_valid(o_complete_valid),.i_complete_ready(i_complete_ready),.o_complete_port(o_complete_port),.o_complete_tag(o_complete_tag),.o_complete_status(o_complete_status),.o_complete_data(o_complete_data),.o_complete_data_valid(o_complete_data_valid),
  .o_count(o_outstanding_count),.o_error(originator_error));
 endpoint_receive_transactions u_receiver(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_port(i_port),.i_read_valid(i_read_valid),.o_read_ready(o_read_ready),
+ .i_clk(i_clk),.i_rstn(transaction_rstn),.i_port(i_port),.i_read_valid(i_read_valid),.o_read_ready(o_read_ready),
  .i_read_flit(i_read_flit),.i_read_msg(i_read_msg),.i_read_classes(i_read_classes),.i_read_releases(i_read_releases),
  .o_request_valid(request_valid),.i_request_ready(request_ready),.o_request_tag(request_tag),.o_request_src(request_src),.o_request_dst(request_dst),
  .o_request_address(request_address),.o_request_length(request_length),.o_request_attr(request_attr),.o_request_vc(request_vc),.o_request_pool(request_pool),.o_request_asi(request_asi),.o_request_metadata(request_metadata),
  .o_response_valid(response_valid),.i_response_ready(response_ready),.o_response_port(response_port),.o_response_tag(response_tag),.o_response_dst(response_dst),
  .o_response_status(response_status),.o_response_offset(response_offset),.o_response_last(response_last),.o_response_num_beats(response_num_beats),.o_response_data(response_data),.o_response_data_error(response_data_error),.o_error(receiver_error));
-endpoint_read_completer #(.CAPACITY(4),.SLOT_WIDTH(2)) u_completer(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_local_id(i_local_id),.i_request_valid(request_valid),.o_request_ready(request_ready),
+endpoint_read_completer #(.CAPACITY(COMPLETER_CAPACITY_SAFE),.SLOT_WIDTH(2)) u_completer(
+ .i_clk(i_clk),.i_rstn(transaction_rstn),.i_local_id(i_local_id),.i_request_valid(request_valid),.o_request_ready(request_ready),
  .i_request_tag(request_tag),.i_request_src(request_src),.i_request_dst(request_dst),.i_request_address(request_address),.i_request_length(request_length),.i_request_attr(request_attr),
  .i_request_vc(request_vc),.i_request_pool(request_pool),.i_request_asi(request_asi),.i_request_metadata(request_metadata),
  .o_mem_valid(o_mem_valid),.i_mem_ready(i_mem_ready),.o_mem_slot(o_mem_slot),.o_mem_address(o_mem_address),.o_mem_length(o_mem_length),.o_mem_attr(o_mem_attr),.o_mem_asi(o_mem_asi),.o_mem_metadata(o_mem_metadata),

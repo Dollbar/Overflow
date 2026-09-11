@@ -2,11 +2,14 @@
 module tb;
 import ualink_test_pkg::*;
 parameter INJECT=0, BANK_DEPTH=3;
+parameter ORIGINATOR_CAPACITY=4, COMPLETER_CAPACITY=4, MEMORY_LATENCY=3, CHECK_COMPLETER_FULL=0, EXPECT_CONFIG_ERROR=0;
+localparam EXPECTED_ORIGIN=(ORIGINATOR_CAPACITY<8)?ORIGINATOR_CAPACITY:8;
+localparam EXPECTED_COMPLETER=(EXPECTED_ORIGIN<COMPLETER_CAPACITY)?EXPECTED_ORIGIN:COMPLETER_CAPACITY;
 reg clk=0; always #5 clk=~clk;
 reg rstn=0,start=0; integer cycle=0,quiet=0,e,j,k,index_value;
 integer requested[0:1],completed[0:1],sent[0:1][0:7],reads[0:1][0:7],returns[0:1][0:7],seen[0:1][0:7];
 integer result_at[0:1][0:7];reg [511:0] expected_memory[0:1][0:7];
-integer originals[0:1],replays[0:1],max_count[0:1];reg dropped[0:1],corrupted[0:1];
+integer originals[0:1],replays[0:1],max_count[0:1],max_completer[0:1];reg dropped[0:1],corrupted[0:1];
 wire done[0:1],peer_done[0:1],error[0:1],te[0:1],request_valid[0:1],request_ready[0:1];
 wire [10:0] request_tag[0:1];wire [56:0] request_address[0:1];
 wire complete_valid[0:1],complete_ready[0:1],complete_data_valid[0:1];
@@ -24,10 +27,10 @@ wire [511:0] observed_tx[0:1];wire [1:0] observed_ht[0:1];wire [7:0] request_sta
 ualink_switch_top #(.PORTS(2),.DATA_WIDTH(545)) sw(.clk(clk),.rstn(rstn),.i_route_ids({10'd513,10'd17}),.i_port_enable(2'b11),
 .i_valid(sv),.o_ready(sr),.i_data(sd),.i_dst({10'd17,10'd513}),.i_last(2'b11),.o_valid(ov),.i_ready(orr),.o_data(od),.o_last(sl),.o_route_error(se));
 genvar s;generate for(s=0;s<2;s=s+1)begin:ends
- assign request_valid[s]=rstn&&done[s]&&peer_done[s]&&requested[s]<8;
+ assign request_valid[s]=rstn&&(EXPECT_CONFIG_ERROR||(done[s]&&peer_done[s]&&requested[s]<8));
  assign request_tag[s]=tag_at(requested[s]);assign request_address[s]=address_at(requested[s]);
- assign complete_ready[s]=cycle>350&&(cycle%7!=s+1);
- ualink_memory_vip #(.SIDE(s)) memory_vip(
+ assign complete_ready[s]=cycle>350&&requested[s]>=EXPECTED_ORIGIN&&(cycle%7!=s+1);
+ ualink_memory_vip #(.SIDE(s),.MIN_LATENCY(MEMORY_LATENCY)) memory_vip(
  .i_clk(clk),.i_rstn(rstn),.i_read_valid(mem_valid[s]),.o_read_ready(mem_ready[s]),
  .i_read_slot(mem_slot[s]),.i_read_address(mem_address[s]),.i_read_length(mem_length[s]),
  .i_read_attr(mem_attr[s]),.i_read_asi(mem_asi[s]),.i_read_metadata(mem_metadata[s]),
@@ -37,7 +40,7 @@ genvar s;generate for(s=0;s<2;s=s+1)begin:ends
  assign bad_now[s]=INJECT&&link_payload[s]&&!link_replay[s]&&originals[s]==2&&!corrupted[s];
  assign sv[s]=link_valid[s]&&!drop_now[s];assign sd[s*545+:545]={!bad_now[s],link_data[s]};
  assign link_ready[s]=drop_now[s]||sr[s];assign orr[s]=rstn&&(cycle%7!=s+1)&&!(cycle>=90&&cycle<110);
- ualink_endpoint_top #(.TRANSACTION_MODE(1),.WIDTH(8),.HEADER_DEPTH(2),.BANK_DEPTH(BANK_DEPTH),.RX_DEPTH(40),.DL_DEPTH(3)) dut(
+ ualink_endpoint_top #(.TRANSACTION_MODE(1),.ORIGINATOR_CAPACITY(ORIGINATOR_CAPACITY),.COMPLETER_CAPACITY(COMPLETER_CAPACITY),.WIDTH(8),.HEADER_DEPTH(2),.BANK_DEPTH(BANK_DEPTH),.RX_DEPTH(40),.DL_DEPTH(3)) dut(
  .i_clk(clk),.i_rstn(rstn),.i_link_reset(1'b0),.i_start(start),.i_auth(1'b0),.i_shared(1'b0),.i_capacities({20{8'd1}}),
  .i_source_valid(2'd0),.i_source_control(512'd0),.i_source_tags_valid(2'd0),.i_source_tags(1024'd0),.i_data_valid(4'd0),.i_data0(512'd0),.i_data1(512'd0),.i_read_ready(1'b0),
  .i_port(2'd0),.i_local_id(s==0?10'd17:10'd513),.i_request_valid(request_valid[s]),.o_request_ready(request_ready[s]),.i_request_port(2'd0),
@@ -45,7 +48,7 @@ genvar s;generate for(s=0;s<2;s=s+1)begin:ends
  .o_complete_valid(complete_valid[s]),.i_complete_ready(complete_ready[s]),.o_complete_port(complete_port[s]),.o_complete_tag(complete_tag[s]),
  .o_complete_status(complete_status[s]),.o_complete_data(complete_data[s]),.o_complete_data_valid(complete_data_valid[s]),
  .o_mem_valid(mem_valid[s]),.i_mem_ready(mem_ready[s]),.o_mem_slot(mem_slot[s]),.o_mem_address(mem_address[s]),.o_mem_length(mem_length[s]),.o_mem_attr(mem_attr[s]),.o_mem_asi(mem_asi[s]),.o_mem_metadata(mem_metadata[s]),
- .i_mem_result_valid(result_valid[s]),.o_mem_result_ready(result_ready[s]),.i_mem_result_slot(result_slot[s]),.i_mem_result_data(result_data[s]),.i_mem_result_status(result_status[s]),
+ .i_mem_result_valid(EXPECT_CONFIG_ERROR?1'b1:result_valid[s]),.o_mem_result_ready(result_ready[s]),.i_mem_result_slot(result_slot[s]),.i_mem_result_data(result_data[s]),.i_mem_result_status(result_status[s]),
  .o_outstanding_count(origin_count[s]),.o_completer_count(completer_count[s]),.o_transaction_error(te[s]),
  .o_link_valid(link_valid[s]),.o_link_data(link_data[s]),.i_link_ready(link_ready[s]),.o_link_payload(link_payload[s]),.o_link_replay(link_replay[s]),
  .i_link_valid(rv[s]),.i_link_data(rd[s]),.i_link_crc_ok(rc[s]),.i_rx_replay_limit(8'd50),
@@ -72,7 +75,7 @@ initial begin
  expected_memory[1][6]=512'h534133211301f3e1c3b1a3918371635133211301f3e1d3c1a3918371635143311301f3e1d3c1b3a18371635143312311f3e1d3c1b3a1938163514331231103f1;
  expected_memory[1][7]=512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
  for(e=0;e<2;e=e+1)begin
-  requested[e]=0;completed[e]=0;originals[e]=0;replays[e]=0;dropped[e]=0;corrupted[e]=0;max_count[e]=0;rv[e]=0;rc[e]=1;rd[e]=0;
+  requested[e]=0;completed[e]=0;originals[e]=0;replays[e]=0;dropped[e]=0;corrupted[e]=0;max_count[e]=0;max_completer[e]=0;rv[e]=0;rc[e]=1;rd[e]=0;
   for(j=0;j<8;j=j+1)begin sent[e][j]=0;reads[e][j]=0;returns[e][j]=0;seen[e][j]=0;result_at[e][j]=-1;end
   for(j=0;j<4;j=j+1)begin score_mem_active[e][j]=0;score_mem_address[e][j]=0;score_mem_at[e][j]=-1;end
  end
@@ -80,12 +83,21 @@ initial begin
 end
 always @(posedge clk)begin
  cycle<=cycle+1;
- if(rstn)begin
+ if(rstn&&EXPECT_CONFIG_ERROR)begin
+  for(e=0;e<2;e=e+1)
+   if(request_valid[e]!==1||te[e]!==1||request_ready[e]!==0||complete_valid[e]!==0||mem_valid[e]!==0||result_ready[e]!==0||origin_count[e]!==0||completer_count[e]!==0)
+    $fatal(1,"CAUSAL_CONFIG_NOT_GATED side=%0d",e);
+  if(cycle>30)begin $display("CAUSAL_CONFIG_REJECT_PASS");$finish;end
+ end
+ if(rstn&&!EXPECT_CONFIG_ERROR)begin
   if(|se)$fatal(1,"CAUSAL_ROUTE_ERROR");
   for(e=0;e<2;e=e+1)begin
    if(error[e]||te[e])$fatal(1,"CAUSAL_DUT_ERROR side=%0d cycle=%0d transaction=%b",e,cycle,te[e]);
    rv[e]<=ov[e]&&orr[e];if(ov[e]&&orr[e])begin rd[e]<=od[e*545+:544];rc[e]<=od[e*545+544];end
+   if(origin_count[e] !== (requested[e]-completed[e]))$fatal(1,"CAUSAL_COUNT_ACCOUNTING");
    if(request_valid[e]&&request_ready[e])begin $display("APP %0d %0d %0d",cycle,e,request_tag[e]);requested[e]=requested[e]+1;end
+   if(origin_count[e]>ORIGINATOR_CAPACITY||completer_count[e]>COMPLETER_CAPACITY)$fatal(1,"CAUSAL_CAPACITY_BOUND");
+   if(completer_count[e]>max_completer[e])max_completer[e]=completer_count[e];
    if(origin_count[e]>max_count[e])max_count[e]=origin_count[e];
    if(observed_ht[e][0])for(k=0;k<8;k=k+1)if(request_starts[e][k])begin
     index_value=tag_index(observed_tx[e][k*32+103+:11]);
@@ -94,6 +106,7 @@ always @(posedge clk)begin
     sent[e][index_value]=1;$display("SENT %0d %0d %0d",cycle,e,index_value);
    end
    if(mem_valid[e]&&mem_ready[e])begin
+    if(mem_slot[e]>=COMPLETER_CAPACITY)$fatal(1,"CAUSAL_MEMORY_SLOT_RANGE");
     index_value=address_index(mem_address[e]);
     if(index_value<0||score_mem_active[e][mem_slot[e]]||sent[1-e][index_value]!=1||reads[e][index_value]!=0)$fatal(1,"CAUSAL_MEMORY_REQUEST side=%0d address=%h",e,mem_address[e]);
     if(mem_length[e]!==15||mem_attr[e]!==8'hff||mem_asi[e]!==0||mem_metadata[e]!==0)$fatal(1,"CAUSAL_MEMORY_FIELDS");
@@ -125,9 +138,10 @@ always @(posedge clk)begin
   end
   if(completed[0]==8&&completed[1]==8&&origin_count[0]==0&&origin_count[1]==0&&completer_count[0]==0&&completer_count[1]==0&&unacked[0]==0&&unacked[1]==0&&scheduled[0]==0&&scheduled[1]==0)quiet=quiet+1;else quiet=0;
   if(quiet==30)begin
-   if(max_count[0]!=4||max_count[1]!=4)$fatal(1,"CAUSAL_OUTSTANDING_COVERAGE");
+   if(max_count[0]!=EXPECTED_ORIGIN||max_count[1]!=EXPECTED_ORIGIN)$fatal(1,"CAUSAL_OUTSTANDING_COVERAGE actual=%0d,%0d expected=%0d",max_count[0],max_count[1],EXPECTED_ORIGIN);
+   if(CHECK_COMPLETER_FULL&&(max_completer[0]!=EXPECTED_COMPLETER||max_completer[1]!=EXPECTED_COMPLETER))$fatal(1,"CAUSAL_COMPLETER_COVERAGE");
    if(INJECT&&(!dropped[0]||!dropped[1]||!corrupted[0]||!corrupted[1]||replays[0]==0||replays[1]==0))$fatal(1,"CAUSAL_RECOVERY_COVERAGE");
-   $display("CAUSAL_READ_PASS requests=16 completions=16 max_outstanding=4,4 replays=%0d,%0d cycles=%0d",replays[0],replays[1],cycle);$finish;
+   $display("CAUSAL_READ_PASS requests=16 completions=16 max_outstanding=%0d,%0d max_completer=%0d,%0d replays=%0d,%0d cycles=%0d",max_count[0],max_count[1],max_completer[0],max_completer[1],replays[0],replays[1],cycle);$finish;
   end
   if(cycle>6000)$fatal(1,"CAUSAL_TIMEOUT requests=%0d,%0d complete=%0d,%0d count=%0d,%0d",requested[0],requested[1],completed[0],completed[1],origin_count[0],origin_count[1]);
  end

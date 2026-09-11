@@ -105,8 +105,14 @@ def main():
     p.add_argument('--label',required=True);p.add_argument('--kd28-root',type=Path)
     p.add_argument('--inject',action='store_true');p.add_argument('--bank-depth',type=int,default=3)
     p.add_argument('--vip-selftest',action='store_true',help='Run four-slot memory VIP holding/reset test without KD28')
-    p.add_argument('--shell-baseline',action='store_true');p.add_argument('--fault',choices=['data_half','retirement','tag_high'])
+    p.add_argument('--shell-baseline',action='store_true');p.add_argument('--fault',choices=['data_half','retirement','tag_high','capacity'])
+    p.add_argument('--originator-capacity',type=int,default=4);p.add_argument('--completer-capacity',type=int,default=4)
+    p.add_argument('--memory-latency',type=int,default=3);p.add_argument('--check-completer-full',action='store_true')
+    p.add_argument('--expect-config-error',action='store_true')
     a=p.parse_args()
+    legal_capacity=1<=a.originator_capacity<=255 and 1<=a.completer_capacity<=4
+    if a.expect_config_error==legal_capacity:p.error('legal capacities require normal test; invalid capacities require --expect-config-error')
+    if not 1<=a.memory_latency<=500:p.error('memory-latency must be 1..500')
     if not re.fullmatch(r'[A-Za-z0-9_-]+',a.label):p.error('safe new label required')
     if not 1<=a.bank_depth<=16:p.error('bank-depth must be 1..16')
     if a.vip_selftest and (a.shell_baseline or a.fault or a.inject):p.error('VIP selftest is separate from transaction and fault scenarios')
@@ -131,6 +137,7 @@ def main():
         dest=(stage/'support'/(str(index)+'_'+path.name)) if path.suffix=='.sv' else srcdir/(str(index)+'_'+path.name)
         dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,dest);copies.append(dest)
         mutations={
+            'capacity':('endpoint_transaction_core.v','.CAPACITY(ORIGINATOR_CAPACITY_SAFE)', '.CAPACITY(4)'),
             'data_half':('endpoint_transaction_core.v', 'assign o_data1={completer_data[511:256],256\'d0};', 'assign o_data1={256\'d0,256\'d0};'),
             'retirement':('ualink_endpoint_top.v', '.i_read_ready(selected_read_ready),.o_read_valid(o_read_valid)', '.i_read_ready(1\'b1),.o_read_valid(o_read_valid)'),
             'tag_high':('endpoint_transaction_core.v', '.i_response_tag(response_tag)', '.i_response_tag({1\'b0,response_tag[9:0]})')}
@@ -143,8 +150,11 @@ def main():
         hashes[str(path)]=hashlib.sha256(path.read_bytes()).hexdigest()
     (stage/'tb.sv').write_text(tb)
     command=['iverilog','-g2012','-s','tb',f'-Ptb.INJECT={int(a.inject)}',f'-Ptb.BANK_DEPTH={a.bank_depth}',
+             f'-Ptb.ORIGINATOR_CAPACITY={a.originator_capacity}',f'-Ptb.COMPLETER_CAPACITY={a.completer_capacity}',
+             f'-Ptb.MEMORY_LATENCY={a.memory_latency}',f'-Ptb.CHECK_COMPLETER_FULL={int(a.check_completer_full)}',f'-Ptb.EXPECT_CONFIG_ERROR={int(a.expect_config_error)}',
              '-o',str(stage/'sim.vvp'),*map(str,copies),str(stage/'tb.sv')]
     result=dict(passed=False,shell_baseline=a.shell_baseline,vip_selftest=a.vip_selftest,inject=a.inject,bank_depth=a.bank_depth,
+                originator_capacity=a.originator_capacity,completer_capacity=a.completer_capacity,memory_latency=a.memory_latency,check_completer_full=a.check_completer_full,expect_config_error=a.expect_config_error,
                 fault=a.fault,scope=('four-slot memory VIP holding/reset behavior; local test memory' if a.vip_selftest else 'actual causal single64B Read RTL; local DL record and explicit CRC status, not standard framing'),sources=hashes,source_order=[str(path) for path in sources],snapshot_sources={str(path):str(copy.relative_to(stage)) for path,copy in zip(sources,copies)})
     for name,cmd in [('compile',command),('run',['vvp',str(stage/'sim.vvp')])]:
         result[name+'_command']=cmd
@@ -155,10 +165,12 @@ def main():
         if code and name=='compile':break
     log=(stage/'run.log').read_text() if (stage/'run.log').exists() else ''
     result['passed']=(result.get('compile_exit')==0 and result.get('run_exit')==1 and 'UNIMPLEMENTED_TRANSACTION_CORE' in log) if a.shell_baseline else (result.get('run_exit')==0 and 'CAUSAL_READ_PASS' in log)
+    if a.expect_config_error:
+        result['passed']=result.get('compile_exit')==0 and result.get('run_exit')==0 and 'CAUSAL_CONFIG_REJECT_PASS' in log
     if a.vip_selftest:
         result['passed']=result.get('compile_exit')==0 and result.get('run_exit')==0 and 'VIP_MEMORY_PASS' in log
     if a.fault:
-        result['passed']=result.get('compile_exit')==0 and result.get('run_exit')==1 and any(x in log for x in {'data_half':['CAUSAL_COMPLETION_DATA'],'tag_high':['CAUSAL_DUT_ERROR'],'retirement':['CAUSAL_DUT_ERROR','CAUSAL_TIMEOUT','CAUSAL_COMPLETION_DATA']}[a.fault])
+        result['passed']=result.get('compile_exit')==0 and result.get('run_exit')==1 and any(x in log for x in {'capacity':['CAUSAL_CAPACITY_BOUND','CAUSAL_OUTSTANDING_COVERAGE'],'data_half':['CAUSAL_COMPLETION_DATA'],'tag_high':['CAUSAL_DUT_ERROR'],'retirement':['CAUSAL_DUT_ERROR','CAUSAL_TIMEOUT','CAUSAL_COMPLETION_DATA']}[a.fault])
     result['artifacts_sha256']={str(f.relative_to(stage)):hashlib.sha256(f.read_bytes()).hexdigest() for f in stage.rglob('*') if f.is_file()}
     (stage/'result.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k in ('passed','shell_baseline','compile_exit','run_exit')}))

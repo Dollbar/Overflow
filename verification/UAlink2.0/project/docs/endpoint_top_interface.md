@@ -91,7 +91,7 @@ vvp build/verification/ip_tops/endpoint_buffer_manual/sim.vvp
 保守节拍属于研发实现选择，未作满带宽声明。下一步运行独立两Endpoint/Switch
 轨迹回归并检查真实首次发送、重放、接收退休和所有信用账本，随后再做综合与时序评估。
 
-完整模块骨架已接入 `u_scaffold`；`o_pending_features[127:0]` 的低109位表示未实现接口壳，既有模块的未完成能力仍须查阅库存状态。系统回归和构建入口见 `ip_top_bringup.md`。
+完整模块骨架已接入 `u_scaffold`；`o_pending_features[127:0]` 的每个非零位表示相应未实现接口壳，位与模块的映射见库存及实际 aggregate。已提升模块的位保持零，既有模块的未完成能力仍须查阅库存状态。系统回归和构建入口见 `ip_top_bringup.md`。
 
 ## 真实Read事务模式
 
@@ -99,4 +99,10 @@ vvp build/verification/ip_tops/endpoint_buffer_manual/sim.vvp
 
 `i_local_id`与`i_port`运行期间保持稳定；unsupported Auth/port产生`o_transaction_error`并复位局部事务核，不能作动态配置恢复。`o_outstanding_count`保持到应用完成退休，`o_completer_count`保持到Header与两半Data提交完成。Request header_taken无Tag，只反馈给唯一单Read生产者，未来多请求源必须显式扩展身份关联。
 
-`o_error`包含事务诊断，但不是全层立即停流或协议LinkDown状态机。整个网络在途reset及旧内存结果epoch隔离尚未完成。
+`o_error`包含事务诊断，但不是全层立即停流或协议LinkDown状态机。统一网络在途同步复位已覆盖三个窗口，详见 [复位审查](endpoint_reset_review.md)；独立端点恢复及带世代号的旧内存结果隔离尚未完成。
+
+## 独立事务容量
+
+`ORIGINATOR_CAPACITY` 与 `COMPLETER_CAPACITY` 追加于既有位置参数之后，默认均为 4。前者贯通实际 Tag 预约表（合法范围 1～255），后者贯通实际执行环（集成范围 1～4，保持公开 memory slot 的两位宽度）。两者可独立配置，不要求相等或为二次幂。容量非法时保留安全可展开的单槽实例，持续复位局部事务核并报告 `o_transaction_error`；请求、结果及完成握手均关闭。合法但满槽只产生背压。
+
+实际验证范围和复现命令见 [容量验证](endpoint_capacity_review.md)。八请求的集成检查不能证明 255 槽满载；更宽 slot、完整请求长度及其他事务种类仍需后续实现。

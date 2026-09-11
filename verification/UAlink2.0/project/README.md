@@ -22,6 +22,8 @@ UALink Endpoint / Controller 与 Switch 数字 RTL 研发工程，目标为 Comm
 
 发布到 Overflow 时按其既有小写目录拆分为 `rtl/UAlink2.0/`、`verification/UAlink2.0/`、`simulator/UAlink2.0/`；映射和运行入口见[布局说明](docs/overflow_layout.md)。
 
+最新增量已贯通独立事务容量并补充真实网络在途同步复位，具体覆盖及未闭合的静态门限见[容量与复位审查](docs/endpoint_capacity_review.md)。
+
 ## 使用
 
 需要 Python 3.10+、Icarus Verilog（`iverilog`/`vvp`）、Verilator、C++ 编译器和 Make；综合/形式验证使用 Yosys，时序使用 OpenSTA。已使用的工具版本见 `config/toolchain.json`。

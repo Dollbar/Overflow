@@ -1,15 +1,15 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Actual Endpoint/Switch causal single64B Read complete in three RTL configurations; full IP still incomplete",
+  "latest_stage": "Configurable actual Endpoint Read ownership: 20 capacity pairs + default/invalid/fault cases passed; three uniform network reset windows verified; full dual IP remains incomplete",
   "rtl": "rtl/tl/tl_tx_prepared.v",
-  "review": "docs/endpoint_causal_read_review.md",
-  "evidence": "docs/endpoint_causal_read_evidence.json",
+  "review": "docs/endpoint_capacity_review.md",
+  "evidence": "docs/endpoint_capacity_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish partitioned sources into existing lowercase Overflow rtl, verification and simulator/UAlink2.0 namespaces; rerun from exported paths and preserve unrelated contents.",
-    "Expand real transaction coverage: full Read sizes/masks and response modes, in-flight network reset/recovery and supported parameter matrix; preserve independent event/data checking.",
-    "Continue replacing 136 unimplemented RTL shells for full Endpoint/Switch, native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management and CDC/RDC/process STA."
+    "Implement full ordinary Write/WriteFull lengths with shared Read/Write Tag ownership and ordered Data/BE reception, following docs/endpoint_write_contract_review.md.",
+    "Expand Read sizes/masks, response kinds, independent reset epochs and complete supported parameter coverage.",
+    "Close strict static coding/review debt and continue native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management, CDC/RDC and process STA."
   ],
   "remote_main": "c34f40f2dc00c2e12283897ea0f3de085abfbc7f",
   "new_work_published": false,
@@ -17,8 +17,13 @@
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
     "branch": "main",
-    "path": "RTL/UAlink2.0",
-    "verified_commit": "7123ec7ba3c57dd0d43d2f73c4a7e2bf70082c73"
+    "directories": [
+      "rtl/UAlink2.0",
+      "verification/UAlink2.0",
+      "simulator/UAlink2.0"
+    ],
+    "verified_commit": "5d5916b76f076e2c9019c99bac515a706e63a719",
+    "source_commit": "6599e8009ab1a626825854b207a907988d6854f3"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,
@@ -614,5 +619,20 @@
     "full_goal_complete": false,
     "running": false
   },
-  "publication_target": "config/publication.json"
+  "publication_target": "config/publication.json",
+  "publication_layout_verified": {
+    "tracked_source_files": 863,
+    "manifest_entries": 872,
+    "make_test_cases": 665,
+    "export_fixture_cases": 15,
+    "causal_read_recovery": true,
+    "vip_selftest": true,
+    "originator_ports": [
+      1,
+      2,
+      4
+    ],
+    "completer": true,
+    "private_and_generated_outputs_published": false
+  }
 }

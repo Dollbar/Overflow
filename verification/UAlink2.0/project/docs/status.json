@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T05:36:21.005793+00:00",
+  "updated": "2026-09-11T06:11:19.538459+00:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "historical_artifacts_retained": false,
@@ -2269,5 +2269,21 @@
     "native_upli": false,
     "technology_sta": false,
     "midflight_top_reset_verified": false
+  },
+  "latest_endpoint_increment": {
+    "review": "docs/endpoint_capacity_review.md",
+    "evidence": "docs/endpoint_capacity_evidence.json",
+    "capacity_pairs": 20,
+    "pair_transactions": 320,
+    "default_transactions": 48,
+    "invalid_configurations": 5,
+    "capacity_wiring_faults": 1,
+    "uniform_reset_cases": 6,
+    "reset_cancelled": 12,
+    "reset_new_completions": 12,
+    "reset_wiring_faults": 2,
+    "strict_static_gate_complete": false,
+    "process_sta_complete": false,
+    "module_counts_changed": false
   }
 }
