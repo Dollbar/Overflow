@@ -11,15 +11,15 @@
     "rtl/UAlink2.0/README.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "57a87adb00e894ea1dea9b74456ba01b484f2fca43a9f565c07f5fe334d3b28b",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "source": "rtl/README.md",
-      "source_git_blob": "36346f769a8c56dc9edec1ed6639865edd42f858",
-      "source_sha256": "034b8678bb98c6cffd15ff46b6bc7e4ca43edc55d821a0bd54358bfdd4b96755",
+      "source_git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "source_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "transformations": [
         {
           "kind": "entry_readme",
           "project_run_hint": false,
-          "relative_doc_links": 2
+          "relative_doc_links": 0
         }
       ]
     },
@@ -386,19 +386,19 @@
     "rtl/UAlink2.0/endpoint/endpoint_read_originator.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "5e421dcc320c3a79c3777fddaa5e442b1bc3391628d89eec748b1b1ccc366461",
+      "sha256": "73d054e68f23d34cba6858b87f781ae1bd3b42630a3231b6ea48a1c48c95dd72",
       "source": "rtl/endpoint/endpoint_read_originator.v",
-      "source_git_blob": "71ac7dec5f113563437b8400bf3daa3181c773d4",
-      "source_sha256": "5e421dcc320c3a79c3777fddaa5e442b1bc3391628d89eec748b1b1ccc366461",
+      "source_git_blob": "9e99f61e627d4b096ccf4756ab21b51cf756b3c2",
+      "source_sha256": "73d054e68f23d34cba6858b87f781ae1bd3b42630a3231b6ea48a1c48c95dd72",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_receive_transactions.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "f3dd4e8d433a99bf3d66d61aded01e4bb747d8421ffc8e2eed5f29b0bd02a2f0",
+      "sha256": "89a644f80a2c529a015f2d7ec7c98c1ea5fd643c71fe70d487bf56411144d7f7",
       "source": "rtl/endpoint/endpoint_receive_transactions.v",
-      "source_git_blob": "98a40e0a33cd666befd1627f0b7f64fafd3fc675",
-      "source_sha256": "f3dd4e8d433a99bf3d66d61aded01e4bb747d8421ffc8e2eed5f29b0bd02a2f0",
+      "source_git_blob": "98c8157a69a98e4d965b3970a338064735ced2ef",
+      "source_sha256": "89a644f80a2c529a015f2d7ec7c98c1ea5fd643c71fe70d487bf56411144d7f7",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_request_admission.v": {
@@ -413,10 +413,10 @@
     "rtl/UAlink2.0/endpoint/endpoint_request_formatter.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "07badbd077d3e872ce4a1826f2e0c6258842028463c5f673091ee92282f6ef79",
+      "sha256": "57d8a2b63215d7f8cc0f4ae0654bc6e79dfaf92d80abb5f3e29b70d9e6327c81",
       "source": "rtl/endpoint/endpoint_request_formatter.v",
-      "source_git_blob": "fb6882bfb46cad4f8472c66556ae0e7cba92f548",
-      "source_sha256": "07badbd077d3e872ce4a1826f2e0c6258842028463c5f673091ee92282f6ef79",
+      "source_git_blob": "46c087e1f907c6b6687a69fd239047bcc135c7bc",
+      "source_sha256": "57d8a2b63215d7f8cc0f4ae0654bc6e79dfaf92d80abb5f3e29b70d9e6327c81",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_response_assembler.v": {
@@ -449,46 +449,46 @@
     "rtl/UAlink2.0/endpoint/endpoint_tag_table.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "43938584873ab2aeb577eb4cc619498f57b9ed5d275023c871550207e6438663",
+      "sha256": "a593cae3e04f7895cbfa56b014a0e13e82ffdf493693dd9c3d0a74828c631362",
       "source": "rtl/endpoint/endpoint_tag_table.v",
-      "source_git_blob": "782251135310749e42a77def70fa2ee2981e787e",
-      "source_sha256": "43938584873ab2aeb577eb4cc619498f57b9ed5d275023c871550207e6438663",
+      "source_git_blob": "3368649c76ecd264cdc1780cd52c33c5ce7168ee",
+      "source_sha256": "a593cae3e04f7895cbfa56b014a0e13e82ffdf493693dd9c3d0a74828c631362",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_transaction_core.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "3dd32324dad4aa6513137f986b348be0f04509df578b9e81d80937b8289d2e89",
+      "sha256": "9638ef06d3ca85807a7eea41f79f59ce0e43e495ee761bc8ff446230c4eae213",
       "source": "rtl/endpoint/endpoint_transaction_core.v",
-      "source_git_blob": "7192c99d7cf5649806b146a78e2428ea23ae7db2",
-      "source_sha256": "3dd32324dad4aa6513137f986b348be0f04509df578b9e81d80937b8289d2e89",
+      "source_git_blob": "4eaa6b809fccf89d8199912ec1f72896289804ab",
+      "source_sha256": "9638ef06d3ca85807a7eea41f79f59ce0e43e495ee761bc8ff446230c4eae213",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_write_completer.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "6bf1cafc72d198f6137c3bc60be49ae650a216afea7a787ebe85567caedfa0f5",
+      "sha256": "df89ad8ebd63cfaa53a61c2c004cb8b3d6999d443970cea0eb6853167a096aa5",
       "source": "rtl/endpoint/endpoint_write_completer.v",
-      "source_git_blob": "a95d2979dcf8ed662881097e7639a711304d4771",
-      "source_sha256": "6bf1cafc72d198f6137c3bc60be49ae650a216afea7a787ebe85567caedfa0f5",
+      "source_git_blob": "bc35fc13247279c86d84e78af1c300ee9b058198",
+      "source_sha256": "df89ad8ebd63cfaa53a61c2c004cb8b3d6999d443970cea0eb6853167a096aa5",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/endpoint_write_originator.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "59340aca773fc0946a2ddf4d4d2be44e79ec34eca929508fa63bcf1c341b8afb",
+      "sha256": "6dd78c2f84ce2d80d5abf76f1ec902c1d8f322257935bedcc9b4c1f6b0ced958",
       "source": "rtl/endpoint/endpoint_write_originator.v",
-      "source_git_blob": "3e35a2c3dd89f18a0476744b53bbf8135e038b5d",
-      "source_sha256": "59340aca773fc0946a2ddf4d4d2be44e79ec34eca929508fa63bcf1c341b8afb",
+      "source_git_blob": "38abebeda39a0a954233988d3f2a2d2c02d5a651",
+      "source_sha256": "6dd78c2f84ce2d80d5abf76f1ec902c1d8f322257935bedcc9b4c1f6b0ced958",
       "transformations": []
     },
     "rtl/UAlink2.0/endpoint/ualink_endpoint_top.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "9c05e865bcd700d6dcfbbd633ac1682228164e43477f4eb20a10aff66480137b",
+      "sha256": "c7880d728ad1a0e34fb78faaa0d7d5be3bc36b0063a67c0519acaf4818095e05",
       "source": "rtl/endpoint/ualink_endpoint_top.v",
-      "source_git_blob": "8ada32f36005905a6b81264e004b5a58baeec4c4",
-      "source_sha256": "9c05e865bcd700d6dcfbbd633ac1682228164e43477f4eb20a10aff66480137b",
+      "source_git_blob": "6a89531711ffa899cce425d64db6db2f10b506a4",
+      "source_sha256": "c7880d728ad1a0e34fb78faaa0d7d5be3bc36b0063a67c0519acaf4818095e05",
       "transformations": []
     },
     "rtl/UAlink2.0/inc/inc_block_address.v": {
@@ -1025,10 +1025,10 @@
     "rtl/UAlink2.0/scaffold/endpoint/ualink_endpoint_scaffold.v": {
       "kind": "file",
       "mode": 420,
-      "sha256": "0e4cd2921d25ce98e612f1ed637ee5055f71e023e2fbfd62ad0f7ce330b805ee",
+      "sha256": "230bfeaa37e745f4cc1e46d86c92ab5c0795130ce7f496a2c645ef98fe89c7b0",
       "source": "rtl/scaffold/endpoint/ualink_endpoint_scaffold.v",
-      "source_git_blob": "252f19e8aae8724b030728ec5c79158f086454d9",
-      "source_sha256": "0e4cd2921d25ce98e612f1ed637ee5055f71e023e2fbfd62ad0f7ce330b805ee",
+      "source_git_blob": "1ddf7c54ecde7a7819fd0f0b02fb6f7f02518688",
+      "source_sha256": "230bfeaa37e745f4cc1e46d86c92ab5c0795130ce7f496a2c645ef98fe89c7b0",
       "transformations": []
     },
     "rtl/UAlink2.0/scaffold/switch/ualink_switch_scaffold.v": {
@@ -2222,6 +2222,15 @@
       "source_sha256": "9be11653c1461dbd4163c06f1809a2eea15f6035efc0825dca7f7f48c6cc414d",
       "transformations": []
     },
+    "simulator/UAlink2.0/model/ualink/endpoint_write.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "fdea41b84f4913eef9b52762f6f26627d316fd3cb049783f5a71354ac44a9a11",
+      "source": "model/ualink/endpoint_write.py",
+      "source_git_blob": "64023d6facdc3d4a6f7acec59dfd8c2a90baba2e",
+      "source_sha256": "fdea41b84f4913eef9b52762f6f26627d316fd3cb049783f5a71354ac44a9a11",
+      "transformations": []
+    },
     "simulator/UAlink2.0/model/ualink/receive_fifo.py": {
       "kind": "file",
       "mode": 420,
@@ -2630,14 +2639,89 @@
     "verification/UAlink2.0/endpoint_transaction/run_transactions.py": {
       "kind": "file",
       "mode": 420,
-      "sha256": "1de320caccccbc637425cd860425ec7c63c097da602cf92b2d10d90bf7e129b1",
+      "sha256": "105ad8e77f1120a57fd0037d387fbb582a45740a2442437484b6d0111b7fd621",
       "source": "verification/endpoint_transaction/run_transactions.py",
-      "source_git_blob": "09963e9a730cbb96752099c7b120fd3a3146fadf",
-      "source_sha256": "8c8c0908e391f60dd609b9280b51f1161eeafb9a202d7216f63c454b23b381c4",
+      "source_git_blob": "315a659b1d4ac5779fb14af17a29d2000cbfa6c7",
+      "source_sha256": "610d240c60649b114e6566d28c847ae535dd9d7a9ee85c026045dbe492bf5958",
       "transformations": [
         {
           "kind": "project_root",
           "line": 15,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_write_completer.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "7ae2c49bfc39cbb1dbdbc656f7413ece50dfa9901efb842deb7f51fccd7f6922",
+      "source": "verification/endpoint_transaction/run_write_completer.py",
+      "source_git_blob": "2150b0d9b93467095cb51ddb4b7ff64ddb02c8eb",
+      "source_sha256": "91303ee06595f587a7cfacef754000dbf4ce55c16c57577b88c53a02b22197d2",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 19,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_write_core.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "7fe8b530797d86cc8f7709b6bfbbec778c88676c01aac1a77c0cf7999b76cbb9",
+      "source": "verification/endpoint_transaction/run_write_core.py",
+      "source_git_blob": "0cb96fe571332d5155db7c0e12a5a3ebaecb6b7f",
+      "source_sha256": "9f982e4187227fc21795bc361c00211e5673f160e778f2909d4d712cc017e0cf",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 18,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_write_endpoint_switch.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "7282b7bef8d289c229f52658f98d0271699751ece3a5ca5441f7bd0d8dcc293e",
+      "source": "verification/endpoint_transaction/run_write_endpoint_switch.py",
+      "source_git_blob": "af3e8536e5c400c199426de324c0a9232ee7188e",
+      "source_sha256": "fc0cd501e9e6966e729047e0dc06e37b241f2684dfdaa2b1b32f8ed992a93cf3",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 13,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_write_originator.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "9a12bd3db9120ebac7d4da4c586bf2466b4575cb2c8fc8c92ca87f780f8c089c",
+      "source": "verification/endpoint_transaction/run_write_originator.py",
+      "source_git_blob": "cad06332f8c4cc0ba7a11139654cf177b1293cde",
+      "source_sha256": "6dbb6e43dab4569cad264237617cc28c4ed9180e6cb8731eb07552ca4a42a484",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 14,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_write_receiver.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "85c59e9b7554ae151cefcbd3ace4960b71d85c206cbd1686022888490beeebe8",
+      "source": "verification/endpoint_transaction/run_write_receiver.py",
+      "source_git_blob": "8701d33c32064e39a79b90a6bbc5bb099b513e04",
+      "source_sha256": "802cbb629c8581ab725a47fd5301c7183cc3790b0465a373cb3699b9c33fbe31",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 14,
           "original": "Path(__file__).resolve().parents[2]"
         }
       ]
@@ -2657,6 +2741,21 @@
         }
       ]
     },
+    "verification/UAlink2.0/endpoint_transaction/test_write_model.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "acc1af3ab7842ea9ab7937d313ba37df78503aeb6e53741e3e782fee9add2134",
+      "source": "verification/endpoint_transaction/test_write_model.py",
+      "source_git_blob": "795e913dbdd037a62c58c8c18d11fd6d94ab4dd7",
+      "source_sha256": "d972f2c129f27e20a7eb43595b4a6df6edfc5ddba87f81f4b320e5f7c16cc6c9",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 20,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
     "verification/UAlink2.0/endpoint_transaction/transactions_tb.sv": {
       "kind": "file",
       "mode": 420,
@@ -2664,6 +2763,51 @@
       "source": "verification/endpoint_transaction/transactions_tb.sv",
       "source_git_blob": "080d2a873f3130b5da751cc7a8d9e92e0d4c2ed7",
       "source_sha256": "66f89f4fa639ac0cdf3a68bb42f2a0fe978e46fda54196e390d45ad9770a7d44",
+      "transformations": []
+    },
+    "verification/UAlink2.0/endpoint_transaction/write_completer_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "f81eaa88b4db991b08b273412bf5dae40c0e7ba997c36397a299221170efcd08",
+      "source": "verification/endpoint_transaction/write_completer_tb.sv",
+      "source_git_blob": "e48d9c831e5a87235787e4e0d331422028f3387a",
+      "source_sha256": "f81eaa88b4db991b08b273412bf5dae40c0e7ba997c36397a299221170efcd08",
+      "transformations": []
+    },
+    "verification/UAlink2.0/endpoint_transaction/write_core_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "7bb1b883b27d9dcc976bce31cd62e9715904f5a740c93bad877bfd27df48a870",
+      "source": "verification/endpoint_transaction/write_core_tb.sv",
+      "source_git_blob": "f9676034c79a7ab4c71c419297ce1d0d488c882a",
+      "source_sha256": "7bb1b883b27d9dcc976bce31cd62e9715904f5a740c93bad877bfd27df48a870",
+      "transformations": []
+    },
+    "verification/UAlink2.0/endpoint_transaction/write_endpoint_switch_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "1a9773480e08f2f018ddeb131603800e09ea159d4ecff2c46d97d7222fa8d9f2",
+      "source": "verification/endpoint_transaction/write_endpoint_switch_tb.sv",
+      "source_git_blob": "3ffb706cca4049e7611bc8cba92d3a3db888883b",
+      "source_sha256": "1a9773480e08f2f018ddeb131603800e09ea159d4ecff2c46d97d7222fa8d9f2",
+      "transformations": []
+    },
+    "verification/UAlink2.0/endpoint_transaction/write_formatter_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "0914f659f34f233ae7521dfdbbba588b4617bd864cc19e91278ec6a349a5e7ae",
+      "source": "verification/endpoint_transaction/write_formatter_tb.sv",
+      "source_git_blob": "9ee2c767b2419cdff0de0c9ccd4a00aadddca259",
+      "source_sha256": "0914f659f34f233ae7521dfdbbba588b4617bd864cc19e91278ec6a349a5e7ae",
+      "transformations": []
+    },
+    "verification/UAlink2.0/endpoint_transaction/write_serializer_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "d4c74c364135970243077eab69c4eac38c10711838925dacc2d35d4d1cfdde70",
+      "source": "verification/endpoint_transaction/write_serializer_tb.sv",
+      "source_git_blob": "eee45e1b53e07f95f5d9703b3b2758d2669cfe66",
+      "source_sha256": "d4c74c364135970243077eab69c4eac38c10711838925dacc2d35d4d1cfdde70",
       "transformations": []
     },
     "verification/UAlink2.0/formal/dl_basic_properties.v": {
@@ -3047,10 +3191,10 @@
     "verification/UAlink2.0/ip_tops/run_elaboration.py": {
       "kind": "file",
       "mode": 420,
-      "sha256": "88ca40025286e263a6485e069388129166944ff40199909509b994d443900e5f",
+      "sha256": "79e8b99f192ce6cc341b8c454a6ffe0689d3b50238077307375f8b6353df20fe",
       "source": "verification/ip_tops/run_elaboration.py",
-      "source_git_blob": "90f24c8fc0d67d875b7e932ee0589e8873a3eac8",
-      "source_sha256": "b63dd996d7cafd2e0be89d482e9005555dcd9ec6a8ea90019e95abcd9ae37c6f",
+      "source_git_blob": "324f54ede42f757da7da010c8285a67236bd4d2b",
+      "source_sha256": "83da10e99a9799bfbc5e96511aed14ac712064a490eb9138cfccd3064e7e110a",
       "transformations": [
         {
           "kind": "project_root",
@@ -3608,13 +3752,22 @@
       "source_sha256": "abeba77591ff8944d557d200cbd5b0592a0f1075ab3a700227d7f2556ceb5524",
       "transformations": []
     },
+    "verification/UAlink2.0/project/config/endpoint_write_contract.json": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "d8667853f4eebe589c5cd6650842ce48d5dc9691b3d871fe0e0df026f036e97f",
+      "source": "config/endpoint_write_contract.json",
+      "source_git_blob": "ce41c0f971281966a1c33316a4e58170783ca42e",
+      "source_sha256": "d8667853f4eebe589c5cd6650842ce48d5dc9691b3d871fe0e0df026f036e97f",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/config/ip_module_inventory.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "15c2f41793de0c3625d47f15c4d9f35327f12c0558b45a6d4b18624322a544f5",
+      "sha256": "e4dc5ecefa09f1634db5b14efdf215c8ce657e05032eaf36b92bb60016b2ffcd",
       "source": "config/ip_module_inventory.json",
-      "source_git_blob": "b5ce6a55d6a0491e78dc055a8eb175ac8b6e946d",
-      "source_sha256": "15c2f41793de0c3625d47f15c4d9f35327f12c0558b45a6d4b18624322a544f5",
+      "source_git_blob": "1e9377c53680e0336d16e11b75e080e60e915cf2",
+      "source_sha256": "e4dc5ecefa09f1634db5b14efdf215c8ce657e05032eaf36b92bb60016b2ffcd",
       "transformations": []
     },
     "verification/UAlink2.0/project/config/kd28_verilator.vlt": {
@@ -4076,6 +4229,15 @@
       "source_sha256": "925e3bc6104eca508574f491414ef477bb47184e255a9b7d5fc8b85cffc114b0",
       "transformations": []
     },
+    "verification/UAlink2.0/project/docs/endpoint_write_completer_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "544d1267a87bdee236b5a64b140308777ea01913b71660748e957ea1469f4506",
+      "source": "docs/endpoint_write_completer_review.md",
+      "source_git_blob": "44f582d73367e0369a0fb27eba5826f87dd4954b",
+      "source_sha256": "544d1267a87bdee236b5a64b140308777ea01913b71660748e957ea1469f4506",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/docs/endpoint_write_contract_review.md": {
       "kind": "file",
       "mode": 420,
@@ -4085,13 +4247,94 @@
       "source_sha256": "07207f858569cb77429f31b4d34e05fcca43a31299fb4996ba85e66b61827fe8",
       "transformations": []
     },
+    "verification/UAlink2.0/project/docs/endpoint_write_core_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "f41b5bc6ab710aa4404b9b8c0e949006dd44f91c54564d618f4fe6dac95e9c10",
+      "source": "docs/endpoint_write_core_review.md",
+      "source_git_blob": "7bd40febf0c8e5bff78e35f15e817aa5fcbadc11",
+      "source_sha256": "f41b5bc6ab710aa4404b9b8c0e949006dd44f91c54564d618f4fe6dac95e9c10",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_endpoint_switch_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "bb04a0897f60840299d028a393ba7af30c484b5de85c4e4e6258aec024574998",
+      "source": "docs/endpoint_write_endpoint_switch_review.md",
+      "source_git_blob": "d37f8fdb8dfcf00006ec71067ceeadc69a2a085d",
+      "source_sha256": "bb04a0897f60840299d028a393ba7af30c484b5de85c4e4e6258aec024574998",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_evidence.json": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "cc9a1ee7a1568b1d36a2270bddb2e48f4506e9571fd55fe26c4d528e0eac6948",
+      "source": "docs/endpoint_write_evidence.json",
+      "source_git_blob": "2dcde3415ab488ddb3909b16b06a5770cacea809",
+      "source_sha256": "cc9a1ee7a1568b1d36a2270bddb2e48f4506e9571fd55fe26c4d528e0eac6948",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_execution.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "f3e67b72df64150985cf3fc638646e2c730324e334b43f36079898f932965850",
+      "source": "docs/endpoint_write_execution.md",
+      "source_git_blob": "6f57d412f8831aab96b22105389797497cc88af1",
+      "source_sha256": "f3e67b72df64150985cf3fc638646e2c730324e334b43f36079898f932965850",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_integration_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "e8e19993cce503b62efe20b95f2136fbac6ac894edba7c12d6814dc385cdeb75",
+      "source": "docs/endpoint_write_integration_review.md",
+      "source_git_blob": "f6c0b6081beda78ef7f537afebb32a8e5dd7b67d",
+      "source_sha256": "e8e19993cce503b62efe20b95f2136fbac6ac894edba7c12d6814dc385cdeb75",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_model_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "f3c75a3bf13c5d3e0f1d21aaeac4f2dd9f287a60c3e41169bbb9bec828ba61f3",
+      "source": "docs/endpoint_write_model_review.md",
+      "source_git_blob": "984766f002cca01496def9933fd13a249a84dd6b",
+      "source_sha256": "f3c75a3bf13c5d3e0f1d21aaeac4f2dd9f287a60c3e41169bbb9bec828ba61f3",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_originator_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "56f21f6cc2e2f70e92701c080cdba9b346ec5c467eaedd4ae1047cadb1583094",
+      "source": "docs/endpoint_write_originator_review.md",
+      "source_git_blob": "479aaf236ca37e2a352c193e8388db9662625a16",
+      "source_sha256": "56f21f6cc2e2f70e92701c080cdba9b346ec5c467eaedd4ae1047cadb1583094",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_receiver_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "c626567c696a2c3eebf32629cbf16eb5aa3247872c27cd95f140413ee56e1719",
+      "source": "docs/endpoint_write_receiver_review.md",
+      "source_git_blob": "d3d8eb012e230378048e414e7e7bee290b5906f9",
+      "source_sha256": "c626567c696a2c3eebf32629cbf16eb5aa3247872c27cd95f140413ee56e1719",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_write_test_audit.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "16adeac05277b6bdf3412650b9b0033d2917bda92510984ccfe4a3a666be9207",
+      "source": "docs/endpoint_write_test_audit.md",
+      "source_git_blob": "738c327b67eb5438a2b6a002ed600be6cc65d9d2",
+      "source_sha256": "16adeac05277b6bdf3412650b9b0033d2917bda92510984ccfe4a3a666be9207",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/docs/goal_checkpoint.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "c6abaf1ebe7d31289bda6e02dc0cf1913f190084a9f24ef3ba378d9df18b7451",
+      "sha256": "075544b62cd2a2f5c961d212dda14344ac4efb8bff24dd06992b5a21ba57fc27",
       "source": "docs/goal_checkpoint.json",
-      "source_git_blob": "77379507059cfd0511a6a593d99677d6a8ca68f4",
-      "source_sha256": "c6abaf1ebe7d31289bda6e02dc0cf1913f190084a9f24ef3ba378d9df18b7451",
+      "source_git_blob": "57ba9d523a4328f43c00df8f9bb384f5ba62d548",
+      "source_sha256": "075544b62cd2a2f5c961d212dda14344ac4efb8bff24dd06992b5a21ba57fc27",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_delivery_plan.md": {
@@ -4115,10 +4358,10 @@
     "verification/UAlink2.0/project/docs/ip_module_inventory.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "7fc646e60dfe29446be93bbf2a3a594e4a04d6faaf18bfd3dd8c105d6f816fdb",
+      "sha256": "d7033358d45d2ca38202677f03f9b4888763dae1741ee764703d21563b3b588b",
       "source": "docs/ip_module_inventory.md",
-      "source_git_blob": "be33de5a497b38c6330b557e5c379dc8c2aa7737",
-      "source_sha256": "7fc646e60dfe29446be93bbf2a3a594e4a04d6faaf18bfd3dd8c105d6f816fdb",
+      "source_git_blob": "8055d915969c2508e2269a9f2f8b5f6da7f1a080",
+      "source_sha256": "d7033358d45d2ca38202677f03f9b4888763dae1741ee764703d21563b3b588b",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_scaffold_interface.md": {
@@ -4133,10 +4376,10 @@
     "verification/UAlink2.0/project/docs/ip_top_bringup.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "09a0ac3f4010fdb29c317c70e2ad9be1fbf7315f98ed7f1684bcd670526d54fa",
+      "sha256": "c984672ff5e722cc84d4aae32626c4f55aa57227cfbe6bc8aa822927bf311171",
       "source": "docs/ip_top_bringup.md",
-      "source_git_blob": "eb981cd9f4e380a1c1a598e36a47a5ea33acf2cc",
-      "source_sha256": "09a0ac3f4010fdb29c317c70e2ad9be1fbf7315f98ed7f1684bcd670526d54fa",
+      "source_git_blob": "6f5981a42148db889df78e313f42ba472eaf9f2a",
+      "source_sha256": "c984672ff5e722cc84d4aae32626c4f55aa57227cfbe6bc8aa822927bf311171",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_top_evidence.json": {
@@ -4169,10 +4412,10 @@
     "verification/UAlink2.0/project/docs/overflow_layout.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "2ddec887ad726686473bf7d471e4d99fd6ab82bd88c03eab3a39ad9242f5ebee",
+      "sha256": "18f44617c57d0b4a2f1b67db0cc546d6b35074cf8385771f30e11602d6b0487a",
       "source": "docs/overflow_layout.md",
-      "source_git_blob": "81e20e2bdc0ecae18e74c71b5964529e1f090949",
-      "source_sha256": "2ddec887ad726686473bf7d471e4d99fd6ab82bd88c03eab3a39ad9242f5ebee",
+      "source_git_blob": "a7672a213dd5421e7504c6ec45e6d4b59c20171c",
+      "source_sha256": "18f44617c57d0b4a2f1b67db0cc546d6b35074cf8385771f30e11602d6b0487a",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/research.md": {
@@ -4259,10 +4502,10 @@
     "verification/UAlink2.0/project/docs/status.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "d25dac891eb1ee4b4e044fc8433d554f21a38cba4836764475f14276802aa7a7",
+      "sha256": "26f4c80f6122933e49015159979cbc9b34b07a706b348ea1d3affee9d49307be",
       "source": "docs/status.md",
-      "source_git_blob": "8acdd59fdffe9d55b842f33d98ecdfca24d10d6c",
-      "source_sha256": "d25dac891eb1ee4b4e044fc8433d554f21a38cba4836764475f14276802aa7a7",
+      "source_git_blob": "09ab4e39ada08f7f09a9b04293e1875fb8f59437",
+      "source_sha256": "26f4c80f6122933e49015159979cbc9b34b07a706b348ea1d3affee9d49307be",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/switch_route_lookup_review.md": {
@@ -4866,6 +5109,15 @@
       "source": "docs/upli_model_contract.md",
       "source_git_blob": "eab1619bb70494ac232fbe06e6972afbc4101976",
       "source_sha256": "d2f6aa46bdb0da41b3cec7b790185b5a8dc0cbecc3d9de091b1ff8867c94c123",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/workspace_cleanup.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "b14fb94dcd79ef72ba275bed05e1fff91fcbe73f49babaca6dc755335c094b13",
+      "source": "docs/workspace_cleanup.md",
+      "source_git_blob": "98d5cb945a0f4d23e1ddd2b2e93efcf78ef9f595",
+      "source_sha256": "b14fb94dcd79ef72ba275bed05e1fff91fcbe73f49babaca6dc755335c094b13",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/workspace_verification.json": {
@@ -9110,5 +9362,5 @@
   },
   "owner": "ualink-overflow-export",
   "schema": 1,
-  "source_commit": "7e8896ad624a4b74474ab8843f4cee9780c6db6d"
+  "source_commit": "6b794142c3f3a3bbbbe33a722700dba6c971b712"
 }

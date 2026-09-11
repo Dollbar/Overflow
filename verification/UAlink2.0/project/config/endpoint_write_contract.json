@@ -1,0 +1,117 @@
+{
+  "scope": "ordinary uncompressed unicast Write and WriteFull; full legal geometry, local VC0/VC-credit profile",
+  "references": [
+    "Common 2.0 Table 2-12 pp57-59: Write0x28, WriteFull0x29",
+    "Common 2.0 section2.8 pp77-79: natural byte lanes, masks, all-zero BE and geometry",
+    "Common 2.0 Table2-19 p68: statuses; section2.7.8 pp71-72: UPLI timing",
+    "Common 2.0 Table2-2 p49 and section2.7.4.2 p52: shared per-port Tag domain",
+    "Common 2.0 section5.1.1 pp106-108 and Tables5-29/30 pp137-139: field/half-flit layout"
+  ],
+  "source_contract": "docs/endpoint_write_execution.md",
+  "request": {
+    "address_width": 57,
+    "tag_width": 11,
+    "id_width": 10,
+    "port_width": 2,
+    "length_width": 6,
+    "size_bytes": "4*(length+1)",
+    "beat_count": "ceil(((address mod64)+size_bytes)/64)",
+    "num_beats_field": "beat_count-1",
+    "normal_command": 40,
+    "full_command": 41,
+    "normal_alignment_bytes": 4,
+    "full_alignment_bytes": 64,
+    "full_lengths": [15, 31, 47, 63],
+    "region_bytes": 256,
+    "cross_region_allowed": false,
+    "data_beats": "immutable tuple of exactly N unsigned512 integers, relative Beat0 first",
+    "application_data2048_mapping": "data_beats[j]=(data2048>>(512*j)) & ((1<<512)-1), only j<N",
+    "byte_enable_width": 256,
+    "byte_enable_mapping": "bit k maps memory byte (address & ~255)+k",
+    "ordinary_out_of_range_be": "reject",
+    "ordinary_zero_be": "legal; all Data beats and response still required",
+    "full_input_be": "ignore in this whole-transaction application interface; reconstruct all requested bytes enabled",
+    "data_halves": "2N low/high256 halves, then one256-bit region BE for ordinary Write only",
+    "attr_asi_metadata": "unsigned8/2/8, preserved opaque metadata; no translation or coherence semantics inferred",
+    "vc": 0,
+    "pool": false,
+    "cload": false,
+    "cway_receive": "ignored while CLOAD=0"
+  },
+  "response": {
+    "ftype": 2,
+    "rd_wr": 0,
+    "num_beats": 0,
+    "rsp_type": 0,
+    "statuses": [0, 2, 3, 6, 8],
+    "data_present": false,
+    "data_error": false,
+    "offset_last": "TX zero; RX accepts all width-valid values because unused for Write",
+    "spare": "TX zero; RX ignored",
+    "source": "request.dst for debug only; not identity matching",
+    "destination": "request.src",
+    "tag": "request.tag"
+  },
+  "api": {
+    "module": "ualink.endpoint_write",
+    "types": ["WriteRequest", "WriteResponse", "ByteMemory", "MemoryResult", "TagCompletion"],
+    "functions": [
+      "validate_write(request)",
+      "effective_byte_enable(request)->int256",
+      "data_halves(request)->tuple[int256,...]",
+      "encode_write(request)->int128",
+      "decode_write(word,*,port,data_beats,byte_enable)->WriteRequest",
+      "validate_response(response)",
+      "encode_response(response)->int64",
+      "decode_response(word,*,port)->WriteResponse",
+      "memory_write(request,ByteMemory,*,status=0)->MemoryResult"
+    ],
+    "backend": [
+      "WriteBackend(memory,*,local_id,capacity=4)",
+      "accept(token,request): hold without executing",
+      "finish(token,*,status=0): execute exactly once and retain response",
+      "peek_response(token): response or None until finish",
+      "retire_response(token): free token/capacity"
+    ],
+    "shared_tags": [
+      "ReadWriteTags(*,local_id,capacity=4,num_ports=1)",
+      "reserve(port,tag,kind): shared read/write identity reservation",
+      "mark_sent(port,tag): actual header issue event",
+      "receive(port,tag,kind,status,dst): validate kind, phase, identity, destination, status",
+      "peek(port,tag): completion or None",
+      "retire(port,tag): application completion accepted, identity becomes reusable",
+      "occupancy"
+    ]
+  },
+  "known_vectors": {
+    "method": "fixed literals reviewed using an independent binary-field concatenation worksheet; tests do not generate expected words through model encode/decode",
+    "request_words": [
+      "1a000000000000000000000000000000",
+      "1a4fffa94fd3ffffffffffffe1ffffc0",
+      "1a0a0020415a0000000000001e008041"
+    ],
+    "response_tag2047_src1023_dst1022": {
+      "0": "23ff800ffffe0000",
+      "2": "23ff808ffffe0000",
+      "3": "23ff80cffffe0000",
+      "6": "23ff818ffffe0000",
+      "8": "23ff820ffffe0000"
+    }
+  },
+  "local_memory_policy": [
+    "ByteMemory owns immutable bytes, full57-bit base address and execution count.",
+    "Every valid memory_write invocation counts one attempt, including zero-BE and error results.",
+    "Status0 updates enabled bytes only; invalid address interval yields status3; every error leaves bytes unchanged.",
+    "Explicit nonzero backend status takes priority over local address decode; this is a reference-backend policy.",
+    "Backend accept does not execute; finish produces the effect and response; duplicate/invalid events do not mutate state.",
+    "Response capacity remains allocated until retirement; backend finish order may differ from accept order."
+  ],
+  "limitations": [
+    "Field codecs do not implement Control packing, credits, CRC, DL framing or RTL timing.",
+    "WriteBackend is an event oracle; it does not prove the UPLI next-cycle response rule, coherent ordering or rollback semantics.",
+    "ReadWriteTags is a shared identity oracle, not Read payload validation; existing Read model is unchanged.",
+    "No compressed request/cache, authentication, poison, multicast, atomic or vendor commands.",
+    "No reset epoch, isolation/watchdog or stale-response protection after legal Tag reuse.",
+    "All validation exceptions are local diagnostic behavior, not invented wire error codes."
+  ]
+}

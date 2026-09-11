@@ -58,3 +58,7 @@ python3 -O verification/tools/test_overflow_export.py -v
 15项临时 Git 仓库测试在普通及 `/tmp` 下的 `-O` 模式均通过。覆盖不可变提交/脏工作树/untracked 隔离、路径与哈希、README/ignore、四条链接、原布局与新布局 Python 导入及 fallback、自身源身份、只读/idempotent、增量删除边界、owner 修改保护、非 owner 同内容碰撞、目标 symlink 逃逸、源 symlink、清单路径逃逸和目标映射冲突。测试输出 unittest 结果，临时仓库自动清理。
 
 已对当时的 `88a330e` 源提交做临时空目标只读规划，856个源文件、0排除，目标未发生写入。这不替代后续最终提交的实际 Overflow 导出与运行验证；最终生产发布由 root 选择包含本工具及最新 VIP 的不可变提交后执行。
+
+## 后续上游合并
+
+Write增量发布准备时，远端main已推进到`186769aea7d14adfa5add3e823a6c7e571702508`：清空RTL命名空间README并增加`KD-UAlink2_0.png`。本地发布clone先fast-forward，保留图片为非导出器owner内容，并把远端README原字节合并回源`rtl/README.md`。核实远端Git blob后，仅将旧manifest对应README条目身份同步为该已审查内容，再运行正常导出保护；没有覆盖上游内容或放宽导出器规则。旧manifest和对账记录保存在`build/publication/write_remote_reconciliation/`，最终manifest仍由不可变源提交重建。

@@ -1,0 +1,209 @@
+{
+  "scope": "Ordinary uncompressed Write/WriteFull local VC0 profile plus single64B Read; full dual IP incomplete",
+  "technology_sta": false,
+  "inventory": {
+    "rtl_entries": 202,
+    "existing_partial": 69,
+    "shells": 133
+  },
+  "records": [
+    {
+      "label": "write_ese_final_basic",
+      "record": "build/verification/endpoint_transaction/write_ese_final_basic/result.json",
+      "record_sha256": "6c3fcbb13f67f14d7f3a5a5db56be0b4446c9343e167956d2ce14a62a8cd8347",
+      "reported_passed": true,
+      "requests_per_side": 10,
+      "writes_per_side": 3,
+      "all_lengths": false,
+      "bank_depth": 3,
+      "inject": false,
+      "fault": null,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "pass_markers": [
+        "WRITE_ESE_PASS requests=20 completions=20 writes=3,3 replays=0,0 cycles=791"
+      ]
+    },
+    {
+      "label": "write_ese_final_lengths",
+      "record": "build/verification/endpoint_transaction/write_ese_final_lengths/result.json",
+      "record_sha256": "f87db10eabd13856fb935e6be9c55ef951317bd5394afb5bfa1a287102370cea",
+      "reported_passed": true,
+      "requests_per_side": 283,
+      "writes_per_side": 77,
+      "all_lengths": true,
+      "bank_depth": 3,
+      "inject": false,
+      "fault": null,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "pass_markers": [
+        "WRITE_ESE_PASS requests=566 completions=566 writes=77,77 replays=0,0 cycles=11212"
+      ]
+    },
+    {
+      "label": "write_ese_final_minimum_recovery",
+      "record": "build/verification/endpoint_transaction/write_ese_final_minimum_recovery/result.json",
+      "record_sha256": "4bde3d110d43c9c43b71583cd86838601f064ad49cc6c131b7288a2645ad5645",
+      "reported_passed": true,
+      "requests_per_side": 10,
+      "writes_per_side": 3,
+      "all_lengths": false,
+      "bank_depth": 1,
+      "inject": true,
+      "fault": null,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "pass_markers": [
+        "WRITE_ESE_PASS requests=20 completions=20 writes=3,3 replays=4,4 cycles=784"
+      ]
+    },
+    {
+      "label": "write_ese_final_lengths_minimum_recovery",
+      "record": "build/verification/endpoint_transaction/write_ese_final_lengths_minimum_recovery/result.json",
+      "record_sha256": "22bd50706e597b2e434e88a5ec38f0e51340f12a3c5d03530830fa0347719ae6",
+      "reported_passed": true,
+      "requests_per_side": 283,
+      "writes_per_side": 77,
+      "all_lengths": true,
+      "bank_depth": 1,
+      "inject": true,
+      "fault": null,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "pass_markers": [
+        "WRITE_ESE_PASS requests=566 completions=566 writes=77,77 replays=4,4 cycles=11190"
+      ]
+    },
+    {
+      "label": "write_ese_final_be_fault",
+      "record": "build/verification/endpoint_transaction/write_ese_final_be_fault/result.json",
+      "record_sha256": "1dcea5469d6b414809299424e6129bb01dba47797b3a1bda9cdc4ccbf84a3f03",
+      "reported_passed": true,
+      "requests_per_side": 10,
+      "writes_per_side": 3,
+      "all_lengths": false,
+      "bank_depth": 3,
+      "inject": false,
+      "fault": "drop_write_be",
+      "compile_exit": 0,
+      "run_exit": 1,
+      "pass_markers": []
+    },
+    {
+      "label": "write_ese_final_completion_fault",
+      "record": "build/verification/endpoint_transaction/write_ese_final_completion_fault/result.json",
+      "record_sha256": "58cbfabf21f603a3b7a783f83a4c6968b6c4f366d3cf5366f8a7a66445156e59",
+      "reported_passed": true,
+      "requests_per_side": 10,
+      "writes_per_side": 3,
+      "all_lengths": false,
+      "bank_depth": 3,
+      "inject": false,
+      "fault": "early_write_result",
+      "compile_exit": 0,
+      "run_exit": 1,
+      "pass_markers": []
+    },
+    {
+      "label": "write_core_review_c1",
+      "record": "build/verification/endpoint_transaction/write_core_review_c1/result.json",
+      "record_sha256": "fa2f0e161f4371c3ee780a35e4481d31948844e4c6f4d7b1f2c68572930a9ce3",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_c2",
+      "record": "build/verification/endpoint_transaction/write_core_review_c2/result.json",
+      "record_sha256": "1ed0dfd5d81573fcf9e42e36d1ca13ae435d4d6e46de9e9cb5236fa4a102e250",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_c3",
+      "record": "build/verification/endpoint_transaction/write_core_review_c3/result.json",
+      "record_sha256": "3d532e45cfbe6e2b01f75b8fd1fe96ae63657dda47311db41a4f8896291e2d59",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_c4",
+      "record": "build/verification/endpoint_transaction/write_core_review_c4/result.json",
+      "record_sha256": "790867f87aa6dea3c37a92218bcbb2596b006e3b3c859d6d8d81a09834f92dc5",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_be",
+      "record": "build/verification/endpoint_transaction/write_core_review_be/result.json",
+      "record_sha256": "4695088a9536dd46bbd0606df5a6e101e370a568701e6a058d7e2ead49d08d1b",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_data",
+      "record": "build/verification/endpoint_transaction/write_core_review_data/result.json",
+      "record_sha256": "32093e289b258105a527b2fdcae918d6356ef893d91220edc0a6760d3286d4df",
+      "reported_passed": true
+    },
+    {
+      "label": "write_core_review_dispatch",
+      "record": "build/verification/endpoint_transaction/write_core_review_dispatch/result.json",
+      "record_sha256": "cdb7eff8ba3344f2bd0f927db4bd0ee2b63f202aed7752b3851818bd3dbd8cb3",
+      "reported_passed": true
+    },
+    {
+      "label": "write_receiver_release",
+      "record": "build/verification/endpoint_transaction/write_receiver_release/result.json",
+      "record_sha256": "aa47d03cef42a6e0934918c52fd254954b8fa5dc819acce40fbdb5da9c528f7a",
+      "reported_passed": true
+    },
+    {
+      "label": "write_receiver_release_optimized",
+      "record": "build/verification/endpoint_transaction/write_receiver_release_optimized/result.json",
+      "record_sha256": "badf70c510b2c630a6ad4a96aa6513724b3a4f58d03d42851f1116527ccef7c3",
+      "reported_passed": true
+    },
+    {
+      "label": "write_model_release",
+      "record": "build/verification/endpoint_transaction/write_model_release/result.json",
+      "record_sha256": "2fb62deafdb55a81c613b41157da8b37139aab79f70193bbae1a6b811657b27c",
+      "reported_passed": true
+    },
+    {
+      "label": "write_model_release_optimized",
+      "record": "build/verification/endpoint_transaction/write_model_release_optimized/result.json",
+      "record_sha256": "f5121ab75a4950d925d7e4c498bf5316603488fea80dc1624fa4449bad70e25f",
+      "reported_passed": true
+    },
+    {
+      "label": "write_originator_release",
+      "record": "build/verification/endpoint_transaction/write_originator_release/result.json",
+      "record_sha256": "b53b7286076e870f8b67266b33760f84fb46f8ba92de66f6f4592560a5f85ddb",
+      "reported_passed": true
+    }
+  ],
+  "rtl_sources": {
+    "rtl/endpoint/endpoint_atomic_transport.v": "0e25f2d9452f896cbf66397849bf2acf33f159c49a0eff27142d840245d974dc",
+    "rtl/endpoint/endpoint_completion_sink.v": "c09022e4dc3086ba8ef157c80388c23f2f1bec6b4007275059c7ac9724eba5c6",
+    "rtl/endpoint/endpoint_memory_adapter.v": "680a31527fa2f86a2263ace46346c5c51764383d19181ce1450b50b531b0eb06",
+    "rtl/endpoint/endpoint_message_handler.v": "eb1c18f69f5cbde0121e0b68eef7380967288b9efa305a6115fdd99fbba8eee3",
+    "rtl/endpoint/endpoint_ordering.v": "d2c217351ad3c6a1a703cd80e311e8813ea65e68c99a103693556db9d062c9f8",
+    "rtl/endpoint/endpoint_read_completer.v": "4e1fe08f12eb09aa0a875785cebce4d0020e120058e266b64b2546feaf98526f",
+    "rtl/endpoint/endpoint_read_encode.v": "4a5487d760ea49dd7306eb98c269b87538c861651a39aaa597a40f68e57c2262",
+    "rtl/endpoint/endpoint_read_originator.v": "73d054e68f23d34cba6858b87f781ae1bd3b42630a3231b6ea48a1c48c95dd72",
+    "rtl/endpoint/endpoint_receive_transactions.v": "89a644f80a2c529a015f2d7ec7c98c1ea5fd643c71fe70d487bf56411144d7f7",
+    "rtl/endpoint/endpoint_request_admission.v": "d1b72f960d0e273bc77022eef83f2851a96a81ed5724b729f4ca0d5ab15e10e7",
+    "rtl/endpoint/endpoint_request_formatter.v": "57d8a2b63215d7f8cc0f4ae0654bc6e79dfaf92d80abb5f3e29b70d9e6327c81",
+    "rtl/endpoint/endpoint_response_assembler.v": "c3962e2742f0854c99218b440405865ee7014378724974634f478174d0346c2b",
+    "rtl/endpoint/endpoint_response_encode.v": "38d43a7aa7122d591c28805070795fd4b8570f7123a627b04c859f339cbd5fdb",
+    "rtl/endpoint/endpoint_response_formatter.v": "a4e4ff6767b9a7f2ebf62a6f4a0b9ee47134618500d30ead3d09df5f1d7dbcfb",
+    "rtl/endpoint/endpoint_tag_table.v": "a593cae3e04f7895cbfa56b014a0e13e82ffdf493693dd9c3d0a74828c631362",
+    "rtl/endpoint/endpoint_transaction_core.v": "9638ef06d3ca85807a7eea41f79f59ce0e43e495ee761bc8ff446230c4eae213",
+    "rtl/endpoint/endpoint_write_completer.v": "df89ad8ebd63cfaa53a61c2c004cb8b3d6999d443970cea0eb6853167a096aa5",
+    "rtl/endpoint/endpoint_write_originator.v": "6dd78c2f84ce2d80d5abf76f1ec902c1d8f322257935bedcc9b4c1f6b0ced958",
+    "rtl/endpoint/ualink_endpoint_top.v": "c7880d728ad1a0e34fb78faaa0d7d5be3bc36b0063a67c0519acaf4818095e05"
+  },
+  "limits": [
+    "ESE uses explicit switch route sideband and local DL record; not native wire framing certification",
+    "ESE covers 64 LEN representatives and 10 Full geometries; 2080 ordinary legal start/LEN geometries checked at unit/model level",
+    "Uniform legacy Read reset checked; mixed Write in-flight reset and independent epoch recovery remain open",
+    "Strict core lint has 16 warnings without waivers; no process STA/PPA signoff"
+  ],
+  "review": "docs/endpoint_write_integration_review.md"
+}

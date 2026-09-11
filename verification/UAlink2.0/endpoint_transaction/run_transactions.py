@@ -138,12 +138,14 @@ def main():
         dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,dest);copies.append(dest)
         mutations={
             'capacity':('endpoint_transaction_core.v','.CAPACITY(ORIGINATOR_CAPACITY_SAFE)', '.CAPACITY(4)'),
-            'data_half':('endpoint_transaction_core.v', 'assign o_data1={completer_data[511:256],256\'d0};', 'assign o_data1={256\'d0,256\'d0};'),
+            'data_half':('endpoint_transaction_core.v', 'assign o_data1={completer_data[511:256],originator_data[511:256]};', 'assign o_data1={256\'d0,originator_data[511:256]};'),
             'retirement':('ualink_endpoint_top.v', '.i_read_ready(selected_read_ready),.o_read_valid(o_read_valid)', '.i_read_ready(1\'b1),.o_read_valid(o_read_valid)'),
             'tag_high':('endpoint_transaction_core.v', '.i_response_tag(response_tag)', '.i_response_tag({1\'b0,response_tag[9:0]})')}
         if a.fault and path.name==mutations[a.fault][0]:
             _,before,after=mutations[a.fault];text=dest.read_text()
-            if text.count(before)!=1:raise ValueError('fault anchor missing/ambiguous')
+            # Both generate branches own the same Read identity/capacity contract.
+            expected_anchors=2 if a.fault in ('capacity','tag_high') else 1
+            if text.count(before)!=expected_anchors:raise ValueError('fault anchor missing/ambiguous')
             dest.write_text(text.replace(before,after))
         hashes[str(path)]=hashlib.sha256(path.read_bytes()).hexdigest()
     for path in [Path(__file__),ROOT/'config/ip_module_inventory.json']+([] if a.shell_baseline else [ROOT/'verification/endpoint_transaction/transactions_tb.sv']):

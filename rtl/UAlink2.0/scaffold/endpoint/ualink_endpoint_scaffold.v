@@ -12,20 +12,6 @@ endpoint_request_admission u_endpoint_request_admission(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_1),.o_error());
 assign o_pending_features[1]=!implemented_1;
-wire implemented_5;
-endpoint_write_originator u_endpoint_write_originator(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_5),.o_error());
-assign o_pending_features[5]=!implemented_5;
-wire implemented_6;
-endpoint_write_completer u_endpoint_write_completer(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_6),.o_error());
-assign o_pending_features[6]=!implemented_6;
 wire implemented_7;
 endpoint_atomic_transport u_endpoint_atomic_transport(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -33,13 +19,6 @@ endpoint_atomic_transport u_endpoint_atomic_transport(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_7),.o_error());
 assign o_pending_features[7]=!implemented_7;
-wire implemented_10;
-endpoint_request_formatter u_endpoint_request_formatter(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_10),.o_error());
-assign o_pending_features[10]=!implemented_10;
 wire implemented_13;
 endpoint_response_formatter u_endpoint_response_formatter(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -716,8 +695,11 @@ assign o_pending_features[0]=1'b0;
 assign o_pending_features[2]=1'b0;
 assign o_pending_features[3]=1'b0;
 assign o_pending_features[4]=1'b0;
+assign o_pending_features[5]=1'b0;
+assign o_pending_features[6]=1'b0;
 assign o_pending_features[8]=1'b0;
 assign o_pending_features[9]=1'b0;
+assign o_pending_features[10]=1'b0;
 assign o_pending_features[11]=1'b0;
 assign o_pending_features[12]=1'b0;
 assign o_pending_features[109]=1'b0;
