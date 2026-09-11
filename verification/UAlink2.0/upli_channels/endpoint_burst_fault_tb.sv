@@ -629,7 +629,15 @@ upli_endpoint_ip_top #(.C_NUM_PORTS(P),.C_IS_TL(TL)) dut(
 .i_req_has_data(i_req_has_data),
 .o_rx_burst_error(o_rx_burst_error),
 .o_rx_burst_error_sticky(o_rx_burst_error_sticky),
-.o_rx_burst_active(o_rx_burst_active)
+.o_rx_burst_active(o_rx_burst_active),
+.i_context_station(8'd0),
+.i_backend_issue_ready(1'b0),
+.i_backend_release_valid(1'b0),
+.i_backend_release_token(10'd0),
+.o_backend_issue_valid(),.o_backend_issue_token(),.o_backend_release_ready(),
+.o_context_request_ready(),.o_context_request_token(),.o_context_error(),.o_context_count(),
+.o_backend_issue_station(),.o_backend_issue_port(),.o_backend_issue_vc(),.o_backend_issue_pool(),
+.o_backend_issue_payload(),.o_backend_issue_data(),.o_backend_issue_be(),.o_backend_issue_poison(),.o_backend_issue_data_pools()
 );
 integer checks=0,cycles=0,reqs=0,beats=0,faults=0,n,p,k;
 reg [9:0] history=0;reg overlay=0;reg [5:0] cmd,len;

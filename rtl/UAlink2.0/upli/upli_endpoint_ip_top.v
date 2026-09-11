@@ -17,7 +17,12 @@ parameter integer C_INIT_COUNT_WIDTH=4, // 沿用实际子模块参数，TX远�
 parameter integer C_INIT_CYCLES=2, // 沿用实际子模块参数，TX远端容量和本地RX容量分别配置。
 parameter integer C_RETURN_DEPTH=4, // 沿用实际子模块参数，TX远端容量和本地RX容量分别配置。
 parameter integer C_PENDING_WIDTH=(C_RETURN_DEPTH<=1)?1:(C_RETURN_DEPTH<=3)?2:(C_RETURN_DEPTH<=7)?3:(C_RETURN_DEPTH<=15)?4:5, // 沿用实际子模块参数，TX远端容量和本地RX容量分别配置。
-parameter integer C_ORDER_COUNT_WIDTH=C_CREDIT_WIDTH+3 // 沿用实际子模块参数，TX远端容量和本地RX容量分别配置。
+parameter integer C_ORDER_COUNT_WIDTH=C_CREDIT_WIDTH+3, // 沿用实际子模块参数，TX远端容量和本地RX容量分别配置。
+parameter integer C_REQUEST_CONTEXT_ENABLE=0, // 关闭时保留已有descriptor消费者接口。
+parameter integer C_CONTEXT_CAPACITY=4, // 唯一本地上下文表容量。
+parameter integer C_CONTEXT_GENERATION_WIDTH=8, // 有限本地token代次，不改网络Tag。
+parameter integer C_CONTEXT_SLOT_WIDTH=(C_CONTEXT_CAPACITY<=2)?1:(C_CONTEXT_CAPACITY<=4)?2:(C_CONTEXT_CAPACITY<=8)?3:4, // 对齐真实表项索引。
+parameter integer C_CONTEXT_COUNT_WIDTH=(C_CONTEXT_CAPACITY<=1)?1:(C_CONTEXT_CAPACITY<=3)?2:(C_CONTEXT_CAPACITY<=7)?3:(C_CONTEXT_CAPACITY<=15)?4:5 // 总占用包含已issue项。
 )( // typed发送候选与真实响应collector握手分别保留所有权。
 input wire  i_clk, // 完整原生字段、可信描述符或独立消费者资格。
 input wire  i_rstn, // 完整原生字段、可信描述符或独立消费者资格。
@@ -330,10 +335,30 @@ output wire [618:0] o_response_read_payload, // 完整原生字段、可信描�
 output wire [100:0] o_response_write_payload, // 完整原生字段、可信描述符或独立消费者资格。
 output wire [1:0] o_response_retired, // 完整原生字段、可信描述符或独立消费者资格。
 output wire [1:0] o_response_metadata_error, // 完整原生字段、可信描述符或独立消费者资格。
-output wire  o_response_fault_stop_request // 完整原生字段、可信描述符或独立消费者资格。
+output wire  o_response_fault_stop_request, // 完整原生字段、可信描述符或独立消费者资格。
+input wire [7:0] i_context_station, // 上下文接纳、交付或最终释放的明确边界。
+input wire  i_backend_issue_ready, // 上下文接纳、交付或最终释放的明确边界。
+input wire  i_backend_release_valid, // 上下文接纳、交付或最终释放的明确边界。
+input wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] i_backend_release_token, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_backend_issue_valid, // 上下文接纳、交付或最终释放的明确边界。
+output wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] o_backend_issue_token, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_backend_release_ready, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_context_request_ready, // 上下文接纳、交付或最终释放的明确边界。
+output wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] o_context_request_token, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_context_error, // 上下文接纳、交付或最终释放的明确边界。
+output wire [C_CONTEXT_COUNT_WIDTH-1:0] o_context_count, // 上下文接纳、交付或最终释放的明确边界。
+output wire [7:0] o_backend_issue_station, // 上下文接纳、交付或最终释放的明确边界。
+output wire [1:0] o_backend_issue_port, // 上下文接纳、交付或最终释放的明确边界。
+output wire [1:0] o_backend_issue_vc, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_backend_issue_pool, // 上下文接纳、交付或最终释放的明确边界。
+output wire [183:0] o_backend_issue_payload, // 上下文接纳、交付或最终释放的明确边界。
+output wire [2047:0] o_backend_issue_data, // 上下文接纳、交付或最终释放的明确边界。
+output wire [255:0] o_backend_issue_be, // 上下文接纳、交付或最终释放的明确边界。
+output wire [3:0] o_backend_issue_poison, // 上下文接纳、交付或最终释放的明确边界。
+output wire [3:0] o_backend_issue_data_pools // 上下文接纳、交付或最终释放的明确边界。
 ); // 结束完整原生前端聚合接口。
 wire [3:0] collector_port;wire [1:0] collector_ready; // 实际collector唯一驱动两个原RX的选择和退休。
-assign o_backend_implemented=1'b0; // 当前未接真正Endpoint上下文和执行器，禁止假完成。
+assign o_backend_implemented=1'b0; // 上下文仅提供真实issue/release边界，尚无backend执行器，禁止假完成。
 upli_connection_side #(.C_IS_COMPLETER(1'b0)) u_originator_connection( // 本角色唯一连接状态机。
  .i_clk(i_clk),.i_rstn(i_rstn),.i_ready(i_originator_ready), // 连接保持与业务Drop分离，不撤销既有承诺。
  .i_peer_req(i_originator_peer_req),.i_peer_ack(i_originator_peer_ack), // 真实对端输入，不制造本地虚假应答。
@@ -676,7 +701,7 @@ upli_endpoint_native_rx_path #(.C_NUM_PORTS(C_NUM_PORTS),.C_CREDIT_WIDTH(C_CREDI
 .o_tdm_error_sticky(o_rx_tdm_error_sticky), // 保留完整native、可信head、descriptor与分类诊断。
 .o_tdm_phase_known(o_rx_tdm_phase_known), // 保留完整native、可信head、descriptor与分类诊断。
 .o_tdm_expected_port(o_rx_tdm_expected_port), // 保留完整native、可信head、descriptor与分类诊断。
-.i_request_ready(i_rx_request_ready), // 保留完整native、可信head、descriptor与分类诊断。
+.i_request_ready(context_bridge_ready), // 保留完整native、可信head、descriptor与分类诊断。
 .o_request_valid(o_rx_request_valid), // 保留完整native、可信head、descriptor与分类诊断。
 .o_request_port(o_rx_request_port), // 保留完整native、可信head、descriptor与分类诊断。
 .o_request_vc(o_rx_request_vc), // 保留完整native、可信head、descriptor与分类诊断。
@@ -742,5 +767,64 @@ upli_rx_role_fault_controller #(.C_NUM_PORTS(C_NUM_PORTS),.C_NUM_ROLES(2),.C_IS_
  .i_metadata_error(kind_metadata),.i_order_error(kind_order),.i_storage_error(kind_storage),.i_tdm_error(kind_tdm),.i_data_error(kind_data), // data-only按拍poison，不能升级为Drop。
  .o_drop_roles(o_drop_roles),.o_drop_ports(o_drop_ports),.o_notify_roles(o_notify_roles),.o_ack_accepted(o_ack_accepted), // 所有业务使用同一真实角色故障资格。
  .o_reset_required(o_reset_required),.o_reason_sticky(o_reason_sticky),.o_init_incomplete(o_init_incomplete),.o_data_error_observed(o_data_error_observed)); // 保留原因与故障初始化边界。
+wire context_bridge_ready; // bridge只有一个实际消费者，启用后由真实上下文表独占admission。
+wire context_rstn; // 复用现有Completer Drop取消资格，不建立第二角色状态机。
+assign context_rstn=i_rstn && !o_drop_roles[1]; // bridge和context在同一取消沿丢弃本地旧承诺，RX信用队列仍共同reset。
+wire unused_legacy_request_ready; // 启用时旧ready只保留兼容端口，不参与descriptor消费。
+assign unused_legacy_request_ready=i_rx_request_ready; // 显式说明旧接口不形成第二消费者。
+generate if(C_REQUEST_CONTEXT_ENABLE==1)begin:gen_request_context // 单表保存完整native身份，不另发信用或响应。
+ assign context_bridge_ready=o_context_request_ready; // 唯一admission资格直连真实bridge。
+ upli_endpoint_request_context #( // 复用已验证的完整上下文所有权表。
+  .CAPACITY(C_CONTEXT_CAPACITY),.C_NUM_PORTS(C_NUM_PORTS),.C_STATION_WIDTH(8), // station为本地上下文身份，不改线字段。
+  .C_GENERATION_WIDTH(C_CONTEXT_GENERATION_WIDTH),.C_SLOT_WIDTH(C_CONTEXT_SLOT_WIDTH),.C_COUNT_WIDTH(C_CONTEXT_COUNT_WIDTH) // 所有派生宽度由真实表检查。
+ ) RequestContext_Inst( // 全部信息仅在bridge descriptor fire时保存。
+  .i_clk(i_clk),.i_rstn(context_rstn), // 共同时钟及既有role取消资格。
+  .i_request_valid(o_rx_request_valid),.o_request_ready(o_context_request_ready),.o_request_token(o_context_request_token), // 原descriptor观察输出不再是第二消费接口。
+  .i_request_station(i_context_station), // epoch内稳定的本地station身份。
+  .i_request_port(o_rx_request_port), // 完整保存原始port，不从后续输入重建。
+  .i_request_vc(o_rx_request_vc), // 完整保存原始vc，不从后续输入重建。
+  .i_request_pool(o_rx_request_pool), // 完整保存原始pool，不从后续输入重建。
+  .i_request_payload(o_rx_request_payload), // 完整保存原始payload，不从后续输入重建。
+  .i_request_data(o_rx_request_data), // 完整保存原始data，不从后续输入重建。
+  .i_request_be(o_rx_request_be), // 完整保存原始be，不从后续输入重建。
+  .i_request_poison(o_rx_request_poison), // 完整保存原始poison，不从后续输入重建。
+  .i_request_data_pools(o_rx_request_data_pools), // 完整保存原始data_pools，不从后续输入重建。
+  .i_issue_ready(i_backend_issue_ready),.o_issue_valid(o_backend_issue_valid),.o_issue_token(o_backend_issue_token), // issue仅交付，不能释放Tag或容量。
+  .o_issue_station(o_backend_issue_station), // 同一上下文背压期间保持完整station。
+  .o_issue_port(o_backend_issue_port), // 同一上下文背压期间保持完整port。
+  .o_issue_vc(o_backend_issue_vc), // 同一上下文背压期间保持完整vc。
+  .o_issue_pool(o_backend_issue_pool), // 同一上下文背压期间保持完整pool。
+  .o_issue_payload(o_backend_issue_payload), // 同一上下文背压期间保持完整payload。
+  .o_issue_data(o_backend_issue_data), // 同一上下文背压期间保持完整data。
+  .o_issue_be(o_backend_issue_be), // 同一上下文背压期间保持完整be。
+  .o_issue_poison(o_backend_issue_poison), // 同一上下文背压期间保持完整poison。
+  .o_issue_data_pools(o_backend_issue_data_pools), // 同一上下文背压期间保持完整data_pools。
+  .i_release_valid(i_backend_release_valid),.i_release_token(i_backend_release_token),.o_release_ready(o_backend_release_ready), // 只有合法最终release才归还槽。
+  .o_error(o_context_error),.o_count(o_context_count) // 非法本地事件只诊断，不扩大既有Drop。
+ ); // 结束唯一上下文表实例。
+end else begin:gen_legacy_request // 默认关闭保持原真实bridge消费者行为。
+ assign context_bridge_ready=i_rx_request_ready; // legacy外部ready继续独占descriptor消费。
+ wire unused_context_inputs; // 未启用的新增输入没有协议副作用。
+ assign unused_context_inputs=^{i_context_station,i_backend_issue_ready,i_backend_release_valid,i_backend_release_token,context_rstn}; // 只声明未启用输入的本地静态用途。
+ assign o_backend_issue_valid='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_token='b0; // legacy模式新增接口确定归零。
+ assign o_backend_release_ready='b0; // legacy模式新增接口确定归零。
+ assign o_context_request_ready='b0; // legacy模式新增接口确定归零。
+ assign o_context_request_token='b0; // legacy模式新增接口确定归零。
+ assign o_context_error='b0; // legacy模式新增接口确定归零。
+ assign o_context_count='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_station='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_port='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_vc='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_pool='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_payload='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_data='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_be='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_poison='b0; // legacy模式新增接口确定归零。
+ assign o_backend_issue_data_pools='b0; // legacy模式新增接口确定归零。
+end endgenerate // 不并列创建两个descriptor所有者。
+generate if((C_REQUEST_CONTEXT_ENABLE!=0)&&(C_REQUEST_CONTEXT_ENABLE!=1))begin:gen_invalid_context_enable // 显式拒绝未定义模式。
+ upli_endpoint_context_enable_invalid ContextEnableInvalid_Inst(); // 错误参数不能静默退回legacy。
+end endgenerate // 结束模式保护。
 endmodule // 结束实际原生前端，backend/collector仍须后续真实接入。
 `default_nettype wire // 恢复独立编译单元默认网络。

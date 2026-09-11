@@ -33,13 +33,6 @@ endpoint_ordering u_endpoint_ordering(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_14),.o_error());
 assign o_pending_features[14]=!implemented_14;
-wire implemented_15;
-endpoint_memory_adapter u_endpoint_memory_adapter(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_15),.o_error());
-assign o_pending_features[15]=!implemented_15;
 wire implemented_16;
 endpoint_message_handler u_endpoint_message_handler(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -579,13 +572,6 @@ ras_tl_drop u_ras_tl_drop(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_97),.o_error());
 assign o_pending_features[97]=!implemented_97;
-wire implemented_98;
-ras_originator_isolation u_ras_originator_isolation(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_98),.o_error());
-assign o_pending_features[98]=!implemented_98;
 wire implemented_99;
 ras_completion_timeout u_ras_completion_timeout(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -667,11 +653,13 @@ assign o_pending_features[9]=1'b0;
 assign o_pending_features[10]=1'b0;
 assign o_pending_features[11]=1'b0;
 assign o_pending_features[12]=1'b0;
+assign o_pending_features[15]=1'b0;
 assign o_pending_features[19]=1'b0;
 assign o_pending_features[20]=1'b0;
 assign o_pending_features[21]=1'b0;
 assign o_pending_features[22]=1'b0;
 assign o_pending_features[24]=1'b0;
+assign o_pending_features[98]=1'b0;
 assign o_pending_features[109]=1'b0;
 assign o_pending_features[110]=1'b0;
 assign o_pending_features[111]=1'b0;

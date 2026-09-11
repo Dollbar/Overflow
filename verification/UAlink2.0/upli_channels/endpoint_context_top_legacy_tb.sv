@@ -267,6 +267,23 @@ wire sent_pool[0:3];
 wire [618:0] sent_payload[0:3],head_payload[0:3];
 wire [12:0] sent_parity[0:3];
 wire [3:0] head_taken;
+wire  legacy_o_backend_issue_valid;
+wire [10-1:0] legacy_o_backend_issue_token;
+wire  legacy_o_backend_release_ready;
+wire  legacy_o_context_request_ready;
+wire [10-1:0] legacy_o_context_request_token;
+wire  legacy_o_context_error;
+wire [3-1:0] legacy_o_context_count;
+wire [7:0] legacy_o_backend_issue_station;
+wire [1:0] legacy_o_backend_issue_port;
+wire [1:0] legacy_o_backend_issue_vc;
+wire  legacy_o_backend_issue_pool;
+wire [183:0] legacy_o_backend_issue_payload;
+wire [2047:0] legacy_o_backend_issue_data;
+wire [255:0] legacy_o_backend_issue_be;
+wire [3:0] legacy_o_backend_issue_poison;
+wire [3:0] legacy_o_backend_issue_data_pools;
+always @(posedge clk) if(rstn)begin #2;if({legacy_o_backend_issue_valid,legacy_o_backend_issue_token,legacy_o_backend_release_ready,legacy_o_context_request_ready,legacy_o_context_request_token,legacy_o_context_error,legacy_o_context_count,legacy_o_backend_issue_station,legacy_o_backend_issue_port,legacy_o_backend_issue_vc,legacy_o_backend_issue_pool,legacy_o_backend_issue_payload,legacy_o_backend_issue_data,legacy_o_backend_issue_be,legacy_o_backend_issue_poison,legacy_o_backend_issue_data_pools} !== '0)$fatal(1,"IP_TOP_MISMATCH legacy outputs");end
 wire request_ready=consumer_enable && (cycles%47>=31);
 wire response_ready=consumer_enable && (cycles%7!=0);
 assign sent_port[0]=o_req_port; assign sent_vc[0]=o_req_vc; assign sent_pool[0]=o_req_pool;
@@ -387,14 +404,6 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_response_retired(top_response_retired),
 .o_response_metadata_error(top_response_metadata_error),
 .o_response_fault_stop_request(top_response_fault_stop_request),
-.i_context_station(8'd0),
-.i_backend_issue_ready(1'b0),
-.i_backend_release_valid(1'b0),
-.i_backend_release_token(10'd0),
-.o_backend_issue_valid(),.o_backend_issue_token(),.o_backend_release_ready(),
-.o_context_request_ready(),.o_context_request_token(),.o_context_error(),.o_context_count(),
-.o_backend_issue_station(),.o_backend_issue_port(),.o_backend_issue_vc(),.o_backend_issue_pool(),
-.o_backend_issue_payload(),.o_backend_issue_data(),.o_backend_issue_be(),.o_backend_issue_poison(),.o_backend_issue_data_pools(),
 .o_drop_roles(top_drop_roles),
 .o_drop_ports(top_drop_ports),
 .o_notify_roles(top_notify_roles),
@@ -663,6 +672,26 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_rx_tdm_error_sticky(path_tdm_error_sticky),
 .o_rx_tdm_phase_known(path_tdm_phase_known),
 .o_rx_tdm_expected_port(path_tdm_expected_port),
+.i_context_station(8'd255),
+.i_backend_issue_ready(1'd1),
+.i_backend_release_valid(1'd1),
+.i_backend_release_token(10'd1023),
+.o_backend_issue_valid(legacy_o_backend_issue_valid),
+.o_backend_issue_token(legacy_o_backend_issue_token),
+.o_backend_release_ready(legacy_o_backend_release_ready),
+.o_context_request_ready(legacy_o_context_request_ready),
+.o_context_request_token(legacy_o_context_request_token),
+.o_context_error(legacy_o_context_error),
+.o_context_count(legacy_o_context_count),
+.o_backend_issue_station(legacy_o_backend_issue_station),
+.o_backend_issue_port(legacy_o_backend_issue_port),
+.o_backend_issue_vc(legacy_o_backend_issue_vc),
+.o_backend_issue_pool(legacy_o_backend_issue_pool),
+.o_backend_issue_payload(legacy_o_backend_issue_payload),
+.o_backend_issue_data(legacy_o_backend_issue_data),
+.o_backend_issue_be(legacy_o_backend_issue_be),
+.o_backend_issue_poison(legacy_o_backend_issue_poison),
+.o_backend_issue_data_pools(legacy_o_backend_issue_data_pools),
 .i_rx_request_ready(request_ready),
 .o_rx_request_valid(path_request_valid),
 .o_rx_request_port(path_request_port),

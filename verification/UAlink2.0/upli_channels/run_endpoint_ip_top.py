@@ -40,7 +40,7 @@ def main():
   target.write_bytes(b)
   if f in paths:files.append(target)
  static=[];lint=[]
- needed={TOP,'upli_endpoint_response_collector','upli_endpoint_native_rx_path','upli_station_tx','upli_native_rx_burst_monitor','upli_connection_side','upli_rx_role_fault_controller','upli_credit_guard','upli_request_data_sender','upli_burst_sender','upli_burst_control','upli_credit_bank','upli_request_channel','upli_orig_data_channel','upli_read_response_sender','upli_write_response_sender','upli_read_response_channel','upli_write_response_channel','upli_endpoint_request_bridge','upli_receive_tdm_monitor','upli_native_rx_channel','upli_native_rx_protection','upli_ordered_receive_channel','upli_receive_channel','upli_receive_storage','upli_receive_fifo','upli_credit_initializer','upli_credit_return_queue','upli_credit_return_adapter','upli_parity'}
+ needed={TOP,'upli_endpoint_request_context','upli_endpoint_response_collector','upli_endpoint_native_rx_path','upli_station_tx','upli_native_rx_burst_monitor','upli_connection_side','upli_rx_role_fault_controller','upli_credit_guard','upli_request_data_sender','upli_burst_sender','upli_burst_control','upli_credit_bank','upli_request_channel','upli_orig_data_channel','upli_read_response_sender','upli_write_response_sender','upli_read_response_channel','upli_write_response_channel','upli_endpoint_request_bridge','upli_receive_tdm_monitor','upli_native_rx_channel','upli_native_rx_protection','upli_ordered_receive_channel','upli_receive_channel','upli_receive_storage','upli_receive_fifo','upli_credit_initializer','upli_credit_return_queue','upli_credit_return_adapter','upli_parity'}
  for f in files:
   if f.stem in needed or f.name in {Path(n).name for n in deps}:static.append(f)
  if a.static:

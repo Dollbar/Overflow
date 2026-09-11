@@ -4421,9 +4421,11 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
-      "purpose": "加速器本地内存/原子执行接口的准入、原请求上下文和完成交接",
-      "dependencies": [],
+      "status": "existing_partial",
+      "purpose": "以单在途生命周期保持完整请求命令和后端结果，直到显式最终响应退休后才向request context交付release token",
+      "dependencies": [
+        "upli_endpoint_request_context"
+      ],
       "source_refs": [
         {
           "family": "F02",
@@ -4438,36 +4440,34 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "完整request-context issue tuple、后端command ready/result和最终响应退休token"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "反压稳定的完整后端命令/完成、最终退休后context release及顺序诊断"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "endpoint_atomic_transport",
         "endpoint_read_completer",
         "endpoint_transaction_core",
-        "endpoint_write_completer"
+        "endpoint_write_completer",
+        "upli_endpoint_ip_top"
       ],
       "feature_slots": {
         "endpoint": 15
       },
       "functional_inputs": [
-        "完整请求/响应描述符、Data/BE、端口与Tag、本地执行/应用握手"
+        "完整context token、station/port/VC/pool、Request184、Data2048、BE256、poison及后端结果"
       ],
       "functional_outputs": [
-        "格式化请求/响应、内存操作、完整应用完成及事务诊断"
+        "后端命令与完成交接，以及仅在真实最终响应退休后的context release"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single_outstanding_backend_lifecycle_without_execution_response_formatting_dummy_completion_or_recovery_epoch",
+      "port_source": "rtl/endpoint/endpoint_memory_adapter.v"
     },
     {
       "id": "endpoint_message_handler",
@@ -10963,8 +10963,8 @@
         "switch"
       ],
       "subsystem": "ras",
-      "status": "planned",
-      "purpose": "端点station或Switch INC出口Originator Isolation与迟到响应丢弃",
+      "status": "existing_partial",
+      "purpose": "Track real completion obligations by slot and epoch, isolate the applicable Endpoint or Switch scope, request timeout dummy completions, discard late real completions and permit only explicit non-wrapping recovery.",
       "dependencies": [],
       "source_refs": [
         {
@@ -10976,20 +10976,16 @@
           "source": "M §7–9"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Trusted isolate/link events, transaction obligation registration and completion events, dummy completion acknowledgement and explicit recovery epoch"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Scoped isolation/forward qualification, stable dummy completion request, late completion discard, obligation count, diagnostics and explicit recovery handshake"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "ras_controller"
       ],
@@ -10998,12 +10994,13 @@
         "switch": 116
       },
       "functional_inputs": [
-        "协议错误、端口/连接状态、超时、真实事务完成和软件恢复动作"
+        "Original slot/port/Tag/read/beat obligations, exact epoch-qualified real and dummy completion events, link/drop/quiescent recovery qualification"
       ],
       "functional_outputs": [
-        "按规范角色作用域的Drop/Isolation/恢复、dummy完成及CPER事件"
+        "Endpoint-wide or Switch-port isolation, stable CMPTO dummy descriptor request and exact non-wrapping epoch recovery"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "obligation_and_isolation_lifecycle_without_dummy_response_generator_tag_owner_system_recovery_or_native_tl_dl_integration",
+      "port_source": "rtl/ras/ras_originator_isolation.v"
     },
     {
       "id": "ras_completion_timeout",
@@ -11950,6 +11947,53 @@
         "Actual bounded storage through packet-locking scheduler with one final-beat release"
       ],
       "functional_interface_status": "queue_scheduler_pipeline_without_standard_tl_classifier_repack_switch_top_or_process_sta"
+    },
+    {
+      "id": "switch_egress_typed_pipeline",
+      "module": "switch_egress_typed_pipeline",
+      "path": "rtl/switch/switch_egress_typed_pipeline.v",
+      "roles": [
+        "switch"
+      ],
+      "subsystem": "switch",
+      "status": "existing_partial",
+      "purpose": "Compose the bounded Request/Response/VC queue and scheduler pipeline with a lossless per-egress typed 544-bit record handoff.",
+      "dependencies": [
+        "switch_egress_pipeline",
+        "switch_egress_repack"
+      ],
+      "source_refs": [
+        {
+          "family": "F01",
+          "source": "C §1, §7, §9; M §1–4"
+        },
+        {
+          "family": "F20",
+          "source": "L §7–10"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Typed packet admission/body streams with explicit class, VC, Last and token plus downstream typed-record readiness"
+      ],
+      "outputs": [
+        "Backpressure-stable per-egress DL header, auxiliary bits, TL message/flit, class, VC, Last and token with separate queue release and downstream retirement"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_typed_pipeline.v",
+      "integration_parents": [
+        "ualink_switch_top"
+      ],
+      "functional_inputs": [
+        "Complete locally typed packets entering actual bounded egress queues"
+      ],
+      "functional_outputs": [
+        "Lossless typed physical-egress handoff with queue capacity release independent from downstream record retirement"
+      ],
+      "functional_interface_status": "typed_queue_scheduler_repack_integration_without_standard_tl_control_data_auth_reconstruction_or_per_hop_tl_dl_signoff"
     }
   ],
   "software_modules": [
@@ -12362,8 +12406,8 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 100,
-    "planned_rtl": 122,
+    "existing_rtl": 103,
+    "planned_rtl": 120,
     "software_planned": 13,
     "external_boundaries": 4
   },

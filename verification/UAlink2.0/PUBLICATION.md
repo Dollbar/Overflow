@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1101 tracked source files from the UALink development
-repository at commit `d4ab93acc19898ab3aa24956cdeb534572c584e8`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1120 tracked source files from the UALink development
+repository at commit `59c4bdf1784eab17fa697733953c385d4410193d`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -160,3 +160,13 @@ The Endpoint top now instantiates one native burst monitor and routes its diagno
 `switch_egress_repack` replaces stable Switch slot 58 with an elastic, backpressure-stable typed handoff for the complete 544-bit local egress record plus Request/Response, VC, Last and token metadata. Nine PORTS×VCS configurations cover 18,759 rows, 25,703 accepted records including reset cancellations and 25,663 retirements; nine RTL mutations and 27 static/elaboration checks pass. It does not reconstruct prepared Control/Data/Auth sources and is not yet connected to `tl_tx_prepared` or the production Switch top.
 
 The source repository passes 403 model tests and 199 tool tests with two conditional skips. Generic synthesis passes for the existing digital Endpoint top at 149 elaborated modules and about 145,887 cells, and the Switch top at 134 modules and about 21,472 cells. The relocated request-context, burst-integration, Endpoint-top and typed-repack runners are repeated from this published layout before push. Full backend/top integration, standard per-hop TL/DL, Isolation/dummy completion/recovery epoch, PHY, INC, security, management, CDC/RDC and process STA remain unfinished.
+
+## Endpoint context top, typed Switch top and originator isolation
+
+The inventory now contains 223 RTL entries: 103 partial implementations and 120 explicit disabled shells. Pending role bits are Endpoint 91 and Switch 114. The production Endpoint top has an opt-in persistent request-context path; the independently verified single-outstanding memory adapter keeps command, result, completion and final response retirement as separate ownership stages, but automatic response formatting and its top connection remain open.
+
+The production Switch top has an opt-in bounded egress path combining Request/Response/VC queues, packet-locking scheduling and a lossless 544-bit typed handoff. Queue capacity release and typed downstream retirement are independently accounted. Helper and top each pass nine PORTS×VCS configurations; eight wiring mutations are detected. This local typed record lacks enough information to reconstruct complete prepared Control/Data/Auth sources, so standard per-hop TL/DL remains open.
+
+`ras_originator_isolation` now tracks real slot/port/epoch completion obligations for Endpoint-wide or Switch-port isolation. Late real completions are consumed without clearing dummy obligations; dummy request acceptance does not release a slot, and only an independent `dummy_done` clears it. The 24 PORTS×CAPACITY×role configurations and nine RTL mutations pass. An 8-bit epoch completes 255 recoveries and then rejects wrap. The dummy response generator, Tag owner, system recovery and native TL/DL connection remain open.
+
+The source suite passes 403 model and 199 tool tests with two conditional skips. Generic synthesis passes at 147 modules/about 145,890 cells for Endpoint and 133 modules/about 21,468 cells for Switch. Relocated memory-adapter, Endpoint-context, Switch-typed-top, isolation and 223-entry structure suites pass from this published layout. Process STA, CDC/RDC closure and full protocol completion have not been completed.

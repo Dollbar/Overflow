@@ -48,9 +48,9 @@
       ]
     },
     "inventory": {
-      "modules": 222,
-      "existing_partial": 100,
-      "planned_shells": 122
+      "modules": 223,
+      "existing_partial": 103,
+      "planned_shells": 120
     },
     "native_rx_complete": false,
     "endpoint_context_bridge_complete": true,
@@ -87,7 +87,31 @@
       "normal_and_optimized": true,
       "role_drop_subset_complete": true,
       "isolation_dummy_recovery_complete": false,
-      "review": "docs/upli_rx_role_fault_controller_execution.md"
+      "review": "docs/upli_rx_role_fault_controller_execution.md",
+      "originator_isolation_ledger_complete": true,
+      "originator_isolation": {
+        "configurations": 24,
+        "ports": [
+          1,
+          2,
+          4
+        ],
+        "capacities": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "roles": [
+          "endpoint",
+          "switch"
+        ],
+        "rtl_faults": 9,
+        "default_epoch_recoveries_before_wrap_rejection": 255,
+        "dummy_generator_connected": false,
+        "native_tl_dl_connected": false,
+        "review": "docs/ras_originator_isolation_execution.md"
+      }
     },
     "response_collector": {
       "ports": [
@@ -151,7 +175,7 @@
       "rtl_faults": 5,
       "static_checks": 9
     },
-    "switch_top_integrated": false,
+    "switch_top_integrated": true,
     "physical_egress_scheduler_complete": true,
     "tl_classifier_repack_complete": false,
     "reviews": [
@@ -194,6 +218,15 @@
       "static_checks": 27,
       "stable_slot": 58,
       "review": "docs/switch_egress_repack_typed_review.md"
+    },
+    "typed_egress_top_connected": true,
+    "typed_pipeline": {
+      "helper_configurations": 9,
+      "top_configurations": 9,
+      "real_wiring_faults": 8,
+      "queue_release_separate_from_typed_retirement": true,
+      "standard_tl_dl_complete": false,
+      "review": "docs/switch_egress_typed_review.md"
     }
   },
   "historical_artifacts_retained": false,
@@ -2498,7 +2531,19 @@
     "review": "docs/upli_endpoint_ip_top_execution.md",
     "request_context_module_complete": true,
     "burst_monitor_integrated": true,
-    "request_context_integrated": false
+    "request_context_integrated": true,
+    "context_enabled_ports": [
+      1,
+      2,
+      4
+    ],
+    "context_admitted_per_case": 62,
+    "context_issued_per_case": 57,
+    "context_released_per_case": 53,
+    "context_cancelled_per_case": 9,
+    "context_top_wiring_faults": 4,
+    "context_legacy_compatible": true,
+    "context_top_review": "docs/upli_endpoint_context_top_execution.md"
   },
   "current_endpoint_request_context": {
     "ports": [
@@ -2520,5 +2565,16 @@
     "network_tag_reallocated": false,
     "backend_release_owner_complete": false,
     "review": "docs/upli_endpoint_request_context_execution.md"
+  },
+  "current_endpoint_memory_adapter": {
+    "single_outstanding": true,
+    "lifecycle_checks": 22,
+    "rtl_faults": 8,
+    "g2001_lint_yosys": true,
+    "release_requires_explicit_final_retirement": true,
+    "integrated_into_endpoint_top": false,
+    "executes_memory_operations": false,
+    "formats_responses": false,
+    "review": "docs/endpoint_memory_adapter_execution.md"
   }
 }

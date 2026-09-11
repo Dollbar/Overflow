@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 100 个部分实现RTL模块、122 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 103 个部分实现RTL模块、120 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -42,7 +42,7 @@ output o_implemented, o_error
 
 ## 稳定功能位
 
-Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53/55/58已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别93/115个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
+Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12/15/98、Switch的53/55/58/116已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别91/114个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
 
 不得因排序或实现进展重编号已分配slot；用已验证typed子集替换壳时保留slot，更新部分实现状态、实际集成父模块与证据；清除位不代表全部规范功能完成。新增模块追加slot；超过128时先显式扩展位图版本/本地接口，不截断。此位图是研发可观测性，不是标准能力协商字段。
 
@@ -87,7 +87,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/endpoint/endpoint_response_encode.v` | E / existing_partial / E:12 | 已冻结单Beat普通Read Response的64-bit字段编码 |
 | `rtl/endpoint/endpoint_response_formatter.v` | E / planned / E:13 | 真实执行完成转读/写响应字段及有序Data，含多Beat语义 |
 | `rtl/endpoint/endpoint_ordering.v` | E / planned / E:14 | 每对端/VC/流/256-byte区域的SO、SOL、non-SO调度与端口亲和 |
-| `rtl/endpoint/endpoint_memory_adapter.v` | E / planned / E:15 | 加速器本地内存/原子执行接口的准入、原请求上下文和完成交接 |
+| `rtl/endpoint/endpoint_memory_adapter.v` | E / existing_partial / E:15 | 单在途完整后端命令/结果交接；仅在显式最终响应退休后释放context，执行/格式化/恢复仍开放 |
 | `rtl/endpoint/endpoint_message_handler.v` | E / planned / E:16 | 标准UPLI消息和端点适用TL消息向执行/安全/RAS控制分派 |
 | `rtl/endpoint/endpoint_completion_sink.v` | E / planned / E:17 | 预留响应接收空间，成功数据和错误完成分离，应用退休释放Tag |
 
@@ -251,6 +251,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/switch/switch_egress_vc_queues.v` | S / existing_partial / S:55 | 按出口、Request/Response和VC独立分区的有界整包实际缓存；尚未接TL分类、重打包和Switch顶层 |
 | `rtl/switch/switch_egress_scheduler.v` | S / existing_partial / — | 每物理出口按整包锁定Request/Response/VC队列，有限响应偏好与VC轮询；不创建容量预约或释放 |
 | `rtl/switch/switch_egress_pipeline.v` | S / existing_partial / — | 实际连接VC分区队列与物理出口scheduler，保留队列唯一预约/释放所有权；尚未接标准TL重打包与Switch顶层 |
+| `rtl/switch/switch_egress_typed_pipeline.v` | S / existing_partial / — | VC队列、包锁定scheduler和544-bit typed repack的实际组合；标准prepared Control/Data/Auth与逐跳TL/DL仍开放 |
 | `rtl/switch/switch_arbiter.v` | S / existing_partial / S:56 | 多入口到出口无饥饿调度、请求不阻塞应答资源 |
 | `rtl/switch/switch_fabric.v` | S / existing_partial / S:57 | 实际多入口多出口数据交叉连接及并发冲突控制 |
 | `rtl/switch/switch_egress_repack.v` | S / existing_partial / S:58 | 完整544-bit本地record的typed elastic交接；尚未重建prepared Control/Data/Auth或接入标准TL |
@@ -331,7 +332,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/ras/ras_controller.v` | E/S / planned / E:95/S:113 | 故障分类、隔离、恢复与管理事件总装 |
 | `rtl/ras/ras_error_classify.v` | E/S / planned / E:96/S:114 | 控制错误、Data/BE/parity/poison与不可定位错误作用域分类 |
 | `rtl/ras/ras_tl_drop.v` | E/S / planned / E:97/S:115 | 按适用端口TL双向Drop及可信/不可信信用状态区分 |
-| `rtl/ras/ras_originator_isolation.v` | E/S / planned / E:98/S:116 | 端点station或Switch INC出口Originator Isolation与迟到响应丢弃 |
+| `rtl/ras/ras_originator_isolation.v` | E/S / existing_partial / E:98/S:116 | 真实义务、隔离、迟到完成丢弃、dummy请求及无回绕epoch恢复；dummy生成和系统接线未完成 |
 | `rtl/ras/ras_completion_timeout.v` | E/S / planned / E:99/S:117 | 有状态请求watchdog、dummy完成和同拍真实完成竞态 |
 | `rtl/ras/ras_link_recovery.v` | E/S / planned / E:100/S:118 | 按角色Link Down/Up作用域、既有UPLI信用保持与恢复 |
 | `rtl/ras/ras_cper_bridge.v` | E/S / planned / E:101/S:119 | 硬件错误记录到软件CPER/持久化服务交接，不伪装片上持久存储 |

@@ -733,13 +733,6 @@ ras_tl_drop u_ras_tl_drop(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_115),.o_error());
 assign o_pending_features[115]=!implemented_115;
-wire implemented_116;
-ras_originator_isolation u_ras_originator_isolation(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_116),.o_error());
-assign o_pending_features[116]=!implemented_116;
 wire implemented_117;
 ras_completion_timeout u_ras_completion_timeout(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -822,6 +815,7 @@ assign o_pending_features[56]=1'b0;
 assign o_pending_features[57]=1'b0;
 assign o_pending_features[58]=1'b0;
 assign o_pending_features[65]=1'b0;
+assign o_pending_features[116]=1'b0;
 assign o_pending_features[127]=1'b0;
 endmodule
 `default_nettype wire
