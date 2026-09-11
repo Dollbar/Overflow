@@ -198,6 +198,11 @@ output wire [3:0] o_tx_credit_parity_error, // 完整原生字段、可信描述
 output wire [3:0] o_tx_credit_integrity_ok, // 完整原生字段、可信描述符或独立消费者资格。
 input wire  i_rx_auth_enabled, // 完整原生字段、可信描述符或独立消费者资格。
 input wire [1:0] i_rx_select_port, // 完整原生字段、可信描述符或独立消费者资格。
+input wire i_req_class_known, // 与原始Request同沿的外部可信分类，不猜命令编码。
+input wire i_req_has_data, // 已确认命令是否携带OrigData，不能从Data有效反推。
+output wire [9:0] o_rx_burst_error, // 原始burst本拍完整诊断，接唯一角色故障控制器。
+output wire [9:0] o_rx_burst_error_sticky, // 首组burst错误保存到共同reset。
+output wire [C_NUM_PORTS-1:0] o_rx_burst_active, // 原始尾部描述符只作诊断观察。
 input wire  i_rx_req_valid, // 完整原生字段、可信描述符或独立消费者资格。
 input wire [1:0] i_rx_req_port, // 完整原生字段、可信描述符或独立消费者资格。
 input wire [1:0] i_rx_req_vc, // 完整原生字段、可信描述符或独立消费者资格。
@@ -699,6 +704,14 @@ always @(posedge i_clk)begin // 仅扩展本地诊断时序，不增加响应数
  if(!i_rstn)collector_error_q<=2'd0; // 共同reset清除旧epoch诊断。
  else collector_error_q<=collector_error_q | o_response_metadata_error; // collector已同沿阻断坏头，下一沿统一角色Drop。
 end // 结束本地诊断同步桥接。
+upli_native_rx_burst_monitor #(.C_NUM_PORTS(C_NUM_PORTS)) u_burst_monitor( // 仅增加burst诊断，沿用既有TDM相位。
+ .i_clk(i_clk),.i_rstn(i_rstn), // 使用全层共同reset，Drop不是重建边界。
+ .i_tdm_known(o_rx_tdm_phase_known[0]),.i_tdm_port(o_rx_tdm_expected_port[1:0]), // 唯一接收时隙观察者的沿前状态。
+ .i_req_valid(i_rx_req_valid),.i_req_port(i_rx_req_port),.i_req_class_known(i_req_class_known),.i_req_has_data(i_req_has_data), // 原始事件及同沿外部确认分类。
+ .i_req_vc(i_rx_req_vc),.i_req_num_beats(i_rx_req_payload[86:85]), // 保存原始请求VC与完整拍数编码。
+ .i_data_valid(i_rx_data_valid),.i_data_port(i_rx_data_port),.i_data_vc(i_rx_data_vc), // 原始OrigData，不用延迟存储accepted替换。
+ .i_data_offset(i_rx_data_payload[3:2]),.i_data_last(i_rx_data_payload[1]), // 本地完整580位bundle的原生控制字段。
+ .o_error(o_rx_burst_error),.o_error_sticky(o_rx_burst_error_sticky),.o_active(o_rx_burst_active)); // 完整诊断保留独立原因，不产生ready或信用。
 wire [3:0] kind_control,kind_credit,kind_auth,kind_profile,kind_metadata,kind_order,kind_storage,kind_tdm,kind_data; // controller按Req/Rd/Wr/Data的kind次序接收。
 wire [1:0] init_done_roles; // 只记录真实两方向初始化资格，不控制恢复。
 reg bridge_error_q; // 寄存本地组装错误避免Drop取消holding形成组合自反馈，不是第二Drop状态。
@@ -713,7 +726,7 @@ assign kind_tdm={o_rx_tdm_error[1],o_rx_tdm_error[3],o_rx_tdm_error[2],o_rx_tdm_
 assign kind_data={o_rx_data_error[1],o_rx_data_error[3],o_rx_data_error[2],o_rx_data_error[0]}; // Req/Data/Rd/Wr转为规范kind索引，不交换角色。
 assign kind_metadata={o_rx_metadata_error[1],(o_rx_metadata_error[3] || collector_error_q[1]),(o_rx_metadata_error[2] || collector_error_q[0]),(o_rx_metadata_error[0] || bridge_error_q)}; // 本地组装错误归Request接收角色的保守策略。
 assign kind_credit={o_raw_credit_error[1] || o_tx_data_credit_error,o_raw_credit_error[3] || o_tx_wr_credit_error,o_raw_credit_error[2] || o_tx_rd_credit_error,o_raw_credit_error[0] || o_tx_req_credit_error}; // 反向信用归属由controller独立角色掩码判定。
-assign kind_order[0]=(|o_rx_order_error[0*C_NUM_PORTS +: C_NUM_PORTS]) || (|o_rx_order_error_sticky[0*C_NUM_PORTS +: C_NUM_PORTS]); // 角色作用域不从可疑port字段缩小。
+assign kind_order[0]=(|o_rx_burst_error) || (|o_rx_order_error[0*C_NUM_PORTS +: C_NUM_PORTS]) || (|o_rx_order_error_sticky[0*C_NUM_PORTS +: C_NUM_PORTS]); // 角色作用域不从可疑port字段缩小。
 assign kind_storage[0]=|o_rx_storage_diagnostic[0*3 +: 3]; // 保留实际FIFO输入诊断的通道归属。
 assign kind_order[1]=(|o_rx_order_error[2*C_NUM_PORTS +: C_NUM_PORTS]) || (|o_rx_order_error_sticky[2*C_NUM_PORTS +: C_NUM_PORTS]); // 角色作用域不从可疑port字段缩小。
 assign kind_storage[1]=|o_rx_storage_diagnostic[2*3 +: 3]; // 保留实际FIFO输入诊断的通道归属。

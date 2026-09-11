@@ -1,21 +1,19 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Production now includes a synthesizable native Endpoint frontend top with real connection, four-channel TX/RX, request holding, response collection and one role fault owner, plus a diagnostic RX burst monitor. Switch production now connects the Request/Response/VC packet queues through a packet-locking scheduler to one stream per physical egress. Endpoint backend/Tag completion, Switch TL classifier/repacker/top connection and process STA remain open.",
+  "latest_stage": "Production now includes a native Endpoint frontend with response collection and integrated burst diagnostics. A persistent request context table is implemented and verified against the real request bridge but is not yet instantiated into the top or connected to backend execution. Switch packet queues, physical scheduler, queue-to-scheduler pipeline and a lossless typed 544-bit egress handoff are implemented; prepared TL reconstruction/top integration remain open.",
   "rtl": "rtl/upli/upli_endpoint_ip_top.v",
-  "review": "docs/upli_endpoint_ip_top_execution.md",
-  "evidence": "docs/switch_egress_pipeline_review.md",
+  "review": "docs/upli_endpoint_request_context_execution.md",
+  "evidence": "docs/switch_egress_repack_typed_review.md",
   "full_goal_complete": false,
   "next_actions": [
-    "Implement and integrate the Endpoint request context and backend/result causality without reallocating native network Tags.",
-    "Connect the Switch egress pipeline to standard TL classification/repacking and the production Switch top.",
-    "Route RX burst diagnostics into the existing unique role fault owner with explicit command classification.",
-    "Complete Isolation, dummy completion, recovery epoch, standard per-hop TL/DL, PHY, INC, security, management, CDC/RDC and process STA."
+    "Connect the Endpoint request context to a real backend adapter and release only after actual result/response ownership completes.",
+    "Connect the Switch typed egress handoff to confirmed prepared Control/Data/Auth construction and the production Switch top.",
+    "Complete Isolation, dummy completion, LinkDown/recovery epoch and standard per-hop TL/DL.",
+    "Complete PHY, INC, security, management, CDC/RDC and process STA."
   ],
-  "remote_main": "df50bdeab410143853a76ceeca062121ed300207",
-  "live_jobs": [
-    "isolated Endpoint request context candidate"
-  ],
+  "remote_main": "71cc3df1b4f5edd24c04b16844729eaeab18d96f",
+  "live_jobs": [],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
     "branch": "main",
@@ -24,8 +22,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "df50bdeab410143853a76ceeca062121ed300207",
-    "source_commit": "842d9a0612d701e1dcc28a9bd310e7314fde4661"
+    "verified_commit": "71cc3df1b4f5edd24c04b16844729eaeab18d96f",
+    "source_commit": "8ce73aa87e41a9104282eda1f3b9518fa47910dd"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

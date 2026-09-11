@@ -73,13 +73,22 @@ python3 build/development/upli_endpoint_ip_top/run.py --label NEW_FAULT --kd28-r
 
 ## 下一批真正Endpoint缺口
 
+后续生产增量已加入一个 `upli_native_rx_burst_monitor`，新增同沿显式
+`i_req_class_known/i_req_has_data` 分类边界，并把完整 burst 诊断送入本模块原有的
+唯一 role fault controller。它没有增加 Drop、TDM 或信用所有者；详细六配置、
+54 次异常和三项接线故障证据见
+[`upli_endpoint_burst_fault_integration_review.md`](upli_endpoint_burst_fault_integration_review.md)。
+独立 `upli_endpoint_request_context` 也已实现并与真实 request bridge 联动验证，
+但尚未实例化到本顶层或连接 backend，见
+[`upli_endpoint_request_context_execution.md`](upli_endpoint_request_context_execution.md)。
+
 可直接复用但尚不能无损相接的现有模块：`endpoint_transaction_core`/formatter共享Tag结果槽，read/write completer真实memory issue/result因果，以及TL prepared/data sender。它们已有本地应用profile和字段限制，不能把这个top的descriptor ready绑高后假装接入。
 
 建议下一批有界实现：
 
 | 建议候选 | 真实职责与依赖 | 最小验收 |
 |---|---|---|
-| `upli_endpoint_request_context` | 实际descriptor fire预约保存station/port/Tag/Src/Dst/VC/Auth及全部几何/poison；token是本地槽，不能重分配网络Tag；依赖本top request holding | 多port同Tag合法区分、同port共享Tag冲突不按pool/kind扩大域；背压字段稳定、reset取消 |
+| `upli_endpoint_request_context` | 已形成独立生产模块：实际descriptor fire预约保存station/port/Tag/Src/Dst/VC/Auth及全部几何/poison；token是本地槽，不能重分配网络Tag；尚待实例化到本top | 多port配置、满表holding、旧token拒绝、背压字段稳定和reset取消已验证；backend最终release所有者仍开放 |
 | `upli_endpoint_backend_adapter` | 在真实context槽下接已有read/write executor或外部backend二选一；相对BE到区域BE按真实地址映射；request/issue/result是三个事件 | 全4..256B普通几何、zeroBE仍执行一次、实际result才响应、端口/身份/poison不丢；不把ReqAuth当RspAuth |
 | `upli_endpoint_response_context` | collector retired只能进入真实Tag/转发资源；保留raw错误数据/Num/Offset/Last；控制事件单独处理，不从已mask应用结果逆构原始数据 | 五状态完整N拍、single乱序/交错、重复/未知Tag、ISOLATE单独路径、只在真正最后交付时释放原上下文 |
 

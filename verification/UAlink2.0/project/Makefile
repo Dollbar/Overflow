@@ -64,7 +64,7 @@ connection-check:
 .DEFAULT_GOAL := help
 .PHONY: help test rtl-smoke sram-smoke clean clean-dry-run
 help:
-	@echo "test | rtl-smoke | sram-smoke | prepared-tx-smoke KD28_ROOT=/authorized/path | ip-structure IP_RUN_LABEL=fresh | ip-module-smoke IP_RUN_LABEL=fresh | ip-top-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh | clean-dry-run | clean"
+	@echo "test | rtl-smoke | sram-smoke | prepared-tx-smoke KD28_ROOT=/authorized/path | native-endpoint-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh | switch-egress-smoke IP_RUN_LABEL=fresh | ip-structure IP_RUN_LABEL=fresh | ip-module-smoke IP_RUN_LABEL=fresh | ip-top-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh | clean-dry-run | clean"
 test: model
 	mkdir -p "$(ROOT_DIR)/build"
 	cd "$(ROOT_DIR)" && $(PYTHON) -m unittest discover -s verification/tools -p 'test_*.py' -q
@@ -144,6 +144,22 @@ ip-top-elaborate: ip-structure
 ip-top-synth: ip-structure
 	@test -n "$(KD28_ROOT)" || { echo "Set KD28_ROOT to the authorized external SRAM repository"; exit 1; }
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_elaboration.py" --kd28-root "$(KD28_ROOT)" --label "$(IP_RUN_LABEL)" --synth
+
+# Native Endpoint frontend and Switch physical-egress integration. Labels must
+# be fresh because every runner keeps immutable source and result snapshots.
+.PHONY: native-endpoint-smoke switch-egress-smoke
+native-endpoint-smoke:
+	@test -n "$(KD28_ROOT)" || { echo "Set KD28_ROOT to the authorized external SRAM repository"; exit 1; }
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_endpoint_ip_top.py" --label "$(IP_RUN_LABEL)_native_top" --kd28-root "$(KD28_ROOT)" --static
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_response_collector.py" --label "$(IP_RUN_LABEL)_collector" --kd28-root "$(KD28_ROOT)" --faults --receive
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_rx_burst.py" --label "$(IP_RUN_LABEL)_burst" --kd28-root "$(KD28_ROOT)" --faults --receive
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_endpoint_burst_fault.py" --label "$(IP_RUN_LABEL)_burst_top" --kd28-root "$(KD28_ROOT)" --static
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_request_context.py" --label "$(IP_RUN_LABEL)_request_context" --integration --static
+
+switch-egress-smoke:
+	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_scheduler.py" --label "$(IP_RUN_LABEL)_scheduler" --faults
+	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_pipeline.py" --label "$(IP_RUN_LABEL)_pipeline" --faults
+	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_repack.py" --label "$(IP_RUN_LABEL)_repack" --faults
 
 # Actual Read execution path through two Endpoint tops and the Switch.
 .PHONY: ip-transaction-smoke ip-transaction-elaborate ip-transaction-capacity

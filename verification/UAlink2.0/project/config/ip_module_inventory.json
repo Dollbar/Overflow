@@ -3197,7 +3197,8 @@
         "upli_connection_side",
         "upli_endpoint_native_rx_path",
         "upli_endpoint_response_collector",
-        "upli_rx_role_fault_controller"
+        "upli_rx_role_fault_controller",
+        "upli_native_rx_burst_monitor"
       ],
       "source_refs": [
         {
@@ -3233,6 +3234,48 @@
         "Synthesizable native Endpoint frontend with explicit backend_implemented=0 boundary"
       ],
       "functional_interface_status": "native_endpoint_frontend_without_backend_execution_tag_completion_isolation_recovery_or_full_tl_dl"
+    },
+    {
+      "id": "upli_endpoint_request_context",
+      "module": "upli_endpoint_request_context",
+      "path": "rtl/upli/upli_endpoint_request_context.v",
+      "roles": [
+        "endpoint"
+      ],
+      "subsystem": "endpoint",
+      "status": "existing_partial",
+      "purpose": "Hold complete accepted Request/OrigData descriptors by local station/port/native Tag until ordered issue and an external final-ownership release event.",
+      "dependencies": [
+        "upli_endpoint_request_bridge"
+      ],
+      "source_refs": [
+        {
+          "family": "F06",
+          "source": "C §5–6"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Complete request descriptor, local station identity, issue readiness and final release token"
+      ],
+      "outputs": [
+        "FIFO-ordered complete issue tuple, generation-qualified local token, duplicate/invalid release diagnostics and bounded request readiness"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_endpoint_request_context.v",
+      "integration_parents": [
+        "upli_endpoint_ip_top"
+      ],
+      "functional_inputs": [
+        "Actual request bridge transfer with complete payload, Data, byte enables, poison and account metadata"
+      ],
+      "functional_outputs": [
+        "Persistent request context until trusted backend/result ownership releases the local token"
+      ],
+      "functional_interface_status": "request_context_without_backend_execution_response_completion_remote_src_namespace_or_independent_epoch"
     },
     {
       "id": "upli_rx_role_fault_controller",
@@ -7823,10 +7866,10 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
-      "purpose": "转发字段顺序保持、TL完整字段重打包和Data关联",
+      "status": "existing_partial",
+      "purpose": "Preserve the complete local 544-bit egress record through a per-egress typed elastic handoff and expose DL header, auxiliary bits, TL message, TL flit, class, VC, Last and token without truncation.",
       "dependencies": [
-        "tl_tx_prepared"
+        "switch_egress_pipeline"
       ],
       "source_refs": [
         {
@@ -7842,20 +7885,16 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "One complete 544-bit local egress record per physical port with Request/Response, VC, Last and token plus downstream ready"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Backpressure-stable 24-bit DL header, 6-bit auxiliary field, 2-bit TL message, 512-bit TL flit and unchanged packet metadata"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "switch_core"
       ],
@@ -7863,12 +7902,13 @@
         "switch": 58
       },
       "functional_inputs": [
-        "入口事务/路由元数据、各出口VC容量、路由/vPod/plane配置"
+        "Scheduler-owned complete local packet record and metadata"
       ],
       "functional_outputs": [
-        "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
+        "Lossless typed elastic handoff; no reconstruction of prepared Control/Data/Auth sources"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_local_record_handoff_without_tl_tx_prepared_connection_or_standard_tl_certification",
+      "port_source": "rtl/switch/switch_egress_repack.v"
     },
     {
       "id": "switch_vpod_filter",
@@ -12322,8 +12362,8 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 98,
-    "planned_rtl": 123,
+    "existing_rtl": 100,
+    "planned_rtl": 122,
     "software_planned": 13,
     "external_boundaries": 4
   },

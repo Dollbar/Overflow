@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T22:10:00+08:00",
+  "updated": "2026-09-11T23:15:00+08:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "current_native_receive_increment": {
@@ -48,9 +48,9 @@
       ]
     },
     "inventory": {
-      "modules": 221,
-      "existing_partial": 98,
-      "planned_shells": 123
+      "modules": 222,
+      "existing_partial": 100,
+      "planned_shells": 122
     },
     "native_rx_complete": false,
     "endpoint_context_bridge_complete": true,
@@ -116,7 +116,10 @@
       "data_events": 440,
       "actual_faults": 10,
       "normal_and_optimized": true,
-      "review": "docs/upli_native_rx_burst_monitor_execution.md"
+      "review": "docs/upli_native_rx_burst_monitor_execution.md",
+      "integrated_into_endpoint_top": true,
+      "role_fault_owner_count": 1,
+      "top_wiring_faults": 3
     }
   },
   "current_switch_reservation_increment": {
@@ -155,7 +158,8 @@
       "docs/switch_egress_packet_queue_review.md",
       "docs/switch_egress_vc_queues_review.md",
       "docs/switch_egress_scheduler_review.md",
-      "docs/switch_egress_pipeline_review.md"
+      "docs/switch_egress_pipeline_review.md",
+      "docs/switch_egress_repack_typed_review.md"
     ],
     "scheduler": {
       "configurations": 4,
@@ -178,6 +182,18 @@
       "real_wiring_faults": 5,
       "g2001_lint_yosys": 9,
       "review": "docs/switch_egress_pipeline_review.md"
+    },
+    "typed_repack_subset_complete": true,
+    "tl_prepared_connected": false,
+    "repack": {
+      "port_vc_configurations": 9,
+      "rows": 18759,
+      "accepted_including_reset_cancel": 25703,
+      "retired": 25663,
+      "rtl_faults": 9,
+      "static_checks": 27,
+      "stable_slot": 58,
+      "review": "docs/switch_egress_repack_typed_review.md"
     }
   },
   "historical_artifacts_retained": false,
@@ -2479,6 +2495,30 @@
     "tag_completion": false,
     "isolation_dummy_recovery": false,
     "process_sta_complete": false,
-    "review": "docs/upli_endpoint_ip_top_execution.md"
+    "review": "docs/upli_endpoint_ip_top_execution.md",
+    "request_context_module_complete": true,
+    "burst_monitor_integrated": true,
+    "request_context_integrated": false
+  },
+  "current_endpoint_request_context": {
+    "ports": [
+      1,
+      2,
+      4
+    ],
+    "capacity": 4,
+    "unit_rows": [
+      297,
+      299,
+      299
+    ],
+    "bridge_allocated_per_case": 9,
+    "bridge_issued_per_case": 8,
+    "bridge_released_per_case": 7,
+    "reset_cancelled_per_case": 2,
+    "rtl_faults": 5,
+    "network_tag_reallocated": false,
+    "backend_release_owner_complete": false,
+    "review": "docs/upli_endpoint_request_context_execution.md"
   }
 }
