@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1035 tracked source files from the UALink development
-repository at commit `4f579906f7b1551a9f1051513c23b81764818bcf`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1061 tracked source files from the UALink development
+repository at commit `842d9a0612d701e1dcc28a9bd310e7314fde4661`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -127,3 +127,15 @@ Three native receive/Endpoint modules and one Switch capacity module now replace
 The protected native receive matrix covers four kinds and 1/2/4 ports over 152,957 sampled edges, with 9,529 accepted Beats, 9,517 retirements, 12 reset cancellations and six detected RTL faults. The Endpoint bridge completes 981 descriptors and 2,459 actual SRAM head transfers with the same number of original-account credit returns; long backpressure, Read/Write queue overlap, reset and four RTL faults pass. Switch reservation normal and optimized runs each cover four configurations and 3,970 cycles, detecting six RTL faults; nine static checks pass. The repository suite passes 403 model and 199 tool tests with two conditional skips.
 
 The corresponding normal, fault and static runners are rerun from this published layout before pushing. Native role-level Drop/Isolation, authentication, burst monitoring, actual station/top wiring, Endpoint backend-derived response causality, Switch egress queues and VC/request-response partitions remain open. Process STA has not been run for these new modules. See `project/docs/upli_native_rx_channel_execution.md`, `project/docs/upli_endpoint_request_bridge_execution.md` and `project/docs/switch_credit_reservation_review.md`.
+
+## Endpoint native RX frontend and Switch VC queues
+
+The production tree now adds an Endpoint native receive frontend, a role-scoped receive fault controller, a single-resource Switch packet queue, and Request/Response/VC-partitioned Switch egress queues. Inventory: 216 RTL entries, 93 partial implementations and 123 explicit shells; pending role bits are Endpoint 93 and Switch 116. The Switch VC queue replaces slot55 while keeping its stable bit assignment.
+
+The Endpoint frontend connects four protected native RX channels, one three-phase monitor and the complete Request/OrigData holding bridge. Normal and optimized source runs each cover 1/2/4 ports and complete 216 descriptors, 1,341 SRAM head transfers and 1,341 original-account credit returns. Drop admission/cancellation/reset recovery is covered, and four actual wiring faults are detected. The role controller covers nine parameter configurations and 19,530 unit slots plus nine real RX/SRAM cases; forward Beat errors and reverse-direction returned-credit errors retain distinct Originator/Completer ownership.
+
+The single-resource packet queue covers 7,600 normal and 5,700 illegal-input cycles and detects seven RTL faults. The VC combination covers 6,900 normal and 13,800 illegal-input cycles, all 40 enabled slots and two disabled slots, detecting five RTL faults. It accepts 2,234 headers and 4,693 body words and retires 2,220 complete packets; Response resources continue while Request is full, and independent VCs continue while VC0 is full. Complete-packet reservation occurs once and is released only by the final output-word handshake.
+
+All new production runners pass from this published linked layout, including Endpoint 1/2/4-port static checks, its four wiring faults, the role controller real-RX matrix and faults, and both Switch queue fault/static suites. The first relocated Endpoint run exposed a runner-only path-classification bug because the project RTL link also resides below the Overflow checkout; commit `842d9a0` restricts external hash checks to exact manifest paths, and the final published rerun passes. Repository tests and generic synthesis of both existing tops pass in the source checkout.
+
+The Endpoint response collector and backend-derived causality, full role Isolation/dummy completion/recovery epoch, Switch ingress classification/physical egress scheduling/repacking/top connection, standard per-hop TL/DL, CDC/RDC and process STA remain open. See `project/docs/upli_endpoint_native_rx_path_execution.md`, `project/docs/upli_rx_role_fault_controller_execution.md`, `project/docs/switch_egress_packet_queue_review.md` and `project/docs/switch_egress_vc_queues_review.md`.

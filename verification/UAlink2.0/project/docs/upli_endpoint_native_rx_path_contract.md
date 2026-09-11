@@ -1,0 +1,9 @@
+# Native RX path 候选测试契约
+
+隔离开发，正常路径遵守已有 `docs/upli_native_rx_execution.md` 与 `upli_endpoint_context_execution.md`，不新增线上字段。四个实际受保护接收通道，三组TDM相位由一个既有monitor观察，Req/OrigData由单完整holding bridge组装；Rd/Wr保留完整有序可信head，不实现collector/Tag/Backend。
+
+四种本地payload为Req184、Orig580、Rd619、Wr101，元数据Port2/VC2/Pool1及收到parity13独立传递。每通道容量向量覆盖port五账户，消费者只能选择port。模块不建立第二连接状态或自行升级role Drop；外部Originator/Completer connection资格和Drop分别作用其响应/请求方向。四RX保持共同同步reset，bridge局部资格为共同reset且非Completer Drop：进入Drop的下一沿取消未提交holding，可信旧信用可自然排空。取消不生成dummy；外部恢复需新epoch策略，不能直接当完整RAS恢复。Auth enabled仅容许完整Auth字段传输，不证明认证。
+
+TDD先fail-closed接口壳运行失败，再实现连接。实测实际station_tx、两connection_side和显式KD28依赖，1/2/4端口。独立源tuple账本逐层检查source accepted→native→ordered head，另按源字段构造完整descriptor；每port原账户信用journal必须仅由更早真实head transfer建立，最终request_fire不再次返还。下游长背压全tuple保持、四账户及pool独立、注册接受检查、共同reset取消、同Tag新轮、Drop取消holding与信用保留。响应流独立构造，仅检验可信传输，不能宣称Req到backend到Response因果闭环。
+
+正常发送器承担Req首Data同沿及合法连续尾拍；TDM monitor只诊断相位。该总装尚不新增非法对端的首Data同沿/完整burst连续性检查或角色错误持有状态；不能以正常对端测试关闭这些接收契约。实际mutation至少字段丢失、错账户返还、TDM接线、Drop取消遗漏。

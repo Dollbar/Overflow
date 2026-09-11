@@ -3081,6 +3081,113 @@
       "functional_interface_status": "ordinary_request_assembly_without_backend_response_or_role_ras"
     },
     {
+      "id": "upli_endpoint_native_rx_path",
+      "module": "upli_endpoint_native_rx_path",
+      "path": "rtl/upli/upli_endpoint_native_rx_path.v",
+      "roles": [
+        "endpoint"
+      ],
+      "subsystem": "endpoint",
+      "status": "existing_partial",
+      "purpose": "Aggregate four protected native receive channels, three-phase receive monitoring and complete Request/OrigData descriptor assembly for an Endpoint.",
+      "dependencies": [
+        "upli_native_rx_channel",
+        "upli_receive_tdm_monitor",
+        "upli_endpoint_request_bridge"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.6–2.8, §4.1"
+        },
+        {
+          "family": "F06",
+          "source": "C §5–6"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Four complete native channel beats with received parity, connection/drop state and independent receive capacities",
+        "Request descriptor readiness plus selectable Read/Write response head retirement"
+      ],
+      "outputs": [
+        "Complete trusted Request/Data descriptor and full selectable trusted Read/Write response heads",
+        "Exact original-account returned credits and full receive/TDM diagnostics"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [
+        "KD28 functional SRAM dependency"
+      ],
+      "port_source": "rtl/upli/upli_endpoint_native_rx_path.v",
+      "integration_parents": [
+        "upli_station_port",
+        "ualink_endpoint_top"
+      ],
+      "functional_inputs": [
+        "Complete Req/OrigData/RdRsp/WrRsp native events and role connection/drop qualification"
+      ],
+      "functional_outputs": [
+        "Protected ordered SRAM ownership, complete request holding and raw response retirement boundary"
+      ],
+      "functional_interface_status": "endpoint_native_receive_frontend_without_response_collector_backend_or_complete_role_ras"
+    },
+    {
+      "id": "upli_rx_role_fault_controller",
+      "module": "upli_rx_role_fault_controller",
+      "path": "rtl/upli/upli_rx_role_fault_controller.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Classify four native receive-channel fatal controls and returned-credit errors into Originator/Completer role-scoped sticky Drop notification.",
+      "dependencies": [
+        "upli_native_rx_channel",
+        "upli_receive_tdm_monitor"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Req/RdRsp/WrRsp/OrigData fatal diagnostics, returned-credit errors, connection initialization and notification acknowledgement"
+      ],
+      "outputs": [
+        "Per-role per-port sticky Drop, reason bitmap, initialization fault state and notification pending"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_rx_role_fault_controller.v",
+      "integration_parents": [
+        "upli_station_port",
+        "ualink_endpoint_top",
+        "ualink_switch_top"
+      ],
+      "functional_inputs": [
+        "Direction-aware native receive and credit diagnostics in Req/RdRsp/WrRsp/OrigData order"
+      ],
+      "functional_outputs": [
+        "Role-scoped fail-stop Drop ownership; acknowledgement clears notification only"
+      ],
+      "functional_interface_status": "role_drop_subset_without_isolation_dummy_completion_or_recovery_epoch"
+    },
+    {
       "id": "upli_receive_fifo",
       "module": "upli_receive_fifo",
       "path": "rtl/upli/upli_receive_fifo.v",
@@ -7346,17 +7453,17 @@
       "port_source": "rtl/switch/switch_route_table.v"
     },
     {
-      "id": "switch_egress_vc_queues",
-      "module": "switch_egress_vc_queues",
-      "path": "rtl/switch/switch_egress_vc_queues.v",
+      "id": "switch_egress_packet_queue",
+      "module": "switch_egress_packet_queue",
+      "path": "rtl/switch/switch_egress_packet_queue.v",
       "roles": [
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
-      "purpose": "按出口/Request-Response/VC分离的有界实际缓存",
+      "status": "existing_partial",
+      "purpose": "Single-resource helper that reserves a complete packet, stores every word in chronological order and releases the original units only when the final word retires.",
       "dependencies": [
-        "upli_receive_storage"
+        "upli_receive_fifo"
       ],
       "source_refs": [
         {
@@ -7372,34 +7479,88 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Per-source packet reservation size/token and body words",
+        "Per-egress downstream ready"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Complete-only packet publication with stable data/last/token",
+        "Original reserved-unit release on actual final-word retirement and fail-stop diagnostics"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_packet_queue.v",
+      "integration_parents": [
+        "switch_egress_vc_queues"
+      ],
+      "functional_inputs": [
+        "One resource partition reservation and source-owned packet body"
+      ],
+      "functional_outputs": [
+        "Chronological bounded packet storage, completion visibility and exact capacity release"
+      ],
+      "functional_interface_status": "single_resource_packet_queue_helper_without_vc_partition_or_output_scheduling"
+    },
+    {
+      "id": "switch_egress_vc_queues",
+      "module": "switch_egress_vc_queues",
+      "path": "rtl/switch/switch_egress_vc_queues.v",
+      "roles": [
+        "switch"
+      ],
+      "subsystem": "switch",
+      "status": "existing_partial",
+      "purpose": "Per-egress Request/Response and VC-partitioned packet buffering with whole-packet reservation, source ownership, bounded storage and exact final-word release.",
+      "dependencies": [
+        "switch_credit_reservation",
+        "switch_egress_packet_queue"
+      ],
+      "source_refs": [
+        {
+          "family": "F01",
+          "source": "C §1, §7, §9; M §1–4"
+        },
+        {
+          "family": "F04",
+          "source": "C §1.5, §2.7–2.8, §9"
+        },
+        {
+          "family": "F13",
+          "source": "C §9; M §4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Per-ingress unique route, Request/Response class, VC, packet-unit count, ownership token and body words",
+        "Independent ready for every egress/class/VC resource"
+      ],
+      "outputs": [
+        "Atomic header/body acceptance with preserved source ownership",
+        "Independently buffered egress words and exact final-word capacity release"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "switch_arbiter",
-        "switch_core"
+        "switch_core",
+        "ualink_switch_top"
       ],
       "feature_slots": {
         "switch": 55
       },
       "functional_inputs": [
-        "入口事务/路由元数据、各出口VC容量、路由/vPod/plane配置"
+        "Unique route result, class/VC partition, full packet size and source-owned body stream"
       ],
       "functional_outputs": [
-        "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
+        "Independent bounded egress packet streams, per-domain capacity accounting and fail-stop diagnostics"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "local_partitioned_packet_buffer_without_tl_classifier_repack_or_top_integration",
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_vc_queues.v"
     },
     {
       "id": "switch_arbiter",
@@ -11921,8 +12082,8 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 89,
-    "planned_rtl": 124,
+    "existing_rtl": 93,
+    "planned_rtl": 123,
     "software_planned": 13,
     "external_boundaries": 4
   },

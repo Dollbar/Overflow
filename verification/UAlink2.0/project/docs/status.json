@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T17:50:49+08:00",
+  "updated": "2026-09-11T19:30:00+08:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "current_native_receive_increment": {
@@ -8,7 +8,11 @@
       "station_edges": 3483,
       "station_native_events": 1034,
       "real_faults": 3,
-      "ports": [1, 2, 4]
+      "ports": [
+        1,
+        2,
+        4
+      ]
     },
     "ordered_receive": {
       "cycles": 8736,
@@ -17,7 +21,11 @@
       "returned": 3696,
       "reset_cancelled_pending": 3,
       "real_faults": 3,
-      "ports": [1, 2, 4]
+      "ports": [
+        1,
+        2,
+        4
+      ]
     },
     "protected_native_rx": {
       "channel_kinds": 4,
@@ -33,26 +41,91 @@
       "head_transfers": 2459,
       "returned_credits": 2459,
       "real_faults": 4,
-      "ports": [1, 2, 4]
+      "ports": [
+        1,
+        2,
+        4
+      ]
     },
     "inventory": {
-      "modules": 213,
-      "existing_partial": 89,
-      "planned_shells": 124
+      "modules": 216,
+      "existing_partial": 93,
+      "planned_shells": 123
     },
     "native_rx_complete": false,
-    "endpoint_context_bridge_complete": false,
+    "endpoint_context_bridge_complete": true,
     "process_sta_complete": false,
-    "review": "docs/upli_native_rx_channel_execution.md"
+    "review": "docs/upli_native_rx_channel_execution.md",
+    "endpoint_native_rx_path": {
+      "ports": [
+        1,
+        2,
+        4
+      ],
+      "descriptors": 216,
+      "head_transfers": 1341,
+      "returned_credits": 1341,
+      "drop_blocked_beats": [
+        37,
+        57,
+        60
+      ],
+      "real_wiring_faults": 4,
+      "normal_and_optimized": true,
+      "static_g2001_lint_yosys": true,
+      "response_collector_complete": false,
+      "backend_causality_complete": false,
+      "review": "docs/upli_endpoint_native_rx_path_execution.md"
+    },
+    "role_fault_controller": {
+      "unit_parameter_cases": 9,
+      "unit_slots": 19530,
+      "actual_rx_sram_cases": 9,
+      "unit_faults": 6,
+      "actual_integration_faults": 3,
+      "invalid_parameters_rejected": 4,
+      "normal_and_optimized": true,
+      "role_drop_subset_complete": true,
+      "isolation_dummy_recovery_complete": false,
+      "review": "docs/upli_rx_role_fault_controller_execution.md"
+    }
   },
   "current_switch_reservation_increment": {
     "normal_cycles": 3970,
     "port_configurations": 4,
     "real_faults": 6,
     "static_checks": 9,
-    "egress_queue_integrated": false,
+    "egress_queue_integrated": true,
     "process_sta_complete": false,
-    "review": "docs/switch_credit_reservation_review.md"
+    "review": "docs/switch_credit_reservation_review.md",
+    "vc_resource_partition_integrated": true,
+    "packet_queue": {
+      "normal_cycles": 7600,
+      "illegal_cycles": 5700,
+      "rtl_faults": 7,
+      "static_checks": 10
+    },
+    "vc_queues": {
+      "normal_cycles": 6900,
+      "illegal_cycles": 13800,
+      "enabled_slots": 40,
+      "disabled_slots": 2,
+      "headers": 2234,
+      "body_words": 4693,
+      "retired_packets": 2220,
+      "reset_cancelled": 14,
+      "response_admit_while_request_full": 257,
+      "other_vc_admit_while_vc0_full": 170,
+      "rtl_faults": 5,
+      "static_checks": 9
+    },
+    "switch_top_integrated": false,
+    "physical_egress_scheduler_complete": false,
+    "tl_classifier_repack_complete": false,
+    "reviews": [
+      "docs/switch_egress_packet_queue_review.md",
+      "docs/switch_egress_vc_queues_review.md"
+    ]
   },
   "historical_artifacts_retained": false,
   "historical_results": {

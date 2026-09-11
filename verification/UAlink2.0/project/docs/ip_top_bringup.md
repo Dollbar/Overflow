@@ -1,6 +1,6 @@
 # Endpoint / Switch 顶层研发交付
 
-原生 Request/OrigData 发送字段层与共享信用/TDM 总装已形成实际 RTL；Read/Write Response 独立信用/TDM发送器与四通道TX/SRAM闭环也已验证。接收侧已有实际事件 TDM 观察、跨 VC/Pool 的每端口有序 SRAM 退休、四通道类型 parity/poison/信用封装，以及 Endpoint Request/OrigData 完整事务 holding；完整 station 尚未接入顶层。Switch 新增整包出口容量原子预约，但真实 egress queue 尚在隔离开发。当前结构为213项、89个部分实现、124个显式壳。见 [接收封装验证](upli_native_rx_channel_execution.md)、[Endpoint请求桥验证](upli_endpoint_request_bridge_execution.md)和[Switch预约验证](switch_credit_reservation_review.md)。
+原生 Request/OrigData 发送字段层与共享信用/TDM 总装已形成实际 RTL；Read/Write Response 独立信用/TDM发送器与四通道TX/SRAM闭环也已验证。接收侧已把四个保护通道、实际事件 TDM、跨 VC/Pool 的有序 SRAM 退休、Endpoint Request/OrigData 完整事务 holding和角色Drop控制组成可综合前端；完整 station/Endpoint 顶层连接仍在开发。Switch 已有整包出口容量原子预约、单资源packet queue及按Request/Response和VC分区的实际缓存，物理出口scheduler与顶层连接仍开放。当前结构为216项、93个部分实现、123个显式壳。见 [Native RX生产记录](upli_endpoint_native_rx_path_execution.md)、[角色故障控制器](upli_rx_role_fault_controller_execution.md)、[单资源队列审查](switch_egress_packet_queue_review.md)和[VC队列审查](switch_egress_vc_queues_review.md)。
 
 最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应统一reset已验证，独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
 
@@ -13,7 +13,7 @@
 
 ## 此前实际Read链
 
-`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前89个部分实现、124个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
+`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前93个部分实现、123个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
 
 ## 首批接口壳替换
 
@@ -52,4 +52,4 @@ make ip-top-synth KD28_ROOT=/authorized/path IP_RUN_LABEL=synthesis_check
 
 下一步按模块清单推进实际事务接收/执行/响应完成，接入 Switch TL 目的解析和每端口协议终止，随后逐功能族补齐并逐项更新状态。当前综合检查仅证明相应工具能展开/转换声明结构，不是工艺时序或可制造性签核。
 
-两个顶层的 `o_pending_features[127:0]` 仅标记清单中尚未实现的接口壳：Endpoint 当前93个壳位、Switch当前117个壳位为1（稳定slot不重排）。既有 `existing_partial` 模块的剩余功能不会由这些位完整表达；位图为0不是完整IP就绪条件。
+两个顶层的 `o_pending_features[127:0]` 仅标记清单中尚未实现的接口壳：Endpoint 当前93个壳位、Switch当前116个壳位为1（稳定slot不重排）。既有 `existing_partial` 模块的剩余功能不会由这些位完整表达；位图为0不是完整IP就绪条件。
