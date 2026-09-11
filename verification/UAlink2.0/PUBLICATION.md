@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 922 tracked source files from the UALink development
-repository at commit `ec31dfc39379b1b78fb165511b1746e1c1cc72a0`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 939 tracked source files from the UALink development
+repository at commit `013c9fd805669b33a10bc51ef7c27256b7ff304a`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -29,7 +29,22 @@ Expected outputs are in project `build/` or `reports/`, ignored by Git. Use a fr
 its functional SRAM source hashes. The four relative directory links provide one project
 root without duplicate source files; see [layout details](project/docs/overflow_layout.md).
 
-This increment implements full ordinary uncompressed Read with DWORD lengths 4..256B,
+This increment replaces three Switch shells with real packet ownership/round-robin
+arbitration, full-width data fabric, and an atomic shadow/active route table. All three
+are connected in ualink_switch_top. Static routes remain the default; ROUTE_CONFIG_ENABLE=1
+adds a local explicit write/commit interface. Commit requires no ingress valid and no
+packet owner, including during packet bubbles; rejected commands preserve the active table.
+This is a local sideband unicast service, not standard CSR mapping or per-hop TL/DL routing.
+
+Actual top packet tests delivered 7,097 complete words in 3,033 packets across ports 2/3/4/5.
+Configuration checks covered ports 1/3/4/5 in both modes (195 checks); two real wiring faults
+were detected. The refactored ESE again completed 812 mixed transactions with 8 replays.
+Leaf simulation and static checks, whole-project make test, and configuration-enabled
+Yosys elaboration passed. No process STA or full protocol completeness is claimed.
+See the [Switch integration review](project/docs/switch_integration_review.md) and
+[bounded evidence](project/docs/switch_integration_evidence.json).
+
+The preceding Read increment implements full ordinary uncompressed Read with DWORD lengths 4..256B,
 first/last byte masks, complete 2048-bit backend results and all expected response Beats.
 Single-mode responses allow arbitrary offsets; multi-mode reception reconstructs offsets
 and finality from length. Error responses still collect every expected Beat before retirement.
@@ -50,7 +65,7 @@ skips. After export, the full Read matrix at bank1 with replay completed 812 tra
 the independent Read model with four actual mutations and full-Read-only write-rejection
 check also passed from these published directories before pushing.
 
-The inventory remains 202 RTL entries: 69 partially implemented and 133 disabled interface
+The inventory is 202 RTL entries: 72 partially implemented and 130 disabled interface
 scaffolds. Set TRANSACTION_MODE=1 and FULL_READ_ENABLE=1 for the documented complete ordinary
 Read profile; WRITE_ENABLE=1 independently adds ordinary Write/WriteFull. Defaults preserve
 the earlier fixed Read subset. Strict core lint still reports 15 warnings per Write setting;
@@ -59,3 +74,7 @@ native UPLI, standard per-hop routing/framing, PHY, INC, security, management an
 remain unfinished. This snapshot is not a complete Endpoint/Switch protocol delivery.
 
 The upstream cleared RTL namespace README and added KD-UAlink2_0.png remain preserved.
+
+After this export, the real top configuration test including both actual wiring faults,
+the arbiter port1..5 simulation/static suite, and the complete Read ESE bank1/replay matrix
+were repeated successfully from the published layout before pushing.

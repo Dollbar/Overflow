@@ -8,7 +8,7 @@
 
 | 名称 | 方向 / 宽度 | 语义 |
 |---|---|---|
-| `PORTS` | 参数，默认 4 | 对称输入/输出数量，RTL 要求至少 1；本轮实测 2/3/4 |
+| `PORTS` | 参数，默认 4 | 对称输入/输出数量，RTL 要求至少 1；静态包回归2/3/4/5；配置回归1/3/4/5 |
 | `DATA_WIDTH` | 参数，默认 544 | 每拍原样传递的完整数据宽度 |
 | `clk`, `rstn` | 输入，各 1 位 | 共同时钟上升沿、同步低有效状态复位；复位期间抑制有效传输 |
 | `i_route_ids` | 输入，`PORTS*10` | 每个目的端口的 10 位逻辑 ID，端口 p 位于 `[p*10 +:10]` |
@@ -23,7 +23,7 @@
 
 路由表和目的使能在复位期间配置，在正常运行期间保持稳定。允许 self-route。相同 ID 仅在多个 enabled 项同时匹配时构成歧义；disabled 项不参与匹配。未知 ID、仅匹配 disabled 端口或重复 enabled ID 都使有效源 `o_route_error=1`、`o_ready=0`，不会静默接收后丢弃。错误标志是当前输入的组合状态，不是 sticky 中断或内部错误队列。
 
-源在 `i_valid && !o_ready` 时必须保持 valid、data、dst、last；一个多 beat 包内必须保持同一 dst。允许已获得 owner 的源在相邻 beat 之间插入 valid 气泡，owner 会保留。数据和 last 在 valid=0 时没有外部语义。配置动态变更或包内目标变更不属于合法输入序列，需要先复位/停流。
+源在 `i_valid && !o_ready` 时必须保持 valid、data、dst、last；一个多 beat 包内必须保持同一 dst。允许已获得 owner 的源在相邻 beat 之间插入 valid 气泡，owner 会保留。数据和 last 在 valid=0 时没有外部语义。默认静态模式的配置动态变更或包内目标变更不属于合法输入序列；动态配置须使用下述显式提交服务并先停流排空。
 
 ## 转发与仲裁行为
 
@@ -60,3 +60,15 @@ Yosys `read_verilog; hierarchy; proc; opt; check -assert; stat` 对 2/3/4 端口
 Endpoint 初版每个 544 位 slot 作为单 beat、`last=1` 包接入，10 位目标由上层显式提供。随后逐步接通完整标准端口链、标准目的解析、管理配置与错误恢复；保留当前 fabric 的独立回归，分别报告新增模块的实现状态和验证范围。
 
 完整模块骨架已接入 `u_scaffold`；`o_pending_features[127:0]` 的低127位表示未实现接口壳。`run_switch.py` 已纳入这些角色依赖，系统入口见 `ip_top_bringup.md`。位图不代表既有部分实现已具备全部协议能力。
+
+## 可选原子路由配置与模块衔接
+
+`ROUTE_CONFIG_ENABLE=0`默认仍使用外部静态表，所有新增配置状态输出为零。置一后`switch_route_table`的active表驱动lookup；复位后全部目的关闭。`ROUTE_INDEX_WIDTH`默认max(1,ceil(log2(PORTS)))。
+
+- `i_route_write_valid/index/id/enable`及`o_route_write_accepted`：更新shadow单项，不影响当前转发。
+- `i_route_commit`及`o_route_commit_accepted`：只在无输入valid、无包owner、无并发write、无重复enabled目标时原子发布整表。
+- `o_route_config_pending/error`：分别报告shadow差异与本周期非法配置事件；错误不粘滞。
+- `o_route_quiescent`：配置模式下的真实空闲资格；气泡仍有owner，因此不能提交。
+- `o_fabric_error`：单独报告选择矩阵冲突，相关路径拒绝转发；它不是完整协议错误恢复。
+
+`switch_arbiter`保持raw owner矩阵，`switch_fabric`检查选择/路由后转发完整数据。顶层仅把实际有效出口的ready反馈给arbiter，避免被拒绝路径虚假退休。配置控制方需暂停新入口请求以获得idle窗口；没有自动停流、CSR总线或跨域接口。最终证据和复跑见[switch_integration_review.md](switch_integration_review.md)。

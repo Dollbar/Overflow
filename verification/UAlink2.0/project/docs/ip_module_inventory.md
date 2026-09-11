@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 69 个部分实现RTL模块、133 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 72 个部分实现RTL模块、130 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -42,7 +42,7 @@ output o_implemented, o_error
 
 ## 稳定功能位
 
-Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别101/126个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
+Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别98/123个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
 
 不得因排序或实现进展重编号已分配slot；用已验证typed子集替换壳时保留slot，更新部分实现状态、实际集成父模块与证据；清除位不代表全部规范功能完成。新增模块追加slot；超过128时先显式扩展位图版本/本地接口，不截断。此位图是研发可观测性，不是标准能力协商字段。
 
@@ -230,10 +230,10 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/switch/switch_core.v` | S / planned / S:51 | 多端口消息路由、VC缓冲、仲裁和重打包总装 |
 | `rtl/switch/switch_ingress.v` | S / planned / S:52 | 实际TL事务拆包、入口元数据和错误/INC分类 |
 | `rtl/switch/switch_route_lookup.v` | S / existing_partial / S:53 | 按目的ID/角色选择合法出口或INC处理，不截断ID |
-| `rtl/switch/switch_route_table.v` | S / planned / S:54 | 独立合法路由表组织、配置原子更新和lookup容量 |
+| `rtl/switch/switch_route_table.v` | S / existing_partial / S:54 | 独立合法路由表组织、配置原子更新和lookup容量 |
 | `rtl/switch/switch_egress_vc_queues.v` | S / planned / S:55 | 按出口/Request-Response/VC分离的有界实际缓存 |
-| `rtl/switch/switch_arbiter.v` | S / planned / S:56 | 多入口到出口无饥饿调度、请求不阻塞应答资源 |
-| `rtl/switch/switch_fabric.v` | S / planned / S:57 | 实际多入口多出口数据交叉连接及并发冲突控制 |
+| `rtl/switch/switch_arbiter.v` | S / existing_partial / S:56 | 多入口到出口无饥饿调度、请求不阻塞应答资源 |
+| `rtl/switch/switch_fabric.v` | S / existing_partial / S:57 | 实际多入口多出口数据交叉连接及并发冲突控制 |
 | `rtl/switch/switch_egress_repack.v` | S / planned / S:58 | 转发字段顺序保持、TL完整字段重打包和Data关联 |
 | `rtl/switch/switch_vpod_filter.v` | S / planned / S:59 | 入口/出口/ID/成员关系的vPod边界和非法路由隔离 |
 | `rtl/switch/switch_ordering.v` | S / planned / S:60 | 每ingress-egress流保序、Single-Beat立即转发和区域顺序 |

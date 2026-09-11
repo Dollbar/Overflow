@@ -11,7 +11,7 @@
 
 ## 此前实际Read链
 
-`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前69个部分实现、133个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
+`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前72个部分实现、130个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
 
 ## 首批接口壳替换
 
@@ -26,7 +26,7 @@ make ip-module-smoke IP_RUN_LABEL=fresh_modules
 ## 当前顶层
 
 - `rtl/endpoint/ualink_endpoint_top.v`：将实际 TL 源组捕获/发送 SRAM、信用准入、600-bit 接收 SRAM/FC 发布及 DL 重放合并。新增真实发送 holding 容量预约，把原固定延迟 DL 返回转换为可背压的 ready/valid 输出。
-- `rtl/switch/ualink_switch_top.v`：按显式 10-bit 目的侧带选择唯一启用端口，提供参数化端口仲裁、包内独占与输出停顿保持。配置在复位期间设置，运行期间保持稳定。
+- `rtl/switch/ualink_switch_top.v`：按显式 10-bit 目的侧带选择唯一启用端口，提供参数化端口仲裁、包内独占与输出停顿保持。默认静态配置在复位期间设置并保持；可选原子路由配置服务只在完整空闲边界提交。
 - 完整模块清单与待实现模块边界见 `config/ip_module_inventory.json` 和 `ip_module_inventory.md`。现有模块复用，缺失模块用明确标记的不可接纳服务壳表示，逐项替换后重新验证。
 
 ## 初版系统连接
@@ -50,4 +50,4 @@ make ip-top-synth KD28_ROOT=/authorized/path IP_RUN_LABEL=synthesis_check
 
 下一步按模块清单推进实际事务接收/执行/响应完成，接入 Switch TL 目的解析和每端口协议终止，随后逐功能族补齐并逐项更新状态。当前综合检查仅证明相应工具能展开/转换声明结构，不是工艺时序或可制造性签核。
 
-两个顶层的 `o_pending_features[127:0]` 仅标记清单中尚未实现的接口壳：Endpoint 低109位、Switch低127位为1。既有 `existing_partial` 模块的剩余功能不会由这些位完整表达；位图为0不是完整IP就绪条件。
+两个顶层的 `o_pending_features[127:0]` 仅标记清单中尚未实现的接口壳：Endpoint 当前98个壳位、Switch当前123个壳位为1（稳定slot不重排）。既有 `existing_partial` 模块的剩余功能不会由这些位完整表达；位图为0不是完整IP就绪条件。

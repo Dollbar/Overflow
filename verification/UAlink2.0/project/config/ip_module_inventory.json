@@ -1107,7 +1107,13 @@
       "subsystem": "switch",
       "status": "existing_partial",
       "purpose": "Switch完整数字IP顶层：station、交换、INC、安全、管理与RAS；已存在文件，功能范围须按对应实现审查",
-      "dependencies": [],
+      "dependencies": [
+        "switch_route_lookup",
+        "switch_arbiter",
+        "switch_fabric",
+        "switch_route_table",
+        "ualink_switch_scaffold"
+      ],
       "source_refs": [
         {
           "family": "F01",
@@ -1125,14 +1131,12 @@
       "interface_status": "existing_rtl_ports",
       "level": "top",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Same-clock packet data/valid/last with explicit destination sideband",
+        "Static routes or opt-in shadow write/commit"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Routed packet ready/valid/data/last",
+        "Route/selection errors, local configuration status and pending-feature bitmap"
       ],
       "phase": "existing_source_not_full_protocol_signoff",
       "existence_at_inventory": true,
@@ -1145,7 +1149,8 @@
       "functional_outputs": [
         "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
       ],
-      "functional_interface_status": "existing_source_ports"
+      "functional_interface_status": "existing_source_ports",
+      "review": "docs/switch_integration_review.md"
     },
     {
       "id": "tl_atomic_admission",
@@ -7058,7 +7063,7 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "独立合法路由表组织、配置原子更新和lookup容量",
       "dependencies": [],
       "source_refs": [
@@ -7075,22 +7080,18 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "local_packet_semantic_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "See semantic ports in rtl/switch/switch_route_table.v"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "See semantic ports in rtl/switch/switch_route_table.v"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "local_packet_service_integrated_pending_final_regression",
       "existence_at_inventory": false,
       "integration_parents": [
-        "switch_route_lookup"
+        "ualink_switch_top"
       ],
       "feature_slots": {
         "switch": 54
@@ -7101,7 +7102,10 @@
       "functional_outputs": [
         "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "implemented_local_subset_not_standard_wire_or_CSR",
+      "review": "docs/switch_route_table_review.md",
+      "implemented_subset": "Shadow/active 10-bit destination table; atomic quiescent commit with enabled-ID uniqueness; local management API, no standard CSR map",
+      "port_source": "rtl/switch/switch_route_table.v"
     },
     {
       "id": "switch_egress_vc_queues",
@@ -7167,7 +7171,7 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "多入口到出口无饥饿调度、请求不阻塞应答资源",
       "dependencies": [
         "switch_egress_vc_queues"
@@ -7186,23 +7190,18 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "local_packet_semantic_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "See semantic ports in rtl/switch/switch_arbiter.v"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "See semantic ports in rtl/switch/switch_arbiter.v"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "local_packet_service_integrated_pending_final_regression",
       "existence_at_inventory": false,
       "integration_parents": [
-        "switch_core",
-        "switch_fabric"
+        "ualink_switch_top"
       ],
       "feature_slots": {
         "switch": 56
@@ -7213,7 +7212,10 @@
       "functional_outputs": [
         "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "implemented_local_subset_not_standard_wire_or_CSR",
+      "review": "docs/switch_arbiter_review.md",
+      "implemented_subset": "Per-egress packet ownership and round-robin unicast selection; no per-VC queue fairness claim",
+      "port_source": "rtl/switch/switch_arbiter.v"
     },
     {
       "id": "switch_fabric",
@@ -7223,7 +7225,7 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "实际多入口多出口数据交叉连接及并发冲突控制",
       "dependencies": [
         "switch_arbiter"
@@ -7242,22 +7244,18 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "local_packet_semantic_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "See semantic ports in rtl/switch/switch_fabric.v"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "See semantic ports in rtl/switch/switch_fabric.v"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "local_packet_service_integrated_pending_final_regression",
       "existence_at_inventory": false,
       "integration_parents": [
-        "switch_core"
+        "ualink_switch_top"
       ],
       "feature_slots": {
         "switch": 57
@@ -7268,7 +7266,10 @@
       "functional_outputs": [
         "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "implemented_local_subset_not_standard_wire_or_CSR",
+      "review": "docs/switch_fabric_review.md",
+      "implemented_subset": "Full-width local unicast data crossbar with selection conflict rejection",
+      "port_source": "rtl/switch/switch_fabric.v"
     },
     {
       "id": "switch_egress_repack",

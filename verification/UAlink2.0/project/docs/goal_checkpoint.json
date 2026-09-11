@@ -1,21 +1,19 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Full ordinary Read opt-in integrated: 1652 ESE completions, 12 real Write executions, 8 replays; complete DWORD geometry/masks, multi-beat response reception, independent model and uniform Write reset checked. Full dual IP incomplete.",
+  "latest_stage": "Three Switch shells replaced and integrated: packet arbiter, full-width fabric and atomic route table. 72 partial / 130 shells. Real packet/config/ESE checks passed; full dual IP incomplete.",
   "rtl": "rtl/endpoint/ualink_endpoint_top.v",
-  "review": "docs/endpoint_read_integration_review.md",
-  "evidence": "docs/endpoint_read_evidence.json",
+  "review": "docs/switch_integration_review.md",
+  "evidence": "docs/switch_integration_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish frozen full ordinary Read and Write reset increment to authorized Overflow namespaces.",
-    "Integrate independently developed Switch arbiter/fabric and atomic route table; replace reviewed shells with actual partial implementations.",
-    "Close full Read in-flight partial-response reset and independent LinkDown/epoch; continue native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management, strict lint, CDC/RDC and process STA."
+    "Publish reviewed Switch arbiter/fabric/atomic route configuration increment to authorized Overflow namespaces.",
+    "Continue standard per-hop TL/DL and transaction routing, with real per-VC ownership and resource boundaries; do not substitute local packet sidebands for standard routing.",
+    "Close full Read partial-response reset and independent LinkDown/epoch, then continue native UPLI, PHY, INC, security, management, strict lint, CDC/RDC and process STA."
   ],
-  "remote_main": "c0aab0e5e8522793bf653114d98cae686dae11ac",
+  "remote_main": "283ef7ddc8ae30caccc6fbaffa3f65383c386732",
   "live_jobs": [
-    "switch_arbiter candidate development",
-    "switch_fabric candidate development",
-    "switch_route_table candidate development"
+    "bounded read-only cleanup audit"
   ],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
@@ -25,8 +23,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "c0aab0e5e8522793bf653114d98cae686dae11ac",
-    "source_commit": "6b794142c3f3a3bbbbe33a722700dba6c971b712"
+    "verified_commit": "283ef7ddc8ae30caccc6fbaffa3f65383c386732",
+    "source_commit": "ec31dfc39379b1b78fb165511b1746e1c1cc72a0"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

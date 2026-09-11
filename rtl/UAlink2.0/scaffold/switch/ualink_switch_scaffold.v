@@ -376,13 +376,6 @@ switch_ingress u_switch_ingress(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_52),.o_error());
 assign o_pending_features[52]=!implemented_52;
-wire implemented_54;
-switch_route_table u_switch_route_table(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_54),.o_error());
-assign o_pending_features[54]=!implemented_54;
 wire implemented_55;
 switch_egress_vc_queues u_switch_egress_vc_queues(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -390,20 +383,6 @@ switch_egress_vc_queues u_switch_egress_vc_queues(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_55),.o_error());
 assign o_pending_features[55]=!implemented_55;
-wire implemented_56;
-switch_arbiter u_switch_arbiter(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_56),.o_error());
-assign o_pending_features[56]=!implemented_56;
-wire implemented_57;
-switch_fabric u_switch_fabric(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_57),.o_error());
-assign o_pending_features[57]=!implemented_57;
 wire implemented_58;
 switch_egress_repack u_switch_egress_repack(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -888,6 +867,9 @@ diagnostic_event_mux u_diagnostic_event_mux(
  .o_implemented(implemented_126),.o_error());
 assign o_pending_features[126]=!implemented_126;
 assign o_pending_features[53]=1'b0;
+assign o_pending_features[54]=1'b0;
+assign o_pending_features[56]=1'b0;
+assign o_pending_features[57]=1'b0;
 assign o_pending_features[127]=1'b0;
 endmodule
 `default_nettype wire

@@ -1,0 +1,103 @@
+{
+  "scope": "Local unicast sideband Switch packet arbiter/fabric and opt-in quiescent atomic route configuration; not full protocol Switch",
+  "full_goal_complete": false,
+  "technology_sta": false,
+  "inventory": {
+    "rtl_entries": 202,
+    "existing_partial": 72,
+    "shells": 130
+  },
+  "coverage": {
+    "arbiter_cycles": 9465,
+    "fabric_vectors": 56743,
+    "route_table_candidate_configs": 10,
+    "top_packet_cycles": 5426,
+    "top_packet_deliveries": 7097,
+    "top_packets": 3033,
+    "top_config_cases": 8,
+    "top_config_checks": 195,
+    "top_config_actual_faults": 2,
+    "ese_static_route_completions": 812,
+    "ese_actual_writes": 4,
+    "ese_replays": 8
+  },
+  "records": [
+    {
+      "record": "build/verification/ip_tops/switch_arbiter/integrated_leaf/result.json",
+      "record_sha256": "5540de0bc477b11daeb68904fc171a4bdc15a51d34437b4ff1dd8fd877ae82f2",
+      "reported_status": true
+    },
+    {
+      "record": "build/verification/ip_tops/switch_fabric/integrated_leaf/result.json",
+      "record_sha256": "6477ccdf4f48d83c3e19ad1cca1c716779ff29a36c58f86fb9802687afdd66ff",
+      "reported_status": true
+    },
+    {
+      "record": "build/verification/ip_tops/switch_route_table/integrated_leaf/result.json",
+      "record_sha256": "65f1ff6a0c6396aca7c91a5c1612d8ec02ca55f9c4c64f9a2390c31aa7943f18",
+      "reported_status": true
+    },
+    {
+      "record": "build/verification/ip_tops/switch_top_config/integrated_final/result.json",
+      "record_sha256": "49aa910ec93456826eff855e03c01ca4a76f14316a6dba3f7e5c4dc41354e332",
+      "reported_status": true
+    },
+    {
+      "record": "reports/ip_tops/switch_module_refactor_final/summary.json",
+      "record_sha256": "f3021fb50dbd681cab25e92fe4c4550e9957ca09add5ebf722f441c142b0d9b4",
+      "reported_status": "pass"
+    },
+    {
+      "record": "build/verification/endpoint_transaction/switch_modules_full_read/result.json",
+      "record_sha256": "b6281b74cb56954ac0fa8586c093dc5245744fbba6570a8aa370aa8e3b7ae116",
+      "reported_status": true
+    },
+    {
+      "record": "build/verification/ip_tops/switch_modules_config/results.json",
+      "record_sha256": "104b66f965981e8b3ca0c06954e856d09900420aa1db4e6b9c87a09bedca2f3f",
+      "reported_status": true
+    },
+    {
+      "record": "build/verification/ip_structure/switch_modules_structure/evidence.json",
+      "record_sha256": "568973f8b4e80684072b133a44679dc1f7aa2259961166914fa11ec32c93aa62",
+      "reported_status": true
+    }
+  ],
+  "source_sha256": {
+    "rtl/switch/ualink_switch_top.v": "66fc4e51c011422b5641a2e5b1c9884ce4b6c848482409605c3dceeaa15780c1",
+    "rtl/switch/switch_arbiter.v": "4a1005fe57d8443bae78849e51995b21f6f223f4f4585dd5df6d938a611be0e5",
+    "rtl/switch/switch_fabric.v": "0ecb20eee74469030bae6834cc6e3db6543c2bbe70fa85dedb685712db243ea2",
+    "rtl/switch/switch_route_table.v": "8042939304a3b459bee49458f0f532bd84b4cfdf52c0246eaa8fa07b60550977",
+    "rtl/switch/switch_route_lookup.v": "4cb4c2558b2efe42e479806d88349c23f479224ac1a78c7538b5741db137fc8e",
+    "rtl/scaffold/switch/ualink_switch_scaffold.v": "d4c5ab2557ebf9f9616d2384a4858922bdbb4e3496456234918854b06afb2ca3"
+  },
+  "limits": [
+    "Dynamic route config is local service; no standard CSR map",
+    "ESE uses static route mode; dynamic config has separate real top checks",
+    "No native TL destination parsing or per-hop TL/DL termination",
+    "No complete per-VC scheduling, PHY, INC, security, management, CDC/RDC or physical signoff"
+  ],
+  "make_test": {
+    "exit": 0,
+    "log": "build/development/switch_make_test.log",
+    "sha256": "a3c0ad4a5f2cb8242304410799b10c5911b3e502a0fba5ea3fe8d31c79d4c4a3",
+    "suite_counts": [
+      "Ran 403 tests in 21.190s",
+      "Ran 199 tests in 111.183s",
+      "Ran 6 tests in 0.001s",
+      "Ran 7 tests in 0.001s",
+      "Ran 4 tests in 0.000s",
+      "Ran 4 tests in 0.007s",
+      "Ran 8 tests in 0.001s",
+      "Ran 8 tests in 0.002s",
+      "Ran 5 tests in 0.000s",
+      "Ran 5 tests in 0.002s",
+      "Ran 5 tests in 0.008s",
+      "Ran 20 tests in 0.007s",
+      "Ran 6 tests in 0.001s"
+    ],
+    "skips": [
+      "OK (skipped=2)"
+    ]
+  }
+}

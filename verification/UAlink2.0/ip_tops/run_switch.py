@@ -220,7 +220,8 @@ def main() -> int:
         configs += [(4, "routing"), (4, "hold")]
     mutations = {
         "routing": (".i_dst(i_dst)", ".i_dst({(PORTS*10){1'b0}})"),
-        "hold": ("if (locked_q[egress]) begin", "if (1'b0) begin"),
+        "hold": (("if (locked_q[egress]) begin", "if (1'b0) begin") if "if (locked_q[egress]) begin" in source.read_text() else
+                 (".i_last(i_last), .i_ready(accepted_ready)", ".i_last({PORTS{1'b1}}), .i_ready(accepted_ready)")),
     }
     for ports, mutation in configs:
         directory = output / (f"ports{ports}" + (f"_{mutation}" if mutation else ""))
