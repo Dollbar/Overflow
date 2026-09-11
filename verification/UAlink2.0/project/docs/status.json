@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T19:30:00+08:00",
+  "updated": "2026-09-11T22:10:00+08:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "current_native_receive_increment": {
@@ -48,8 +48,8 @@
       ]
     },
     "inventory": {
-      "modules": 216,
-      "existing_partial": 93,
+      "modules": 221,
+      "existing_partial": 98,
       "planned_shells": 123
     },
     "native_rx_complete": false,
@@ -73,7 +73,7 @@
       "real_wiring_faults": 4,
       "normal_and_optimized": true,
       "static_g2001_lint_yosys": true,
-      "response_collector_complete": false,
+      "response_collector_complete": true,
       "backend_causality_complete": false,
       "review": "docs/upli_endpoint_native_rx_path_execution.md"
     },
@@ -88,6 +88,35 @@
       "role_drop_subset_complete": true,
       "isolation_dummy_recovery_complete": false,
       "review": "docs/upli_rx_role_fault_controller_execution.md"
+    },
+    "response_collector": {
+      "ports": [
+        1,
+        2,
+        4
+      ],
+      "unit_slots": 15337,
+      "actual_receive_cycles": 1729,
+      "accepted": 633,
+      "retired": 630,
+      "reset_cancelled": 3,
+      "actual_source_faults": 10,
+      "normal_and_optimized": true,
+      "review": "docs/upli_endpoint_response_collector_execution.md"
+    },
+    "burst_monitor": {
+      "ports": [
+        1,
+        2,
+        4
+      ],
+      "unit_slots": 7877,
+      "actual_observed_edges": 5109,
+      "request_events": 271,
+      "data_events": 440,
+      "actual_faults": 10,
+      "normal_and_optimized": true,
+      "review": "docs/upli_native_rx_burst_monitor_execution.md"
     }
   },
   "current_switch_reservation_increment": {
@@ -120,12 +149,36 @@
       "static_checks": 9
     },
     "switch_top_integrated": false,
-    "physical_egress_scheduler_complete": false,
+    "physical_egress_scheduler_complete": true,
     "tl_classifier_repack_complete": false,
     "reviews": [
       "docs/switch_egress_packet_queue_review.md",
-      "docs/switch_egress_vc_queues_review.md"
-    ]
+      "docs/switch_egress_vc_queues_review.md",
+      "docs/switch_egress_scheduler_review.md",
+      "docs/switch_egress_pipeline_review.md"
+    ],
+    "scheduler": {
+      "configurations": 4,
+      "cycles": 8300,
+      "completed_packet_services": 2764,
+      "real_faults": 7,
+      "static_checks": 12,
+      "creates_capacity_events": false,
+      "review": "docs/switch_egress_scheduler_review.md"
+    },
+    "queue_to_scheduler_pipeline_complete": true,
+    "pipeline": {
+      "port_vc_configurations": 9,
+      "cycles": 2944,
+      "admitted_packets": 303,
+      "completed_packets": 294,
+      "releases": 294,
+      "words": 737,
+      "reset_cancelled_packets": 9,
+      "real_wiring_faults": 5,
+      "g2001_lint_yosys": 9,
+      "review": "docs/switch_egress_pipeline_review.md"
+    }
   },
   "historical_artifacts_retained": false,
   "historical_results": {
@@ -2410,5 +2463,22 @@
     "strict_static_gate_complete": false,
     "process_sta_complete": false,
     "module_counts_changed": false
+  },
+  "current_endpoint_native_ip_top": {
+    "ports": [
+      1,
+      2,
+      4
+    ],
+    "tl_scope_cases": 1,
+    "descriptors_per_case": 50,
+    "heads_and_returns_per_case": 301,
+    "real_wiring_faults": 5,
+    "g2001_lint_yosys": true,
+    "backend_implemented": false,
+    "tag_completion": false,
+    "isolation_dummy_recovery": false,
+    "process_sta_complete": false,
+    "review": "docs/upli_endpoint_ip_top_execution.md"
   }
 }

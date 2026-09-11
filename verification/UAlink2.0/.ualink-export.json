@@ -1274,6 +1274,15 @@
       "source_sha256": "a9eba89ec31cc4061f0b65c34dabf36eb695f698d72c2fecac05413fc08a043a",
       "transformations": []
     },
+    "rtl/UAlink2.0/switch/switch_egress_pipeline.v": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "71b9706d3d0c81e079f5d59c76f9bcb319255755411c2e5175b62ee8de95eb67",
+      "source": "rtl/switch/switch_egress_pipeline.v",
+      "source_git_blob": "0df435e54d54047cc94ac7722fb756e9e9bbfda5",
+      "source_sha256": "71b9706d3d0c81e079f5d59c76f9bcb319255755411c2e5175b62ee8de95eb67",
+      "transformations": []
+    },
     "rtl/UAlink2.0/switch/switch_egress_repack.v": {
       "kind": "file",
       "mode": 420,
@@ -1281,6 +1290,15 @@
       "source": "rtl/switch/switch_egress_repack.v",
       "source_git_blob": "f1fc2e5e2688919dcbbc7b019bef1129074f9b0f",
       "source_sha256": "28a4cc9e297eefe2af3f17919cd9242a165d1b08feefe3474b510c778cb07b22",
+      "transformations": []
+    },
+    "rtl/UAlink2.0/switch/switch_egress_scheduler.v": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "cf40a6827f3a3ede11bbb3f4e5b19958d67ad795e037da693d2170a8d58371c0",
+      "source": "rtl/switch/switch_egress_scheduler.v",
+      "source_git_blob": "05d210aa7f5b63de302b07a6df266d00dc43ce07",
+      "source_sha256": "cf40a6827f3a3ede11bbb3f4e5b19958d67ad795e037da693d2170a8d58371c0",
       "transformations": []
     },
     "rtl/UAlink2.0/switch/switch_egress_vc_queues.v": {
@@ -1796,6 +1814,15 @@
       "source_sha256": "983c10088f312626e482971dc6730d9a06ce5ae4d2ff277f9d743c6b54073b94",
       "transformations": []
     },
+    "rtl/UAlink2.0/upli/upli_endpoint_ip_top.v": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "584cabdbf619d4af3819da8ad7ab50d520c2f9082bc91952288bef6143890884",
+      "source": "rtl/upli/upli_endpoint_ip_top.v",
+      "source_git_blob": "bf1ad386e59c74a922e82c85439034760f9f6591",
+      "source_sha256": "584cabdbf619d4af3819da8ad7ab50d520c2f9082bc91952288bef6143890884",
+      "transformations": []
+    },
     "rtl/UAlink2.0/upli/upli_endpoint_native_rx_path.v": {
       "kind": "file",
       "mode": 420,
@@ -1812,6 +1839,24 @@
       "source": "rtl/upli/upli_endpoint_request_bridge.v",
       "source_git_blob": "174e273caac6506e06c905eb7b412b5560b41032",
       "source_sha256": "1808facf9f1016e6538833108612b1cca3531fe1ad773eed07aa5dd876201dc9",
+      "transformations": []
+    },
+    "rtl/UAlink2.0/upli/upli_endpoint_response_collector.v": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "96b08ee44ae8c8eac2143d7ee5b2ddb291b8d3fec1f8b309fc9f049b1f0f7efb",
+      "source": "rtl/upli/upli_endpoint_response_collector.v",
+      "source_git_blob": "1cf746e6319302697f13b83f76f9d6188b67abc2",
+      "source_sha256": "96b08ee44ae8c8eac2143d7ee5b2ddb291b8d3fec1f8b309fc9f049b1f0f7efb",
+      "transformations": []
+    },
+    "rtl/UAlink2.0/upli/upli_native_rx_burst_monitor.v": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "b736bd686f619caa830758cf90cda6185e1600ba236a9acbb29550e9dde38085",
+      "source": "rtl/upli/upli_native_rx_burst_monitor.v",
+      "source_git_blob": "9dbc1442102ff94071a88268f2483d51c06e965d",
+      "source_sha256": "b736bd686f619caa830758cf90cda6185e1600ba236a9acbb29550e9dde38085",
       "transformations": []
     },
     "rtl/UAlink2.0/upli/upli_native_rx_channel.v": {
@@ -3641,6 +3686,36 @@
         }
       ]
     },
+    "verification/UAlink2.0/ip_tops/run_switch_egress_pipeline.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "f6211dabd775f6fd9c4d4072ef35ed3cf5bf41d3165281e5537ca51422f00b6d",
+      "source": "verification/ip_tops/run_switch_egress_pipeline.py",
+      "source_git_blob": "6fb9175064cc946edb67a6c76c72d62393c64c96",
+      "source_sha256": "b46f3fd6e9757759174e317e8b8abcb410e5bad85798478149182355f444dcde",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 8,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/ip_tops/run_switch_egress_scheduler.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "62314b9237563a796bbe3bc66b9be56337ef7300b6bcf1f24f31e22d78260954",
+      "source": "verification/ip_tops/run_switch_egress_scheduler.py",
+      "source_git_blob": "6dcc16ec4ed2864e1156f3ac07c9ca926574d7a1",
+      "source_sha256": "24d92d3e9834d4d16a81f7157dc51230e9b7404cad9b4a109630cda10b67319d",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 9,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
     "verification/UAlink2.0/ip_tops/run_switch_egress_vc_queues.py": {
       "kind": "file",
       "mode": 420,
@@ -3771,6 +3846,33 @@
       "source": "verification/ip_tops/switch_egress_packet_queue_tb.sv",
       "source_git_blob": "9c0e6ff6e5e8d462dc5c4c1f014d6d5bfb689087",
       "source_sha256": "efa27cf15a51380a84296704881a86eaaf9a300379d597ae3d6d377ca25f5fe0",
+      "transformations": []
+    },
+    "verification/UAlink2.0/ip_tops/switch_egress_pipeline_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "33d53156dfb426bae8d30d406adaba6638ea7c40a9eb73795b3e97276a8505a9",
+      "source": "verification/ip_tops/switch_egress_pipeline_tb.sv",
+      "source_git_blob": "2e221cd3b935bd9a0af57f4cc8be2fa9ce11137e",
+      "source_sha256": "33d53156dfb426bae8d30d406adaba6638ea7c40a9eb73795b3e97276a8505a9",
+      "transformations": []
+    },
+    "verification/UAlink2.0/ip_tops/switch_egress_scheduler_reference.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "886c24b7591c36e3ad2f89b47986f86430db9ca68f9a374161b13a44e6b54f66",
+      "source": "verification/ip_tops/switch_egress_scheduler_reference.py",
+      "source_git_blob": "5677b96ed24689ef34d048177bcdd0bfb5ec0dcc",
+      "source_sha256": "886c24b7591c36e3ad2f89b47986f86430db9ca68f9a374161b13a44e6b54f66",
+      "transformations": []
+    },
+    "verification/UAlink2.0/ip_tops/switch_egress_scheduler_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "ebcd2d90155999c831d26c8bf773865771eb9c8b003515ac672c1fbe683f0ec3",
+      "source": "verification/ip_tops/switch_egress_scheduler_tb.sv",
+      "source_git_blob": "2090a975a04e6dfab60e81ebb6a20a9f08440789",
+      "source_sha256": "ebcd2d90155999c831d26c8bf773865771eb9c8b003515ac672c1fbe683f0ec3",
       "transformations": []
     },
     "verification/UAlink2.0/ip_tops/switch_egress_vc_queues_reference.py": {
@@ -4343,10 +4445,10 @@
     "verification/UAlink2.0/project/config/ip_module_inventory.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "f7d8f3dd2f070e81610d7d46b1519c56410f69eb41448dd5fd3ddce33440f1e1",
+      "sha256": "109e8edd54fd7e0640f26058e3dffc7c78634415ac4c8ca4e1681d717636f85b",
       "source": "config/ip_module_inventory.json",
-      "source_git_blob": "fa9ea684447fa39e76f3b468784ba84f28307aef",
-      "source_sha256": "f7d8f3dd2f070e81610d7d46b1519c56410f69eb41448dd5fd3ddce33440f1e1",
+      "source_git_blob": "e5451027e6641752c16d1c4fd53f30305877192f",
+      "source_sha256": "109e8edd54fd7e0640f26058e3dffc7c78634415ac4c8ca4e1681d717636f85b",
       "transformations": []
     },
     "verification/UAlink2.0/project/config/kd28_verilator.vlt": {
@@ -5027,10 +5129,10 @@
     "verification/UAlink2.0/project/docs/goal_checkpoint.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "14b266ca759650f84f1679b7ec363eaa341d5813553c4b4d03f5f3ec5b2cab79",
+      "sha256": "d99b9fcb5276c7d9251c0104f01f57af80a26c88cb4369699d91a890828a77b4",
       "source": "docs/goal_checkpoint.json",
-      "source_git_blob": "2cc700e35097f09289e817b0f7a867302c2c1421",
-      "source_sha256": "14b266ca759650f84f1679b7ec363eaa341d5813553c4b4d03f5f3ec5b2cab79",
+      "source_git_blob": "4b391fc92b2f9a392f7e0c42fdf0773d365da104",
+      "source_sha256": "d99b9fcb5276c7d9251c0104f01f57af80a26c88cb4369699d91a890828a77b4",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_delivery_plan.md": {
@@ -5054,10 +5156,10 @@
     "verification/UAlink2.0/project/docs/ip_module_inventory.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "2a30145acab0f5e6baa5c8f771c8eb2332a37e25da4b51668bae03e369e30cb0",
+      "sha256": "d12aadc623721f5a83b46f01493ce5628b3b422366aeec8d540c9341fc4a2beb",
       "source": "docs/ip_module_inventory.md",
-      "source_git_blob": "6b72b781507752db7c36ba7029132ca409c62d9e",
-      "source_sha256": "2a30145acab0f5e6baa5c8f771c8eb2332a37e25da4b51668bae03e369e30cb0",
+      "source_git_blob": "e4a186592e92070479113c9c2d9abac6b21d01b4",
+      "source_sha256": "d12aadc623721f5a83b46f01493ce5628b3b422366aeec8d540c9341fc4a2beb",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_scaffold_interface.md": {
@@ -5072,10 +5174,10 @@
     "verification/UAlink2.0/project/docs/ip_top_bringup.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "322ccd79a54559594def9cc8c7b57c224f7cae919a33cfee066331a446c62692",
+      "sha256": "d9083a786a0be29e890dd59270b48681f5bbcab302fb106aacb3503fcf2649df",
       "source": "docs/ip_top_bringup.md",
-      "source_git_blob": "ef155f96cde410fd94d2589b8b41d52be3fa8ff9",
-      "source_sha256": "322ccd79a54559594def9cc8c7b57c224f7cae919a33cfee066331a446c62692",
+      "source_git_blob": "f4bdb1d6ee8388831c6b1c318edcd2a59b1b61db",
+      "source_sha256": "d9083a786a0be29e890dd59270b48681f5bbcab302fb106aacb3503fcf2649df",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_top_evidence.json": {
@@ -5189,19 +5291,19 @@
     "verification/UAlink2.0/project/docs/status.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "9db2abcbc07760fdc4c63ed3a71ceb96cd472e0c9789e0f19df4334e1e2c7201",
+      "sha256": "e9cf98d2e847a47ac1273e034a41c11a7e4d4efb624bba125ec22c3232b3bf7b",
       "source": "docs/status.json",
-      "source_git_blob": "7a299bc8a307cc4ae426359dc0ce73f90c62b0de",
-      "source_sha256": "9db2abcbc07760fdc4c63ed3a71ceb96cd472e0c9789e0f19df4334e1e2c7201",
+      "source_git_blob": "b81869b9a64e3b0d089469f448f71d7317adf620",
+      "source_sha256": "e9cf98d2e847a47ac1273e034a41c11a7e4d4efb624bba125ec22c3232b3bf7b",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/status.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "3bba1674158496dabc933a60214f7ab17a3820236f6e6e557536d80dc96af5f0",
+      "sha256": "24c5dece3e61f4afdeb2d52b3d76ebb02712c745976e41043c0a9e532c50a071",
       "source": "docs/status.md",
-      "source_git_blob": "51a12b480ed16e71e37e92d016ad6a9411d2fbb3",
-      "source_sha256": "3bba1674158496dabc933a60214f7ab17a3820236f6e6e557536d80dc96af5f0",
+      "source_git_blob": "a0d0ae6598d976194cb9285af2b67f58fff3dd69",
+      "source_sha256": "24c5dece3e61f4afdeb2d52b3d76ebb02712c745976e41043c0a9e532c50a071",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/switch_arbiter_review.md": {
@@ -5238,6 +5340,33 @@
       "source": "docs/switch_egress_packet_queue_review.md",
       "source_git_blob": "87ddab622e8a4f6501a4668d3a5e0906e9dff7ff",
       "source_sha256": "53ce24428707a54103ff8a45e26bdc6007ae6a622bce2c043800df7be1a82b22",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/switch_egress_pipeline_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "15e3c5b1158518ca7f93cdd69332e0fb131b42677e4ed2901ab453c912d73c62",
+      "source": "docs/switch_egress_pipeline_review.md",
+      "source_git_blob": "fc25bbe5d9b2b66c5ed94e63769377dd83fc2c6e",
+      "source_sha256": "15e3c5b1158518ca7f93cdd69332e0fb131b42677e4ed2901ab453c912d73c62",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/switch_egress_scheduler_contract.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "83bec9d8512f6dfe3108552bb3add129154b0d17f4912b72b89a27a59b4069c3",
+      "source": "docs/switch_egress_scheduler_contract.md",
+      "source_git_blob": "e0fdb018f7e2491b520bc8721a68ed22c27b665d",
+      "source_sha256": "83bec9d8512f6dfe3108552bb3add129154b0d17f4912b72b89a27a59b4069c3",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/switch_egress_scheduler_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "17f3d2f798467554c23667d76106e6a2f0fd9f41e8731decd2a1dbc8362f021b",
+      "source": "docs/switch_egress_scheduler_review.md",
+      "source_git_blob": "7c4231da10f47aa0b67ce31790ee4f5592266caa",
+      "source_sha256": "17f3d2f798467554c23667d76106e6a2f0fd9f41e8731decd2a1dbc8362f021b",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/switch_egress_vc_queues_contract.md": {
@@ -5906,6 +6035,15 @@
       "source_sha256": "e4d164af5e56b1d61a60eb8d22d4b6596aa5a18a116036d00920d33cd51d87a6",
       "transformations": []
     },
+    "verification/UAlink2.0/project/docs/upli_endpoint_ip_top_execution.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "5cbbccf3794a58515fe6598e2f3e578bbc1a54ab98fba9012a0910e8c80cb313",
+      "source": "docs/upli_endpoint_ip_top_execution.md",
+      "source_git_blob": "96950bf19fa5b940cb4c474a247036936a21bcd5",
+      "source_sha256": "5cbbccf3794a58515fe6598e2f3e578bbc1a54ab98fba9012a0910e8c80cb313",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/docs/upli_endpoint_native_rx_path_contract.md": {
       "kind": "file",
       "mode": 420,
@@ -5942,6 +6080,15 @@
       "source_sha256": "128dfcf73f4a98f9aa3b669d2021e36b9f43c54f7e2422745fadeaa032a4113c",
       "transformations": []
     },
+    "verification/UAlink2.0/project/docs/upli_endpoint_response_collector_execution.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "a3192e64c97b90c4292165a46d0e964ebc1a9baf67a193b58d112c32b71661fa",
+      "source": "docs/upli_endpoint_response_collector_execution.md",
+      "source_git_blob": "b5db8bf0631ed43e8b21b3902557e6aed8f21da3",
+      "source_sha256": "a3192e64c97b90c4292165a46d0e964ebc1a9baf67a193b58d112c32b71661fa",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/docs/upli_fifo_payload_proof_evidence.json": {
       "kind": "file",
       "mode": 420,
@@ -5976,6 +6123,15 @@
       "source": "docs/upli_model_contract.md",
       "source_git_blob": "eab1619bb70494ac232fbe06e6972afbc4101976",
       "source_sha256": "d2f6aa46bdb0da41b3cec7b790185b5a8dc0cbecc3d9de091b1ff8867c94c123",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/upli_native_rx_burst_monitor_execution.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "c2f52735a9f2d1a1477beabf5b7cfae2d4696f9d27be437c4e57a46f38cd94df",
+      "source": "docs/upli_native_rx_burst_monitor_execution.md",
+      "source_git_blob": "d2251ca0f6fa7182d1eb014ae3ecb5581681488e",
+      "source_sha256": "c2f52735a9f2d1a1477beabf5b7cfae2d4696f9d27be437c4e57a46f38cd94df",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/upli_native_rx_channel_execution.md": {
@@ -10454,6 +10610,15 @@
       "source_sha256": "a77b5e28704db4d0cc1177732b05024539c31622479519fd3f1540ddd91038a0",
       "transformations": []
     },
+    "verification/UAlink2.0/upli_channels/endpoint_ip_top_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "7d7796e6d0d42b8560b1996b4550478a6371b89970865d64d10c72906e1805a7",
+      "source": "verification/upli_channels/endpoint_ip_top_tb.sv",
+      "source_git_blob": "c10c0f76aee2f8a4d2c9a887d1b77d14107b7cb8",
+      "source_sha256": "7d7796e6d0d42b8560b1996b4550478a6371b89970865d64d10c72906e1805a7",
+      "transformations": []
+    },
     "verification/UAlink2.0/upli_channels/endpoint_request_bridge_reference.py": {
       "kind": "file",
       "mode": 420,
@@ -10661,6 +10826,33 @@
       "source_sha256": "43658224578be35e6d897ff5b4eb7cae0ffdf7431cf0c5d82e7bd33a514f9e2e",
       "transformations": []
     },
+    "verification/UAlink2.0/upli_channels/response_collector_receive_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "4f146d9b9160a8a7948d4f89fe00abb51643c64d0513a0fcd6805c335f8fb8b4",
+      "source": "verification/upli_channels/response_collector_receive_tb.sv",
+      "source_git_blob": "8a36a33371383338cbbf0564123b9b6f5201e47f",
+      "source_sha256": "4f146d9b9160a8a7948d4f89fe00abb51643c64d0513a0fcd6805c335f8fb8b4",
+      "transformations": []
+    },
+    "verification/UAlink2.0/upli_channels/response_collector_reference.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "57ca7fc0d85f7eb36e05431b9a54b0b5f4b6ec0450200052b74ee7647ccfb810",
+      "source": "verification/upli_channels/response_collector_reference.py",
+      "source_git_blob": "d0825e475dcbea645a303950a2bfae975eef59b9",
+      "source_sha256": "57ca7fc0d85f7eb36e05431b9a54b0b5f4b6ec0450200052b74ee7647ccfb810",
+      "transformations": []
+    },
+    "verification/UAlink2.0/upli_channels/response_collector_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "a28f04601bfdfe4a6c91398e35e384632cd0ec5a0ff331dd30ec1613fd669eb4",
+      "source": "verification/upli_channels/response_collector_tb.sv",
+      "source_git_blob": "41ed6d784fd7f775d8b8c4a16802f5f189edf81a",
+      "source_sha256": "a28f04601bfdfe4a6c91398e35e384632cd0ec5a0ff331dd30ec1613fd669eb4",
+      "transformations": []
+    },
     "verification/UAlink2.0/upli_channels/role_fault_receive_tb.sv": {
       "kind": "file",
       "mode": 420,
@@ -10699,6 +10891,21 @@
         {
           "kind": "project_root",
           "line": 12,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/upli_channels/run_endpoint_ip_top.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "a13444f45da765059aa9929a3fba95b1c1e329405988e3f9262982460ca1651c",
+      "source": "verification/upli_channels/run_endpoint_ip_top.py",
+      "source_git_blob": "db292cf6e1f7630cd1e3365c459bbbc570dc1596",
+      "source_sha256": "c81d2760a5c66ac7bd8f696a628f6b294e81204ad887a7f677c003687cf21ee1",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 9,
           "original": "Path(__file__).resolve().parents[2]"
         }
       ]
@@ -10853,6 +11060,21 @@
         }
       ]
     },
+    "verification/UAlink2.0/upli_channels/run_response_collector.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "dd59616926ba0a125d89031d699c818811a3fc0289ab16dc1979ae774da2c246",
+      "source": "verification/upli_channels/run_response_collector.py",
+      "source_git_blob": "a397c91442e94c0d8ac5896a503045e5443be210",
+      "source_sha256": "cf66f70cd93ecb7d3c4ff4bfe278a2cc55739f0b3041b6dcbcc685f1e0258f0c",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 6,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
     "verification/UAlink2.0/upli_channels/run_role_fault.py": {
       "kind": "file",
       "mode": 420,
@@ -10864,6 +11086,21 @@
         {
           "kind": "project_root",
           "line": 9,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/upli_channels/run_rx_burst.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "c91ae0a8b281ea398fa3c9f735d9b1a3742cf0936490043e6237e03bb67353f1",
+      "source": "verification/upli_channels/run_rx_burst.py",
+      "source_git_blob": "7d391c070b6dc603d2a3c3ee97717477a0845077",
+      "source_sha256": "da9a6a129207fda452cf403bec2324d4d1b0d3ceb7f3886c4ed221108ff83e10",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 6,
           "original": "Path(__file__).resolve().parents[2]"
         }
       ]
@@ -10927,6 +11164,33 @@
           "original": "Path(__file__).resolve().parents[2]"
         }
       ]
+    },
+    "verification/UAlink2.0/upli_channels/rx_burst_path_bind.svh": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "586cf99d26f9e3dd47c6b4449f06e24274d07c73dce94cfde8bc113434f9637a",
+      "source": "verification/upli_channels/rx_burst_path_bind.svh",
+      "source_git_blob": "bdf42481575d98cbcd1a3f362d27ea298e318a2a",
+      "source_sha256": "586cf99d26f9e3dd47c6b4449f06e24274d07c73dce94cfde8bc113434f9637a",
+      "transformations": []
+    },
+    "verification/UAlink2.0/upli_channels/rx_burst_reference.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "1b6b4424cd8f437dd4ccd79d75688ee1705b45304b3432fa4245c6328f30615d",
+      "source": "verification/upli_channels/rx_burst_reference.py",
+      "source_git_blob": "f84d2071acf04a2964167e243cd3e22d7a9128ac",
+      "source_sha256": "1b6b4424cd8f437dd4ccd79d75688ee1705b45304b3432fa4245c6328f30615d",
+      "transformations": []
+    },
+    "verification/UAlink2.0/upli_channels/rx_burst_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "53b6f3fd57e38dde9faed486834651086a19245fd92176ba0caf25590ab121f9",
+      "source": "verification/upli_channels/rx_burst_tb.sv",
+      "source_git_blob": "5d9b36dad598e7c0947fc2c3dcf89049c3d50c13",
+      "source_sha256": "53b6f3fd57e38dde9faed486834651086a19245fd92176ba0caf25590ab121f9",
+      "transformations": []
     },
     "verification/UAlink2.0/upli_channels/sender_orig_data_tb.sv": {
       "kind": "file",
@@ -11036,5 +11300,5 @@
   },
   "owner": "ualink-overflow-export",
   "schema": 1,
-  "source_commit": "842d9a0612d701e1dcc28a9bd310e7314fde4661"
+  "source_commit": "8ce73aa87e41a9104282eda1f3b9518fa47910dd"
 }

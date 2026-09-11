@@ -3134,6 +3134,107 @@
       "functional_interface_status": "endpoint_native_receive_frontend_without_response_collector_backend_or_complete_role_ras"
     },
     {
+      "id": "upli_endpoint_response_collector",
+      "module": "upli_endpoint_response_collector",
+      "path": "rtl/upli/upli_endpoint_response_collector.v",
+      "roles": [
+        "endpoint"
+      ],
+      "subsystem": "endpoint",
+      "status": "existing_partial",
+      "purpose": "Select and hold trusted Read/Write response heads until downstream retirement while atomically driving the existing native RX consumer boundary.",
+      "dependencies": [
+        "upli_native_rx_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.6–2.8, §4.1"
+        },
+        {
+          "family": "F06",
+          "source": "C §5–6"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Selectable complete RdRsp619/WrRsp101 heads with original Port/VC/Pool/account metadata",
+        "Independent downstream retire readiness and role stop qualification"
+      ],
+      "outputs": [
+        "Stable complete Read/Write response payload and original metadata",
+        "Atomic consumer port/ready signals for the unique existing native RX credit owner"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_endpoint_response_collector.v",
+      "integration_parents": [
+        "upli_endpoint_native_rx_path",
+        "ualink_endpoint_top"
+      ],
+      "functional_inputs": [
+        "Trusted selectable Read/Write native response heads from the protected receive path"
+      ],
+      "functional_outputs": [
+        "Backpressure-stable response retirement without a second credit return, Tag table or response interpretation"
+      ],
+      "functional_interface_status": "raw_response_collection_without_tag_completion_isolate_semantics_or_automatic_port_scheduling"
+    },
+    {
+      "id": "upli_endpoint_ip_top",
+      "module": "upli_endpoint_ip_top",
+      "path": "rtl/upli/upli_endpoint_ip_top.v",
+      "roles": [
+        "endpoint"
+      ],
+      "subsystem": "endpoint",
+      "status": "existing_partial",
+      "purpose": "Aggregate the native Endpoint connection, transmit station, four-channel protected receive path, response collector and unique role-scoped fault owner while exposing the backend as explicitly unimplemented.",
+      "dependencies": [
+        "upli_station_tx",
+        "upli_connection_side",
+        "upli_endpoint_native_rx_path",
+        "upli_endpoint_response_collector",
+        "upli_rx_role_fault_controller"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.5–2.8, §4"
+        },
+        {
+          "family": "F06",
+          "source": "C §5–6"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Complete native TX candidates, RX channel beats/credits, connection handshakes and downstream request/response retirement controls"
+      ],
+      "outputs": [
+        "Complete native four-channel TX/RX frontend events, exact credit/account diagnostics, role Drop state and preserved request/response tuples"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [
+        "KD28 functional SRAM dependency"
+      ],
+      "port_source": "rtl/upli/upli_endpoint_ip_top.v",
+      "integration_parents": [
+        "ualink_endpoint_top"
+      ],
+      "functional_inputs": [
+        "Two-role native UPLI frontend traffic and connection/fault qualification"
+      ],
+      "functional_outputs": [
+        "Synthesizable native Endpoint frontend with explicit backend_implemented=0 boundary"
+      ],
+      "functional_interface_status": "native_endpoint_frontend_without_backend_execution_tag_completion_isolation_recovery_or_full_tl_dl"
+    },
+    {
       "id": "upli_rx_role_fault_controller",
       "module": "upli_rx_role_fault_controller",
       "path": "rtl/upli/upli_rx_role_fault_controller.v",
@@ -3186,6 +3287,50 @@
         "Role-scoped fail-stop Drop ownership; acknowledgement clears notification only"
       ],
       "functional_interface_status": "role_drop_subset_without_isolation_dummy_completion_or_recovery_epoch"
+    },
+    {
+      "id": "upli_native_rx_burst_monitor",
+      "module": "upli_native_rx_burst_monitor",
+      "path": "rtl/upli/upli_native_rx_burst_monitor.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Observe externally classified native Request/Data bursts against the existing receive TDM phase and report pairing, offset, last and VC protocol errors.",
+      "dependencies": [
+        "upli_receive_tdm_monitor"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.5–2.8, §4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Raw Request/Data event metadata, explicit command-class qualification and existing receive TDM expected-port phase"
+      ],
+      "outputs": [
+        "Sticky first-error burst diagnostic context until common reset"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_native_rx_burst_monitor.v",
+      "integration_parents": [
+        "upli_endpoint_native_rx_path",
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "Externally confirmed data-bearing request class and native Data sequence observations"
+      ],
+      "functional_outputs": [
+        "Diagnostic-only Req/Data pairing, gap, Offset, Last and VC error observation"
+      ],
+      "functional_interface_status": "diagnostic_only_without_filter_drop_credit_tdm_ownership_or_abort_recovery"
     },
     {
       "id": "upli_receive_fifo",
@@ -11670,6 +11815,101 @@
         "Actual native events or diagnostic/generation subset as applicable"
       ],
       "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
+    },
+    {
+      "id": "switch_egress_scheduler",
+      "module": "switch_egress_scheduler",
+      "path": "rtl/switch/switch_egress_scheduler.v",
+      "roles": [
+        "switch"
+      ],
+      "subsystem": "switch",
+      "status": "existing_partial",
+      "purpose": "Select Request/Response and VC-partitioned packet queues onto one physical stream per egress with packet ownership, bounded response preference and per-class VC round robin.",
+      "dependencies": [
+        "switch_egress_vc_queues"
+      ],
+      "source_refs": [
+        {
+          "family": "F20",
+          "source": "L §7–10"
+        },
+        {
+          "family": "F21",
+          "source": "L §7–10"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Per-egress Request/Response/VC queue heads with valid, payload, token and Last plus physical egress ready"
+      ],
+      "outputs": [
+        "One locked packet stream per physical egress, selected class/VC/token and exactly one selected queue ready"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_scheduler.v",
+      "integration_parents": [
+        "switch_core",
+        "ualink_switch_top"
+      ],
+      "functional_inputs": [
+        "Queue-owned packet heads in slot=(response*VCS+vc)*PORTS+egress layout"
+      ],
+      "functional_outputs": [
+        "Packet-granular physical egress arbitration without creating reservation or release capacity events"
+      ],
+      "functional_interface_status": "scheduler_without_ingress_classifier_repack_top_integration_deadlock_proof_or_qos_time_bound"
+    },
+    {
+      "id": "switch_egress_pipeline",
+      "module": "switch_egress_pipeline",
+      "path": "rtl/switch/switch_egress_pipeline.v",
+      "roles": [
+        "switch"
+      ],
+      "subsystem": "switch",
+      "status": "existing_partial",
+      "purpose": "Connect Request/Response/VC-partitioned egress queues to the physical egress scheduler while preserving the queue as the sole packet reservation and release owner.",
+      "dependencies": [
+        "switch_egress_vc_queues",
+        "switch_egress_scheduler"
+      ],
+      "source_refs": [
+        {
+          "family": "F20",
+          "source": "L §7–10"
+        },
+        {
+          "family": "F21",
+          "source": "L §7–10"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Per-class/VC packet admissions and body words plus physical egress readiness"
+      ],
+      "outputs": [
+        "One complete packet stream per physical egress and exact queue-owned reservation/release diagnostics"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_pipeline.v",
+      "integration_parents": [
+        "switch_core",
+        "ualink_switch_top"
+      ],
+      "functional_inputs": [
+        "Header/body packets classified by egress, Request/Response and VC"
+      ],
+      "functional_outputs": [
+        "Actual bounded storage through packet-locking scheduler with one final-beat release"
+      ],
+      "functional_interface_status": "queue_scheduler_pipeline_without_standard_tl_classifier_repack_switch_top_or_process_sta"
     }
   ],
   "software_modules": [
@@ -12082,7 +12322,7 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 93,
+    "existing_rtl": 98,
     "planned_rtl": 123,
     "software_planned": 13,
     "external_boundaries": 4

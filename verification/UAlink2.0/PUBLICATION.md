@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1061 tracked source files from the UALink development
-repository at commit `842d9a0612d701e1dcc28a9bd310e7314fde4661`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1087 tracked source files from the UALink development
+repository at commit `8ce73aa87e41a9104282eda1f3b9518fa47910dd`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -139,3 +139,14 @@ The single-resource packet queue covers 7,600 normal and 5,700 illegal-input cyc
 All new production runners pass from this published linked layout, including Endpoint 1/2/4-port static checks, its four wiring faults, the role controller real-RX matrix and faults, and both Switch queue fault/static suites. The first relocated Endpoint run exposed a runner-only path-classification bug because the project RTL link also resides below the Overflow checkout; commit `842d9a0` restricts external hash checks to exact manifest paths, and the final published rerun passes. Repository tests and generic synthesis of both existing tops pass in the source checkout.
 
 The Endpoint response collector and backend-derived causality, full role Isolation/dummy completion/recovery epoch, Switch ingress classification/physical egress scheduling/repacking/top connection, standard per-hop TL/DL, CDC/RDC and process STA remain open. See `project/docs/upli_endpoint_native_rx_path_execution.md`, `project/docs/upli_rx_role_fault_controller_execution.md`, `project/docs/switch_egress_packet_queue_review.md` and `project/docs/switch_egress_vc_queues_review.md`.
+
+
+## Native Endpoint IP frontend and Switch physical scheduler
+
+Five new partial implementations raise the inventory to 221 RTL entries: 98 partial implementations and 123 explicit disabled shells. `upli_endpoint_response_collector` retires complete Read/Write heads through the existing native RX consumer boundary, which remains the sole credit-return owner. `upli_endpoint_ip_top` connects the two role connections, the actual four-channel transmit station, protected four-channel receive path, response collector and the unique role fault controller. Its explicit `o_backend_implemented=0` boundary records that backend execution and Tag completion remain open.
+
+The production Endpoint layout passes 1/2/4-port non-TL and 4-port TL-scope cases. Each case accepts 50 descriptors and accounts for 301 receive heads and returns; five real wiring mutations are detected. The standalone collector normal and optimized matrices cover 15,337 unit slots and actual protected-RX transfer/retirement, with ten source mutations detected. The diagnostic burst monitor covers 7,877 unit slots and observes 5,109 actual native-path edges, 271 Requests and 440 Data Beats; ten mutations are detected. It consumes explicit command classification and existing TDM phase and owns no traffic filtering, credit, Drop or TDM state.
+
+`switch_egress_scheduler` selects the Request/Response/VC-partitioned queues onto one stream per physical egress, locks ownership from the first offered beat through the final accepted beat, and applies bounded response preference plus per-class VC round robin. Four configurations cover 8,300 cycles and 2,764 completed packet services; seven actual RTL mutations and twelve static checks pass. It generates no reservation or release events. `switch_egress_pipeline` now connects the real partitioned queues to that scheduler across nine PORTS×VCS configurations: 303 packets are admitted, 294 complete with exactly 294 releases, and nine are cancelled by reset. Five queue/scheduler wiring mutations are detected. Standard TL classification/repacking and Switch top connection remain open.
+
+The source repository suite passes 403 model and 199 tool tests with two conditional skips. The linked publication layout independently passes the Endpoint 1/2/4-port static matrix, collector and burst-monitor real-RX fault matrices, and the scheduler and queue-to-scheduler pipeline normal/fault/static matrices. Existing Endpoint and Switch digital tops synthesize successfully with 149 and 135 elaborated modules respectively. Process STA for the new native Endpoint top and Switch scheduling path has not been completed. Endpoint backend/Tag completion, Isolation/dummy completion/recovery epoch, standard per-hop TL/DL, PHY, INC, security, management and CDC/RDC remain unfinished. See `project/docs/upli_endpoint_ip_top_execution.md`, `project/docs/upli_endpoint_response_collector_execution.md`, `project/docs/upli_native_rx_burst_monitor_execution.md` and `project/docs/switch_egress_scheduler_review.md`.

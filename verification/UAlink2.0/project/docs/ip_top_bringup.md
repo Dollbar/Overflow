@@ -1,6 +1,6 @@
 # Endpoint / Switch 顶层研发交付
 
-原生 Request/OrigData 发送字段层与共享信用/TDM 总装已形成实际 RTL；Read/Write Response 独立信用/TDM发送器与四通道TX/SRAM闭环也已验证。接收侧已把四个保护通道、实际事件 TDM、跨 VC/Pool 的有序 SRAM 退休、Endpoint Request/OrigData 完整事务 holding和角色Drop控制组成可综合前端；完整 station/Endpoint 顶层连接仍在开发。Switch 已有整包出口容量原子预约、单资源packet queue及按Request/Response和VC分区的实际缓存，物理出口scheduler与顶层连接仍开放。当前结构为216项、93个部分实现、123个显式壳。见 [Native RX生产记录](upli_endpoint_native_rx_path_execution.md)、[角色故障控制器](upli_rx_role_fault_controller_execution.md)、[单资源队列审查](switch_egress_packet_queue_review.md)和[VC队列审查](switch_egress_vc_queues_review.md)。
+原生双角色 Endpoint 前端顶层现已实际连接 connection、四通道TX、四通道保护RX、Request holding、Read/Write response collector和唯一role Drop控制；后端通过 `o_backend_implemented=0` 明确保留。RX burst monitor补齐Req/Data配对、Offset/Last/VC诊断。Switch已有整包容量预约、Request/Response/VC分区缓存、物理出口scheduler及其实际生产pipeline。当前结构为221项、98个部分实现、123个显式壳。见 [Endpoint前端记录](upli_endpoint_ip_top_execution.md)、[burst monitor记录](upli_native_rx_burst_monitor_execution.md)、[VC队列审查](switch_egress_vc_queues_review.md)和[scheduler审查](switch_egress_scheduler_review.md)。
 
 最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应统一reset已验证，独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
 

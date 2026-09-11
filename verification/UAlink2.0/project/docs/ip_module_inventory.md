@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 93 个部分实现RTL模块、123 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 98 个部分实现RTL模块、123 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -114,6 +114,8 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/upli/upli_endpoint_request_bridge.v` | E / existing_partial / — | Complete Request/OrigData holding with preserved Port/VC/Pool/Auth/Src/Tag and exact SRAM-head versus descriptor ownership events. |
 | `rtl/upli/upli_endpoint_native_rx_path.v` | E / existing_partial / — | Four protected native RX channels, three-phase receive monitor and complete Request/OrigData bridge; response collector, backend and complete role RAS remain open. |
 | `rtl/upli/upli_rx_role_fault_controller.v` | E/S / existing_partial / — | Direction-aware native receive and credit fault classification into sticky role-scoped Drop; isolation, dummy completion and recovery epoch remain open. |
+| `rtl/upli/upli_endpoint_ip_top.v` | E / existing_partial / — | 原生双角色Endpoint前端总装：实际连接、四通道TX/RX、响应收集和唯一Drop控制；后端显式未实现 |
+| `rtl/upli/upli_native_rx_burst_monitor.v` | E/S / existing_partial / — | 复用现有接收TDM观察Req/Data burst配对、Offset/Last/VC；仅诊断，不接管流量、信用或Drop |
 | `rtl/upli/upli_receive_fifo.v` | E/S / existing_partial / — | Synchronous receive FIFO controller for a one-cycle registered SDP SRAM. |
 | `rtl/upli/upli_receive_storage.v` | E/S / existing_partial / — | Bind the synchronous receive FIFO to externally supplied KD28 SDP storage. |
 | `rtl/upli/upli_station_port.v` | E/S / planned / E:18/S:0 | 原生station UPLI四通道、连接、TDM、信用与parity总装 |
@@ -246,6 +248,8 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/switch/switch_route_table.v` | S / existing_partial / S:54 | 独立合法路由表组织、配置原子更新和lookup容量 |
 | `rtl/switch/switch_egress_packet_queue.v` | S / existing_partial / — | 单资源整包预约、逐字保存与末字真实退休后原容量释放辅助模块 |
 | `rtl/switch/switch_egress_vc_queues.v` | S / existing_partial / S:55 | 按出口、Request/Response和VC独立分区的有界整包实际缓存；尚未接TL分类、重打包和Switch顶层 |
+| `rtl/switch/switch_egress_scheduler.v` | S / existing_partial / — | 每物理出口按整包锁定Request/Response/VC队列，有限响应偏好与VC轮询；不创建容量预约或释放 |
+| `rtl/switch/switch_egress_pipeline.v` | S / existing_partial / — | 实际连接VC分区队列与物理出口scheduler，保留队列唯一预约/释放所有权；尚未接标准TL重打包与Switch顶层 |
 | `rtl/switch/switch_arbiter.v` | S / existing_partial / S:56 | 多入口到出口无饥饿调度、请求不阻塞应答资源 |
 | `rtl/switch/switch_fabric.v` | S / existing_partial / S:57 | 实际多入口多出口数据交叉连接及并发冲突控制 |
 | `rtl/switch/switch_egress_repack.v` | S / planned / S:58 | 转发字段顺序保持、TL完整字段重打包和Data关联 |
