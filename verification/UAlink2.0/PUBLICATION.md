@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1020 tracked source files from the UALink development
-repository at commit `abff72898061d833d8ce264d3e32e86dd766ffef`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1035 tracked source files from the UALink development
+repository at commit `4f579906f7b1551a9f1051513c23b81764818bcf`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -119,3 +119,11 @@ Two new partial implementations observe receive-side TDM phase and preserve each
 The final 1/2/4-port ordered matrix ran 8,736 cycles with 3,699 accepted Beats, 3,696 retired and returned Beats, and three deliberately reset-cancelled pending Beats. Three live wiring/data faults were detected. TDM unit tests covered 24,923 slots; real station integration covered 3,483 edges and 1,034 native events, detecting phase, idle and cross-channel faults. Strict lint, Yosys structural checks, structure validation and the source repository test suite passed.
 
 Relocated ordered receive and TDM tests are rerun from this published layout before pushing. Full native channel parity conversion, per-Beat poison and Drop handling, burst ownership, Endpoint request/context causality, independent LinkDown/epoch and process STA remain open. See `project/docs/upli_ordered_receive_channel_execution.md` and `project/docs/upli_native_rx_execution.md` for commands and the bounded scope.
+
+## Protected native receive, Endpoint request holding and Switch capacity
+
+Three native receive/Endpoint modules and one Switch capacity module now replace or supplement prior shells. Four native channel kinds check received protection, convert data or byte-enable errors to per-Beat poison, store protected envelopes in the ordered SRAM path, and return credits from the original account. A complete Endpoint holding assembles Request184 and up to four OrigData Beats while preserving Port/VC/Pool/Auth/Src/Tag. Switch egress admission now reserves all buffer units for a packet atomically with independent per-egress round-robin service. Inventory: 213 entries, 89 partial implementations and 124 explicit shells; pending role bits are Endpoint 93 and Switch 117.
+
+The protected native receive matrix covers four kinds and 1/2/4 ports over 152,957 sampled edges, with 9,529 accepted Beats, 9,517 retirements, 12 reset cancellations and six detected RTL faults. The Endpoint bridge completes 981 descriptors and 2,459 actual SRAM head transfers with the same number of original-account credit returns; long backpressure, Read/Write queue overlap, reset and four RTL faults pass. Switch reservation normal and optimized runs each cover four configurations and 3,970 cycles, detecting six RTL faults; nine static checks pass. The repository suite passes 403 model and 199 tool tests with two conditional skips.
+
+The corresponding normal, fault and static runners are rerun from this published layout before pushing. Native role-level Drop/Isolation, authentication, burst monitoring, actual station/top wiring, Endpoint backend-derived response causality, Switch egress queues and VC/request-response partitions remain open. Process STA has not been run for these new modules. See `project/docs/upli_native_rx_channel_execution.md`, `project/docs/upli_endpoint_request_bridge_execution.md` and `project/docs/switch_credit_reservation_review.md`.

@@ -1,6 +1,6 @@
 # UPLI 与 Endpoint 因果上下文实施契约
 
-本文件是对当前真实 RTL 的只读实施审查，不是 Native Endpoint 已完成声明。目标为普通单播 Read、Write、WriteFull 的全部合法 4..256B 几何；不增加 Atomic、INC、Vendor、Message 或压缩能力声明，也不退回只支持 64B。审查时源码身份和定位保存于 `build/development/upli_endpoint_context_review/sources.json`，未修改生产 RTL、库存或接口。以下新增接口与微架构均是待实现的本地契约。
+本文件起始于对真实 RTL 的只读实施审查，不是 Native Endpoint 已完成声明。目标为普通单播 Read、Write、WriteFull 的全部合法 4..256B 几何；不增加 Atomic、INC、Vendor、Message 或压缩能力声明，也不退回只支持 64B。审查时源码身份和定位保存于 `build/development/upli_endpoint_context_review/sources.json`。其中 ordered receive 与 Request/OrigData 完整 holding 已按后续执行记录实现并验证；Backend/Response 因果路径及其余接口仍是待实现的本地契约。
 
 ## 规范依据与必须保留的身份
 

@@ -109,6 +109,9 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/upli/upli_credit_return_queue.v` | E/S / existing_partial / — | UPLI normal credit return metadata queue; Common 2.0 sections 2.6 and 4.3. |
 | `rtl/upli/upli_receive_channel.v` | E/S / existing_partial / — | UPLI per-account receive storage and initial/normal credit handoff. |
 | `rtl/upli/upli_ordered_receive_channel.v` | E/S / existing_partial / — | Per-channel, per-port chronological retirement across actual VC and shared-pool SRAM accounts; parity, burst ownership and Drop remain outside this layer. |
+| `rtl/upli/upli_native_rx_protection.v` | E/S / existing_partial / — | Four-kind received parity classification and per-Beat data/BE poison normalization; authentication and role RAS remain external. |
+| `rtl/upli/upli_native_rx_channel.v` | E/S / existing_partial / — | Protected ordered SRAM receive and exact credit-return wrapper; role Drop/Isolation recovery remains open. |
+| `rtl/upli/upli_endpoint_request_bridge.v` | E / existing_partial / — | Complete Request/OrigData holding with preserved Port/VC/Pool/Auth/Src/Tag and exact SRAM-head versus descriptor ownership events. |
 | `rtl/upli/upli_receive_fifo.v` | E/S / existing_partial / — | Synchronous receive FIFO controller for a one-cycle registered SDP SRAM. |
 | `rtl/upli/upli_receive_storage.v` | E/S / existing_partial / — | Bind the synchronous receive FIFO to externally supplied KD28 SDP storage. |
 | `rtl/upli/upli_station_port.v` | E/S / planned / E:18/S:0 | 原生station UPLI四通道、连接、TDM、信用与parity总装 |
@@ -249,7 +252,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/switch/switch_multiplane.v` | S / planned / S:62 | 平面/端口选择配置与完整ID映射，不引入外部级联语义 |
 | `rtl/switch/switch_port_state.v` | S / planned / S:63 | 单端口up/down、转发资格与其它端口运行保持 |
 | `rtl/switch/switch_uturn.v` | S / planned / S:64 | 规范允许的U-turn路由与同端口转发条件 |
-| `rtl/switch/switch_credit_reservation.v` | S / planned / S:65 | 交换出口信用/缓冲预留和并发转发消费守恒 |
+| `rtl/switch/switch_credit_reservation.v` | S / existing_partial / — | Whole-packet egress buffer-unit reservation, per-egress round-robin admission and exact release accounting; actual queue/top integration remains open. |
 
 ### inc
 

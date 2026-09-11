@@ -2933,6 +2933,154 @@
       "functional_interface_status": "normal_receive_ordering_subset_not_full_native_rx"
     },
     {
+      "id": "upli_native_rx_protection",
+      "module": "upli_native_rx_protection",
+      "path": "rtl/upli/upli_native_rx_protection.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Check received native protection groups and regenerate protection after per-Beat data/byte-enable poison normalization; authentication validation remains external.",
+      "dependencies": [
+        "upli_parity"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.5–2.8"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Complete native Beat fields, received protection groups and negotiated authentication profile"
+      ],
+      "outputs": [
+        "Original protection errors plus normalized payload and regenerated protection"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_native_rx_protection.v",
+      "integration_parents": [
+        "upli_native_rx_channel"
+      ],
+      "functional_inputs": [
+        "One complete Request, Read Response, Write Response or OrigData Beat"
+      ],
+      "functional_outputs": [
+        "Control/data/auth classification and data-error poison conversion"
+      ],
+      "functional_interface_status": "four_native_kinds_without_role_ras_or_authentication_engine"
+    },
+    {
+      "id": "upli_native_rx_channel",
+      "module": "upli_native_rx_channel",
+      "path": "rtl/upli/upli_native_rx_channel.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Protected four-kind native receive wrapper around ordered SRAM ownership and exact returned-credit protection; role Drop/Isolation recovery remains external.",
+      "dependencies": [
+        "upli_native_rx_protection",
+        "upli_ordered_receive_channel",
+        "upli_credit_return_adapter"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Complete protected native Beat, connection/drop state and consumer port/ready"
+      ],
+      "outputs": [
+        "Protected chronological SRAM head, exact returned credits and fail-stop diagnostics"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_native_rx_channel.v",
+      "integration_parents": [
+        "upli_station_port",
+        "upli_endpoint_request_bridge"
+      ],
+      "functional_inputs": [
+        "One configured native channel kind with port, VC, pool, payload and received parity"
+      ],
+      "functional_outputs": [
+        "Parity-screened storage, per-Beat poison, ordered retirement and protected credit return"
+      ],
+      "functional_interface_status": "normal_receive_and_fail_stop_subset_without_role_recovery"
+    },
+    {
+      "id": "upli_endpoint_request_bridge",
+      "module": "upli_endpoint_request_bridge",
+      "path": "rtl/upli/upli_endpoint_request_bridge.v",
+      "roles": [
+        "endpoint"
+      ],
+      "subsystem": "endpoint",
+      "status": "existing_partial",
+      "purpose": "Assemble trusted ordered Request and OrigData SRAM heads into one complete Endpoint request descriptor while preserving native identity and ownership.",
+      "dependencies": [
+        "upli_native_rx_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F03",
+          "source": "C §2.6–2.8, §4.1"
+        },
+        {
+          "family": "F06",
+          "source": "C §5–6"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Per-port ordered Request184 and OrigData580 heads with consume qualification"
+      ],
+      "outputs": [
+        "Stable complete Request184, data2048, relative byte enables, poison and original context descriptor"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_endpoint_request_bridge.v",
+      "integration_parents": [
+        "upli_station_port",
+        "ualink_endpoint_top"
+      ],
+      "functional_inputs": [
+        "Integrity-checked ordered Request and OrigData heads plus downstream descriptor ready"
+      ],
+      "functional_outputs": [
+        "Single complete transaction holding with exact head-transfer and final-fire ownership"
+      ],
+      "functional_interface_status": "ordinary_request_assembly_without_backend_response_or_role_ras"
+    },
+    {
       "id": "upli_receive_fifo",
       "module": "upli_receive_fifo",
       "path": "rtl/upli/upli_receive_fifo.v",
@@ -7748,11 +7896,9 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
-      "purpose": "交换出口信用/缓冲预留和并发转发消费守恒",
-      "dependencies": [
-        "tl_credit_ledger"
-      ],
+      "status": "existing_partial",
+      "purpose": "Per-egress whole-packet buffer-unit reservation with independent round-robin admission and exact release accounting; actual egress queues and top integration remain open.",
+      "dependencies": [],
       "source_refs": [
         {
           "family": "F01",
@@ -7767,33 +7913,30 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Per-ingress packet reservation valid, unique source-major route match and complete packet units",
+        "Per-egress descriptor ready and actual retired-unit release events"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Per-ingress actual reservation acceptance and per-egress one-hot grant",
+        "Available/reserved units plus invalid request and release diagnostics"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_credit_reservation.v",
       "integration_parents": [
         "switch_core"
       ],
-      "feature_slots": {
-        "switch": 65
-      },
       "functional_inputs": [
-        "入口事务/路由元数据、各出口VC容量、路由/vPod/plane配置"
+        "Complete packet-unit request after route lookup and actual egress release accounting"
       ],
       "functional_outputs": [
-        "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
+        "Atomic admission, per-egress capacity balance and independent round-robin result"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "local_packet_capacity_subset_without_egress_queue_integration"
     },
     {
       "id": "inc_core",
@@ -11778,8 +11921,8 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 85,
-    "planned_rtl": 125,
+    "existing_rtl": 89,
+    "planned_rtl": 124,
     "software_planned": 13,
     "external_boundaries": 4
   },

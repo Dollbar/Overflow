@@ -397,13 +397,6 @@ switch_uturn u_switch_uturn(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_64),.o_error());
 assign o_pending_features[64]=!implemented_64;
-wire implemented_65;
-switch_credit_reservation u_switch_credit_reservation(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_65),.o_error());
-assign o_pending_features[65]=!implemented_65;
 wire implemented_66;
 inc_core u_inc_core(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -840,6 +833,7 @@ assign o_pending_features[53]=1'b0;
 assign o_pending_features[54]=1'b0;
 assign o_pending_features[56]=1'b0;
 assign o_pending_features[57]=1'b0;
+assign o_pending_features[65]=1'b0;
 assign o_pending_features[127]=1'b0;
 endmodule
 `default_nettype wire

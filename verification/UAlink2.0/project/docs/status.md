@@ -2,11 +2,17 @@
 
 更新时间：2026-09-11。完整 Endpoint/Controller 与 Switch 数字 RTL IP 的 Goal 仍在进行；本次整理没有改变交付完成条件。
 
-优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 210 个 RTL 条目均有源码：85 个已有部分实现、125 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 213 个 RTL 条目均有源码：89 个已有部分实现、124 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
 
 最新原生接收增量：`upli_receive_tdm_monitor` 已对实际四通道 valid/port 事件实现三组独立相位观察；正式回归覆盖1/2/4端口共24,923个单元时隙，并通过真实 station 三发送器、四 SRAM 接收链路的3,483沿/1,034个原生事件，三项时隙故障全部检出。`upli_ordered_receive_channel` 复用唯一实际接收存储和信用归还所有者，按每端口实际接纳次序跨 VC/Pool 退休；1/2/4端口异构及零容量配置共8,736周期，完成3,699次接纳、3,696次退休和3,696次原账户信用归还，另有3项真实接线故障检出。定向reset各取消一拍已接纳在途事件。它们不实现parity poison、Req/OrigData关联、Drop/Isolation或Endpoint上下文桥，完整native RX仍开放。见[时隙执行记录](upli_receive_tdm_monitor_execution.md)、[有序接收执行记录](upli_ordered_receive_channel_execution.md)和[完整RX契约](upli_native_rx_execution.md)。
 
+`upli_native_rx_protection/channel` 已把四种原生通道的收到 parity 检查、数据/BE错误逐拍 poison、受保护封套、有序 SRAM 退休和真实信用返回连成一条可综合路径。四 kind × 1/2/4端口覆盖152,957个采样沿，完成9,529次真实接纳、9,517次退休和12次reset取消；6项控制、数据、BE、信用、坏头与Drop门控故障全部检出。角色级Drop/Isolation状态机、认证执行及初始化未完成时的Drop政策仍开放，见[接收封装记录](upli_native_rx_channel_execution.md)。
+
+`upli_endpoint_request_bridge` 已从两个实际 ordered receive/KD28 SRAM 头组装完整 Request184、Data2048、relative BE256、poison与Port/VC/Pool/Auth/Src/Tag 上下文。1/2/4端口完成981笔descriptor、2,459次头部转交和同数原账户信用归还；长背压、Read/Write排队、reset与4项实际故障通过。它尚未接入 `ualink_endpoint_top` 的Backend/Response因果链，见[请求桥记录](upli_endpoint_request_bridge_execution.md)。
+
 最新Switch增量：真实包仲裁器、完整字交叉连接和shadow/active原子路由表已替换三个壳并接入顶层。默认保留静态路由，`ROUTE_CONFIG_ENABLE=1`开放显式本地配置；只有无输入valid且无在途owner时可提交。详见[Switch集成审查](switch_integration_review.md)。
+
+`switch_credit_reservation` 已替换库存壳，实现各出口独立轮询与整包所需缓冲单位的原子预约/真实释放记账。普通和优化两轮各覆盖1/2/4端口、3/4/16位容量、3,970周期、6项实际故障及9项静态检查。真实egress packet queue、VC与请求/响应资源分区和顶层一次性reservation token仍待接入，见[预约模块记录](switch_credit_reservation_review.md)。
 
 最新完整Read复位验证：10个正常配置及4项真实漏复位故障均达到判据，覆盖bank1/3、精确1/2/3个响应Beat、后端待结果和完成背压。20笔旧Read取消、80笔新Read复用Tag正确完成，20次先前Write的内存副作用保留。见[复位审查](endpoint_read_reset_review.md)。
 

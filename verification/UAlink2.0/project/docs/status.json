@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T17:23:13+08:00",
+  "updated": "2026-09-11T17:50:49+08:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "current_native_receive_increment": {
@@ -19,15 +19,40 @@
       "real_faults": 3,
       "ports": [1, 2, 4]
     },
+    "protected_native_rx": {
+      "channel_kinds": 4,
+      "port_configurations": 12,
+      "sampled_edges": 152957,
+      "accepted": 9529,
+      "retired": 9517,
+      "reset_cancelled": 12,
+      "real_faults": 6
+    },
+    "endpoint_request_bridge": {
+      "descriptors": 981,
+      "head_transfers": 2459,
+      "returned_credits": 2459,
+      "real_faults": 4,
+      "ports": [1, 2, 4]
+    },
     "inventory": {
-      "modules": 210,
-      "existing_partial": 85,
-      "planned_shells": 125
+      "modules": 213,
+      "existing_partial": 89,
+      "planned_shells": 124
     },
     "native_rx_complete": false,
     "endpoint_context_bridge_complete": false,
     "process_sta_complete": false,
-    "review": "docs/upli_native_rx_execution.md"
+    "review": "docs/upli_native_rx_channel_execution.md"
+  },
+  "current_switch_reservation_increment": {
+    "normal_cycles": 3970,
+    "port_configurations": 4,
+    "real_faults": 6,
+    "static_checks": 9,
+    "egress_queue_integrated": false,
+    "process_sta_complete": false,
+    "review": "docs/switch_credit_reservation_review.md"
   },
   "historical_artifacts_retained": false,
   "historical_results": {
