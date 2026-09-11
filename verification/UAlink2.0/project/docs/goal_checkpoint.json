@@ -1,22 +1,18 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Three-sender native TX aggregate, four credit banks/guards and actual SRAM return paths pass five final configurations, reset cancellation and faults. Full native station RX/RAS and causal Endpoint context adapters remain open.",
+  "latest_stage": "Native receive TDM observation and per-port chronological retirement across actual VC/pool SRAM accounts now pass 1/2/4-port regressions and real faults. Full parity poison/Drop, burst ownership and causal Endpoint context adapters remain open.",
   "rtl": "rtl/endpoint/ualink_endpoint_top.v",
-  "review": "docs/upli_station_tx_integration_review.md",
-  "evidence": "docs/upli_station_tx_evidence.json",
+  "review": "docs/upli_native_rx_execution.md",
+  "evidence": "docs/upli_ordered_receive_channel_execution.md",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish frozen native response senders, credit adapters and TX aggregate with portable SRAM regression.",
-    "Implement native RX ordering and parity/TDM/burst checks with section 3.1.4 required poison/Drop processing; preserve complete Endpoint context and prove backend-derived native response causality.",
+    "Integrate four ordered receive instances and the TDM observer into the native station receive boundary.",
+    "Implement native RX parity protection conversion and section 3.1.4 poison/Drop processing, then preserve complete Endpoint context and prove backend-derived native response causality.",
     "Continue independent LinkDown/epoch, standard per-hop TL/DL, per-VC resources, PHY, INC, security, management, CDC/RDC and process STA."
   ],
-  "remote_main": "a4deff3e88b4482dc1bd1f036e0df215f7376d65",
-  "live_jobs": [
-    "native RX ordering/error-policy contract",
-    "actual receive-side TDM monitor candidate",
-    "Endpoint full-context causal adapter contract"
-  ],
+  "remote_main": "1b0f7b7a4a082891ef9da2e7cb963c38bee3b347",
+  "live_jobs": [],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
     "branch": "main",
@@ -25,8 +21,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "a4deff3e88b4482dc1bd1f036e0df215f7376d65",
-    "source_commit": "aae2ff01ae1955d201cb2f6c799cd42d75434df6"
+    "verified_commit": "1b0f7b7a4a082891ef9da2e7cb963c38bee3b347",
+    "source_commit": "cf8fd72e0b37b3b1f7fd167324d7def096c708a3"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

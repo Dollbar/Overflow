@@ -1,6 +1,6 @@
 # Endpoint / Switch 顶层研发交付
 
-原生 Request/OrigData 发送字段层与共享信用/TDM 总装已形成实际 RTL；Read/Write Response 独立信用/TDM发送器与四通道TX/SRAM闭环也已验证，完整 station 尚未接入顶层。当前结构为208项、83个部分实现、125个显式壳。见 [发送增量审查](upli_native_sender_integration_review.md)。
+原生 Request/OrigData 发送字段层与共享信用/TDM 总装已形成实际 RTL；Read/Write Response 独立信用/TDM发送器与四通道TX/SRAM闭环也已验证。接收侧新增实际事件 TDM 观察器和跨 VC/Pool 的每端口有序 SRAM 退休封装，完整 station 尚未接入顶层。当前结构为210项、85个部分实现、125个显式壳。见 [发送增量审查](upli_native_sender_integration_review.md)、[接收时隙验证](upli_receive_tdm_monitor_execution.md)和[有序接收验证](upli_ordered_receive_channel_execution.md)。
 
 最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应统一reset已验证，独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
 
@@ -13,7 +13,7 @@
 
 ## 此前实际Read链
 
-`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前83个部分实现、125个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
+`TRANSACTION_MODE=1`已连接真实Read事务模块；新增可选`WRITE_ENABLE=1`连接普通Write/WriteFull，当前85个部分实现、125个未实现壳。Write混合总装验证状态见[Write审查](endpoint_write_integration_review.md)。三组真实两端Read因果回归完成48笔事务，三项实际接线故障全部检出。复跑与完整边界见[因果事务评审](endpoint_causal_read_review.md)；以下首批接口壳与独立fixture记录属于前一阶段。
 
 ## 首批接口壳替换
 

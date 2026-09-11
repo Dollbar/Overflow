@@ -1,7 +1,34 @@
 {
-  "updated": "2026-09-11T06:11:19.538459+00:00",
+  "updated": "2026-09-11T17:23:13+08:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
+  "current_native_receive_increment": {
+    "tdm_monitor": {
+      "unit_slots": 24923,
+      "station_edges": 3483,
+      "station_native_events": 1034,
+      "real_faults": 3,
+      "ports": [1, 2, 4]
+    },
+    "ordered_receive": {
+      "cycles": 8736,
+      "accepted": 3699,
+      "retired": 3696,
+      "returned": 3696,
+      "reset_cancelled_pending": 3,
+      "real_faults": 3,
+      "ports": [1, 2, 4]
+    },
+    "inventory": {
+      "modules": 210,
+      "existing_partial": 85,
+      "planned_shells": 125
+    },
+    "native_rx_complete": false,
+    "endpoint_context_bridge_complete": false,
+    "process_sta_complete": false,
+    "review": "docs/upli_native_rx_execution.md"
+  },
   "historical_artifacts_retained": false,
   "historical_results": {
     "latest_tl_credit_port_rtl": {

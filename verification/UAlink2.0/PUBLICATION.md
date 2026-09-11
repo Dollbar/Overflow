@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1006 tracked source files from the UALink development
-repository at commit `cf8fd72e0b37b3b1f7fd167324d7def096c708a3`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1020 tracked source files from the UALink development
+repository at commit `abff72898061d833d8ce264d3e32e86dd766ffef`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -111,3 +111,11 @@ Five new partial implementations provide Read/Write Response credit/TDM senders,
 Read sender final production matrix covers30351 cycles; Write sender production wide run covers1552 cycles/467 sends, with identical frozen RTL also validated across six configurations. Credit adapters cover3418 independent vectors. Independent aggregate bit-level review checks three senders/four guards, four banks and distinct capacity mapping. Evidence and exact commands: project/docs/upli_station_tx_integration_review.md.
 
 Relocated Read sender full matrix/faults, Write sender wide/static, credit adapter actual SRAM integration and station port4/width16/capacity5/static plus actual guard fault have passed from this publication layout. The aggregate tests independent response streams, not backend-derived native response causality. Complete native RX ordering/validation, required poison/Drop policy, Endpoint context adapters, independent LinkDown/epoch and process STA remain open. Diagnostic-only credit guards do not implement required corrupted-credit discard/recovery.
+
+## Native receive ordering and TDM observation
+
+Two new partial implementations observe receive-side TDM phase and preserve each port's chronological acceptance order across the five VC/pool SRAM accounts. The ordered wrapper retains payload storage in the existing receive channel and adds only the account journal. A detected journal/SRAM mismatch now blocks retirement and credit return while reporting current and sticky errors. Current inventory: 210 entries, 85 partial implementations and 125 explicit shells.
+
+The final 1/2/4-port ordered matrix ran 8,736 cycles with 3,699 accepted Beats, 3,696 retired and returned Beats, and three deliberately reset-cancelled pending Beats. Three live wiring/data faults were detected. TDM unit tests covered 24,923 slots; real station integration covered 3,483 edges and 1,034 native events, detecting phase, idle and cross-channel faults. Strict lint, Yosys structural checks, structure validation and the source repository test suite passed.
+
+Relocated ordered receive and TDM tests are rerun from this published layout before pushing. Full native channel parity conversion, per-Beat poison and Drop handling, burst ownership, Endpoint request/context causality, independent LinkDown/epoch and process STA remain open. See `project/docs/upli_ordered_receive_channel_execution.md` and `project/docs/upli_native_rx_execution.md` for commands and the bounded scope.

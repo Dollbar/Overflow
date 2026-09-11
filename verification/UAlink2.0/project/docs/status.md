@@ -2,7 +2,9 @@
 
 更新时间：2026-09-11。完整 Endpoint/Controller 与 Switch 数字 RTL IP 的 Goal 仍在进行；本次整理没有改变交付完成条件。
 
-优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 208 个 RTL 条目均有源码：83 个已有部分实现、125 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 210 个 RTL 条目均有源码：85 个已有部分实现、125 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+
+最新原生接收增量：`upli_receive_tdm_monitor` 已对实际四通道 valid/port 事件实现三组独立相位观察；正式回归覆盖1/2/4端口共24,923个单元时隙，并通过真实 station 三发送器、四 SRAM 接收链路的3,483沿/1,034个原生事件，三项时隙故障全部检出。`upli_ordered_receive_channel` 复用唯一实际接收存储和信用归还所有者，按每端口实际接纳次序跨 VC/Pool 退休；1/2/4端口异构及零容量配置共8,736周期，完成3,699次接纳、3,696次退休和3,696次原账户信用归还，另有3项真实接线故障检出。定向reset各取消一拍已接纳在途事件。它们不实现parity poison、Req/OrigData关联、Drop/Isolation或Endpoint上下文桥，完整native RX仍开放。见[时隙执行记录](upli_receive_tdm_monitor_execution.md)、[有序接收执行记录](upli_ordered_receive_channel_execution.md)和[完整RX契约](upli_native_rx_execution.md)。
 
 最新Switch增量：真实包仲裁器、完整字交叉连接和shadow/active原子路由表已替换三个壳并接入顶层。默认保留静态路由，`ROUTE_CONFIG_ENABLE=1`开放显式本地配置；只有无输入valid且无在途owner时可提交。详见[Switch集成审查](switch_integration_review.md)。
 

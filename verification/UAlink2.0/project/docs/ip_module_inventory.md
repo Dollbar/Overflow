@@ -108,6 +108,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/upli/upli_credit_initializer.v` | E/S / existing_partial / — | UPLI initial credit publisher; Common 2.0 sections 2.6 and 4.3. |
 | `rtl/upli/upli_credit_return_queue.v` | E/S / existing_partial / — | UPLI normal credit return metadata queue; Common 2.0 sections 2.6 and 4.3. |
 | `rtl/upli/upli_receive_channel.v` | E/S / existing_partial / — | UPLI per-account receive storage and initial/normal credit handoff. |
+| `rtl/upli/upli_ordered_receive_channel.v` | E/S / existing_partial / — | Per-channel, per-port chronological retirement across actual VC and shared-pool SRAM accounts; parity, burst ownership and Drop remain outside this layer. |
 | `rtl/upli/upli_receive_fifo.v` | E/S / existing_partial / — | Synchronous receive FIFO controller for a one-cycle registered SDP SRAM. |
 | `rtl/upli/upli_receive_storage.v` | E/S / existing_partial / — | Bind the synchronous receive FIFO to externally supplied KD28 SDP storage. |
 | `rtl/upli/upli_station_port.v` | E/S / planned / E:18/S:0 | 原生station UPLI四通道、连接、TDM、信用与parity总装 |
@@ -116,6 +117,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/upli/upli_write_response_channel.v` | E/S / existing_partial / E:21/S:3 | Typed native Write Response TX fields and parity; receive, credit and control-event execution remain incomplete. |
 | `rtl/upli/upli_orig_data_channel.v` | E/S / existing_partial / E:22/S:4 | Typed native OrigData TX field preservation and unmasked parity generation; receive/credit/station integration remains incomplete. |
 | `rtl/upli/upli_tdm_scheduler.v` | E/S / planned / E:23/S:5 | 按station bifurcation管理1/2/4端口原生通道slot与连续burst |
+| `rtl/upli/upli_receive_tdm_monitor.v` | E/S / existing_partial / — | Actual receive-event TDM phase observation for shared Request/OrigData and independent responses; diagnostic only, with no flow control or recovery. |
 | `rtl/upli/upli_parity.v` | E/S / existing_partial / E:24/S:6 | Common four-channel parity generation and gated diagnostic classification; no RAS recovery or isolation policy. |
 
 ### tl

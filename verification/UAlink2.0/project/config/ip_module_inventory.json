@@ -2882,6 +2882,57 @@
       "functional_interface_status": "existing_source_ports"
     },
     {
+      "id": "upli_ordered_receive_channel",
+      "module": "upli_ordered_receive_channel",
+      "path": "rtl/upli/upli_ordered_receive_channel.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Per-channel per-port chronological retirement across actual VC and shared-pool receive SRAM accounts; no parity, burst ownership, Drop or Endpoint context policy.",
+      "dependencies": [
+        "upli_receive_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Actual native channel beat and consumer port/ready without external account selection"
+      ],
+      "outputs": [
+        "Chronological SRAM head, original VC/Pool, actual retirement and unchanged credit return"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_ordered_receive_channel.v",
+      "integration_parents": [
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "One native channel input with full port, VC, pool and opaque payload"
+      ],
+      "functional_outputs": [
+        "Per-port accepted-account order, actual SRAM tuple, retirement and original-account credits"
+      ],
+      "functional_interface_status": "normal_receive_ordering_subset_not_full_native_rx"
+    },
+    {
       "id": "upli_receive_fifo",
       "module": "upli_receive_fifo",
       "path": "rtl/upli/upli_receive_fifo.v",
@@ -4421,6 +4472,55 @@
         "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
       ],
       "functional_interface_status": "local_provisional_until_module_contract_freeze"
+    },
+    {
+      "id": "upli_receive_tdm_monitor",
+      "module": "upli_receive_tdm_monitor",
+      "path": "rtl/upli/upli_receive_tdm_monitor.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Receive-side actual-event TDM phase observation for shared Request/OrigData and independent response channels; diagnostic only.",
+      "dependencies": [],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Actual Request, OrigData, Read Response and Write Response valid/port events"
+      ],
+      "outputs": [
+        "Current and sticky per-channel diagnostics with three independent phase observations"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_receive_tdm_monitor.v",
+      "integration_parents": [
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "Actual native valid and port fields after connection qualification"
+      ],
+      "functional_outputs": [
+        "Local TDM mismatch observation without traffic control or recovery"
+      ],
+      "functional_interface_status": "native_receive_tdm_diagnostic_subset_not_full_station"
     },
     {
       "id": "upli_parity",
@@ -11678,8 +11778,8 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 69,
-    "planned_rtl": 133,
+    "existing_rtl": 85,
+    "planned_rtl": 125,
     "software_planned": 13,
     "external_boundaries": 4
   },
