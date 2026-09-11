@@ -13,3 +13,4 @@ Large waveforms and intermediate netlists are CI artifacts rather than Git sourc
 - [`kd28/`](kd28/) contains self-checking Verilator regressions for fixed SRAM cells, parameterized FIFO
   wrappers, width/depth macro tiling, NPU SRAM replacement adapters, and exact black-box synthesis mapping
   checks.
+- [`UAlink2.0/`](UAlink2.0/) contains UALink self-checking SystemVerilog tests, shared test packages, formal checks and the reproducible project workflow; reusable models and VIP are in [`../simulator/UAlink2.0/`](../simulator/UAlink2.0/).

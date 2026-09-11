@@ -9,6 +9,7 @@ RTL and hardware are complete.
 | Package | Scope | Evidence |
 | --- | --- | --- |
 | [`kdlink/`](kdlink/) | KDLink protocol model and self-checking RTL regressions | `FUNCTIONAL_SIM`, `RTL_SIM` |
+| [`UAlink2.0/`](UAlink2.0/) | UALink reference models and reusable memory VIP; tests and commands in [`../verification/UAlink2.0/`](../verification/UAlink2.0/) | `FUNCTIONAL_SIM`, `RTL_SIM` |
 
 Generated KDLink binaries, logs, and caches belong under `simulator/kdlink/work/` and are not source
 artifacts. Each future simulator package must similarly isolate generated files in its own ignored work

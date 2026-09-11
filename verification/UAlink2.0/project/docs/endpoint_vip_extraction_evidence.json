@@ -1,0 +1,62 @@
+{
+  "scope": "RTL_SIM: reusable local four-slot single64B memory VIP/package extraction; full protocol validation incomplete",
+  "cases": [
+    {
+      "label": "vip_extract_final",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "record_sha256": "e32cdbca3f68d18320995e3933c71b943e6344d926234d38c43571b887966e21"
+    },
+    {
+      "label": "vip_extract_final_recovery",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "record_sha256": "5e6ee7b40496ba9bf9d041b201f055d5b9b5693019b3826e8151a8dfcf136d3d"
+    },
+    {
+      "label": "vip_extract_final_minimum",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "record_sha256": "03bb7874bf2dffd14ffbc45b0226994e60e506f368b624a839380fc47794548f"
+    },
+    {
+      "label": "vip_extract_final_data_fault",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 1,
+      "record_sha256": "30d44483594dfaf4e6120c3294f6ab052e280256bea12c071dde253ccf4c9666"
+    },
+    {
+      "label": "vip_extract_final_retirement_fault",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 1,
+      "record_sha256": "acb7de99a48b578c0a9615ce75b922f38d522aadfababa084491190e0a014340"
+    },
+    {
+      "label": "vip_extract_final_tag_fault",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 1,
+      "record_sha256": "9877cc7b545a84d48d91b7dcadc0b6400141c952f30257467981960049618afd"
+    },
+    {
+      "label": "vip_extract_final_selftest",
+      "passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "record_sha256": "6fdcc102986ae31a7b8dc08b3e2cd7d2c47d7d65822420827cb5eac92049cd4b"
+    }
+  ],
+  "files": {
+    "verification/pkg/ualink_test_pkg.sv": "cd9bffeab5175e349bd574a0dac660d11c0617f4916e72b006646fdc4e560044",
+    "simulator/vip/ualink_memory_vip.sv": "febb0ddfc5202211222acb1cb666b54fc2ccfb73aca3f8c285d2ee4051c95e5f",
+    "verification/endpoint_transaction/transactions_tb.sv": "f69a167c12f311cc884fb29531c96d17a3ddf22154c69b0e8fbc7cc799329dab",
+    "verification/endpoint_transaction/run_transactions.py": "ac7679e7796517378a99a340655bcd2b1a26ff5342a08fbe8442dc6aaf7f5a2c"
+  },
+  "oracle": "Original sixteen literal 512-bit expected words retained independently in transaction TB; scoreboards observe actual memory/result/complete handshakes.",
+  "outputs": "Local build/verification/endpoint_transaction, not published; use fresh labels to reproduce."
+}

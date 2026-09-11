@@ -1,0 +1,18 @@
+# Generated export namespace: runtime artifacts are not source.
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.vvp
+*.vcd
+*.fst
+*.wdb
+*.wlf
+*.ghw
+*.log
+*.jou
+*.o
+*.a
+build/
+reports/
+artifacts/
