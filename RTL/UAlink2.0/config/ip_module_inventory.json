@@ -2985,7 +2985,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "请求发起、目的执行、Tag关联和完成接口的端点事务总装",
       "dependencies": [
         "endpoint_request_admission",
@@ -3016,19 +3016,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "subsystem",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [],
       "feature_slots": {
@@ -3040,7 +3036,16 @@
       "functional_outputs": [
         "格式化请求/响应、内存操作、完整应用完成及事务诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "ualink_endpoint_top"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_causal_read_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_request_admission",
@@ -3106,7 +3111,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "按端口和完整Tag保留请求/结果容量、跟踪全部响应和一次退休",
       "dependencies": [],
       "source_refs": [
@@ -3123,19 +3128,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_completion_sink",
@@ -3154,7 +3155,16 @@
       "functional_outputs": [
         "准入容量、活跃请求上下文、完整完成和未知/重复Tag诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "endpoint_read_originator"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_originator_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_read_originator",
@@ -3164,7 +3174,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "普通Read发起、已发送状态和两种响应模式Tag完成",
       "dependencies": [
         "endpoint_tag_table",
@@ -3185,19 +3195,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_transaction_core"
@@ -3211,7 +3217,16 @@
       "functional_outputs": [
         "格式化请求/响应、内存操作、完整应用完成及事务诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "endpoint_transaction_core"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_originator_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_read_completer",
@@ -3221,7 +3236,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "实际收到Read后发出内存读并由真实完成产生响应",
       "dependencies": [
         "endpoint_memory_adapter",
@@ -3241,19 +3256,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_transaction_core"
@@ -3267,7 +3278,16 @@
       "functional_outputs": [
         "格式化请求/响应、内存操作、完整应用完成及事务诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "endpoint_transaction_core"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_completer_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_write_originator",
@@ -3447,7 +3467,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "从实际TL退休字解析完整字段并分流Request/Response和Data/BE",
       "dependencies": [
         "tl_control_decode",
@@ -3468,19 +3488,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_transaction_core"
@@ -3494,7 +3510,16 @@
       "functional_outputs": [
         "格式化请求/响应、内存操作、完整应用完成及事务诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "endpoint_transaction_core"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_receiver_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_response_assembler",
@@ -3504,7 +3529,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "按响应上下文收齐Data半Flit、offset/LAST/status并恢复完整beat",
       "dependencies": [
         "endpoint_tag_table",
@@ -3524,19 +3549,15 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "single64B_unit_and_actual_endpoint_integration",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_read_originator",
@@ -3551,7 +3572,16 @@
       "functional_outputs": [
         "格式化请求/响应、内存操作、完整应用完成及事务诊断"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "single64B_subset_frozen",
+      "actual_integration_parents": [
+        "endpoint_receive_transactions"
+      ],
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "integration_gap": "TRANSACTION_MODE=1 actual single64B Read subset; general transactions, native UPLI, full error recovery and process STA still pending",
+      "verification_refs": [
+        "docs/endpoint_receiver_review.md",
+        "verification/endpoint_transaction/run_transactions.py"
+      ]
     },
     {
       "id": "endpoint_request_formatter",
@@ -3637,13 +3667,12 @@
       "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "i_valid, i_tag[10:0], i_src/i_dst[9:0]",
-        "Profile fields explicitly declared in RTL and config/endpoint_transaction_contract.json"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "o_valid, o_error, o_control[255:0]; low request/response field and NOP padding"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "unit_rtl_verified_integration_in_progress",
+      "phase": "causal_read_rtl_integration_under_test",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_read_originator",
@@ -3658,14 +3687,16 @@
       "functional_outputs": [
         "一个未压缩128-bit Read字段；不自动构造标准DL framing"
       ],
-      "functional_interface_status": "frozen_subset_see_module_review",
-      "implemented_subset": "Single aligned 64-byte ordinary Read field encoder",
-      "actual_integration_parents": [],
+      "functional_interface_status": "single64B_subset_frozen",
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "actual_integration_parents": [
+        "endpoint_read_originator"
+      ],
       "verification_refs": [
         "docs/endpoint_fields_review.md",
         "verification/endpoint_transaction/run_fields.py"
       ],
-      "integration_gap": "Unit RTL only; causal originator/completer/Tag completion remains pending"
+      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending"
     },
     {
       "id": "endpoint_response_encode",
@@ -3695,13 +3726,12 @@
       "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "i_valid, i_tag[10:0], i_src/i_dst[9:0]",
-        "Profile fields explicitly declared in RTL and config/endpoint_transaction_contract.json"
+        "Actual typed input ports declared in RTL"
       ],
       "outputs": [
-        "o_valid, o_error, o_control[255:0]; low request/response field and NOP padding"
+        "Actual typed output ports declared in RTL"
       ],
-      "phase": "unit_rtl_verified_integration_in_progress",
+      "phase": "causal_read_rtl_integration_under_test",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_response_formatter"
@@ -3715,14 +3745,16 @@
       "functional_outputs": [
         "一个未压缩64-bit Read Response字段；Data所有权单独握手"
       ],
-      "functional_interface_status": "frozen_subset_see_module_review",
-      "implemented_subset": "Single-beat ordinary Read response field encoder; status 0 or 3, data ownership handled separately",
-      "actual_integration_parents": [],
+      "functional_interface_status": "single64B_subset_frozen",
+      "implemented_subset": "Initial single64B ordinary Read causal transaction subset; interface and ownership in docs/endpoint_transaction_execution.md",
+      "actual_integration_parents": [
+        "endpoint_read_completer"
+      ],
       "verification_refs": [
         "docs/endpoint_fields_review.md",
         "verification/endpoint_transaction/run_fields.py"
       ],
-      "integration_gap": "Unit RTL only; causal originator/completer/Tag completion remains pending"
+      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending"
     },
     {
       "id": "endpoint_response_formatter",

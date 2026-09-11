@@ -1,15 +1,15 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Published Endpoint/Switch scaffold snapshot to Overflow; implementing typed module subsets",
+  "latest_stage": "Actual Endpoint/Switch causal single64B Read complete in three RTL configurations; full IP still incomplete",
   "rtl": "rtl/tl/tl_tx_prepared.v",
-  "review": "docs/tl_tx_prepared_mapping_review.md",
-  "evidence": "build/verification/tl_tx_prepared/mapped_correspondence_evidence.json",
+  "review": "docs/endpoint_causal_read_review.md",
+  "evidence": "docs/endpoint_causal_read_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Complete and verify typed Read/Response encoders and integrated Switch route lookup, then publish the verified increment under Overflow/RTL/UAlink2.0.",
-    "Build the actual causal single64B Read path: admission and Tag/result reservation, request send, received request decode, memory execution, response assembly, full-Tag completion and retirement under backpressure.",
-    "Replace remaining 142 disabled RTL shells progressively; preserve Endpoint/Switch top regressions. Full standard per-hop TL/DL, digital PHY, INC, security, management, CDC/RDC and process timing remain required."
+    "Publish verified causal Read increment into authorized Overflow/RTL/UAlink2.0.",
+    "Expand real transaction coverage: full Read sizes/masks and response modes, in-flight network reset/recovery and supported parameter matrix; preserve independent event/data checking.",
+    "Continue replacing 136 unimplemented RTL shells for full Endpoint/Switch, native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management and CDC/RDC/process STA."
   ],
   "remote_main": "c34f40f2dc00c2e12283897ea0f3de085abfbc7f",
   "new_work_published": false,

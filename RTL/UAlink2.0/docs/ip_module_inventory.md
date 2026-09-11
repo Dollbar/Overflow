@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 60 个部分实现RTL模块、142 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 66 个部分实现RTL模块、136 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -42,7 +42,7 @@ output o_implemented, o_error
 
 ## 稳定功能位
 
-Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，当前壳位分别107/126个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
+Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别101/126个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
 
 不得因排序或实现进展重编号已分配slot；用已验证typed子集替换壳时保留slot，更新部分实现状态、实际集成父模块与证据；清除位不代表全部规范功能完成。新增模块追加slot；超过128时先显式扩展位图版本/本地接口，不截断。此位图是研发可观测性，不是标准能力协商字段。
 
@@ -72,16 +72,16 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | 文件 | 角色 / 状态 / slot | 职责 |
 |---|---|---|
 | `rtl/endpoint/ualink_endpoint_top.v` | E / existing_partial / — | Endpoint完整数字IP顶层：原生UPLI、事务、安全、station、CSR与RAS汇合；已存在文件，功能范围须按对应实现审查 |
-| `rtl/endpoint/endpoint_transaction_core.v` | E / planned / E:0 | 请求发起、目的执行、Tag关联和完成接口的端点事务总装 |
+| `rtl/endpoint/endpoint_transaction_core.v` | E / existing_partial / E:0 | 请求发起、目的执行、Tag关联和完成接口的端点事务总装 |
 | `rtl/endpoint/endpoint_request_admission.v` | E / planned / E:1 | 完整请求合法性、长度对齐、目的配置和本地资源联合准入 |
-| `rtl/endpoint/endpoint_tag_table.v` | E / planned / E:2 | 按端口和完整Tag保留请求/结果容量、跟踪全部响应和一次退休 |
-| `rtl/endpoint/endpoint_read_originator.v` | E / planned / E:3 | 普通Read发起、已发送状态和两种响应模式Tag完成 |
-| `rtl/endpoint/endpoint_read_completer.v` | E / planned / E:4 | 实际收到Read后发出内存读并由真实完成产生响应 |
+| `rtl/endpoint/endpoint_tag_table.v` | E / existing_partial / E:2 | 按端口和完整Tag保留请求/结果容量、跟踪全部响应和一次退休 |
+| `rtl/endpoint/endpoint_read_originator.v` | E / existing_partial / E:3 | 普通Read发起、已发送状态和两种响应模式Tag完成 |
+| `rtl/endpoint/endpoint_read_completer.v` | E / existing_partial / E:4 | 实际收到Read后发出内存读并由真实完成产生响应 |
 | `rtl/endpoint/endpoint_write_originator.v` | E / planned / E:5 | Write/WriteFull请求与完整Data/BE所有权及写响应关联 |
 | `rtl/endpoint/endpoint_write_completer.v` | E / planned / E:6 | Write/WriteFull接收组装、最终数据后执行完成和写响应 |
 | `rtl/endpoint/endpoint_atomic_transport.v` | E / planned / E:7 | 协议Atomic操作数与mask无语义分解传输、返回/不返回响应关联 |
-| `rtl/endpoint/endpoint_receive_transactions.v` | E / planned / E:8 | 从实际TL退休字解析完整字段并分流Request/Response和Data/BE |
-| `rtl/endpoint/endpoint_response_assembler.v` | E / planned / E:9 | 按响应上下文收齐Data半Flit、offset/LAST/status并恢复完整beat |
+| `rtl/endpoint/endpoint_receive_transactions.v` | E / existing_partial / E:8 | 从实际TL退休字解析完整字段并分流Request/Response和Data/BE |
+| `rtl/endpoint/endpoint_response_assembler.v` | E / existing_partial / E:9 | 按响应上下文收齐Data半Flit、offset/LAST/status并恢复完整beat |
 | `rtl/endpoint/endpoint_request_formatter.v` | E / planned / E:10 | 完整普通读写原子及合法消息请求的未压缩字段构造 |
 | `rtl/endpoint/endpoint_read_encode.v` | E / existing_partial / E:11 | 已冻结单64-byte普通Read的128-bit字段编码 |
 | `rtl/endpoint/endpoint_response_encode.v` | E / existing_partial / E:12 | 已冻结单Beat普通Read Response的64-bit字段编码 |

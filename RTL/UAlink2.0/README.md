@@ -40,13 +40,15 @@ make clean
 
 ## 当前状态
 
-优先交付的[Endpoint/Switch 顶层](docs/ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 202 个 RTL 条目均有源码：60 个已有部分实现、142 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。新增的 Read/Response 编码器仅完成字段级验证，尚未接入事务发起/完成链；Switch 路由查找已实际接入顶层。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+优先交付的[Endpoint/Switch 顶层](docs/ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 202 个 RTL 条目均有源码：66 个已有部分实现、136 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。新增 TRANSACTION_MODE=1 已连接真实单64B Read请求、远端内存执行、响应两半Data与Tag完成；三组正常/恢复/最小缓存配置完成48笔事务。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
 
 ```sh
 make ip-structure IP_RUN_LABEL=fresh_structure
 make ip-top-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh_system
 make ip-top-synth KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh_synth
 ```
+
+实际因果事务范围、复跑入口与缺口见[Read集成评审](docs/endpoint_causal_read_review.md)。
 
 模块职责、状态和依赖见[完整清单](docs/ip_module_inventory.md)，机器可读定义见[库存](config/ip_module_inventory.json)。
 

@@ -2,7 +2,7 @@
 
 更新时间：2026-09-11。完整 Endpoint/Controller 与 Switch 数字 RTL IP 的 Goal 仍在进行；本次整理没有改变交付完成条件。
 
-优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 202 个 RTL 条目均有源码：60 个已有部分实现、142 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。新增的 Read/Response 编码器仅完成字段级验证，尚未接入事务发起/完成链；Switch 路由查找已实际接入顶层。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 202 个 RTL 条目均有源码：66 个已有部分实现、136 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。新增 TRANSACTION_MODE=1 已连接真实单64B Read请求、远端内存执行、响应两半Data与Tag完成；三组正常/恢复/最小缓存配置完成48笔事务。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
 
 ```sh
 make ip-structure IP_RUN_LABEL=fresh_structure
@@ -10,9 +10,11 @@ make ip-top-smoke KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh_system
 make ip-top-synth KD28_ROOT=/authorized/path IP_RUN_LABEL=fresh_synth
 ```
 
+实际因果事务范围、复跑入口与缺口见[Read集成评审](endpoint_causal_read_review.md)。
+
 模块职责、状态和依赖见[完整清单](ip_module_inventory.md)，机器可读定义见[库存](../config/ip_module_inventory.json)。
 
-本轮新增[实际 TL/DL 跨层集成](endpoint_link_integration_review.md)：7 组正常配置、4 项真实接线故障全部达到预期；2,686 个唯一 TL 记录全部交付、2,313 次 SRAM 退休、66 次 DL 重放、双向序号环回完成，普通/优化 Python 检查一致。Request/Response 仍为独立测试源，尚无真实 completer/Tag 关联，测试的 520-bit DL 槽也不是标准 framing。
+此前[实际 TL/DL 跨层集成](endpoint_link_integration_review.md)：7 组正常配置、4 项真实接线故障全部达到预期；2,686 个唯一 TL 记录全部交付、2,313 次 SRAM 退休、66 次 DL 重放、双向序号环回完成，普通/优化 Python 检查一致。Request/Response 仍为独立测试源，尚无真实 completer/Tag 关联，测试的 520-bit DL 槽也不是标准 framing。
 
 实际固定 SRAM 映射新增 95/96 配置的宏引脚与整字 bank 选择归纳，另有 96/96 生产参数行为回归、2,362,336 次整字比较及 24 组实际 FIFO/mapper/功能宏包装器接线检查。600-bit、深度 65,535 的形式查询仍因资源时限未完成；不计通过，也不阻塞真实端点事务实施。宏 Q 在引脚证明中为任意输入，行为仿真和接线检查分开成立；尚无完整 TL 联合载荷归纳及真实宏签核。详见[映射证据](sram_storage_mapping_evidence.json)。
 

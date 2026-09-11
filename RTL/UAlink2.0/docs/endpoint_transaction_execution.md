@@ -1,0 +1,13 @@
+# 实际 Read 事务实施契约
+
+本轮在已冻结single64B普通Read子集上实现实际因果事务，不改变完整双IP目标。端点发起器复用字段编码与独立Tag表，completer保存四个请求/结果，receiver保存完整600bit退休字并按真实half分类解析；独立响应组装器以八槽FIFO维护响应头与两个Data半Flit的顺序。
+
+发起器在应用请求握手时预约完整Tag和512bit结果容量。source_captured只表示TL源组所有权转移；actual header_taken才标记sent。一个待发送holding可保守保持到header_taken，四个已发送请求可以并存。完成保持到应用握手再释放Tag，status3仍必须接收完整Data但不提交成功数据。
+
+Completer仅由已收到请求分配槽，发出57bit地址的内存读，在真实mem_result握手后保存512bit并构造对应Tag/交换ID响应。内存结果可按slot乱序，响应按请求顺序提交；Header capture和两个Data半Flit全部接纳后才释放槽。未知/重复/未issued结果被消费为本地诊断，不更新有效槽；非法请求profile拒绝，不把正常满队列当错误。
+
+Receiver分类来自真实tl_receive_credit输出：classes低三位对应低256bit，另三位对应高半；msg低/高位同序。class0仅lower Control、1 Data、3强制NOP、4普通Message可支持，2 BE、5 DataError/Poison、6 Auth或7非法在当前子集锁存本地unsupported/fatal并停止至统一reset。普通Message不消耗Data。每个holding字整体检查后才公开其事务，避免下半已执行后才发现上半不支持。响应SPARE与CLOAD0的CWAY不当作已定义必零接收条件。
+
+一个Control最多四个普通Response，旧pending尾半可与新Control并存，故四槽header队列可能自锁；八槽队列容纳旧响应和四个新响应。接收ready仅在整字可保存时释放原600bit SRAM ownership，释放向量继续由原信用发布器处理，事务层不重复归还信用。
+
+统一同步reset暂时清除全部局部所有权，不声称LinkDown/Isolation/epoch协议恢复。验证顺序：旧壳真实失败；独立单位请求/内存/完成scoreboard和故障；真实Endpoint内部连接；双端不预造Response的完整因果链、反压和重放。工艺STA等后续原目标仍保留。

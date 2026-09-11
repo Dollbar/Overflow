@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T05:05:45.289188+00:00",
+  "updated": "2026-09-11T05:36:21.005793+00:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "historical_artifacts_retained": false,
@@ -2082,8 +2082,8 @@
     "repository": "https://github.com/Dollbar/Overflow",
     "branch": "main",
     "path": "RTL/UAlink2.0",
-    "verified_commit": "ebbf0db9ecf1ece097d1b3aa211618a19730978f",
-    "imported_source_commit": "4a6ccf5037505b859e821d43e4f484cee06d9b0e",
+    "verified_commit": "1ca37fcaab33553325586d5c700df6b178ee1766",
+    "imported_source_commit": "68a3b7961abe0d592d955cbf9ee39bbe40642010",
     "portable_model_tests": 19,
     "portable_top_smoke_passed": true
   },
@@ -2140,5 +2140,134 @@
     "full_goal_complete": false,
     "rtl_inventory_sha256": "96c410afe7bd4d527f0d030c26d39372a8fce573706f6fc2b0bbaab493cb05ab",
     "evidence": "docs/typed_modules_evidence.json"
+  },
+  "latest_causal_read": {
+    "scope": "single64B causal Read on actual Endpoint/Switch RTL, explicit local TL/DL record boundary",
+    "evidence_levels": [
+      "RTL_SIM",
+      "GENERIC_SYNTH"
+    ],
+    "inventory_modules": 202,
+    "existing_partial": 66,
+    "unimplemented_shells": 136,
+    "role_shells": {
+      "endpoint": 101,
+      "switch": 126
+    },
+    "transaction_mode": 1,
+    "requests_completed_across_three_cases": 48,
+    "actual_wiring_faults_detected": 3,
+    "cases": [
+      {
+        "passed": true,
+        "inject": false,
+        "bank_depth": 3,
+        "fault": null,
+        "compile_exit": 0,
+        "run_exit": 0,
+        "label": "causal_final",
+        "observed": {
+          "requests": 16,
+          "completions": 16,
+          "outstanding0": 4,
+          "outstanding1": 4,
+          "replay0": 0,
+          "replay1": 0,
+          "cycles": 562
+        },
+        "result_sha256": "843808cf7f45baf300f0b6c8632538422a6e1dd4891ac8d96384a4b8504cb55f"
+      },
+      {
+        "passed": true,
+        "inject": true,
+        "bank_depth": 3,
+        "fault": null,
+        "compile_exit": 0,
+        "run_exit": 0,
+        "label": "causal_final_recovery",
+        "observed": {
+          "requests": 16,
+          "completions": 16,
+          "outstanding0": 4,
+          "outstanding1": 4,
+          "replay0": 4,
+          "replay1": 4,
+          "cycles": 624
+        },
+        "result_sha256": "eebdfe79133c489834c0dc62fa34c3a0150149139193a3f28886dd6783b59f77"
+      },
+      {
+        "passed": true,
+        "inject": true,
+        "bank_depth": 1,
+        "fault": null,
+        "compile_exit": 0,
+        "run_exit": 0,
+        "label": "causal_final_minimum",
+        "observed": {
+          "requests": 16,
+          "completions": 16,
+          "outstanding0": 4,
+          "outstanding1": 4,
+          "replay0": 4,
+          "replay1": 4,
+          "cycles": 624
+        },
+        "result_sha256": "f37131c69d069d0f2406209f9c407c61e229c306fec592891804c96aaccc513b"
+      },
+      {
+        "passed": true,
+        "inject": false,
+        "bank_depth": 3,
+        "fault": "data_half",
+        "compile_exit": 0,
+        "run_exit": 1,
+        "label": "causal_final_data_fault",
+        "observed": {
+          "diagnostic": "COMPLETION_DATA side=1 index=0"
+        },
+        "result_sha256": "d8a8be073a80d40ae3f54be4bc2f8aae54dbfe8adc82c016c93c050e9547ae82"
+      },
+      {
+        "passed": true,
+        "inject": false,
+        "bank_depth": 3,
+        "fault": "retirement",
+        "compile_exit": 0,
+        "run_exit": 1,
+        "label": "causal_final_retirement_fault",
+        "observed": {
+          "diagnostic": "COMPLETION_DATA side=1 index=0"
+        },
+        "result_sha256": "138d4f68259e796206b3dc492dcf18a00397c87d61796c29490ee66eb6caa62c"
+      },
+      {
+        "passed": true,
+        "inject": false,
+        "bank_depth": 3,
+        "fault": "tag_high",
+        "compile_exit": 0,
+        "run_exit": 1,
+        "label": "causal_final_tag_fault",
+        "observed": {
+          "diagnostic": "DUT_ERROR side=0 cycle=175 transaction=1"
+        },
+        "result_sha256": "1edb3be5169bd1efbdcd9f0efc56534c80dc44f822371976390ef4ac1ede7721"
+      }
+    ],
+    "unit_reviews": [
+      "docs/endpoint_originator_review.md",
+      "docs/endpoint_completer_review.md",
+      "docs/endpoint_receiver_review.md"
+    ],
+    "independent_integration_review": "docs/endpoint_causal_integration_review.md",
+    "inventory_sha256": "15c2f41793de0c3625d47f15c4d9f35327f12c0558b45a6d4b18624322a544f5",
+    "top_elaboration": "build/verification/ip_tops/causal_elaboration/results.json",
+    "top_elaboration_sha256": "6f872099fb787fec91aea2f3b383d0f31bb3b77da9469fe2ae024ad761d63f41",
+    "full_goal_complete": false,
+    "standard_framing": false,
+    "native_upli": false,
+    "technology_sta": false,
+    "midflight_top_reset_verified": false
   }
 }

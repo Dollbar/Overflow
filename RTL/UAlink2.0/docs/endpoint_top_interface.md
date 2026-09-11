@@ -92,3 +92,11 @@ vvp build/verification/ip_tops/endpoint_buffer_manual/sim.vvp
 轨迹回归并检查真实首次发送、重放、接收退休和所有信用账本，随后再做综合与时序评估。
 
 完整模块骨架已接入 `u_scaffold`；`o_pending_features[127:0]` 的低109位表示未实现接口壳，既有模块的未完成能力仍须查阅库存状态。系统回归和构建入口见 `ip_top_bringup.md`。
+
+## 真实Read事务模式
+
+新增静态展开参数`TRANSACTION_MODE=1`选择实际`endpoint_transaction_core`；默认0仍接受原prepared源/退休接口。模式1由`i_request_*`应用描述符及`o_complete_*`结果握手、`o_mem_*`内存读与`i_mem_result_*`返回接口工作，旧prepared输入不参与源选择。完整宽度以RTL声明为准；四槽、单物理port0、Auth关闭、单64B普通Read已验证，详见[实际因果事务评审](endpoint_causal_read_review.md)。
+
+`i_local_id`与`i_port`运行期间保持稳定；unsupported Auth/port产生`o_transaction_error`并复位局部事务核，不能作动态配置恢复。`o_outstanding_count`保持到应用完成退休，`o_completer_count`保持到Header与两半Data提交完成。Request header_taken无Tag，只反馈给唯一单Read生产者，未来多请求源必须显式扩展身份关联。
+
+`o_error`包含事务诊断，但不是全层立即停流或协议LinkDown状态机。整个网络在途reset及旧内存结果epoch隔离尚未完成。

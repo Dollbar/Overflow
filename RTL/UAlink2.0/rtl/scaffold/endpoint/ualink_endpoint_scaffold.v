@@ -5,13 +5,6 @@ module ualink_endpoint_scaffold(
  input wire i_clk,i_rstn,
  output wire [127:0] o_pending_features
 );
-wire implemented_0;
-endpoint_transaction_core u_endpoint_transaction_core(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_0),.o_error());
-assign o_pending_features[0]=!implemented_0;
 wire implemented_1;
 endpoint_request_admission u_endpoint_request_admission(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -19,27 +12,6 @@ endpoint_request_admission u_endpoint_request_admission(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_1),.o_error());
 assign o_pending_features[1]=!implemented_1;
-wire implemented_2;
-endpoint_tag_table u_endpoint_tag_table(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_2),.o_error());
-assign o_pending_features[2]=!implemented_2;
-wire implemented_3;
-endpoint_read_originator u_endpoint_read_originator(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_3),.o_error());
-assign o_pending_features[3]=!implemented_3;
-wire implemented_4;
-endpoint_read_completer u_endpoint_read_completer(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_4),.o_error());
-assign o_pending_features[4]=!implemented_4;
 wire implemented_5;
 endpoint_write_originator u_endpoint_write_originator(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -61,20 +33,6 @@ endpoint_atomic_transport u_endpoint_atomic_transport(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_7),.o_error());
 assign o_pending_features[7]=!implemented_7;
-wire implemented_8;
-endpoint_receive_transactions u_endpoint_receive_transactions(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_8),.o_error());
-assign o_pending_features[8]=!implemented_8;
-wire implemented_9;
-endpoint_response_assembler u_endpoint_response_assembler(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_9),.o_error());
-assign o_pending_features[9]=!implemented_9;
 wire implemented_10;
 endpoint_request_formatter u_endpoint_request_formatter(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -754,6 +712,12 @@ diagnostic_event_mux u_diagnostic_event_mux(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_108),.o_error());
 assign o_pending_features[108]=!implemented_108;
+assign o_pending_features[0]=1'b0;
+assign o_pending_features[2]=1'b0;
+assign o_pending_features[3]=1'b0;
+assign o_pending_features[4]=1'b0;
+assign o_pending_features[8]=1'b0;
+assign o_pending_features[9]=1'b0;
 assign o_pending_features[11]=1'b0;
 assign o_pending_features[12]=1'b0;
 assign o_pending_features[109]=1'b0;

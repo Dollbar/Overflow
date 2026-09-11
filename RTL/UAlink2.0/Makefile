@@ -144,3 +144,12 @@ ip-top-elaborate: ip-structure
 ip-top-synth: ip-structure
 	@test -n "$(KD28_ROOT)" || { echo "Set KD28_ROOT to the authorized external SRAM repository"; exit 1; }
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_elaboration.py" --kd28-root "$(KD28_ROOT)" --label "$(IP_RUN_LABEL)" --synth
+
+# Actual Read execution path through two Endpoint tops and the Switch.
+.PHONY: ip-transaction-smoke ip-transaction-elaborate
+ip-transaction-smoke:
+	@test -n "$(KD28_ROOT)" || { echo "Set KD28_ROOT to the authorized external SRAM repository"; exit 1; }
+	$(PYTHON) "$(ROOT_DIR)/verification/endpoint_transaction/run_transactions.py" --kd28-root "$(KD28_ROOT)" --label "$(IP_RUN_LABEL)" --inject
+ip-transaction-elaborate: ip-structure
+	@test -n "$(KD28_ROOT)" || { echo "Set KD28_ROOT to the authorized external SRAM repository"; exit 1; }
+	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_elaboration.py" --kd28-root "$(KD28_ROOT)" --label "$(IP_RUN_LABEL)" --transactions
