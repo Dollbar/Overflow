@@ -1,18 +1,22 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Ordinary Write/WriteFull shared Read/Write ownership delivered: model/unit/receiver checks, four-capacity dual-core tests, and corrected real ESE 1172 requests/completions with 320 Write executions and 16 replays passed; full dual IP remains incomplete",
+  "latest_stage": "Full ordinary Read opt-in integrated: 1652 ESE completions, 12 real Write executions, 8 replays; complete DWORD geometry/masks, multi-beat response reception, independent model and uniform Write reset checked. Full dual IP incomplete.",
   "rtl": "rtl/endpoint/ualink_endpoint_top.v",
-  "review": "docs/endpoint_write_integration_review.md",
-  "evidence": "docs/endpoint_write_evidence.json",
+  "review": "docs/endpoint_read_integration_review.md",
+  "evidence": "docs/endpoint_read_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish the reviewed ordinary Write increment to authorized Overflow namespaces; expand full Read lengths/masks and mixed Write in-flight reset/epoch behavior next.",
-    "Expand Read sizes/masks, response kinds, independent reset epochs and complete supported parameter coverage.",
-    "Close strict static coding/review debt and continue native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management, CDC/RDC and process STA."
+    "Publish frozen full ordinary Read and Write reset increment to authorized Overflow namespaces.",
+    "Integrate independently developed Switch arbiter/fabric and atomic route table; replace reviewed shells with actual partial implementations.",
+    "Close full Read in-flight partial-response reset and independent LinkDown/epoch; continue native UPLI, standard per-hop TL/DL, digital PHY, INC, security, management, strict lint, CDC/RDC and process STA."
   ],
-  "remote_main": "186769aea7d14adfa5add3e823a6c7e571702508",
-  "live_jobs": [],
+  "remote_main": "c0aab0e5e8522793bf653114d98cae686dae11ac",
+  "live_jobs": [
+    "switch_arbiter candidate development",
+    "switch_fabric candidate development",
+    "switch_route_table candidate development"
+  ],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
     "branch": "main",
@@ -21,8 +25,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "e14d3c4591230a743fc661edfc5446a030eeda74",
-    "source_commit": "7e8896ad624a4b74474ab8843f4cee9780c6db6d"
+    "verified_commit": "c0aab0e5e8522793bf653114d98cae686dae11ac",
+    "source_commit": "6b794142c3f3a3bbbbe33a722700dba6c971b712"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

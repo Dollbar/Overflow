@@ -1,0 +1,290 @@
+{
+  "scope": "Ordinary uncompressed Read FULL_READ_ENABLE=1 in VC0 local profile; uniform Write reset compatibility; full dual IP incomplete",
+  "full_goal_complete": false,
+  "technology_sta": false,
+  "inventory": {
+    "rtl_entries": 202,
+    "existing_partial": 69,
+    "shells": 133
+  },
+  "coverage": {
+    "legal_geometry_attr_masks": 532480,
+    "ese_requests_and_completions": 1652,
+    "ese_actual_write_executions": 12,
+    "ese_replays": 8,
+    "ese_read_response_beats": 2544,
+    "write_reset_normal_cases": 6,
+    "write_reset_new_completions": 108
+  },
+  "limits": [
+    "ESE TX uses single response mode; multi RX independently unit checked",
+    "Full Read partial-response in-flight reset and independent LinkDown/epoch remain open",
+    "Full core strict lint has 15 warnings per WRITE_ENABLE configuration",
+    "Native UPLI, standard per-hop TL/DL, PHY, INC, security, management and physical signoff remain incomplete"
+  ],
+  "records": [
+    {
+      "label": "full_read_encode_final",
+      "record": "build/verification/endpoint_transaction/full_read_encode_final/result.json",
+      "record_sha256": "35b0b597f0ebd85d9dd81baf0d30288c8b4f02868cdf70ee67c1b711b8222cd7",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "label": "full_read_receiver_final_checked",
+      "record": "build/verification/endpoint_transaction/full_read_receiver_final_checked/result.json",
+      "record_sha256": "cb27ddac1503a58bb40c2806dcc82279364a868646456a2102447f88364f08f3",
+      "reported_passed": true,
+      "requests": 2081,
+      "responses": 404
+    },
+    {
+      "label": "read_tag_full_final",
+      "record": "build/verification/endpoint_transaction/read_tag_full_final/result.json",
+      "record_sha256": "6e03e3c95894d541db7df2b26763ab8bfc5d422c7c2d62feb99bddf6d12ecaf3",
+      "reported_passed": true
+    },
+    {
+      "label": "read_tag_full_final_optimized",
+      "record": "build/verification/endpoint_transaction/read_tag_full_final_optimized/result.json",
+      "record_sha256": "6c3e9caa4b5dd87acb2145e057f2d29c5c0da47441e1e4a0af438e57dcaa517a",
+      "reported_passed": true
+    },
+    {
+      "label": "read_tag_memory_map_final",
+      "record": "build/verification/endpoint_transaction/read_tag_memory_map_final/result.json",
+      "record_sha256": "a3e0f24e52f65a1caf8982e0299e70241e0d1e1396933eaf740ac876d7bf56f7",
+      "reported_passed": true
+    },
+    {
+      "label": "ordinary_read_frozen_c1",
+      "record": "build/verification/endpoint_transaction/ordinary_read_frozen_c1/result.json",
+      "record_sha256": "fe9bc11880202e2d8b9450dce8ad7ca2b7d399d4535abfb53ef1f36d28f52039",
+      "reported_passed": true,
+      "fault": null,
+      "vectors": 4633
+    },
+    {
+      "label": "ordinary_read_frozen_c2",
+      "record": "build/verification/endpoint_transaction/ordinary_read_frozen_c2/result.json",
+      "record_sha256": "8d95d2234f8e0ef97f396e8d3c159749ee7c2d75abaddfcadf83c7c4fc7930b2",
+      "reported_passed": true,
+      "fault": null,
+      "vectors": 4633
+    },
+    {
+      "label": "ordinary_read_frozen_c3",
+      "record": "build/verification/endpoint_transaction/ordinary_read_frozen_c3/result.json",
+      "record_sha256": "54ac2081fdb9d00b7c03d18e4ca8568c638de280b1fd81599cfa20f589f489be",
+      "reported_passed": true,
+      "fault": null,
+      "vectors": 4633
+    },
+    {
+      "label": "ordinary_read_frozen_c4",
+      "record": "build/verification/endpoint_transaction/ordinary_read_frozen_c4/result.json",
+      "record_sha256": "2985ae9995296518b18e17671231657b3f851aff8b39f087381b7635981a8e30",
+      "reported_passed": true,
+      "fault": null,
+      "vectors": 4633
+    },
+    {
+      "label": "ordinary_read_model_final",
+      "record": "build/verification/endpoint_transaction/ordinary_read_model_final/result.json",
+      "record_sha256": "9c04ea3435a548f580f30e2897f98f93d4afeec0e7d0f47e9e5ab7397e045303",
+      "reported_passed": true
+    },
+    {
+      "label": "ordinary_read_model_optimized",
+      "record": "build/verification/endpoint_transaction/ordinary_read_model_optimized/result.json",
+      "record_sha256": "93409a2d3a2796c7e26296a55934637aa0b9b17a863ab21910b205adf2e66748",
+      "reported_passed": true
+    },
+    {
+      "label": "read_ese_first",
+      "record": "build/verification/endpoint_transaction/read_ese_first/result.json",
+      "record_sha256": "7ac0c8a16b433c49609b79aca6fb33aa57c374bc9a9efd9f598a64b77acdbf0e",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "bank_depth": 3,
+      "fault": null,
+      "matrix": false,
+      "requests_per_side": 14
+    },
+    {
+      "label": "read_ese_matrix_first",
+      "record": "build/verification/endpoint_transaction/read_ese_matrix_first/result.json",
+      "record_sha256": "bcdfce68813c0a6ae41269943e70ec245774ef07b2fdd09b68ab424951cd1e7b",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "bank_depth": 3,
+      "fault": null,
+      "matrix": true,
+      "requests_per_side": 406
+    },
+    {
+      "label": "read_ese_minimum_first",
+      "record": "build/verification/endpoint_transaction/read_ese_minimum_first/result.json",
+      "record_sha256": "9a875370d5756c7713424fb6e1f9e1a15c4521b490ff05d3a7760e942941dfdb",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "bank_depth": 1,
+      "fault": null,
+      "matrix": true,
+      "requests_per_side": 406
+    },
+    {
+      "label": "read_ese_mask_fault_first",
+      "record": "build/verification/endpoint_transaction/read_ese_mask_fault_first/result.json",
+      "record_sha256": "8c0ccb637a3aca4415410a80b6a3531909a65c7911596f041a9b228abb7c6f71",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 1,
+      "bank_depth": 3,
+      "fault": "mask_ignored",
+      "matrix": false,
+      "requests_per_side": 14
+    },
+    {
+      "label": "read_ese_upper_fault_first",
+      "record": "build/verification/endpoint_transaction/read_ese_upper_fault_first/result.json",
+      "record_sha256": "1284457c3ec1fb7a3c6a83c6b3edbc57e18cac56aec39663771e279b6ed8db53",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 1,
+      "bank_depth": 3,
+      "fault": "upper_data_lost",
+      "matrix": false,
+      "requests_per_side": 14
+    },
+    {
+      "label": "full_read_only_mode",
+      "record": "build/verification/endpoint_transaction/full_read_only_mode/result.json",
+      "record_sha256": "063cef41868dd6257381a652ea9e0cde80f5bb042f9ed68b181ac2edd6eac504",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0
+    },
+    {
+      "label": "full_read_write_receiver_final",
+      "record": "build/verification/endpoint_transaction/full_read_write_receiver_final/result.json",
+      "record_sha256": "894d723dd5adade22bca9f601f07be619325e7dfc8ce9fa2af28503828a02fb4",
+      "reported_passed": true,
+      "requests": 2097,
+      "responses": 26
+    },
+    {
+      "label": "full_read_legacy_capacity",
+      "record": "build/verification/endpoint_transaction/full_read_legacy_capacity/summary.json",
+      "record_sha256": "b1f5da7958f0eae56433e85d288b5f422f06c46fcd9f2c0b542c581b1fb1232a",
+      "reported_passed": true
+    },
+    {
+      "label": "full_read_write_compat",
+      "record": "build/verification/endpoint_transaction/full_read_write_compat/result.json",
+      "record_sha256": "33d151356abe9006baab0e828e5952960c14d6e0d50d51294a2ea7fc3b7bdd09",
+      "reported_passed": true,
+      "compile_exit": 0,
+      "run_exit": 0,
+      "bank_depth": 1,
+      "fault": null,
+      "requests_per_side": 283
+    },
+    {
+      "label": "full_read_write_reset",
+      "record": "build/verification/endpoint_transaction/full_read_write_reset/result.json",
+      "record_sha256": "6f05d93cbaccd7e01c6391dd1090878353ae7d5f9edbe13e79eef2c20561b02d",
+      "reported_passed": true,
+      "bank_depth": 3,
+      "fault": null
+    },
+    {
+      "label": "full_read_write_reset_minimum",
+      "record": "build/verification/endpoint_transaction/full_read_write_reset_minimum/result.json",
+      "record_sha256": "aa2befa9af4eb83b9d3d4c4e8893b3b3f3b0f68a4d6288d290f81491adced029",
+      "reported_passed": true,
+      "bank_depth": 1,
+      "fault": null
+    },
+    {
+      "label": "full_read_write_reset_endpoint_fault",
+      "record": "build/verification/endpoint_transaction/full_read_write_reset_endpoint_fault/result.json",
+      "record_sha256": "94e331068a32d5386413b9148cd7eced8247e0d52c071360054d8e71701e499b",
+      "reported_passed": true,
+      "bank_depth": 3,
+      "fault": "endpoint_reset"
+    },
+    {
+      "label": "full_read_write_reset_backend_fault",
+      "record": "build/verification/endpoint_transaction/full_read_write_reset_backend_fault/result.json",
+      "record_sha256": "d00d0108325bba1f2d1de588db6c10cbc44485b34dd54b7b75dcb787064926c6",
+      "reported_passed": true,
+      "bank_depth": 3,
+      "fault": "backend_cancel"
+    },
+    {
+      "record": "build/verification/ip_tops/full_read_top_width_fixed/results.json",
+      "record_sha256": "b92e69cca5b1e1434372bb0fa523a400ac543c0577d07fb61c08c3cb97b7e226"
+    },
+    {
+      "record": "build/verification/endpoint_transaction/full_read_root_static/result.json",
+      "record_sha256": "1f67a593ced32fb1dff7aa6d9c326b2e696608dd0b822250f34ae3b2340acc8c",
+      "strict_core_gate_closed": false
+    },
+    {
+      "record": "build/verification/endpoint_transaction/full_read_release_audit_checked.json",
+      "record_sha256": "bc519d94b59d3e490a832dc2261c19bb2e8b4c2927a35c6dec73df0f2ed9aefb",
+      "artifact_checks": 2045,
+      "unexpected_source_drift": 0
+    }
+  ],
+  "source_sha256": {
+    "rtl/endpoint/endpoint_atomic_transport.v": "0e25f2d9452f896cbf66397849bf2acf33f159c49a0eff27142d840245d974dc",
+    "rtl/endpoint/endpoint_completion_sink.v": "c09022e4dc3086ba8ef157c80388c23f2f1bec6b4007275059c7ac9724eba5c6",
+    "rtl/endpoint/endpoint_memory_adapter.v": "680a31527fa2f86a2263ace46346c5c51764383d19181ce1450b50b531b0eb06",
+    "rtl/endpoint/endpoint_message_handler.v": "eb1c18f69f5cbde0121e0b68eef7380967288b9efa305a6115fdd99fbba8eee3",
+    "rtl/endpoint/endpoint_ordering.v": "d2c217351ad3c6a1a703cd80e311e8813ea65e68c99a103693556db9d062c9f8",
+    "rtl/endpoint/endpoint_read_completer.v": "0c102d02eed69528a8257b69cd63da17454207fb5cd3b5cf64f45212bcff73f5",
+    "rtl/endpoint/endpoint_read_encode.v": "2d8909bba95ece88309977fa630df0fbe99127161c2050297043c2b021410b42",
+    "rtl/endpoint/endpoint_read_originator.v": "f89eb5cf569b88c2960ae36711d55f248079cd5f9042ceb6181e7b208f9d563f",
+    "rtl/endpoint/endpoint_receive_transactions.v": "7d8dfd2f649ab0741273f679285ec826ad225e58c29fdc22a09fb8a49583d104",
+    "rtl/endpoint/endpoint_request_admission.v": "d1b72f960d0e273bc77022eef83f2851a96a81ed5724b729f4ca0d5ab15e10e7",
+    "rtl/endpoint/endpoint_request_formatter.v": "12eac681aeff6498985e430477be51ad525e2490b050ac088b2e40e08c8e4b4e",
+    "rtl/endpoint/endpoint_response_assembler.v": "c3962e2742f0854c99218b440405865ee7014378724974634f478174d0346c2b",
+    "rtl/endpoint/endpoint_response_encode.v": "08470e495bcbc58f85556f13e6a89b1139e0584bfb010b970f908852e37092b7",
+    "rtl/endpoint/endpoint_response_formatter.v": "a4e4ff6767b9a7f2ebf62a6f4a0b9ee47134618500d30ead3d09df5f1d7dbcfb",
+    "rtl/endpoint/endpoint_tag_table.v": "98cee3d7f48ff4e0b83e7318a7af68cc505b47fff84ed76772eeeb85a156e623",
+    "rtl/endpoint/endpoint_transaction_core.v": "653ac977dd76d7ad37a2252a22e2a232fecc74638f36f3b304c77a4f2911eeec",
+    "rtl/endpoint/endpoint_write_completer.v": "df89ad8ebd63cfaa53a61c2c004cb8b3d6999d443970cea0eb6853167a096aa5",
+    "rtl/endpoint/endpoint_write_originator.v": "6dd78c2f84ce2d80d5abf76f1ec902c1d8f322257935bedcc9b4c1f6b0ced958",
+    "rtl/endpoint/ualink_endpoint_top.v": "7d825d1bf95addc1004605469cb38e563e4c2d9487bef9a61474e9e974b16a9a",
+    "model/ualink/endpoint_read.py": "8a3eb318957c14597dcd34871070824396b97c6767b98b01907a83829bee576e"
+  },
+  "compatibility_make_test": {
+    "exit": 0,
+    "log": "build/verification/endpoint_transaction/full_read_make_test.log",
+    "sha256": "18935a56b044aa3662debcdd5a52a56ab0519170c0de103e1fd2a7ee2f5a4903",
+    "suite_counts": [
+      "Ran 403 tests in 21.775s",
+      "Ran 199 tests in 123.685s",
+      "Ran 6 tests in 0.001s",
+      "Ran 7 tests in 0.001s",
+      "Ran 4 tests in 0.000s",
+      "Ran 4 tests in 0.009s",
+      "Ran 8 tests in 0.001s",
+      "Ran 8 tests in 0.001s",
+      "Ran 5 tests in 0.000s",
+      "Ran 5 tests in 0.003s",
+      "Ran 5 tests in 0.006s",
+      "Ran 20 tests in 0.009s",
+      "Ran 6 tests in 0.001s"
+    ],
+    "skips": [
+      "OK (skipped=2)"
+    ]
+  }
+}

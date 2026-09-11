@@ -1,6 +1,6 @@
 `default_nettype none
 // 已退休TL记录到单64B Read事务的有限容量适配；不产生新的信用归还。
-module endpoint_receive_transactions #(parameter WRITE_ENABLE=0)(
+module endpoint_receive_transactions #(parameter WRITE_ENABLE=0,FULL_READ_ENABLE=0)(
  input wire i_clk,i_rstn,input wire [1:0] i_port,
  input wire i_read_valid,output wire o_read_ready,
  input wire [511:0] i_read_flit,input wire [1:0] i_read_msg,
@@ -20,7 +20,7 @@ module endpoint_receive_transactions #(parameter WRITE_ENABLE=0)(
  output wire o_request_is_write,o_request_full,output wire [2047:0] o_request_data,output wire [255:0] o_request_be,output wire o_response_is_write
 );
 reg [599:0] r_record; // 保持原退休记录观察点，两个展开模式均整字接纳
- generate if(WRITE_ENABLE==0)begin:read_only
+ generate if(WRITE_ENABLE==0&&FULL_READ_ENABLE==0)begin:read_only
  assign o_request_is_write=1'b0;assign o_request_full=1'b0;assign o_request_data=2048'd0;assign o_request_be=256'd0;assign o_response_is_write=1'b0;
 localparam EMPTY=3'd0,CHECK=3'd1,LOWER=3'd2,SCAN=3'd3,UPPER=3'd4;
 reg [2:0] r_state;
@@ -152,7 +152,9 @@ localparam EMPTY=3'd0,CHECK=3'd1,LOWER=3'd2,SCAN=3'd3,UPPER=3'd4,EARLY=3'd5; // 
 reg [2:0] state; reg [1:0] port; reg [3:0] sector; reg error_q,upper_done; // 当前退休字的独立持有状态
 reg [127:0] requests[0:7]; reg [2047:0] request_data[0:7]; reg [255:0] request_be[0:7]; // 请求与全部数据空间同时预约
 reg [1:0] request_port[0:7],response_port[0:7]; // Payload延续必须属于同一端口
-reg [63:0] responses[0:7];reg [511:0] response_data[0:7]; // Read和无Data写响应使用独立出口队列
+localparam RESPONSE_DATA_WIDTH=(FULL_READ_ENABLE!=0)?2048:512; // 一个Header预约全部Data，默认保留原存储宽度
+reg [1:0] response_beat; // 已完整收齐响应的逐Beat出口索引
+reg [63:0] responses[0:7];reg [RESPONSE_DATA_WIDTH-1:0] response_data[0:7]; // Read和无Data写响应使用独立出口队列
 reg [7:0] request_complete,response_complete; // 完整内容才可交付后端或Tag表
 reg [2:0] request_head,request_tail,response_head,response_tail; // 八槽自然回绕，不增补虚构槽
 reg [3:0] request_count,response_count; // Header预约包含尚未收齐的数据
@@ -170,9 +172,11 @@ wire req_space=request_count<8&&(!field_write||owner_count<16); // 每个Header�
 wire rsp_space=response_count<8&&(!field_read_response||owner_count<16); // 写响应仍独立保存，不等待Data
 wire req_push=i_rstn&&!error_q&&req_here&&req_space;wire rsp_push=i_rstn&&!error_q&&rsp_here&&rsp_space; // 实际字段入队事件
 wire owner_push=(req_push&&field_write)||(rsp_push&&field_read_response); // 保持所有带Data字段的Control顺序
-wire req_pop=o_request_valid&&i_request_ready,rsp_pop=o_response_valid&&i_response_ready; // 输出背压只影响对应队列
+wire req_pop=o_request_valid&&i_request_ready;
+wire response_beat_fire=o_response_valid&&i_response_ready;
 wire [127:0] req_out=o_request_valid?requests[request_head]:128'd0; // 未完成槽不暴露请求字段
 wire [63:0] rsp_out=o_response_valid?responses[response_head]:64'd0; // 响应按同类出口顺序交付
+wire rsp_pop=response_beat_fire&&(response_beat==rsp_out[45:44]); // 输出背压只影响对应队列
 wire payload_state=(state==LOWER&&lower_class!=0)||state==UPPER||state==EARLY; // Control扫描与Payload消费分离
 wire [2:0] payload_class=state==LOWER?lower_class:upper_class; // 提前上半只消费此前所有者，仍先整字预检
 wire [255:0] payload=state==LOWER?r_record[255:0]:r_record[511:256]; // 原始半字不进行大小端交换
@@ -180,6 +184,8 @@ wire payload_event=i_rstn&&!error_q&&payload_state&&(payload_class==1||payload_c
 wire [2:0] data_slot=owner_slot[owner_head]; // 只在owner_count非零时使用
 wire data_is_write=owner_write[owner_head];wire [127:0] data_request=requests[data_slot]; // 数据所属请求不依赖输出队首
 wire [3:0] write_halves=({2'd0,data_request[1:0]}+4'd1)<<1; // 一至四Beat对应二至八半字
+wire [1:0] data_response_length=responses[data_slot][45:44]; // 所有者保存的真实响应Header长度
+wire [3:0] response_halves=({2'd0,data_response_length}+4'd1)<<1; // 每响应Header为一至四Beat
 wire data_full=data_request[123:118]==6'h29; // WriteFull不消费后续BE字段
 wire expect_be=data_is_write&&!data_full&&half_count==write_halves; // 普通Write仅在全部Data后需要BE
 wire payload_port_ok=port==(data_is_write?request_port[data_slot]:response_port[data_slot]); // 防止跨端口误归属
@@ -193,7 +199,7 @@ always @* begin // 有界字节mask组合，不从传入BE推导合法范围
   if(byte_index[8:0]>=byte_start&&byte_index[8:0]<byte_start+byte_size)allowed_be[byte_index]=1'b1; // 自然区域位图，宽度明确保持九位
 end // 完整赋值无锁存
 wire payload_ok=owner_count!=0&&payload_port_ok&&((expect_be&&payload_class==2&&((payload&~allowed_be)==0))||(!expect_be&&payload_class==1)); // 非法BE或无归属Data不推进
-wire owner_pop=payload_event&&payload_ok&&(expect_be||(data_is_write?data_full&&half_count+1==write_halves:half_count==1)); // 完整事务最后半字才完成
+wire owner_pop=payload_event&&payload_ok&&(expect_be||(data_is_write?data_full&&half_count+1==write_halves:half_count+1==response_halves)); // 完整事务最后半字才完成
 assign o_error=error_q;assign o_read_ready=i_rstn&&!error_q&&state==EMPTY; // 原600位所有权仅接纳一次
 assign o_request_valid=i_rstn&&!error_q&&request_count!=0&&request_complete[request_head]; // 后端永不看到部分Write
 assign o_request_is_write=req_out[123:118]==6'h28||req_out[123:118]==6'h29;assign o_request_full=req_out[123:118]==6'h29; // 明确typed请求种类
@@ -204,8 +210,8 @@ assign o_request_data=o_request_valid?request_data[request_head]:2048'd0;assign 
 assign o_response_valid=i_rstn&&!error_q&&response_count!=0&&response_complete[response_head]; // 写响应无需虚构Data
 assign o_response_is_write=o_response_valid&&!rsp_out[37];assign o_response_port=o_response_valid?response_port[response_head]:2'd0; // kind参与共享Tag匹配
 assign o_response_tag=rsp_out[57:47];assign o_response_dst=rsp_out[25:16];assign o_response_status=rsp_out[41:38]; // SRC不参与功能身份
-assign o_response_offset=rsp_out[43:42];assign o_response_last=rsp_out[36];assign o_response_num_beats=rsp_out[45:44]; // 无效写字段原样交付而不额外拒绝
-assign o_response_data=o_response_valid&&rsp_out[37]?response_data[response_head]:512'd0;assign o_response_data_error=1'b0; // poison仍为显式未实现错误路径
+assign o_response_offset=(rsp_out[37]&&rsp_out[45:44]!=0)?response_beat:rsp_out[43:42];assign o_response_last=(rsp_out[37]&&rsp_out[45:44]!=0)?(response_beat==rsp_out[45:44]):rsp_out[36];assign o_response_num_beats=rsp_out[45:44]; // 无效写字段原样交付而不额外拒绝
+assign o_response_data=o_response_valid&&rsp_out[37]?response_data[response_head][response_beat*512+:512]:512'd0;assign o_response_data_error=1'b0; // poison仍为显式未实现错误路径
  tl_control_decode u_decode(.i_half(r_record[255:0]),.o_valid(decoded),.o_requests(unused_request_count),.o_responses(unused_response_count),.o_field_starts(unused_field_starts),.o_request_starts(request_starts),.o_response_starts(response_starts)); // 结构解码不能代替语义检查
 function request_legal; // 未压缩Read子集及完整普通Write几何校验
  input [127:0] f;reg [8:0] size,offset,beats;reg write_cmd,unused_fields; // 中间运算扩宽至可表示256字节
@@ -214,17 +220,18 @@ function request_legal; // 未压缩Read子集及完整普通Write几何校验
  unused_fields=^{f[113:103],f[79:31],f[24:5],f[3:2]}; // 语义检查不以身份值作为合法性依据
  write_cmd=f[123:118]==6'h28||f[123:118]==6'h29;
  request_legal=f[127:124]==1&&f[117:116]==0&&!f[102]&&!f[4]&&
- (write_cmd?(offset+size<=256&&beats>=1&&beats<=4&&{7'd0,f[1:0]}==beats-9'd1&&
+ (write_cmd?((WRITE_ENABLE!=0)&&offset+size<=256&&beats>=1&&beats<=4&&{7'd0,f[1:0]}==beats-9'd1&&
  (f[123:118]!=6'h29||(f[28:25]==0&&f[91:88]==4'hf))):
- (f[123:118]==3&&f[115:114]==0&&f[101:94]==8'hff&&f[93:88]==15&&f[87:80]==0&&f[28:25]==0&&f[1:0]==0));
+ (f[123:118]==3&&f[1:0]==0&&((FULL_READ_ENABLE!=0)?offset+size<=256:(f[115:114]==0&&f[101:94]==8'hff&&f[93:88]==15&&f[87:80]==0&&f[28:25]==0))));
  end
 endfunction
 function response_legal; // 写响应忽略OFFSET/LAST的无效取值，不强制建议值
  input [63:0] f;reg status_ok,unused_fields;
  begin
- status_ok=f[41:38]==0||f[41:38]==3||(!f[37]&&(f[41:38]==2||f[41:38]==6||f[41:38]==8));
+ status_ok=f[41:38]==0||f[41:38]==3||((!f[37]||(FULL_READ_ENABLE!=0))&&(f[41:38]==2||f[41:38]==6||f[41:38]==8));
  unused_fields=^{f[57:47],f[35:16],f[13:0]}; // 响应SRC与SPARE不成为身份/合法性条件
- response_legal=f[63:60]==2&&f[59:58]==0&&!f[46]&&f[45:44]==0&&status_ok&&f[15:14]==0&&(!f[37]||(f[43:42]==0&&f[36]));
+ response_legal=f[63:60]==2&&f[59:58]==0&&!f[46]&&status_ok&&f[15:14]==0&&
+ (f[37]?((FULL_READ_ENABLE!=0)||(f[45:44]==0&&f[43:42]==0&&f[36])):((WRITE_ENABLE!=0)&&f[45:44]==0));
  end
 endfunction
 reg bad,control_has_data;reg [2:0] check_kind;reg [255:0] check_word,probe;integer h,s; // 整个记录在公开其中字段之前检查
@@ -261,7 +268,7 @@ always @(posedge i_clk)begin
  if(!i_rstn)begin
   state<=EMPTY;r_record<=0;port<=0;sector<=0;error_q<=0;upper_done<=0;
   request_head<=0;request_tail<=0;request_count<=0;request_complete<=0;
-  response_head<=0;response_tail<=0;response_count<=0;response_complete<=0;
+  response_head<=0;response_tail<=0;response_count<=0;response_complete<=0;response_beat<=0;
   owner_head<=0;owner_tail<=0;owner_count<=0;owner_write<=0;half_count<=0;
  end else if(!error_q)begin
   case({req_push,req_pop})2'b10:request_count<=request_count+1'b1;2'b01:request_count<=request_count-1'b1;default:begin end endcase
@@ -277,6 +284,7 @@ always @(posedge i_clk)begin
   end
   if(owner_push)begin owner_write[owner_tail]<=req_push;owner_slot[owner_tail]<=req_push?request_tail:response_tail;owner_tail<=owner_tail+1'b1;end
   if(req_pop)begin request_complete[request_head]<=0;request_head<=request_head+1'b1;end
+  if(response_beat_fire)begin if(rsp_pop)response_beat<=0;else response_beat<=response_beat+1'b1;end
   if(rsp_pop)begin response_complete[response_head]<=0;response_head<=response_head+1'b1;end
   if(payload_event)begin
    if(!payload_ok)error_q<=1;

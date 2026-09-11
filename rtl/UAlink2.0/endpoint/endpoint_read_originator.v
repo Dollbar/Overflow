@@ -58,6 +58,7 @@ assign o_error=i_rstn&&(table_error||(i_request_valid&&(encoded_error||!port_leg
  (i_source_captured&&(!r_pending||r_captured))||(i_header_taken&&(!r_pending||(!r_captured&&!i_source_captured)))); // 非法捕获/发送反馈不释放未发送描述符
 endpoint_tag_table #(.CAPACITY(CAPACITY),.NUM_PORTS(NUM_PORTS)) Tags_Inst( // 实际实例化完整Tag和结果预约表
  .i_clk(i_clk),.i_rstn(i_rstn),.i_local_id(i_local_id), // 同一同步复位时期与本地ID
+ .i_allocate_read_num_beats(2'd0),.i_allocate_read_mask({192'd0,64'hffffffffffffffff}),.o_complete_data_full(),.o_complete_mask(),
  .i_allocate_is_write(1'b0),.i_response_is_write(1'b0),.o_complete_is_write(), // 旧Read调用方明确固定kind零并忽略新增完成kind
  .i_allocate_valid(allocate_valid),.i_allocate_port(i_request_port),.i_allocate_tag(i_request_tag),.o_allocate_ready(table_ready), // 只有有界空闲槽支持请求预约
  .i_sent_valid(sent_event),.i_sent_port(r_port),.i_sent_tag(r_tag), // 真实Header消费携带此前保存的身份

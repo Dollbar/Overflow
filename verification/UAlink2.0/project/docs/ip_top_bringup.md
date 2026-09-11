@@ -1,5 +1,8 @@
 # Endpoint / Switch 顶层研发交付
 
+最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应reset和独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
+
+
 本阶段按用户最新优先级，先补齐两套 IP 的模块层级、接口、实例和构建入口，再逐项实现功能及衔接。完整目标仍以 `ip_delivery_plan.md` 为准；模块壳存在不代表相应协议功能完成。
 
 ## 最新容量与复位验证

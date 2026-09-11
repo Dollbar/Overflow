@@ -7,7 +7,8 @@
     "specs/requirements.json",
     "specs/requirement_families.json",
     "docs/specification_issues.md",
-    "docs/endpoint_transaction_plan.md"
+    "docs/endpoint_transaction_plan.md",
+    "docs/endpoint_read_integration_review.md"
   ],
   "status_vocabulary": {
     "existing_partial": "Actual RTL file exists; exact verified subset remains per prior evidence; not complete subsystem",
@@ -923,7 +924,9 @@
       "verification_refs": [
         "docs/endpoint_write_integration_review.md",
         "verification/endpoint_transaction/run_write_endpoint_switch.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "rs_tx_block_formatter",
@@ -3052,7 +3055,9 @@
         "verification/endpoint_transaction/run_transactions.py",
         "docs/endpoint_write_integration_review.md",
         "verification/endpoint_transaction/run_write_endpoint_switch.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_request_admission",
@@ -3173,7 +3178,9 @@
         "verification/endpoint_transaction/run_transactions.py",
         "docs/endpoint_write_integration_review.md",
         "verification/endpoint_transaction/run_write_endpoint_switch.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_read_originator",
@@ -3296,7 +3303,9 @@
       "verification_refs": [
         "docs/endpoint_completer_review.md",
         "verification/endpoint_transaction/run_transactions.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_write_originator",
@@ -3544,7 +3553,9 @@
         "verification/endpoint_transaction/run_transactions.py",
         "docs/endpoint_write_integration_review.md",
         "verification/endpoint_transaction/run_write_endpoint_switch.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_response_assembler",
@@ -3669,7 +3680,9 @@
         "docs/endpoint_write_originator_review.md",
         "docs/endpoint_write_integration_review.md",
         "verification/endpoint_transaction/run_write_endpoint_switch.py"
-      ]
+      ],
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_read_encode",
@@ -3728,7 +3741,9 @@
         "docs/endpoint_fields_review.md",
         "verification/endpoint_transaction/run_fields.py"
       ],
-      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending"
+      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending",
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_response_encode",
@@ -3786,7 +3801,9 @@
         "docs/endpoint_fields_review.md",
         "verification/endpoint_transaction/run_fields.py"
       ],
-      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending"
+      "integration_gap": "Integrated source under test; full UPLI and general Read/Write/Atomic/error recovery remain pending",
+      "read_increment_review": "docs/endpoint_read_integration_review.md",
+      "read_increment_scope": "FULL_READ_ENABLE=1 ordinary uncompressed DWORD-aligned non-crossing Read 4..256B, VC0 local profile; complete dual IP remains incomplete"
     },
     {
       "id": "endpoint_response_formatter",

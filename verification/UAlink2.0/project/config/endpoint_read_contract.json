@@ -1,0 +1,118 @@
+{
+  "scope": "ordinary uncompressed unicast Read CMD03, complete legal length/ATTR geometry; independent semantic model with local VC0/VC-credit profile",
+  "source_contract": "docs/endpoint_read_contract_review.md",
+  "references": [
+    "Common 2.0 Table2-2 pp49-52 and sections2.7.4.4-6/Table2-7 p55: fields, length and first/last DWORD enables",
+    "Common 2.0 section2.8 pp74-75: 256-byte boundary, natural lanes, ignored disabled bytes",
+    "Common 2.0 section2.7.5/Table2-15 pp62-64 and sections2.7.5.1-3/Table2-16 pp64-65: modes, status, LAST and DataError",
+    "Common 2.0 section2.7.8 pp71-72: complete response resources and ordered Multi-Beat transfer",
+    "Common 2.0 Table5-29/30 pp137-139: natural uncompressed fields"
+  ],
+  "request": {
+    "address_width": 57,
+    "tag_width": 11,
+    "id_width": 10,
+    "port_width": 2,
+    "length_width": 6,
+    "command": 3,
+    "num_beats_field": 0,
+    "size_bytes": "4*(length+1)",
+    "alignment_bytes": 4,
+    "region_bytes": 256,
+    "legal_geometry": "(address mod256)+size_bytes <= 256, including zero-byte-enable requests",
+    "beat_count": "number of distinct natural64-byte blocks touched by the DWORD interval, 1..4",
+    "byte_enables": {
+      "attr_low_nibble": "first DWORD byte enables, bit0 is its lowest address byte",
+      "attr_high_nibble": "last DWORD enables when length>0; completely ignored for length0",
+      "middle_dwords": "all enabled when present",
+      "zero_or_sparse_nibbles": "legal; structural response Beat count does not shrink",
+      "region_mask": "bit k maps (address & ~255)+k",
+      "relative_mask": "bit k maps (address & ~63)+k, never address+k"
+    },
+    "raw_data_mapping": "Beat j lane b corresponds to (address & ~63)+64*j+b; inactive lanes are not compacted",
+    "asi_metadata": "unsigned2/8 opaque values preserved; no address-translation or coherence inference",
+    "attr_width": 8,
+    "vc": 0,
+    "pool": false,
+    "cload": false,
+    "cway_receive": "ignored when CLOAD0"
+  },
+  "response_events": {
+    "type": "ReadResponse is one reconstructed natural64-byte Beat event, not a packed TL Header/Data object",
+    "statuses": [0, 2, 3, 6, 8],
+    "status_consistency": "all Beats in one transaction use the same status",
+    "error_tenure": "all original N Beats still required for every nonzero legal status",
+    "single": "num_beats0; distinct OFFSET0..N-1 may arrive in any order; LAST only on final arriving Beat",
+    "multi": "num_beatsN-1; exact OFFSET0..N-1 and final LAST, no same-port response interleaving inside the burst",
+    "multi_header_decode": "decode_response_burst requires exactly LEN+1 full Data Beats, reconstructs event OFFSET/LAST, ignores invalid raw OFFSET and unresolved raw Header LAST reduction",
+    "multi_header_last_caveat": "the decoder policy is an explicit interpretation pending Table5-30 clarification, not an invented normative bit restriction",
+    "send_policy": "encode_response and memory_read deliberately emit Single-Beat mode",
+    "identity": "(port,tag), destination must equal local ID; source is debug-only",
+    "spare_receive": "ignored",
+    "poison": "independent boolean per event, never inferred from status; completion retains a relative Beat poison bitmap"
+  },
+  "api": {
+    "module": "ualink.endpoint_read",
+    "types": ["ReadRequest", "ReadResponse", "ByteMasks", "ByteMemory", "MemoryResult", "Completion"],
+    "functions": [
+      "validate_read(request)",
+      "byte_masks(request)->ByteMasks(region,relative,beats)",
+      "encode_read(request)->int128",
+      "decode_read(word,*,port)->ReadRequest",
+      "validate_response(event)",
+      "encode_response(single_event)->int64",
+      "decode_response_burst(word,*,port,data_beats,poison=None)->tuple[ReadResponse,...]",
+      "memory_read(request,ByteMemory,*,status=0,error_pattern=0)->MemoryResult"
+    ],
+    "collector": [
+      "ReadCollector(*,local_id,capacity=4,num_ports=1)",
+      "reserve(request): retain complete request identity/geometry and response capacity",
+      "mark_sent(port,tag): separate actual-send semantic event",
+      "receive(response): atomic validation/save; returns Completion only after all N Beats",
+      "peek(port,tag): immutable Completion or None; stable under application backpressure",
+      "retire(port,tag): release identity only after complete application acceptance",
+      "reset(): clear owned Tags and multi-burst ownership",
+      "occupancy: includes completed but not yet application-retired Tags"
+    ]
+  },
+  "local_memory_and_application_policy": [
+    "ByteMemory owns immutable bytes and a full57-bit base; memory_read is one backend-result event and increments executions exactly once even for zero-BE/errors.",
+    "The declared DWORD interval must lie in the memory window regardless of BE; out-of-window status0 requests yield status3. Explicit nonzero status takes priority.",
+    "Raw success Beat lanes preserve memory bytes wherever mapped; natural Beat padding outside the memory window is zero. No requested-byte compaction occurs.",
+    "Nonzero backend statuses return N full manufactured Data Beats. error_pattern defaults0 and also permits0xff; the receiver does not require one pattern.",
+    "Successful unpoisoned Completion.data is relative naturally aligned data with inactive bytes zero. requested_mask always records geometry; valid_mask equals requested_mask only for safe success.",
+    "Any error or poison suppresses all application data and valid_mask while retaining status, N, requested_mask and poison bitmap. Whole-transaction poison suppression is a conservative local API policy.",
+    "Invalid response events raise local exceptions without mutating saved identity, status, mode, Beat data or ownership. Exceptions are not wire error statuses."
+  ],
+  "known_vectors": {
+    "method": "fixed request and response literals from independent binary-field worksheets, not model-generated expected values",
+    "request_words": ["10c00000000000000000000000000000", "10cfffa94fd3ffffffffffffe1ffffc0", "10ca0020415a0000000000001e008040"],
+    "response_tag2047_offset3_last0_src1023_dst1022": {
+      "0": "23ff8c2ffffe0000",
+      "2": "23ff8caffffe0000",
+      "3": "23ff8ceffffe0000",
+      "6": "23ff8daffffe0000",
+      "8": "23ff8e2ffffe0000"
+    }
+  },
+  "verification": {
+    "runner": "verification/endpoint_transaction/test_read_model.py",
+    "legal_geometries": 2080,
+    "illegal_geometries": 2016,
+    "attrs_per_legal_geometry": 256,
+    "total_mask_checks": 532480,
+    "oracle": "enumerated natural byte positions for first/last DWORD and middle bytes, independent of model nibble arithmetic",
+    "data_cases": 120,
+    "single_four_beat_permutations": 24,
+    "execution_modes": ["normal", "python -O"],
+    "mutations": ["LEN0 incorrectly combines high nibble", "natural lanes compressed to request address", "error completes before N Beats", "duplicate offset accepted"]
+  },
+  "limitations": [
+    "Semantic events are not cycle-accurate UPLI handshakes, TL credit/framing, DL replay or a proof of RTL execution.",
+    "This collector owns Read Tags only; shared Read/Write allocation remains a separate integration responsibility.",
+    "No compressed/cache, security, multicast, INC, atomic or vendor-command handling is inferred.",
+    "Reset clears state but cannot identify a stale wire response after legal same-Tag reuse without an external epoch scheme.",
+    "No memory-coherence, ordering barrier, timer/watchdog or recovery protocol is supplied by this model.",
+    "Model/RTL agreement does not constitute independent consortium compliance or physical signoff."
+  ]
+}
