@@ -12,20 +12,6 @@ upli_station_port u_upli_station_port(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_0),.o_error());
 assign o_pending_features[0]=!implemented_0;
-wire implemented_2;
-upli_read_response_channel u_upli_read_response_channel(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_2),.o_error());
-assign o_pending_features[2]=!implemented_2;
-wire implemented_3;
-upli_write_response_channel u_upli_write_response_channel(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_3),.o_error());
-assign o_pending_features[3]=!implemented_3;
 wire implemented_5;
 upli_tdm_scheduler u_upli_tdm_scheduler(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -846,6 +832,8 @@ diagnostic_event_mux u_diagnostic_event_mux(
  .o_implemented(implemented_126),.o_error());
 assign o_pending_features[126]=!implemented_126;
 assign o_pending_features[1]=1'b0;
+assign o_pending_features[2]=1'b0;
+assign o_pending_features[3]=1'b0;
 assign o_pending_features[4]=1'b0;
 assign o_pending_features[6]=1'b0;
 assign o_pending_features[53]=1'b0;

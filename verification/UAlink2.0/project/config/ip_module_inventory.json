@@ -4209,11 +4209,10 @@
         "switch"
       ],
       "subsystem": "upli",
-      "status": "planned",
-      "purpose": "完整Read Response/Data原生通道、Single/Multi-Beat时序和信用",
+      "status": "existing_partial",
+      "purpose": "Typed native Read Response TX fields and full data parity; Single/Multi scheduling, receive and credit remain incomplete.",
       "dependencies": [
-        "upli_receive_channel",
-        "upli_tdm_scheduler"
+        "upli_parity"
       ],
       "source_refs": [
         {
@@ -4229,20 +4228,18 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "shared reset, actual response send valid, full native control and authorization fields",
+        "512-bit data including valid poisoned/error data"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "native response fields and generated valid/auth/control parity",
+        "eight unmasked 64-bit data parity groups"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "upli_station_port"
       ],
@@ -4251,12 +4248,15 @@
         "switch": 2
       },
       "functional_inputs": [
-        "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
+        "shared reset, actual response send valid, full native control and authorization fields",
+        "512-bit data including valid poisoned/error data"
       ],
       "functional_outputs": [
-        "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
+        "native response fields and generated valid/auth/control parity",
+        "eight unmasked 64-bit data parity groups"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_transmit_subset_not_full_station",
+      "port_source": "rtl/upli/upli_read_response_channel.v"
     },
     {
       "id": "upli_write_response_channel",
@@ -4267,10 +4267,10 @@
         "switch"
       ],
       "subsystem": "upli",
-      "status": "planned",
-      "purpose": "Write Response含适用本地控制事件的原生通道及信用",
+      "status": "existing_partial",
+      "purpose": "Typed native Write Response TX fields and parity; receive, credit and control-event execution remain incomplete.",
       "dependencies": [
-        "upli_receive_channel"
+        "upli_parity"
       ],
       "source_refs": [
         {
@@ -4286,20 +4286,16 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "shared reset, actual response send valid, full native control and authorization fields"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "native response fields and generated valid/auth/control parity"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
         "upli_station_port"
       ],
@@ -4308,12 +4304,13 @@
         "switch": 3
       },
       "functional_inputs": [
-        "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
+        "shared reset, actual response send valid, full native control and authorization fields"
       ],
       "functional_outputs": [
-        "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
+        "native response fields and generated valid/auth/control parity"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_transmit_subset_not_full_station",
+      "port_source": "rtl/upli/upli_write_response_channel.v"
     },
     {
       "id": "upli_orig_data_channel",
@@ -4463,7 +4460,9 @@
       "existence_at_inventory": true,
       "integration_parents": [
         "upli_request_channel",
-        "upli_orig_data_channel"
+        "upli_orig_data_channel",
+        "upli_read_response_channel",
+        "upli_write_response_channel"
       ],
       "feature_slots": {
         "endpoint": 24,

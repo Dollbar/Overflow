@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 968 tracked source files from the UALink development
-repository at commit `fdbc4ad9f1a7ff2df3552e14ebc634d557756119`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 979 tracked source files from the UALink development
+repository at commit `aae2ff01ae1955d201cb2f6c799cd42d75434df6`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -97,3 +97,9 @@ UPLI controller pin diagram are preserved as unowned user content.
 Typed Request/OrigData leaves now use a shared parity primitive, with an actual one-sender/two-credit-bank native transmit wrapper. Inventory: 203 modules, 76 partial implementations and 127 explicit shells. Final-source tests cover 970 Request, 3688 OrigData and 7084 parity vectors, actual 1/2/4-port shared credit/TDM sending, 16 simulation faults and two formal counterexamples. Full-output combinational equivalence, strict static checks, structure checks and repository make test pass; full Read partial-response uniform-reset compatibility also passes.
 
 Relocated shared sender tests including faults/static checks, OrigData real sender matrix, and shared parity equivalence have been rerun from this published layout. The first CEC relocation failure was fixed in the source root expression; no RTL change was required. Tests and fixtures live under verification/UAlink2.0/upli_channels. Complete station/Endpoint native adapters, response integration, RX/RAS, independent LinkDown, protocol completion, CDC/RDC and process STA remain open. See project/docs/upli_native_sender_integration_review.md for commands and scope.
+
+## Native Read / Write Response field increment
+
+All four native channel types now have typed transmit fields and parity RTL. Final Read Response tests passed 7396 vectors and eight actual faults; Write Response passed 3508 vectors and five actual faults, with strict static checks. Independent cross-review found no concrete field/parity/reset wiring defect. Current inventory is 203 entries, 78 partial implementations and 125 explicit shells (Endpoint/Switch pending slots 93/118). Structure and actual full Read partial-response reset compatibility pass. Relocated Read normal/fault/static tests plus Write normal/static and control-parity fault pass in this repository layout.
+
+Response credit/TDM sender candidates and credit guard/return adapters are the next parallel tasks; full native station/Endpoint integration and process STA remain open. Read Response debug Src is preserved per Beat and will not be used for functional sender admission. Commands and exact scope: project/docs/upli_response_integration_review.md; next integration contract: project/docs/upli_station_integration_execution.md.

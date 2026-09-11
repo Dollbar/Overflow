@@ -2,7 +2,7 @@
 
 更新时间：2026-09-11。完整 Endpoint/Controller 与 Switch 数字 RTL IP 的 Goal 仍在进行；本次整理没有改变交付完成条件。
 
-优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 203 个 RTL 条目均有源码：76 个已有部分实现、127 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
+优先交付的[Endpoint/Switch 顶层](ip_top_bringup.md)已可构建并运行实际两端通信。模块清单中 203 个 RTL 条目均有源码：78 个已有部分实现、125 个明确标识的接口壳；两套顶层均实例化相应预留层级。结构检查、通用逻辑综合及 Endpoint→Switch→Endpoint 正常/重放回归通过。Switch 目前为显式目标侧带的数字 fabric，标准逐跳 TL/DL、完整事务、PHY、INC、安全与管理仍须实现。模块存在不代表功能完成。TRANSACTION_MODE=1 的初始固定64B Read因果路径已进一步扩展为下述可选完整普通Read。此前通用门级综合结论属于 57+145 模块快照，当前增量单独记录结构与集成验证。
 
 最新Switch增量：真实包仲裁器、完整字交叉连接和shadow/active原子路由表已替换三个壳并接入顶层。默认保留静态路由，`ROUTE_CONFIG_ENABLE=1`开放显式本地配置；只有无输入valid且无在途owner时可提交。详见[Switch集成审查](switch_integration_review.md)。
 
@@ -245,3 +245,7 @@ WIDTH 8/16 已完成实际 TSMC28 标准单元网表对生产 RTL 的复位后�
 ## 原生 Request/OrigData 发送增量
 
 原生 Request、OrigData、公共 parity 已替换三个占位壳，新增一个实际共享发送总装，保持单 sender、两组信用银行与共同 TDM。最终源码通过 970 个 Request、3688 个 OrigData、7084 个 parity 向量和 1/2/4 端口实际发送测试；16 项实际故障均检出。完整 Read 三 Beat 后统一复位兼容检查通过。Read/Write Response typed 子模块正在隔离开发，完整 station/端点适配、RX 隔离、独立 LinkDown/epoch、CDC/RDC 和工艺 STA 未完成。详见 [发送增量审查](upli_native_sender_integration_review.md)。
+
+## 两类原生响应字段层
+
+Read/Write Response typed TX 已替换两个占位壳，四类原生通道现在均有完整发送字段与 parity RTL。最终读响应7396向量、写响应3508向量通过，13项实际故障检出，g2001/严格lint/Yosys通过。两类响应的独立信用/TDM sender及完整station仍未实现；不能把组合字段层当作完整响应通道。详见 [响应增量审查](upli_response_integration_review.md)。

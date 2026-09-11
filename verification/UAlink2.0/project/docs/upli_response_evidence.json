@@ -1,0 +1,89 @@
+{
+  "scope": "Read and Write Response native typed TX field/parity leaves, no response sender credit/TDM or full station implementation",
+  "full_goal_complete": false,
+  "inventory": {
+    "total": 203,
+    "existing_partial": 78,
+    "planned": 125,
+    "endpoint_pending_slots": 93,
+    "switch_pending_slots": 118
+  },
+  "source_sha256": {
+    "rtl/upli/upli_parity.v": "9e12e67c72e50616d5298616d0cabf3e551c8fd7df360ed7c00c722266c32c94",
+    "rtl/upli/upli_read_response_channel.v": "fdbe47e8a32bddbf2e2897e4945429b1315546985fb77d9bcba84a3b0a9dcce5",
+    "rtl/upli/upli_write_response_channel.v": "aa18d2cb708261565091fcbbd463af8f15e5dff60993d11bb46f3e30ef6b7178",
+    "verification/upli_channels/run_read_response_channel.py": "d575cee4957806b399afd51679caeae6137f3df74cb7548f4b58915939a218d5",
+    "verification/upli_channels/read_response_channel_tb.sv": "a97b7a72c551535a085264588546594e98ae83737a059657e15c09ca062bad74",
+    "verification/upli_channels/read_response_reference.py": "0ce0de2111e06db7002ddabc12e04bdd1a45ebb3462954a805f782b333d8d472",
+    "verification/upli_channels/run_write_response.py": "16e17de360e2e100728366802d0b11c0d5cf212b0d6c1f5967e6d5a437201ff2",
+    "verification/upli_channels/write_response_tb.sv": "00b16164eaa54b04f639db0da5dad4ceed692bd881a8e7b9241b4f249689c6b7"
+  },
+  "runs": [
+    {
+      "path": "build/verification/upli_channels/read_response_channel/response_installed/result.json",
+      "sha256": "42696537e28bee9d48c0ea743309a23077bc96a3fb14d9b0d442a542096cd675",
+      "passed": true,
+      "verified_artifact_hashes": 56
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed/result.json",
+      "sha256": "f984b50a2ea024cddb03d221e6e06cee5e59f202eab6ddd3f36a5139fd238e6d",
+      "passed": true,
+      "verified_artifact_hashes": 9
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed_tag_msb/result.json",
+      "sha256": "95940d22f508d12065751fd607c4161ded38fdc44521df2f4697d1b1a8282cda",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed_auth_drop/result.json",
+      "sha256": "bce3335b30d453ac80ecba702c5de120f9e7cbb17db23880ea81aa7df7f674ba",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed_pool_parity/result.json",
+      "sha256": "8565fa364c62b4e954bd6bc11349b68cb5b7005fd5760a18543b7de3003e22a4",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed_valid_reset/result.json",
+      "sha256": "53b42dc19b096e18325399edc308a9ad42689876270d9ab120c769e70b6836ff",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/write_response/response_installed_status/result.json",
+      "sha256": "d8922577fe89338cd4aae0c2265a26f2fbc6b9bee7ca0aedfd17790270c9f1b4",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/ip_structure/native_response_installed/evidence.json",
+      "sha256": "7e4b8f046351291ff13b4a098be1a64d19c573678398f94cabeb462d8a3aed74",
+      "passed": true
+    },
+    {
+      "path": "build/verification/endpoint_transaction/native_response_read_reset/result.json",
+      "sha256": "5ade4d367b74f10aacf9862eff2b436e0d63515bcd190c231c83f9e3e808a15e",
+      "passed": true
+    }
+  ],
+  "read_vectors": 7396,
+  "write_vectors": 3508,
+  "actual_faults_detected": 13,
+  "independent_cross_review": {
+    "read_reviewer": "sram_mapping_sim",
+    "write_reviewer": "sram_mapping_audit",
+    "result": "No concrete field/control/parity/reset wiring defect found; reviews limited to frozen typed leaves."
+  },
+  "open": [
+    "Read/Write Response independent credit banks and TDM senders",
+    "station RX/credit return, RAS isolation and Endpoint adapters",
+    "AuthTagParity Driver column specification discrepancy",
+    "complete protocol, CDC/RDC, process STA"
+  ]
+}

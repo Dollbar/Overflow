@@ -61,20 +61,6 @@ upli_station_port u_upli_station_port(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_18),.o_error());
 assign o_pending_features[18]=!implemented_18;
-wire implemented_20;
-upli_read_response_channel u_upli_read_response_channel(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_20),.o_error());
-assign o_pending_features[20]=!implemented_20;
-wire implemented_21;
-upli_write_response_channel u_upli_write_response_channel(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_21),.o_error());
-assign o_pending_features[21]=!implemented_21;
 wire implemented_23;
 upli_tdm_scheduler u_upli_tdm_scheduler(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -682,6 +668,8 @@ assign o_pending_features[10]=1'b0;
 assign o_pending_features[11]=1'b0;
 assign o_pending_features[12]=1'b0;
 assign o_pending_features[19]=1'b0;
+assign o_pending_features[20]=1'b0;
+assign o_pending_features[21]=1'b0;
 assign o_pending_features[22]=1'b0;
 assign o_pending_features[24]=1'b0;
 assign o_pending_features[109]=1'b0;
