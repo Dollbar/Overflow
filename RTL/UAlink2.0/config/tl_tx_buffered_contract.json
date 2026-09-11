@@ -1,0 +1,46 @@
+{
+  "module": "tl_tx_buffered",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "9.1",
+      "5.1.1",
+      "5.1.2",
+      "5.7",
+      "5.8"
+    ],
+    "local_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "clock": "i_clk only",
+  "reset": "synchronous active-low i_rstn; SRAM contents not reset; FIFO ownership is reset",
+  "parameters": {
+    "WIDTH": "8..16 inherited actual port qualification",
+    "HEADER_DEPTH": "1..65535, exact headers per class",
+    "BANK_DEPTH": "1..65535, exact half-Flit capacity per class is 2*BANK_DEPTH",
+    "derived_widths": "validated by underlying FIFO"
+  },
+  "input_contract": [
+    "Two classes: lane0 Request, lane1 Response; each class producer supplies its own ordered prepared Control/tag words and Data/BE halves",
+    "Header admission is i_header_valid AND o_header_ready; tags are stored atomically with the header; Auth input waits for tags_valid",
+    "Data input count 0 idle, 1 or 2 offered halves, 3 invalid; o_data_ready means at least one half can be accepted, not that both were accepted",
+    "Advance data producer by o_data_accepted, which may be smaller than offered count; preserve unaccepted halves before any later data",
+    "i_headers/i_tags and data ordering must correspond within each class; no command formatter/splitter or transaction sequence validation is added here",
+    "Auth/done/shared/pending/credit/catch states come from the same port; Auth configuration remains stable for reset epoch",
+    "Only actual wire o_tx_taken drives i_taken and FIFO output consumption; accepted input is distinct from sent output",
+    "All storage and port resets must share the same epoch; coordinated reset drops buffered local transactions",
+    "Data offer count and available data eventually supply ordered remaining halves; permanent producer starvation is not hidden as protocol progress"
+  ],
+  "capacity": [
+    "Header word 512 bits contains one 256-bit Control plus 256-bit tags",
+    "Two 256-bit striped banks per class support two-half throughput without dual-read emulation",
+    "All cached and in-flight reads remain counted; no borrowing same-edge released space",
+    "Header FIFO and each data bank use the existing registered SDP controller; min-depth case does not increase declared capacity"
+  ],
+  "open": [
+    "UPLI conversion and capacity-aware oversized transaction completion",
+    "Per-VC independence and scheduling",
+    "Data Poison and remaining TL messages",
+    "Complete arbitrary-traffic liveness and reference/resource induction",
+    "Process STA, actual SRAM/PHY signoff and full dual-IP integration"
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "name": "dl_message_arbiter",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "DL two-level message arbitration over external complete eligible messages; no encoder, FIFO or credit controller.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized full local RTL implementation and independent self-review. This bounded native internal interface is an implementation choice under that scope, not a user-specified wire layout."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "role": "reset"
+      },
+      {
+        "name": "i_segment_available",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_source_pending",
+        "direction": "input",
+        "width": 11
+      },
+      {
+        "name": "i_source_words",
+        "direction": "input",
+        "width": 352
+      },
+      {
+        "name": "i_uart_word_count",
+        "direction": "input",
+        "width": 6
+      },
+      {
+        "name": "o_valid",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_word",
+        "direction": "output",
+        "width": 32
+      },
+      {
+        "name": "o_source",
+        "direction": "output",
+        "width": 4
+      },
+      {
+        "name": "o_word_index",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_last",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_source_take",
+        "direction": "output",
+        "width": 11
+      },
+      {
+        "name": "o_message_done",
+        "direction": "output",
+        "width": 11
+      },
+      {
+        "name": "o_error",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_locked",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_uart_word_index",
+        "direction": "output",
+        "width": 6
+      }
+    ]
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "source_catalog": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      8,
+      0
+    ],
+    [
+      8,
+      4
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      1,
+      7
+    ]
+  ],
+  "behavior": [
+    "One DWORD can be serviced at each asserted segment opportunity, with no extra arbitration latency. A segment opportunity is external, not implicitly every PHY clock.",
+    "Sources are complete-staged and eligible before pending. Each source presents its current DWORD; take consumes it and done retires its full message. Source order is the fixed catalog; word slices are 32*index +:32.",
+    "UART source7 presents the word addressed by o_uart_word_index, zero when idle. Total count2..33 includes header, captured only on first take. Non-UART sources are one word.",
+    "No payload/FIFO storage in this unit. Integration must bound external queues and meet the index-to-DWORD combinational access budget. The model/vector queues are two complete messages per source, not an RTL FIFO claim.",
+    "Round-robin within each group, then among Basic/Control/UART. Initial first priorities are Basic, source0/source5/source7. Advance both selected priorities only when the message completes.",
+    "UART transport retains ownership across all remaining words and unasserted segment cycles. No other UART, Basic or Control message may interleave.",
+    "Idle pending UART with count outside2..33 is excluded and raises combinational local error; other sources may progress. A locked owner withdrawing pending raises error, emits nothing, and retains ownership/index until restored or reset. These fault gaps are not legal wire transport behavior.",
+    "Reset suppresses all events and public locked/index observations combinationally; all internal state clears synchronously. It is a local block reset, separate from UART Stream Reset protocol.",
+    "Invalid event fields valid/word/source/word_index/last/take/done are zero; error and locked/index remain meaningful outside service opportunities. Captured UART length ignores subsequent count changes.",
+    "No wire encoding, UART credits/online/reset40NoOp handling, Basic outstanding restrictions or ACK deadlines implemented. No CDC in this single-clock unit."
+  ],
+  "constraints": [
+    "Verilog2001, same-line Chinese semantic comments, one register per sequential always, complete combinational assignments, no raw clocks or RTL functions/tasks.",
+    "Clock frequency is a local characterization target; simulations at640/6400ps do not establish DL physical rate or timing closure.",
+    "Interface error is a local diagnostic, not a standard wire error code."
+  ],
+  "outputs": [
+    {
+      "path": "rtl/dl/dl_message_arbiter.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/rtl/dl_message_arbiter_tb.v",
+      "kind": "testbench",
+      "language": "verilog"
+    }
+  ],
+  "notes": [
+    "Normative scope: DL/PL2.0 Table2-3 / section2.4.1.2 and section2.4.4.4 / Table2-14.",
+    "Encoded headers and source eligibility are trusted source contracts and need their own integration tests."
+  ],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {}
+}

@@ -1,0 +1,26 @@
+{
+  "review_id": "AR01",
+  "date": "2026-09-07",
+  "kind": "finite_domain_specification_arithmetic_diagnostic",
+  "runtime": "Node.js v24.17.0",
+  "issue": "A02",
+  "source": "UALink 200G DL/PL 2.0, sections 2.6.4.1 and 2.6.6.1–2.6.6.3, pages 45,47–49",
+  "execution": "One-off read-only node -e diagnostic in project directory; no generated RTL or protocol model",
+  "oracle": "Explicit successor traversal (511 to 1, otherwise s+1) and queue position membership, independent of the modulo-based distance expressions being checked",
+  "checks": [
+    {"name":"payload_reconstruction","last_sequence":[1,511],"forward_valid_sequence_steps":[1,7],"cases":3577,"mismatches":0},
+    {"name":"nop_reconstruction","last_sequence":[1,511],"forward_valid_sequence_steps":[0,6],"cases":3577,"mismatches":0},
+    {"name":"ack_and_replay_candidate_membership","last_ack":[1,511],"outstanding_count":[0,255],"candidate_sequence":[1,511],"cases":66846976,"mismatches":0}
+  ],
+  "interpretation": {
+    "successor": "s==511 ? 1 : s+1",
+    "distance": "nonnegative mathematical remainder of (b-a) modulo 511",
+    "reconstruction": "delta=(received_low3-(last&7)) mod 8; payload && delta==0 implies delta=8; encoded_sequence=(last+delta) mod 512",
+    "ack_accept": "(candidate-last_ack) mod 511 <=255 AND (tail-candidate) mod 511 <=255",
+    "replay_accept": "(candidate-last_ack-1) mod 511 <=254 AND (tail-candidate) mod 511 <=254"
+  },
+  "excluded": ["full LLR state machine","CRC and ambiguous-state transitions","explicit scheduler timing","replay request duplication","timeouts","reset","RTL","formal tool proof","physical interoperability"],
+  "protocol_tests_run": false,
+  "rtl_tests_run": false,
+  "formal_proof_run": false
+}

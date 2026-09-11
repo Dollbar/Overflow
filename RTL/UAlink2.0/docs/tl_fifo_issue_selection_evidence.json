@@ -1,0 +1,56 @@
+{
+  "source_checkpoint": "161ed37248c08d3f7f5e12c63515d9b365adafb0",
+  "fifo_sha256": "3348d06961770df6da9e10e44077624e6b160312254b72bdc5a9240fe7ff3b06",
+  "adopted": false,
+  "scope": "Completed semantic and physical experiment; restored baseline RTL after adverse measured tradeoff",
+  "fifo_configurations": 36,
+  "buffered_configurations": 6,
+  "reset_queries": 84,
+  "actual_fault_detections": 18,
+  "unit_configurations": 36,
+  "peer_configurations": 32,
+  "ownership_configurations": 27,
+  "ownership_audits_identical": true,
+  "clean_clone_make_exit": 0,
+  "artifacts": {
+    "build/verification/tl_tx_qualification/fifo_issue_composition_summary.json": "7680f89f2b32752572e6913cb1498c6ec174c16379527a55f78ac276e1116776",
+    "build/verification/tl_tx_qualification/fifo_issue_clone_evidence.json": "a55442b94d66ff8d08aa7df9d9cf42e16c90e92e3ea7816eae807b36ce884231",
+    "build/verification/tl_tx_qualification/fifo_issue_trace_identity.json": "c0237c5c5bc606c29ef890303abcb20b856107076a42d85314fcd12caaf2030b",
+    "build/verification/tl_tx_qualification/fifo_issue_ownership_evidence.json": "a1cdee2f66bc858e5a29076858666c76b935d8563c9e16597e0ed1d75524b631",
+    "build/verification/tl_tx_qualification/fifo_issue_ownership_evidence_optimized.json": "a1cdee2f66bc858e5a29076858666c76b935d8563c9e16597e0ed1d75524b631",
+    "build/verification/tl_tx_qualification/fifo_issue_partial_path.json": "a8ba2f330ff060ccd25a93ec9e58321b9669821d09a9a216c1421ea007186729",
+    "build/verification/tl_tx_qualification/fifo_issue_skill/results.json": "45428388d48bb96977669dabc1668ba00db46da494e6bc4c520f1162efc47094",
+    "build/verification/tl_tx_qualification/fifo_issue_restoration.json": "b06b9e4e730fa0402c8e0d4b3f80988c5eab0fad9f899bb3a4f012b4ac2f609f",
+    "build/verification/tl_tx_prepared/fifo_issue_physical/evidence.json": "330912ab1a0c9a1f4b3137dad75c9791646d850a25d59b287a07e306708ba9e3",
+    "build/verification/tl_tx_prepared/fifo_issue_physical/evidence_optimized.json": "330912ab1a0c9a1f4b3137dad75c9791646d850a25d59b287a07e306708ba9e3",
+    "build/verification/tl_tx_prepared/fifo_issue_physical/results.json": "309f8fe84651463d206f5e8790f27862965fb908f582f0a7544daeaf478310da"
+  },
+  "physical_complete": true,
+  "mapped_equivalence": false,
+  "full_goal_complete": false,
+  "decision": "reject",
+  "physical": [
+    {
+      "width": 8,
+      "area_um2": 45184.86,
+      "worst_setup_ns": -1.80945,
+      "worst_hold_ns": -0.008036,
+      "flops": 6254,
+      "macros": 64
+    },
+    {
+      "width": 16,
+      "area_um2": 47284.65,
+      "worst_setup_ns": -1.82345,
+      "worst_hold_ns": -0.008036,
+      "flops": 6574,
+      "macros": 64
+    }
+  ],
+  "main_closed_profiles": 0,
+  "reference_closed_profiles": 26,
+  "normal_optimized_physical_audits_identical": true,
+  "restored_from": "6f10b33539624664cc4231bbb681e7b1d62dc401",
+  "restored_fifo_sha256": "e0bf4e74e5150e008ed0cc4a5aa58fccb0e3d2b6c7ffa3b4a6270dfaafc3b1c3",
+  "candidate_applies_to_current_rtl": false
+}

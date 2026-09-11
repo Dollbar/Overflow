@@ -1,0 +1,161 @@
+{
+  "name": "ualink",
+  "standard_target": {
+    "common": "2.0",
+    "data_link_physical": "200G 2.0",
+    "manageability_candidate": "1.0",
+    "chiplet_deferred_candidate": "1.01",
+    "alternative_data_link_physical_deferred": "128G 1.0",
+    "normative_documents_available": true,
+    "profile_frozen": false
+  },
+  "scope": {
+    "proposed_roles": [
+      "accelerator_endpoint",
+      "switch",
+      "fabric_management"
+    ],
+    "initial_endpoint_counts_proposed": [
+      2,
+      4,
+      8
+    ],
+    "later_endpoint_counts_proposed": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "large_scale_model_endpoint_counts_proposed": [
+      256,
+      512,
+      1024
+    ],
+    "bandwidth_target_frozen": false,
+    "inherit_kdlink_wire_protocol": false
+  },
+  "station_parameterization": {
+    "status": "configuration_arithmetic_model_subset_validated_hardware_not_implemented",
+    "plan_document": "docs/ip_delivery_plan.md",
+    "plan_sections": [
+      "2.1",
+      "4.1"
+    ],
+    "scope": "independent NUM_STATIONS per accelerator or physical switch IP top",
+    "parameters": {
+      "NUM_STATIONS": {
+        "stage": "elaboration",
+        "type": "positive_integer",
+        "requires_power_of_two": false,
+        "selected_value": null
+      },
+      "STATION_BIFURCATION": {
+        "stage": "initial_configuration_and_controlled_management_reconfiguration",
+        "values": [
+          "x4",
+          "2x2",
+          "4x1"
+        ],
+        "encoding": "project_symbolic_names_not_standard_wire_or_management_enums",
+        "selected_value": null
+      }
+    },
+    "lanes_per_station_fixed": 4,
+    "mode_layouts": {
+      "x4": {
+        "ports_per_station": 1,
+        "lanes_per_port": 4
+      },
+      "2x2": {
+        "ports_per_station": 2,
+        "lanes_per_port": 2
+      },
+      "4x1": {
+        "ports_per_station": 4,
+        "lanes_per_port": 1
+      }
+    },
+    "max_managed_ports_per_device": 1024,
+    "port_limit_source": "M §1.4 Table 1-1 p16; R045",
+    "port_limit_scope": "mandatory_scaling_limit_for_Pods_managed_under_Manageability_1_0_not_a_station_count_or_encoding_width_limit",
+    "derived_quantities": {
+      "NUM_LANES": "4 * NUM_STATIONS",
+      "NUM_PORTS": "NUM_STATIONS * PORTS_PER_STATION"
+    },
+    "station_count_bounds_from_port_count_only": {
+      "x4": 1024,
+      "2x2": 512,
+      "4x1": 256
+    },
+    "all_modes_full_population_station_bound": 256,
+    "switch_required_mode_capabilities": [
+      "x4",
+      "2x2",
+      "4x1"
+    ],
+    "initial_mode_must_not_prune_required_switch_capabilities": true,
+    "pod_bifurcation_must_match": true,
+    "accelerator_port_counts_in_pod_must_match": true,
+    "counts_are_not_port_number_ranges": true,
+    "unsafe_live_mode_changes_allowed": false,
+    "bounds_are_not_full_profile_acceptance": true,
+    "verified_configurations": [],
+    "hardware_maximum_frozen": false
+  },
+  "clock_and_rate_control": {
+    "status": "user_approved_plan_not_implemented",
+    "plan_document": "docs/clock_and_rate_plan.md",
+    "accelerator_upli_dynamic_frequency_change_in_scope": true,
+    "switch_upli_fixed_rate": true,
+    "upli_interface_sides_share_clock": true,
+    "upli_clock_change_alters_serdes_line_rate": false,
+    "reference_clock_hz": 156250000,
+    "default_normalized_rate_hz": 1562500000,
+    "rate_notification_lsb_hz": 50000,
+    "default_rate_encoding": 31250,
+    "reference_rate_encoding": 3125,
+    "rate_normalization_bits_per_link_200g": {
+      "x4": 512,
+      "2x2": 256,
+      "4x1": 128
+    },
+    "rate_ack_response_deadline_ns": 1000,
+    "requester_ack_timeout_ns": null,
+    "reference_rate_ack_required_before_clock_change": true,
+    "new_rate_notification_and_ack_required": true,
+    "basic_mclass_max_local_outstanding": 1,
+    "ack_rate_field_echo_required": false,
+    "upli_connection_signals_are_dvfs_controls": false,
+    "platform_pll_and_glitchless_mux_external": true,
+    "selected_working_frequencies_hz": [],
+    "clock_domain_grouping_frozen": false,
+    "fifo_depth_frozen": false,
+    "timer_units_require_explicit_review": true,
+    "dl_pl_appendix_interface_status": "informative_not_frozen",
+    "verified_configurations": []
+  },
+  "uart_firmware_interface": {
+    "status": "native_opaque_tx_and_rx_RTL_paths_implemented_complete_controller_and_CSR_integration_open_custom_payload_protocol_deferred",
+    "scope_decision": "retain_standard_transport_and_firmware_interface_defer_vendor_command_semantics",
+    "plan_document": "docs/transaction_recovery_plan.md",
+    "standard_transport_requirements": [
+      "R058",
+      "R059"
+    ],
+    "in_band_existing_ualink_physical_lanes": true,
+    "external_uart_pins_in_scope": false,
+    "firmware_tx_rx_opaque_dword_interface_retained": true,
+    "interface_signal_and_csr_layout_frozen": false,
+    "vendor_tlv_framing_source": "L §2.4.4.1.4 p38; standard prefix retained if vendor packets are used",
+    "vendor_id_selected": null,
+    "vendor_message_types_assigned": [],
+    "custom_diagnostic_or_security_payload_protocol_in_scope": false,
+    "replaces_basic_rate_notification": false,
+    "verified_configurations": []
+  },
+  "last_implementation_update": "2026-09-10",
+  "phase": "RTL_integration_in_progress",
+  "release_status": "not_ready",
+  "current_status": "docs/status.md",
+  "source_inventory": "config/source_provenance.json"
+}

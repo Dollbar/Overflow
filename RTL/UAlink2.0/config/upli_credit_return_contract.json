@@ -1,0 +1,32 @@
+{
+  "name": "upli_credit_return_queue", "target": "rtl", "rtl_dialect": "verilog",
+  "description": "Common 2.0 2.6/4.3 normal credit return metadata queue; docs/credit_return_plan.md.",
+  "design_requirements": {"target":"rtl", "pipeline_required":true, "streamability":"non_streamable", "interface_family":"native", "interface_profile":{}, "confirmed_by_user":true, "confirmation_notes":"User authorized complete UALink implementation with local Verilator/Yosys/OpenSTA. This bounded internal FIFO contract is derived from the normative saved VC/Pool rule; scheduling/depth are implementation choices, not separately user-selected standard fields."},
+  "pipeline_required": true, "streamability": "non_streamable", "interface_family": "native", "interface_profile": {},
+  "interfaces": {"ports":[
+    {"name":"i_clk", "direction":"input", "width":1, "role":"clock"},
+    {"name":"i_rstn", "direction":"input", "width":1, "role":"reset"},
+    {"name":"i_return_enable", "direction":"input", "width":1},
+    {"name":"i_retire_valid", "direction":"input", "width":1},
+    {"name":"i_retire_port", "direction":"input", "width":2},
+    {"name":"i_retire_vc", "direction":"input", "width":2},
+    {"name":"i_retire_pool", "direction":"input", "width":1},
+    {"name":"o_retire_ready", "direction":"output", "width":1},
+    {"name":"o_credit_valid", "direction":"output", "width":4},
+    {"name":"o_credit_pool", "direction":"output", "width":4},
+    {"name":"o_credit_vc", "direction":"output", "width":8},
+    {"name":"o_credit_num", "direction":"output", "width":8},
+    {"name":"o_pending_count", "direction":"output", "width":12}
+  ]},
+  "clock":{"name":"i_clk", "edge":"posedge", "frequency_mhz":1562.5},
+  "reset":{"name":"i_rstn", "active":"low", "synchronous":true},
+  "behavior":["Per-port depth1..16 metadata queue, 1/2/4 ports, native return bus is registered and has no ready.", "Retirement carries saved VC/Pool; same metadata at the old FIFO head coalesces into at most four credits.", "Full queue cannot accept by borrowing same-edge return capacity; incoming data never bypasses empty queue.", "Enable reserves the following output cycle and cannot retract an already driven batch.", "No payload storage, initial credit issuance, token ownership validation, DVFS or complete wire protocol implementation."],
+  "constraints":["All RTL-MD MUST rules apply.", "Verilog-2001, Chinese semantic same-line comments, one register per sequential always.", "Project native UPLI and snake_case names override AXI/PascalCase preferences."],
+  "outputs":[
+    {"path":"rtl/upli/upli_credit_return_queue.v", "kind":"source", "language":"verilog"},
+    {"path":"verification/rtl/upli_credit_return_tb.v", "kind":"testbench", "language":"verilog"},
+    {"path":"verification/formal/upli_credit_return_properties.v", "kind":"testbench", "language":"verilog"}
+  ],
+  "notes":["Artifact schema requires integer port widths: metadata is default ports1/depth4. Actual local enable width is C_NUM_PORTS; pending width is four times depth.bit_length(), tested parametrically. Native output shapes remain four ports.", "Count width is derived internally from C_DEPTH, not an independently selectable parameter.", "Small queue uses actual register storage, not a fabricated SRAM macro.", "Local confirmed user toolchain overrides skill remote/vendor defaults."],
+  "subfunctions":[], "workflow":{}, "performance":{}
+}

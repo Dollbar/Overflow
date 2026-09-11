@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-11",
+  "passed": true,
+  "positive_cases": 7,
+  "connection_fault_cases": 4,
+  "counts": {
+    "tx": 2686,
+    "delivered": 2686,
+    "retired": 2313,
+    "replay": 66,
+    "crc_bad": 12,
+    "dropped": 12,
+    "fc": 1159,
+    "sequence_wraps": 2
+  },
+  "review": "docs/endpoint_link_integration_review.md",
+  "evidence": "build/verification/endpoint_link/retained/summary.json",
+  "evidence_sha256": "cff351dd84d1596e7d3abbcd0b32e73015f0c4957a9fdb104fdee832846e3b66",
+  "optimized_audit_sha256": "3e30f1cce899df7a70a088c2be040c8eb2ddcbfa3f55eecf73af6072da5c6117",
+  "production_rtl_changed": false,
+  "full_endpoint_transaction_loop": false,
+  "standard_dl_framing": false,
+  "crc_computation": false,
+  "process_sta": false,
+  "full_goal_complete": false,
+  "source_hashes": {
+    "verification/endpoint_link/check.py": "39dc0fc6055a68f02a04eb0d097261cfd175b615a3db94290667f15154468991",
+    "verification/endpoint_link/run.py": "6b20fef5cd668cccd8a1ca51e3571aad59b6f65e1c859125e43a93d3cf6e60de",
+    "verification/endpoint_link/run_matrix.py": "e85d8177b165ff6adb1daf4daa94f7068fa5a8755663dc4db10f652403e05ee4"
+  }
+}

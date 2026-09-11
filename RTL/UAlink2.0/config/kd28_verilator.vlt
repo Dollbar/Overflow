@@ -1,0 +1,4 @@
+`verilator_config
+// External file intentionally contains all fixed SRAM cell modules. Only this
+// observed filename warning is waived; authored RTL and all other rules remain fatal.
+lint_off -rule DECLFILENAME -file "*/Library/models/kd28/sram/rtl/kd28_sram_cells.v"

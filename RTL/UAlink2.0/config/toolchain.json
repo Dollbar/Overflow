@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "selected_on": "2026-09-07",
+  "selection_source": "user_confirmed_local_verilator_yosys_opensta",
+  "host_bindings": "config/local.json",
+  "tools": {
+    "simulation": {"command": "verilator", "observed_version": "5.050 2026-07-01 rev vUNKNOWN-built20260724"},
+    "synthesis": {"command": "yosys", "observed_version": "0.33 (git sha1 2584903a060)"},
+    "sta": {"command": "sta", "observed_version": "3.1.0"}
+  },
+  "standard_cell_library": {
+    "family": "TSMC 28 nm HPC+ tcbn28hpcplusbwp40p140",
+    "model": "NLDM",
+    "synthesis_corner": "ssg0p81v125c",
+    "initial_sta_corners": ["tt0p9v25c", "ssg0p81v125c", "ssg0p81vm40c", "ffg0p99v125c", "ffg0p99vm40c"],
+    "filename_pattern": "tcbn28hpcplusbwp40p140{corner}.lib",
+    "inventory_status": "SSG_mapping_equivalence_and_buffered_connection_five_corner_prelayout_setup_hold_passed",
+    "redistribute": false
+  },
+  "limitations": ["not a final multi-mode multi-corner signoff matrix", "tool availability is not a successful RTL run", "PDK/library paths stay in ignored host configuration", "platform IO/clock budgets and parasitics remain separate"]
+}

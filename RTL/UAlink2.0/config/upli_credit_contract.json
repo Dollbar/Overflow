@@ -1,0 +1,40 @@
+{
+  "name": "upli_credit_bank", "target": "rtl", "rtl_dialect": "verilog",
+  "description": "Single-channel native UPLI sender credit bank; Common 2.0 2.6/4.3; bounded contract in docs/upli_credit_rtl_plan.md.",
+  "design_requirements": {
+    "target": "rtl", "pipeline_required": true, "streamability": "non_streamable",
+    "interface_family": "native", "interface_profile": {}, "confirmed_by_user": true,
+    "confirmation_notes": "User authorized independent full UALink implementation with local Verilator/Yosys/OpenSTA. Agent derives this local internal module contract from the audited model; port spelling and atomic diagnostic hold are implementation choices, not separately approved normative wire fields."
+  },
+  "pipeline_required": true, "streamability": "non_streamable",
+  "interface_family": "native", "interface_profile": {},
+  "interfaces": {"ports": [
+    {"name": "i_clk", "direction": "input", "width": 1, "role": "clock"},
+    {"name": "i_rstn", "direction": "input", "width": 1, "role": "reset"},
+    {"name": "i_credit_connected", "direction": "input", "width": 1},
+    {"name": "i_beats_connected", "direction": "input", "width": 1},
+    {"name": "i_credit_valid", "direction": "input", "width": 4},
+    {"name": "i_credit_pool", "direction": "input", "width": 4},
+    {"name": "i_credit_vc", "direction": "input", "width": 8},
+    {"name": "i_credit_num", "direction": "input", "width": 8},
+    {"name": "i_credit_init_done", "direction": "input", "width": 4},
+    {"name": "i_send_valid", "direction": "input", "width": 1},
+    {"name": "i_send_port", "direction": "input", "width": 2},
+    {"name": "i_send_vc", "direction": "input", "width": 2},
+    {"name": "i_send_pool", "direction": "input", "width": 1},
+    {"name": "o_balances", "direction": "output", "width": 20},
+    {"name": "o_init_confirmed", "direction": "output", "width": 4},
+    {"name": "o_error", "direction": "output", "width": 1}
+  ]},
+  "clock": {"name": "i_clk", "edge": "posedge", "frequency_mhz": 1562.5},
+  "reset": {"name": "i_rstn", "active": "low", "synchronous": true},
+  "behavior": ["Initial balances and confirmation zero.", "Per-port VC0..3 plus one cross-VC pool.", "Returns encode one through four and do not follow TDM slots.", "Consume only prior credit and confirmed initialization; no same-edge bypass.", "Net update and bounded capacity; invalid edge holds all state and registers a local diagnostic.", "Initialization confirms after a parameterized consecutive burst greater than one; then sticky."],
+  "constraints": ["All RTL-MD MUST rules apply.", "One register per synchronous always block; single clock domain and no raw gated clocks.", "Native UPLI, snake_case module naming and semantic Chinese same-line comments.", "Local diagnostic does not retract wire traffic or implement protocol RAS."],
+  "outputs": [
+    {"path": "rtl/upli/upli_credit_bank.v", "kind": "source", "language": "verilog"},
+    {"path": "verification/rtl/upli_credit_tb.v", "kind": "testbench", "language": "verilog"},
+    {"path": "verification/formal/upli_credit_bounds.v", "kind": "testbench", "language": "verilog"}
+  ],
+  "notes": ["Port-width metadata uses default one-port width-four elaboration because the artifact schema requires an integer; real o_balances width is C_NUM_PORTS*5*C_CREDIT_WIDTH and is tested parametrically.", "Explicit local user toolchain overrides skill remote/simulator defaults.", "Whole skill selfcheck currently lacks companion manage_docs.py; separate from project EDA."],
+  "subfunctions": [], "workflow": {}, "performance": {}
+}

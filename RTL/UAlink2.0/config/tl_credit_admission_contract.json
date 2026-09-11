@@ -1,0 +1,41 @@
+{
+  "module": "tl_credit_admitted_port",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "5.1.1",
+      "5.1.2",
+      "5.8",
+      "9.1"
+    ],
+    "local_document_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "policy": "whole new Control tenure must fit currently available physical credits before header transfer; not a new wire requirement",
+  "clock": "i_clk only",
+  "reset": "synchronous active-low i_rstn",
+  "parameters": {
+    "WIDTH": [
+      8,
+      16
+    ]
+  },
+  "constraints": [
+    "single transmitter owns the ledger; caller uses actual o_tx_taken",
+    "i_auth is fixed through each reset epoch",
+    "only shared Request/Response Data Pool quantities are combined",
+    "actual CMD and first-half Data charging remains in the existing port; admission does not subtract future Data twice",
+    "caller must drain remaining old Data/BE before blocking on a new header and provide legal FC slots",
+    "capacity shortfall is a local diagnostic requiring packing/transaction policy; it does not acknowledge or discard the candidate",
+    "application payload availability, fair arbitration, PHY/link timing and transaction semantics require independent integration"
+  ],
+  "known_open": [
+    "oversized transaction forward progress",
+    "old-tail/new-header/FC packing",
+    "full online capacity induction",
+    "complete reference induction",
+    "process STA",
+    "complete Endpoint/Switch IP"
+  ],
+  "verification": "verification/tl_credit_admission",
+  "review": "docs/tl_credit_admission_review.md"
+}

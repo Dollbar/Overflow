@@ -1,0 +1,215 @@
+{
+  "name": "dl_uart_tx_path",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "Stream0 firmware TX through actual synchronous SRAM FIFO, complete-message source and two-level DL arbiter.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized full local RTL implementation and independent self-review. This bounded native internal interface is an implementation choice under that scope, not a user-specified wire layout."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "role": "reset"
+      },
+      {
+        "name": "i_channel4_enabled",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_fw_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_fw_word",
+        "direction": "input",
+        "width": 32
+      },
+      {
+        "name": "i_credit_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_credit_value",
+        "direction": "input",
+        "width": 12
+      },
+      {
+        "name": "i_segment_available",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_other_pending",
+        "direction": "input",
+        "width": 10
+      },
+      {
+        "name": "i_other_words",
+        "direction": "input",
+        "width": 320
+      },
+      {
+        "name": "o_fw_ready",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_buffered_words",
+        "direction": "output",
+        "width": 13
+      },
+      {
+        "name": "o_tx_counter",
+        "direction": "output",
+        "width": 12
+      },
+      {
+        "name": "o_uart_busy",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_uart_reserved",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_uart_staged",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_latest_fc",
+        "direction": "output",
+        "width": 12
+      },
+      {
+        "name": "o_valid",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_word",
+        "direction": "output",
+        "width": 32
+      },
+      {
+        "name": "o_source",
+        "direction": "output",
+        "width": 4
+      },
+      {
+        "name": "o_word_index",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_last",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_other_take",
+        "direction": "output",
+        "width": 10
+      },
+      {
+        "name": "o_other_done",
+        "direction": "output",
+        "width": 10
+      },
+      {
+        "name": "o_uart_message_done",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_uart_locked",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_error",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_uart_word_index",
+        "direction": "output",
+        "width": 6
+      }
+    ]
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "behavior": [
+    "Firmware ready/valid accepts32-bit payload only when total FIFO plus actual source-held unsent words is below C_TX_DEPTH; no same-edge borrowed space. Offline preloading is allowed. A producer holds valid/data until handshake or coordinated reset.",
+    "Actual upli_receive_storage and upli_receive_fifo use authorized explicitly supplied KD28 SDP mapping/models. Both SRAM ports share i_clk; control reset invalidates ownership without clearing physical SRAM contents.",
+    "Actual dl_uart_tx_source consumes exclusively from FIFO, stages1..32 words and provides source7 to actual dl_message_arbiter. Same source/FIFO/arbiter synchronous reset is required.",
+    "The other ten already eligible single-word sources map in order to full source indices0..6,8..10; lower packed DWORD is lower source index. Other-source protocol generation/eligibility remains upstream.",
+    "Expose full service event, complete-message event, indices, captured count, held count, total capacity, TX modulo4096 and latest credit. Diagnostic ORs source/arbiter errors, over-capacity, UART done disagreement and locked/pending index disagreement.",
+    "Decoded credit is an external input. Neither this wrapper nor its simulation credit provider implements unresolved A20/UCR01 four-Flit update cadence or wire Stream Reset. Channel4 must drain before negotiated disable; coordinated local reset aborts data.",
+    "Single-clock internal native integration; no AXI, complete Endpoint/Switch, CDC synchronizer, PHY timing or full-IP signoff claim."
+  ],
+  "constraints": [
+    "Verilog2001, same-line Chinese comments, one register per sequential always, no functions/tasks/raw clocks.",
+    "Single clock;640/6400ps simulation periods are characterization inputs, not timing closure or PHY throughput."
+  ],
+  "outputs": [
+    {
+      "path": "rtl/dl/dl_uart_tx_path.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/rtl/uart_tx_path_tb.v",
+      "kind": "testbench",
+      "language": "verilog"
+    }
+  ],
+  "notes": [
+    "Submodule contracts retain exact source and arbiter semantics. See docs/uart_tx_proof_integration_plan.md; local capacity interface is an implementation choice under authorized goal."
+  ],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {},
+  "parameters": [
+    {
+      "name": "C_TX_DEPTH",
+      "default": 128,
+      "minimum": 1,
+      "maximum": 4095,
+      "scope": "128 standard profile; other capacities are local research configurations"
+    }
+  ]
+}

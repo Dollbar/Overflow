@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "record_date": "2026-09-08",
+  "name": "KD28 SDP SRAM storage and models",
+  "source_repository": "https://github.com/Dollbar/Overflow",
+  "observed_commit": "970273db846451afa05136bf1dba390cfa98e7f8",
+  "used_paths_clean_in_source_worktree": true,
+  "connection": "External read-only checkout supplied by KD28_ROOT; no adjacent-directory default or copied source",
+  "functional_sources_sha256": {
+    "Library/models/kd28/fifo/rtl/kd28_fifo_sdp_storage_map.v": "821c2b14cfdd3f029cb47d7e005c960bca10b18e4e9e3414cc06595cbfe89f1c",
+    "Library/models/kd28/sram/rtl/kd28_sram_sp_model.v": "21d1098c7258c07447250cbb78abbb2e9297edcaa99e6acac170057b7c83ef5d",
+    "Library/models/kd28/sram/rtl/kd28_sram_sdp_model.v": "d590726a812f9ae7a6f01944e2de78ef2c97f2fc6962c8d90150dc0c4eaab9c2",
+    "Library/models/kd28/sram/rtl/kd28_sram_tdp_model.v": "e3b524987682211c29779e1baea1d08a1c3ec896c768f31fd5a655e10c57d6a3",
+    "Library/models/kd28/sram/rtl/kd28_sram_cells.v": "29e7d8c15b05353a0ee7fbc2f2d257453be083668461eda6d0892ddc5e984fed"
+  },
+  "available_not_yet_used_for_integrated_STA_sha256": {
+    "Library/models/kd28/sram/rtl/kd28_sram_blackboxes.v": "cd48ea4bb1cdd7c185fb1f0ab0a3a4922338af260cd66b60e728c32ce97281a6",
+    "Library/timing/kd28/sram/kd28_sram_fast.lib": "4ade5f896ed7250364a6cca5f6d5b4379e55355f46ce549d432a40283d5fe8b2",
+    "Library/timing/kd28/sram/kd28_sram_typical.lib": "2e9acb8aece58d1012f2c85d1021e11dc9dc14760ff04849e49f351c9e230340",
+    "Library/timing/kd28/sram/kd28_sram_slow.lib": "4a1624c676bd92c9bbd899ab8c02e286cbdf6015c0f9dee5eb54bab300b78740"
+  },
+  "functional_contract": {
+    "clocks": "Write and read ports bound to the same UPLI clock",
+    "read_latency": "Registered Q after read-request edge, captured by controller at next edge",
+    "write_mask": "All byte enables asserted",
+    "read_write_same_address": "Excluded by FIFO ownership/address proof, not relying on unspecified collision data",
+    "logical_depth": "1..65535 in new controller, non-power-of-two allowed; physical map is at least depth2",
+    "fixed_classes": [
+      "KD28_SRAM_SDP_256X32",
+      "KD28_SRAM_SDP_512X64",
+      "KD28_SRAM_SDP_1024X128",
+      "KD28_SRAM_SDP_2048X256"
+    ],
+    "padding_not_advertised_as_credit": true
+  },
+  "reset_adaptation": "Do not use kd28_sync_fifo's asynchronous-reset controller; custom synchronous controller clears ownership/pending/cache. SRAM contents and map bank-read state are not reset; old data cannot become valid.",
+  "warning_waiver": {
+    "file": "config/kd28_verilator.vlt",
+    "rule": "DECLFILENAME",
+    "source_file_pattern": "*/Library/models/kd28/sram/rtl/kd28_sram_cells.v",
+    "reason": "One observed file intentionally defines all fixed SRAM cell modules; no global -Wno-fatal or authored RTL waiver",
+    "diagnostic": "reports/receive_external_filename_diagnostic.log"
+  },
+  "timing_model": {
+    "evidence_level": "ANALYTICAL",
+    "characterization_status": "synthetic_frontend_only",
+    "fast": {
+      "setup_ns": 0.06,
+      "hold_ns": 0.02,
+      "clock_to_q_ns": 0.12
+    },
+    "typical": {
+      "setup_ns": 0.1,
+      "hold_ns": 0.03,
+      "clock_to_q_ns": 0.2
+    },
+    "slow": {
+      "setup_ns": 0.16,
+      "hold_ns": 0.05,
+      "clock_to_q_ns": 0.32
+    },
+    "included_in_this_stage_controller_STA": false,
+    "real_macro_signoff": false
+  },
+  "authorization": {
+    "local_use": "Explicit user authorization to use existing project FIFO/SRAM models",
+    "files_copied_to_public_candidate": false,
+    "source_license": "Source repository license policy lists candidate licenses; no blanket redistribution grant inferred. Synthetic Liberty files have Apache-2.0 generated-view headers; this does not relicense all RTL.",
+    "redistribution_status": "Not asserted; external files remain outside candidates"
+  }
+}

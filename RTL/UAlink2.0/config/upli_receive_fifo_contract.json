@@ -1,0 +1,156 @@
+{
+  "name": "upli_receive_fifo",
+  "target": "rtl",
+  "rtl_dialect": "verilog",
+  "description": "Synchronous SRAM receive FIFO controller; see docs/receive_storage_plan.md for actual backend and complete credit integration scope.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": true,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized complete UALink RTL and reuse of repository FIFO/SRAM models using local Verilator/Yosys/OpenSTA. This internal synchronous FIFO control contract does not add native UPLI ready or protocol fields."
+  },
+  "pipeline_required": true,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "role": "reset"
+      },
+      {
+        "name": "i_write_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_write_data",
+        "direction": "input",
+        "width": 32
+      },
+      {
+        "name": "o_write_ready",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "i_read_ready",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "o_read_valid",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_read_data",
+        "direction": "output",
+        "width": 32
+      },
+      {
+        "name": "o_count",
+        "direction": "output",
+        "width": 3
+      },
+      {
+        "name": "o_sram_write_cs",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_sram_write_addr",
+        "direction": "output",
+        "width": 3
+      },
+      {
+        "name": "o_sram_write_data",
+        "direction": "output",
+        "width": 32
+      },
+      {
+        "name": "o_sram_read_cs",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_sram_read_addr",
+        "direction": "output",
+        "width": 3
+      },
+      {
+        "name": "i_sram_read_data",
+        "direction": "input",
+        "width": 32
+      }
+    ]
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "behavior": [
+    "Depth1..65535; positive byte-multiple width; total capacity includes unread SRAM, one read-pending word and up to two cached words.",
+    "SRAM read result becomes available after request edge and is captured at next edge. Read input must meet this contract; backend is separately bound.",
+    "Two reserved cache slots support steady one-word-per-cycle read/write, with no empty write bypass and no full same-edge capacity borrowing.",
+    "Reset clears all controller/cache state; SRAM contents need not reset. New writes and valid read scheduling prevent stale data visibility."
+  ],
+  "constraints": [
+    "All RTL-MD MUST rules apply; native UPLI project snake_case and short bilingual headers retained.",
+    "Authored Verilog-2001 source has Chinese same-line semantic comments and one register per sequential always.",
+    "External KD28 model/storage mapping is read-only and is not restyled or bundled; explicit caller root and hash identity required."
+  ],
+  "outputs": [
+    {
+      "path": "rtl/upli/upli_receive_fifo.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "rtl/upli/upli_receive_storage.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/rtl/upli_receive_storage_tb.v",
+      "kind": "testbench",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/formal/upli_receive_fifo_properties.v",
+      "kind": "testbench",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/formal/upli_receive_content_properties.v",
+      "kind": "testbench",
+      "language": "verilog"
+    }
+  ],
+  "notes": [
+    "Integer schema widths denote depth5/width32 default; derived count/address width is depth.bit_length() and inconsistent override rejected.",
+    "SRAM controls are combinational enables/address to the same-clock registered memory, not asynchronous crossings.",
+    "No complete UPLI receive channel, credit handoff, protocol package, or analog macro signoff claimed by this controller."
+  ],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {}
+}

@@ -1,0 +1,257 @@
+{
+  "name": "dl_replay_tx_control",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "单时钟TxReplay窗口与物理地址控制",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "完整双IP已授权；内部接口依据本阶段计划与冻结调度模型。"
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口",
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口",
+        "role": "reset"
+      },
+      {
+        "name": "i_link_reset",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_ingress_event",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_command_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_command_request",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_command_target",
+        "width": 9,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_push",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "i_replay_take",
+        "width": 1,
+        "direction": "input",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_ack_accept",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_ack_count",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_request_accept",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_command_reject",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_push_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_push_accept",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_push_sequence",
+        "width": 9,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_write_addr",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_replay_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_replay_take",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_replay_sequence",
+        "width": 9,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_replay_addr",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_first_replay",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_resident_count",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_last_sequence",
+        "width": 9,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_last_ack",
+        "width": 9,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_ignore_count",
+        "width": 4,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_unacked_count",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_head_pointer",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_write_pointer",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_scheduled_sequence",
+        "width": 9,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_scheduled_count",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_scheduled_pointer",
+        "width": 8,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      },
+      {
+        "name": "o_first_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "本域接收状态接口"
+      }
+    ]
+  },
+  "parameters": {
+    "C_DEPTH": {
+      "type": "integer",
+      "default": 255,
+      "description": "物理容量"
+    },
+    "C_ADDR_WIDTH": {
+      "type": "integer",
+      "default": 8,
+      "description": "派生地址位宽"
+    }
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "model": "model/ualink/dl_replay_scheduler.py",
+  "outputs": [
+    {
+      "path": "rtl/dl/dl_replay_tx_control.v",
+      "kind": "rtl",
+      "language": "verilog"
+    }
+  ],
+  "limitations": [
+    "本地已授权Verilator/Yosys后端；外部CDC及复位释放同步由集成层负责。",
+    "沿前事件、沿上状态更新；没有payload存储、物理CRC、FEC或watchdog。"
+  ]
+}

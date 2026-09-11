@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-11",
+  "priority": "module hierarchy and development tops first, then full functionality and integration",
+  "top_modules": [
+    "rtl/endpoint/ualink_endpoint_top.v",
+    "rtl/switch/ualink_switch_top.v"
+  ],
+  "inventory_rtl_modules": 202,
+  "existing_partial_modules": 57,
+  "materialized_interface_shells": 145,
+  "role_shells": {
+    "endpoint": 109,
+    "switch": 127
+  },
+  "rtl_inventory_files_present": true,
+  "all_hardware_function_families_reviewed": true,
+  "requirements_fully_implemented": false,
+  "generic_synthesis_tops_passed": 2,
+  "generic_synthesis_latches": 0,
+  "technology_sta": false,
+  "switch_parameter_cases": 3,
+  "switch_real_mutations_detected": 2,
+  "endpoint_switch_endpoint_runs": [
+    {
+      "label": "delivery_clean",
+      "passed": true,
+      "counts": {
+        "tx": 202,
+        "delivered": 202,
+        "retired": 180,
+        "replay": 0,
+        "crc_bad": 0,
+        "dropped": 0,
+        "fc": 94,
+        "sequence_wraps": 0
+      },
+      "record_sha256": "2ef09456347f5a2cb6ad38f88734c98460f5978fe216c1323c69546023f413b9"
+    },
+    {
+      "label": "delivery_smoke",
+      "passed": true,
+      "counts": {
+        "tx": 201,
+        "delivered": 201,
+        "retired": 178,
+        "replay": 10,
+        "crc_bad": 2,
+        "dropped": 2,
+        "fc": 91,
+        "sequence_wraps": 0
+      },
+      "record_sha256": "6178c2f67e22e9c183758d7edfe9518332182fd3a631b7f1038e3cc8687c4eea"
+    },
+    {
+      "label": "delivery_minimum",
+      "passed": true,
+      "counts": {
+        "tx": 206,
+        "delivered": 206,
+        "retired": 188,
+        "replay": 4,
+        "crc_bad": 2,
+        "dropped": 2,
+        "fc": 106,
+        "sequence_wraps": 0
+      },
+      "record_sha256": "d8ce7c45c0b8519a27631d6655a14a60787daf2421d5c84a9a6620c0a0524267"
+    }
+  ],
+  "actual_network_payload_fault_detected": true,
+  "normal_request_response_fixtures": true,
+  "standard_per_hop_tl_dl_termination": false,
+  "software_inventory_only": 13,
+  "external_platform_boundaries": 4,
+  "full_goal_complete": false,
+  "evidence_hashes": {
+    "config/ip_module_inventory.json": "e5f9f4db2e2548138166553c9fa79decdb165f862c438bf1e46a4e47f47b996d",
+    "build/verification/ip_structure/delivery_smoke/evidence.json": "9c63f2032b0cc5dd413c11655624840a4781f34b29f8201973a8f6acec900609",
+    "build/verification/ip_tops/tops_synthesis/results.json": "395166266d2a75984e6184de85f1db83270f341f6f593afbd922960c37b390fe",
+    "reports/ip_tops/switch_delivery_smoke/summary.json": "167d0a6fa63d342182c91390be81531083da1a9e73342537f3642829992ee021",
+    "build/verification/ip_tops/delivery_clean/record.json": "2ef09456347f5a2cb6ad38f88734c98460f5978fe216c1323c69546023f413b9",
+    "build/verification/ip_tops/delivery_clean/audit.json": "1427cd716f8a561b57b79681efdd7a6c49d79bc9459afb9d090b5a2e9ef7532c",
+    "build/verification/ip_tops/delivery_smoke/record.json": "6178c2f67e22e9c183758d7edfe9518332182fd3a631b7f1038e3cc8687c4eea",
+    "build/verification/ip_tops/delivery_smoke/audit.json": "ad8917b76fb3fb9144fa281f0b8f0921bf794ad8b30418115cad0844ad7dbdf5",
+    "build/verification/ip_tops/delivery_minimum/record.json": "d8ce7c45c0b8519a27631d6655a14a60787daf2421d5c84a9a6620c0a0524267",
+    "build/verification/ip_tops/delivery_minimum/audit.json": "0131f7ea3d7fdc76444da9a3303b8fb95d3515f1e02326213e47ea584fdfec30",
+    "build/verification/ip_structure/scaffold_summary.json": "281f819b5f8e007ac2061587299797054c88a2fc998f6d9740ba75af9b3d2eb1"
+  },
+  "review": "docs/ip_top_bringup.md",
+  "structure_mutation_tests": 8,
+  "normal_optimized_structure_evidence_identical": true
+}

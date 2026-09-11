@@ -1,0 +1,319 @@
+{
+  "name": "upli_burst_sender",
+  "target": "rtl",
+  "rtl_dialect": "verilog",
+  "description": "Normal complete-staged request/OrigData sender with actual credit banks and per-port tail registers; not a full UPLI/IP or command encoder.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": true,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized complete isolated UALink RTL with local Verilator/Yosys/OpenSTA. This normal staged-burst component follows the approved burst RTL plan, native UPLI timing, and independent payload model; no wire encoding or recovery invented."
+  },
+  "pipeline_required": true,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "role": "reset"
+      },
+      {
+        "name": "i_credit_connected",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_beats_connected",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_candidate_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_candidate_port",
+        "direction": "input",
+        "width": 2
+      },
+      {
+        "name": "i_candidate_vc",
+        "direction": "input",
+        "width": 2
+      },
+      {
+        "name": "i_candidate_pool",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_candidate_has_data",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_candidate_num_beats",
+        "direction": "input",
+        "width": 2
+      },
+      {
+        "name": "i_candidate_data_pools",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_candidate_request",
+        "direction": "input",
+        "width": 96
+      },
+      {
+        "name": "i_candidate_data",
+        "direction": "input",
+        "width": 2048
+      },
+      {
+        "name": "i_candidate_byte_enable",
+        "direction": "input",
+        "width": 256
+      },
+      {
+        "name": "i_candidate_error",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_req_credit_valid",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_req_credit_pool",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_req_credit_vc",
+        "direction": "input",
+        "width": 8
+      },
+      {
+        "name": "i_req_credit_num",
+        "direction": "input",
+        "width": 8
+      },
+      {
+        "name": "i_req_credit_init_done",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_data_credit_valid",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_data_credit_pool",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "i_data_credit_vc",
+        "direction": "input",
+        "width": 8
+      },
+      {
+        "name": "i_data_credit_num",
+        "direction": "input",
+        "width": 8
+      },
+      {
+        "name": "i_data_credit_init_done",
+        "direction": "input",
+        "width": 4
+      },
+      {
+        "name": "o_candidate_accepted",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_req_valid",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_req_port",
+        "direction": "output",
+        "width": 2
+      },
+      {
+        "name": "o_req_vc",
+        "direction": "output",
+        "width": 2
+      },
+      {
+        "name": "o_req_pool",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_data_valid",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_data_port",
+        "direction": "output",
+        "width": 2
+      },
+      {
+        "name": "o_data_vc",
+        "direction": "output",
+        "width": 2
+      },
+      {
+        "name": "o_data_pool",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_req_payload",
+        "direction": "output",
+        "width": 96
+      },
+      {
+        "name": "o_data_offset",
+        "direction": "output",
+        "width": 2
+      },
+      {
+        "name": "o_data_last",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_data_payload",
+        "direction": "output",
+        "width": 512
+      },
+      {
+        "name": "o_data_byte_enable",
+        "direction": "output",
+        "width": 64
+      },
+      {
+        "name": "o_data_error",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_req_balances",
+        "direction": "output",
+        "width": 20
+      },
+      {
+        "name": "o_req_init",
+        "direction": "output",
+        "width": 4
+      },
+      {
+        "name": "o_req_credit_error",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_data_balances",
+        "direction": "output",
+        "width": 20
+      },
+      {
+        "name": "o_data_init",
+        "direction": "output",
+        "width": 4
+      },
+      {
+        "name": "o_data_credit_error",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_credit_error_sticky",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_busy",
+        "direction": "output",
+        "width": 4
+      },
+      {
+        "name": "o_tdm_known",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_tdm_port",
+        "direction": "output",
+        "width": 2
+      }
+    ]
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "behavior": [
+    "Default ports1, credit width4, capacity4 per account in each bank, request width96, init count width4 and init cycles2. Ports1/2/4, credit widths3..16; capacities configurable independently for both channels; request width positive is local opaque storage, not standard UPLI packing.",
+    "All four staged data512/ByteEn64/Error slices are present before acceptance, offset0 in the low slice. Only the declared1..4 are valid. Accepted request and first data occur on the same edge; the other at most3 words are independently captured per port.",
+    "Upstream may change every candidate field immediately after acceptance; a blocked or read-class candidate does not modify stored tail data. Tail follows original port/offset in successive own TDM slots without new ready or credit bypass.",
+    "Actual Req/OrigData banks debit actual emitted beats once, never pre-debit the full reservation. Their registered balances and confirmed initialization drive the unchanged burst control.",
+    "Credit connection is the Comp-to-Orig return direction; beats connection is both directions. Qualification stays high until common synchronous reset; actual connection FSM and receive channel integration are a later stage.",
+    "Two registered per-bank one-edge errors plus a sticky OR are diagnostic only. An invalid credit edge holds that bank, not the other bank or already emitted data. The model's atomic exception rollback is not used as RTL recovery semantics; no implicit pause of mandatory normal tails.",
+    "Reset suppresses events combinationally, clears banks/control/tail registers/sticky synchronously. Invalid event fields are zero, while state observations only change at the clock edge."
+  ],
+  "constraints": [
+    "Common2.0 sections2.5 pp41-42,2.7.8 p71,and2.8 Writes p77; full command packing/parity and exceptional termination are separately tracked.",
+    "All47 RTL-MD MUST rules, Chinese same-line semantic comments, one register per sequential always, Verilog2001, no raw clocks/RTL functions/tasks/asynchronous reset.",
+    "Clock targets0.640/6.400ns with unchanged budgets need actual whole-wrapper synthesis/equivalence/STA. Existing control results do not establish wrapper timing."
+  ],
+  "outputs": [
+    {
+      "path": "rtl/upli/upli_burst_sender.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/rtl/upli_burst_sender_tb.v",
+      "kind": "testbench",
+      "language": "verilog"
+    }
+  ],
+  "notes": [
+    "Numeric interface widths are the default elaboration; derived bank/request widths apply otherwise.",
+    "Independent immutable-tuple payload oracle, protocol passive monitor, and actual-acceptance shift journal cross-check normal traces. Credit diagnostics use separately hand-derived cases.",
+    "Register baseline stores3*577 bits per enabled port; no SRAM behavior, analog PHY, routed timing, complete IP or alliance certification claimed."
+  ],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {}
+}

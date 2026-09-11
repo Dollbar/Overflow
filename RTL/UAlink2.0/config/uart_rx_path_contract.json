@@ -1,0 +1,236 @@
+{
+  "name": "dl_uart_rx_path",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "Stream0 UART receive framing, actual SRAM storage and firmware-read credit accounting.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "Full local dual-IP implementation authorized. Native internal signal layout is an implementation choice under that scope."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "description": "共享采样时钟",
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "description": "同步低有效全局复位",
+        "role": "reset"
+      },
+      {
+        "name": "i_stream_reset",
+        "direction": "input",
+        "width": 1,
+        "description": "本地流复位清除存储并保持线上排空"
+      },
+      {
+        "name": "i_channel4_enabled",
+        "direction": "input",
+        "width": 1,
+        "description": "协商后的 Channel4 运行资格"
+      },
+      {
+        "name": "i_word_valid",
+        "direction": "input",
+        "width": 1,
+        "description": "完整且已通过上游可靠性处理的 DL 消息字资格"
+      },
+      {
+        "name": "i_word",
+        "direction": "input",
+        "width": 32,
+        "description": "已展开的三十二位有序消息字"
+      },
+      {
+        "name": "i_fw_ready",
+        "direction": "input",
+        "width": 1,
+        "description": "固件接受当前可见队首数据"
+      },
+      {
+        "name": "o_fw_valid",
+        "direction": "output",
+        "width": 1,
+        "description": "固件队首数据已经经过真实 SRAM 读缓存"
+      },
+      {
+        "name": "o_fw_word",
+        "direction": "output",
+        "width": 32,
+        "description": "当前固件可读的不透明完整数据字"
+      },
+      {
+        "name": "o_rx_fill",
+        "direction": "output",
+        "width": 12,
+        "description": "包含 SRAM 在途读取与缓存的完整接收占用"
+      },
+      {
+        "name": "o_initialized",
+        "direction": "output",
+        "width": 1,
+        "description": "本地接收信用初始化已经完成"
+      },
+      {
+        "name": "o_rx_counter",
+        "direction": "output",
+        "width": 12,
+        "description": "只随真实固件读取推进的十二位接收信用"
+      },
+      {
+        "name": "o_credit_available",
+        "direction": "output",
+        "width": 1,
+        "description": "当前 Channel4 状态允许观察信用通告值"
+      },
+      {
+        "name": "o_remaining",
+        "direction": "output",
+        "width": 6,
+        "description": "当前线上消息尚待排空的有效 payload 字数"
+      },
+      {
+        "name": "o_dropping",
+        "direction": "output",
+        "width": 1,
+        "description": "当前消息已进入保持至末字的丢弃状态"
+      },
+      {
+        "name": "o_header",
+        "direction": "output",
+        "width": 1,
+        "description": "当前字被识别为新的 UART transport 头"
+      },
+      {
+        "name": "o_payload_write",
+        "direction": "output",
+        "width": 1,
+        "description": "当前线上 payload 真实写入接收存储"
+      },
+      {
+        "name": "o_payload_discard",
+        "direction": "output",
+        "width": 1,
+        "description": "当前线上 payload 被本地资格规则丢弃"
+      },
+      {
+        "name": "o_done",
+        "direction": "output",
+        "width": 1,
+        "description": "当前字完成原消息长度的排空"
+      },
+      {
+        "name": "o_credit_valid",
+        "direction": "output",
+        "width": 1,
+        "description": "当前边界消息携带可接受的远端绝对信用"
+      },
+      {
+        "name": "o_credit_value",
+        "direction": "output",
+        "width": 12,
+        "description": "解码的十二位远端 DataFCSeq"
+      },
+      {
+        "name": "o_reset_request",
+        "direction": "output",
+        "width": 1,
+        "description": "边界处识别到适用于本流的复位请求"
+      },
+      {
+        "name": "o_request_all",
+        "direction": "output",
+        "width": 1,
+        "description": "该复位请求的全部流选择位"
+      },
+      {
+        "name": "o_reset_response",
+        "direction": "output",
+        "width": 1,
+        "description": "边界处识别到适用于本流的复位响应"
+      },
+      {
+        "name": "o_response_all",
+        "direction": "output",
+        "width": 1,
+        "description": "该复位响应的全部流选择位"
+      },
+      {
+        "name": "o_response_status",
+        "direction": "output",
+        "width": 3,
+        "description": "原样交给上层复位状态机判断的状态字段"
+      },
+      {
+        "name": "o_other_valid",
+        "direction": "output",
+        "width": 1,
+        "description": "需要交给其它 DL 消息处理器的完整字"
+      },
+      {
+        "name": "o_other_word",
+        "direction": "output",
+        "width": 32,
+        "description": "未经重编码的其它 DL 消息内容"
+      },
+      {
+        "name": "o_error",
+        "direction": "output",
+        "width": 1,
+        "description": "超出本地信用容量或存储契约的诊断事件"
+      }
+    ]
+  },
+  "parameters": {
+    "C_RX_DEPTH": {
+      "default": 128,
+      "minimum": 1,
+      "maximum": 4095
+    }
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "normative_sources": [
+    "DL/PL2.0 §2.4, §2.4.1.1 Table2-3, §2.4.3.2, §2.4.4.1.1–3, Tables2-12–15"
+  ],
+  "behavior": [
+    "- Module `dl_uart_rx_path`, parameter `C_RX_DEPTH=128`, valid research range1..4095; storage width32. One clock and synchronous low reset. No raw gated clocks, functions/tasks, or undocumented CDC.",
+    "- Inputs: `i_clk`, `i_rstn`, `i_stream_reset`, `i_channel4_enabled`, `i_word_valid`, `i_word[31:0]`, `i_fw_ready`. The local stream reset is held by the future reset sequencer. It flushes storage/counters and suppresses data errors; it does not substitute for40NoOp/10ms exchange.",
+    "- Ingress has no ready. The trusted front end removes failed/duplicate flits and supplies ordered uncompressed32-bit messages. Idle decoding uses mclass5:2/mtype8:6. UART transport length is31:27+1. Stream0 is11:9=0. Reserved header bits are ignored per§2.4; no compressed-wire decoder is implemented here.",
+    "- A transport header never enters SRAM. Subsequent valid words are opaque payload until the original count expires, including words that look like credit/reset/other headers. Invalid cycles do not decrement the count. Headers for unallocated streams still establish run-out length and discard payload.",
+    "- At a stream0 header, admit only after initialization, while Channel4 is enabled and stream reset is inactive, with at least the complete payload length of pre-edge FIFO free capacity. A simultaneous firmware read does not supply admission capacity. Insufficient capacity reports a local overflow diagnostic and discards the whole transport. This is local handling of traffic violating the credited capacity, not a standard wire error encoding.",
+    "- During an admitted message, an offline/reset interval latches discard through the original end, even if no word arrives during that interval. Already stored payload can be read offline; stream reset explicitly flushes it. An unexpected storage-not-ready condition drops the current/remainder and reports a local error only while enabled and out of reset.",
+    "- Global reset clears framing and all local ownership. Stream reset flushes FIFO and Receiver Credit Counter but preserves framing run-out. On the first released edge initialize the counter to actual depth; no data admission/read on that edge. Thereafter increment modulo4096 only on a real firmware valid/ready read. Do not return credits on arrival, prefetch, header reception or empty reads.",
+    "- Expose firmware valid/data, total RX fill12, initialized/credit snapshot12, framing remaining6/drop, actual payload write/discard, header and message-done events, local error. Invalid firmware data is zero.",
+    "- At a header boundary, decode stream0 Credit Update DataFCSeq31:20 while initialized/out of stream reset, including Channel4 offline. Decode Reset Request/Response for stream0 or allStreams12 even while stream reset is held; expose allStreams and response Status15:13. Do not autonomously reset on these events. Other nontransport words are forwarded unchanged to the higher DL dispatcher. Payload never leaks into those events. Incoming decode does not implement outgoing credit cadence or reset FSM.",
+    "- All events are pre-edge combinational qualifications. Reset masks all public outputs. FIFO/model masks must match synchronous release semantics and current held reset; no hidden clock latency is assumed at the interface."
+  ],
+  "limitations": [
+    "Ingress CRC/replay and compressed-wire decoding are upstream.",
+    "Outgoing Credit Update cadence A20/UCR01 and full40NoOp/10ms Stream Reset controller remain separate.",
+    "Depths other than128 are research configurations; physical closure must be measured separately."
+  ]
+}

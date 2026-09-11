@@ -1,0 +1,143 @@
+{
+  "source_checkpoint": "1194c73711541aadc2633a52fafe8de368d778ff",
+  "adopted_as_research_baseline": true,
+  "rtl_sources": {
+    "rtl/tl/tl_tx_buffered.v": "4bf6a7e10af3561f1368ecf936a50872b5c573822a2e333b9d3a4953a612a8c7",
+    "rtl/tl/tl_tx_channels.v": "bf535db97580c52dca77779d8861cefdb4340ce67120b4400f90d62974230699",
+    "rtl/upli/upli_receive_fifo.v": "e0bf4e74e5150e008ed0cc4a5aa58fccb0e3d2b6c7ffa3b4a6270dfaafc3b1c3",
+    "rtl/upli/upli_receive_storage.v": "6920eb6927098622a162e193145133caa6af243ce0c4e17cfdfa64940f10bd16"
+  },
+  "scope": "Final header visibility RTL, actual mapped binary post-reset correspondence and synthetic-SRAM prelayout measurements; full dual-IP Goal remains open",
+  "composition": {
+    "channel_composite": 9,
+    "channel_default": 9,
+    "fifo": 36,
+    "buffered": 27,
+    "profile_checks": 16
+  },
+  "integration": {
+    "unit_configurations": 36,
+    "peer_configurations": 32,
+    "ownership_configurations": 27,
+    "ownership_properties_per_configuration": 35
+  },
+  "mapped_correspondence": {
+    "complete": true,
+    "scope": "binary post-reset actual standard-cell equivalence with common arbitrary SRAM read values",
+    "stages": {
+      "physical_baseline": "header_visibility_clean_physical",
+      "mapped_pair": "header_visibility_clean_pair",
+      "encoded_step_techmapped": "header_visibility_clean_encoded",
+      "explicit_wide_partition": "header_visibility_clean_partitions",
+      "independent_reset": "header_visibility_clean_reset",
+      "cursor_relation": "header_visibility_clean_cursor",
+      "dormant_capture": "header_visibility_clean_dormant",
+      "actual_reset_fault": "header_visibility_clean_reset_fault",
+      "actual_capture_fault": "header_visibility_clean_capture_fault",
+      "actual_partition_fault": "header_visibility_clean_partition_fault"
+    },
+    "results": [
+      {
+        "width": 8,
+        "complete_partitions": 6,
+        "public_macro_output_bits": 4144,
+        "actual_gold_state_bits": 6244,
+        "actual_gate_state_bits": 6254
+      },
+      {
+        "width": 16,
+        "complete_partitions": 6,
+        "public_macro_output_bits": 4144,
+        "actual_gold_state_bits": 6564,
+        "actual_gate_state_bits": 6574
+      }
+    ],
+    "reset_queries": 4,
+    "cursor_queries": 4,
+    "dormant_queries": 4,
+    "actual_reset_faults": 2,
+    "actual_capture_faults": 2,
+    "actual_partition_faults": 2,
+    "mapped_equivalence": true,
+    "macro_signoff": false,
+    "full_goal_complete": false
+  },
+  "physical": [
+    {
+      "width": 8,
+      "standard_cell_area_um2": 44790.732,
+      "cells": 69382,
+      "flops": 6254,
+      "macros": 64,
+      "profiles": 30,
+      "worst_setup_ns": -1.806385,
+      "worst_hold_ns": -0.008036
+    },
+    {
+      "width": 16,
+      "standard_cell_area_um2": 45603.936,
+      "cells": 69967,
+      "flops": 6574,
+      "macros": 64,
+      "profiles": 30,
+      "worst_setup_ns": -1.834665,
+      "worst_hold_ns": -0.008036
+    }
+  ],
+  "main_640ps_closed_profiles": 0,
+  "main_640ps_total_profiles": 30,
+  "reference_6p4ns_closed_profiles": 26,
+  "reference_6p4ns_total_profiles": 30,
+  "normal_optimized_audits_identical": [
+    "physical",
+    "mapped_correspondence",
+    "ownership",
+    "wire"
+  ],
+  "artifacts": {
+    "build/verification/tl_control_partition/header_visibility_clean_minimum/results.json": "326db93d7ad0ff9e1aef0ca61ff17ccd21f424b146fb97cc3e34791bbcb14cc7",
+    "build/verification/tl_control_partition/header_visibility_clean_peers/results.json": "524b84852cd77b0f7126e2148fb9a8f5a7fb45a54b1d21db59fb7c3581746771",
+    "build/verification/tl_control_partition/header_visibility_clean_wire.json": "06a93eae4441c6cfc0d9c459437e0df29ca9ea14015db8acfed72b99d34d70c3",
+    "build/verification/tl_tx_channels/header_visibility_clean_checks/results.json": "d568fdc397e723b2d66a542645a6f05549237a34a5e447f40653980ca4caa722",
+    "build/verification/tl_tx_prepared/header_visibility_clean_capture_fault/results.json": "b2602a045496c9bca98af3d9d510e558b75e1fe819eb60b2104e2f8d1cd3e9dc",
+    "build/verification/tl_tx_prepared/header_visibility_clean_cursor/results.json": "5b870917c0c36858a09dab823eaaaaacfb93d4b0aaf8642ca2fe32b9b3b002c6",
+    "build/verification/tl_tx_prepared/header_visibility_clean_dormant/results.json": "550a2ba03cbc0c26adb7eefb6286bccc2c8654754b9919e19de9ce05023cb7b2",
+    "build/verification/tl_tx_prepared/header_visibility_clean_encoded/results.json": "7a81615444dea139fc8f087cfba602097d8b41d14a732d3ad8e896c15c22d0d3",
+    "build/verification/tl_tx_prepared/header_visibility_clean_faults/results.json": "441277362396605a40a9dd77d2b201bf685fc6ae4fb20f1ebbfe858b89d250a2",
+    "build/verification/tl_tx_prepared/header_visibility_clean_mapped_correspondence_evidence.json": "33ad6316c3e7c937c80ade30a81bcf5f197f8fcc1d5e2e92daeb926baa005856",
+    "build/verification/tl_tx_prepared/header_visibility_clean_ownership/results.json": "e19ec124a9af97f97688901d60d44091a75e2aaec254f939b0e57865c9f8a466",
+    "build/verification/tl_tx_prepared/header_visibility_clean_pair/results.json": "cb6cdf14742d020e9bef4331a03350e4fb00c10863dafd8b09d8982c72d0dc97",
+    "build/verification/tl_tx_prepared/header_visibility_clean_partition_fault/results.json": "4ad79b37c836b73ed5b386fb06f02b5027a35cfac3ebeabfe633deecf781204c",
+    "build/verification/tl_tx_prepared/header_visibility_clean_partitions/results.json": "1cea6593a4e25310f2a95b5d022b0fe44a1b20ceeaabbebc6cde6d8ac65631b4",
+    "build/verification/tl_tx_prepared/header_visibility_clean_physical/evidence.json": "69b28ab04b588a44fb8815be3595ab1ad6484859b584566468779ad2636378b3",
+    "build/verification/tl_tx_prepared/header_visibility_clean_physical/results.json": "bc349e2b53fe6dd58701ba9020ccb7c224f5b425a224cb06b787697e8c62f002",
+    "build/verification/tl_tx_prepared/header_visibility_clean_reset/results.json": "61cd334593c385650a1acb553b173d1282660aab06cbcd0130ebd78334339047",
+    "build/verification/tl_tx_prepared/header_visibility_clean_reset_fault/results.json": "83477292d7ea5ff453ccdb49a821b955101f736bd121ccc4f42155dfb232e1a1",
+    "build/verification/tl_tx_prepared/header_visibility_clean_unit/results.json": "e2239c183be9fe46374473aa3588f14347e302299d56657f1cadd3459544857a",
+    "build/verification/tl_tx_qualification/header_visibility_clean_buffered/results.json": "8cd94b6256a2b54ec6414bef5b8e5e03f33d90f2e75519f55a63489cf96fdb6b",
+    "build/verification/tl_tx_qualification/header_visibility_clean_buffered_middle/results.json": "3eb3e99b56dd9cc8c03d04ad81f7a7e556a340732833f5495321df25392d5d55",
+    "build/verification/tl_tx_qualification/header_visibility_clean_clone_evidence.json": "ffed88f87ffed5c88a5f168e0454ff4e1e52694e0434b9603f8eedb8734572b7",
+    "build/verification/tl_tx_qualification/header_visibility_clean_composite/results.json": "53978da2341b4d22290b73a7b65b01e9386e2235580b006d166842f8188ff9f9",
+    "build/verification/tl_tx_qualification/header_visibility_clean_composition_evidence.json": "c03d1894f3e8066010443a8cd55142cdb62474cc9a429f7558abd2fa4a48312f",
+    "build/verification/tl_tx_qualification/header_visibility_clean_critical_paths.json": "332dc33e8de5a4af49a50458f3638800722b6df40b7ca6a995d4c2fae3ed9702",
+    "build/verification/tl_tx_qualification/header_visibility_clean_data_fault/results.json": "25b5346447151b9ef1102d01a328f9ebabe599855d177431aec539fc2de895a2",
+    "build/verification/tl_tx_qualification/header_visibility_clean_defaults/results.json": "0e976a2beb2864c26a6d23225632e8392aaa10ee94323f9a438ab9f6fb730b5d",
+    "build/verification/tl_tx_qualification/header_visibility_clean_fifo/results.json": "c4f391b3e4eb7046f08b723f1b618072f19cb2f667735a013c740b71a9ebaba2",
+    "build/verification/tl_tx_qualification/header_visibility_clean_ownership_evidence.json": "f74c4dae216891ae813f0850cf0ee688fff912604fc3f4fac9beedba74c9239e",
+    "build/verification/tl_tx_qualification/header_visibility_clean_payload_fault/results.json": "4d69cd0377a5d7d6a181aaac69e5600daf0e0589f2fd1a7bd1357f2ac587cefb",
+    "build/verification/tl_tx_qualification/header_visibility_clean_skill_confirmed/results.json": "6ff164e912c39afe09f2264e636edfdce1d25904e44487ed92f51297d75bdff5",
+    "build/verification/tl_tx_qualification/header_visibility_clean_trace_identity.json": "ea463caf6aec84808f96862b46561bfff0b2fa5f6d538e97deea564d3b2a53a8",
+    "build/verification/tl_tx_qualification/header_visibility_final_profiles/results.json": "2816f9d89942af25a3cff91940eca743a9691728f11590540cd70d317381a403",
+    "build/verification/tl_tx_qualification/header_visibility_mapping_identity.json": "bfe6c3a25b14b3571c2a3ae7c83338e0a336acc36c2945756bae78c4b959b432"
+  },
+  "artifact_retention": "Local ignored build directory; repository records hashes and reproducible sources, not proprietary libraries or generated graphs",
+  "open_items": [
+    "640 ps setup and hold closure",
+    "Characterized SRAM and layout parasitics / physical signoff",
+    "Activity-based power and full-chip area",
+    "Full Endpoint/Controller and Switch integration, protocol and payload coverage",
+    "Remaining digital PHY/PCS/FEC, INC, security and manageability",
+    "Full-top CDC/RDC and interoperability"
+  ],
+  "full_goal_complete": false
+}

@@ -1,0 +1,23 @@
+{
+  "scope": "Selected whole receive-channel implementation budgets; not complete UPLI or IP signoff",
+  "mapping_corner": "ssg0p81vm40c",
+  "analysis_corners": ["tt0p9v25c", "ssg0p81v125c", "ssg0p81vm40c", "ffg0p99v125c", "ffg0p99vm40c"],
+  "synthetic_macro_views": ["fast", "typical", "slow"],
+  "periods_ns": ["0.640", "6.400"],
+  "hold": 1,
+  "read_control_buffers": 0,
+  "profiles": [
+    {"name": "single", "ports": 1, "width": 32, "credit_width": 4, "cap_hex": "50132", "return_depth": 4},
+    {"name": "asymmetric", "ports": 2, "width": 128, "credit_width": 6, "cap_hex": "fc1000000", "return_depth": 4},
+    {"name": "four", "ports": 4, "width": 32, "credit_width": 4, "cap_hex": "50132501325013250132", "return_depth": 4},
+    {"name": "wide", "ports": 1, "width": 520, "credit_width": 6, "cap_hex": "10000000", "return_depth": 8},
+    {"name": "classes", "ports": 1, "width": 32, "credit_width": 12, "cap_hex": "801201101001", "return_depth": 4},
+    {"name": "zero", "ports": 4, "width": 32, "credit_width": 4, "cap_hex": "0", "return_depth": 4}
+  ],
+  "claims": {
+    "results_are_separate_evidence": true,
+    "matrix_definition_is_not_a_pass": true,
+    "actual_sram_characterization": false,
+    "complete_ip": false
+  }
+}

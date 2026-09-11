@@ -1,0 +1,371 @@
+{
+  "name": "endpoint_transaction",
+  "evidence_scope": "semantic_model; initial single64B Read subset; no RTL implementation or full Endpoint claim",
+  "sources": {
+    "common_pdf": "specs/private/UALink_Common_Specification_v2.0_Final_evaluationcopy-1.pdf",
+    "common_pdf_sha256": "d1431f080621c46b2df9b34bbeb2b7fe7bdc95b14785e717e17687fe37fcc8e6",
+    "common_text": "specs/private/common.txt",
+    "common_text_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383",
+    "requirements": "specs/requirements.json R078-R081/R085",
+    "plan": "docs/endpoint_transaction_plan.md"
+  },
+  "profile": {
+    "classification": "local_implementation_subset",
+    "read_bytes": 64,
+    "address_alignment": 64,
+    "address_width": 57,
+    "tag_width": 11,
+    "accelerator_id_width": 10,
+    "port_width": 2,
+    "request_length": 15,
+    "request_attr": 255,
+    "request_command": 3,
+    "vc": 0,
+    "pool": false,
+    "asi": 0,
+    "metadata": 0,
+    "auth": false,
+    "compression": false,
+    "cache_load": false,
+    "cache_way": 0,
+    "request_num_beats": 0,
+    "response_num_beats": 0,
+    "response_offset": 0,
+    "response_last": true,
+    "response_rsp_type": 0,
+    "response_statuses": [
+      0,
+      3
+    ],
+    "response_data_halves": 2,
+    "response_data_half_width": 256,
+    "response_data_error": false,
+    "initial_num_ports": 1,
+    "default_outstanding_capacity": 4,
+    "capacity_scope": "total across configured identity-model ports",
+    "test_memory_bytes": 4096
+  },
+  "request_fields": {
+    "FTYPE": {
+      "lsb": 124,
+      "width": 4,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "CMD": {
+      "lsb": 118,
+      "width": 6,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "VCHAN": {
+      "lsb": 116,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "ASI": {
+      "lsb": 114,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "TAG": {
+      "lsb": 103,
+      "width": 11,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "POOL": {
+      "lsb": 102,
+      "width": 1,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "ATTR": {
+      "lsb": 94,
+      "width": 8,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "LEN": {
+      "lsb": 88,
+      "width": 6,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "METADATA": {
+      "lsb": 80,
+      "width": 8,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "ADDR": {
+      "lsb": 25,
+      "width": 55,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "SRCACCID": {
+      "lsb": 15,
+      "width": 10,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "DSTACCID": {
+      "lsb": 5,
+      "width": 10,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "CLOAD": {
+      "lsb": 4,
+      "width": 1,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "CWAY": {
+      "lsb": 2,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    },
+    "NUMBEATS": {
+      "lsb": 0,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.1 Table 5-29 p137"
+    }
+  },
+  "response_fields": {
+    "FTYPE": {
+      "lsb": 60,
+      "width": 4,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "VCHAN": {
+      "lsb": 58,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "TAG": {
+      "lsb": 47,
+      "width": 11,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "POOL": {
+      "lsb": 46,
+      "width": 1,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "LEN": {
+      "lsb": 44,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "OFFSET": {
+      "lsb": 42,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "STATUS": {
+      "lsb": 38,
+      "width": 4,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "RD_WR": {
+      "lsb": 37,
+      "width": 1,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "LAST": {
+      "lsb": 36,
+      "width": 1,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "SRCACCID": {
+      "lsb": 26,
+      "width": 10,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "DSTACCID": {
+      "lsb": 16,
+      "width": 10,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "RSPTYPE": {
+      "lsb": 14,
+      "width": 2,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    },
+    "SPARE": {
+      "lsb": 0,
+      "width": 14,
+      "classification": "normative",
+      "source": "Common 2.0 5.9.2 Table 5-30 pp138-139"
+    }
+  },
+  "normative_rules": [
+    {
+      "rule": "Read CMD=0x03 has no OrigData; Read ReqNumBeats=0",
+      "source": "Common 2.0 Table 2-12 p57; Table 2-2 p50"
+    },
+    {
+      "rule": "Request Tag width11; no reuse until last response beat; identity per port",
+      "source": "Common 2.0 Table 2-2 p49; 2.7.4.2 p52; R078"
+    },
+    {
+      "rule": "Request address width57, low2 bits zero, at most256 bytes and no256-byte boundary crossing; length encodes DWORD count minus1",
+      "source": "Common 2.0 Table 2-2 pp49-50; 2.7.4.4-5 p55; 2.8 pp74-75; R080"
+    },
+    {
+      "rule": "Response TAG=request TAG, response DST=request SRC; response SRC is debug only and not functional identity",
+      "source": "Common 2.0 Table 2-15 p62; Table 5-30 pp138-139"
+    },
+    {
+      "rule": "RD_WR=1 selects Read; ordinary unicast RSPTYPE=00",
+      "source": "Common 2.0 Table 5-30 p139; Table 2-15 p63"
+    },
+    {
+      "rule": "Status0 OKAY and3 DECODE ERROR; ordinary errors still supply all beat data/LAST; error data does not commit successful application data",
+      "source": "Common 2.0 2.7.5.1 Table 2-16 pp64-65; R081"
+    },
+    {
+      "rule": "Read data uses natural byte lanes; one64-byte aligned read is one complete response beat",
+      "source": "Common 2.0 2.8 pp74-75; R080"
+    },
+    {
+      "rule": "TL POOL choice is independent of UPLI Pool credit",
+      "source": "Common 2.0 Tables 5-29/30 pp137-138"
+    }
+  ],
+  "local_rules": [
+    "The complete profile above is a bounded bring-up choice, not permission to omit other mandatory protocol behavior.",
+    "ASI0/metadata0 are explicit local test-memory choices for implementation-defined semantics.",
+    "Emit CLOAD=0, CWAY=0 and response SPARE=0. This decoder projects away response SPARE bits and does not define full receiver unassigned-bit policy.",
+    "encode_read returns128-bit field; encode_response returns64-bit field. Neither packs Control padding or DL framing.",
+    "Port is local metadata and is not encoded in either field. Initial integrated profile uses port0; identity model permits num_ports1/2/4 for cross-port unit checks.",
+    "ReadTracker is a semantic event model: reserve atomically owns a request and512-bit result slot; mark_sent is actual TL Header consumption; receive requires two256-bit halves; retire is application completion acceptance.",
+    "Completed results retain capacity and Tag until local application retirement. This is conservative beyond the minimum response-received lifetime.",
+    "All exceptions diagnose unsupported or invalid local model events; they do not prescribe wire error codes, TL Drop, Isolation or resets.",
+    "Memory service uses explicit immutable byte array; it checks full57-bit address plus64 without truncation. Out-of-range returns status3 and two zero halves.",
+    "Only status0 completes with application data; status3 completes with data=None, even though complete response payload must still be present.",
+    "Mutating methods validate fully before committing state; errors do not consume capacity or mark completion."
+  ],
+  "api": {
+    "ReadRequest": [
+      "port",
+      "tag",
+      "address",
+      "src",
+      "dst",
+      "length=15",
+      "attr=255",
+      "vc=0",
+      "pool=False",
+      "asi=0",
+      "metadata=0"
+    ],
+    "ReadResponse": [
+      "port",
+      "tag",
+      "src",
+      "dst",
+      "data_halves=(low256,high256)",
+      "status=0",
+      "offset=0",
+      "last=True",
+      "num_beats=0",
+      "rsp_type=0",
+      "vc=0",
+      "pool=False",
+      "data_error=False"
+    ],
+    "functions": [
+      "validate_read(request)",
+      "validate_response(response)",
+      "encode_read(request)->int128",
+      "decode_read(word,*,port)->ReadRequest",
+      "encode_response(response)->int64",
+      "decode_response(word,*,data_halves,port)->ReadResponse",
+      "memory_read(request,memory:bytes)->ReadResponse"
+    ],
+    "tracker": [
+      "ReadTracker(*,local_id,capacity=4,num_ports=1)",
+      "reserve(request)",
+      "mark_sent(port,tag)",
+      "receive(response)",
+      "peek(port,tag)->Completion|None",
+      "retire(port,tag)->Completion",
+      "occupancy"
+    ]
+  },
+  "known_vectors": {
+    "provenance": "Independent fixed field fixtures from Tables5-29/30; constant expectations, not generated via model encode/decode.",
+    "request": [
+      {
+        "tag": 0,
+        "address": 0,
+        "src": 0,
+        "dst": 0,
+        "word": "10c0003fcf0000000000000000000000"
+      },
+      {
+        "tag": 2047,
+        "address": 144115188075855808,
+        "src": 1023,
+        "dst": 1022,
+        "word": "10c3ffbfcf00ffffffffffffe1ffffc0"
+      },
+      {
+        "tag": 1023,
+        "address": 74560,
+        "src": 1,
+        "dst": 1023,
+        "word": "10c1ffbfcf00000000000091a000ffe0"
+      }
+    ],
+    "response": [
+      {
+        "tag": 0,
+        "src": 0,
+        "dst": 0,
+        "status": 0,
+        "word": "2000003000000000"
+      },
+      {
+        "tag": 2047,
+        "src": 1023,
+        "dst": 1022,
+        "status": 3,
+        "word": "23ff80fffffe0000"
+      },
+      {
+        "tag": 1023,
+        "src": 1,
+        "dst": 1023,
+        "status": 0,
+        "word": "21ff803007ff0000"
+      }
+    ]
+  },
+  "limitations": [
+    "Not a cycle, TDM, native UPLI, PHY, CRC or complete transaction RTL model.",
+    "No arbitrary Read length/masks, Multi-Beat/Single-Beat interleaving, cache compression, authentication, DataError/Poison, ordinary error statuses beyond0/3, Write/Atomic/INC or management.",
+    "No Link Down/reset/timeout/Isolation or epoch model. A stale wire response after legal Tag reuse cannot be distinguished by Tag alone; no such guarantee is claimed.",
+    "No complete byte-store/coherence semantics or asynchronous/duplicate memory service completion model.",
+    "Field decode does not prove full Control packing, TL credit sequencing, or independent interoperability. Open A05/A06/A09/A19/A21 remain open."
+  ]
+}

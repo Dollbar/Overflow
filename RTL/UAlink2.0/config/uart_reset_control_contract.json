@@ -1,0 +1,207 @@
+{
+  "name": "dl_uart_reset_control",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "Stream0 UART reset control with actual commit based40NoOp,derived10ms timer andbounded ordered response queue.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "Full local dual-IP implementation authorized. Native internal signal layout is an implementation choice under that scope."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "description": "所有控制和队列寄存器使用的共同上升沿时钟",
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "description": "同步低有效全局复位清除全部控制与故障",
+        "role": "reset"
+      },
+      {
+        "name": "i_local_request",
+        "direction": "input",
+        "width": 1,
+        "description": "固件请求在本地ready时被当前沿接受"
+      },
+      {
+        "name": "i_local_all",
+        "direction": "input",
+        "width": 1,
+        "description": "当前固件请求所选择的全部流范围"
+      },
+      {
+        "name": "i_rx_request",
+        "direction": "input",
+        "width": 1,
+        "description": "已完成framing和本流资格判断的远端请求事件"
+      },
+      {
+        "name": "i_rx_request_all",
+        "direction": "input",
+        "width": 1,
+        "description": "该远端请求的原始全部流范围"
+      },
+      {
+        "name": "i_rx_response",
+        "direction": "input",
+        "width": 1,
+        "description": "已确认适用于本流的边界复位响应事件"
+      },
+      {
+        "name": "i_rx_response_status",
+        "direction": "input",
+        "width": 3,
+        "description": "原样解码的状态字段只有零表示成功"
+      },
+      {
+        "name": "i_tx_take",
+        "direction": "input",
+        "width": 1,
+        "description": "当前维护字在真实发送边界被接受的唯一提交事件"
+      },
+      {
+        "name": "o_local_ready",
+        "direction": "output",
+        "width": 1,
+        "description": "本地请求为空闲且未被全局或故障复位时可接纳"
+      },
+      {
+        "name": "o_stream_reset",
+        "direction": "output",
+        "width": 1,
+        "description": "禁用并清空本流数据和信用但不得清除接收framing"
+      },
+      {
+        "name": "o_block_messages",
+        "direction": "output",
+        "width": 1,
+        "description": "阻止普通DL消息而保留本轮强制维护路径"
+      },
+      {
+        "name": "o_tx_pending",
+        "direction": "output",
+        "width": 1,
+        "description": "当前存在可真正提交的维护字"
+      },
+      {
+        "name": "o_tx_word",
+        "direction": "output",
+        "width": 32,
+        "description": "完整编码的当前维护字且保留位发零"
+      },
+      {
+        "name": "o_tx_kind",
+        "direction": "output",
+        "width": 2,
+        "description": "零无效一NoOp二Request三SUCCESS响应"
+      },
+      {
+        "name": "o_waiting",
+        "direction": "output",
+        "width": 1,
+        "description": "当前本地请求正在等待适用SUCCESS"
+      },
+      {
+        "name": "o_noops_left",
+        "direction": "output",
+        "width": 6,
+        "description": "本轮尚未实际发送的NoOp字数"
+      },
+      {
+        "name": "o_response_count",
+        "direction": "output",
+        "width": 5,
+        "description": "包含当前队首的待回复远端请求条数"
+      },
+      {
+        "name": "o_local_start",
+        "direction": "output",
+        "width": 1,
+        "description": "当前沿真正接纳固件本地请求"
+      },
+      {
+        "name": "o_local_done",
+        "direction": "output",
+        "width": 1,
+        "description": "当前沿适用SUCCESS完成本地等待"
+      },
+      {
+        "name": "o_retry",
+        "direction": "output",
+        "width": 1,
+        "description": "当前沿超时进入新的完整排空序列"
+      },
+      {
+        "name": "o_reply_done",
+        "direction": "output",
+        "width": 1,
+        "description": "当前沿真正提交一个远端请求的响应"
+      },
+      {
+        "name": "o_fault",
+        "direction": "output",
+        "width": 1,
+        "description": "仅由全局复位清除的已锁存故障"
+      },
+      {
+        "name": "o_error",
+        "direction": "output",
+        "width": 1,
+        "description": "本沿队列溢出或无pending却take的故障事件"
+      }
+    ]
+  },
+  "parameters": {
+    "C_CLOCK_PERIOD_PS": {
+      "default": 640,
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "C_RESPONSE_DEPTH": {
+      "default": 4,
+      "minimum": 1,
+      "maximum": 16
+    }
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "normative_sources": [
+    "DL/PL2.0 §2.4 reserved fields; §2.4.2.5 No-Op; §2.4.4.1.2 UART Stream Reset; Tables2-12/13 Request/Response"
+  ],
+  "behavior": [
+    "docs/uart_reset_rtl_plan.md"
+  ],
+  "limitations": [
+    "Finite queue overflow locks a local fault; upper-level port recovery integration remains required.",
+    "No complete UART/TX/RX/normal arbiter or Credit Update cadence integration claim."
+  ],
+  "constraints": [
+    "Native synchronous internal control interface; no AXI adaptation or new wire fields.",
+    "Every nonempty Verilog code line has a Chinese semantic comment.",
+    "One clock, synchronous low reset, one register peralways, no function/task orraw clock gating.",
+    "Frozen event/queue/timeout priorities in docs/uart_reset_rtl_plan.md."
+  ]
+}

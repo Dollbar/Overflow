@@ -1,0 +1,2080 @@
+{
+  "updated": "2026-09-11T04:51:41.869921+00:00",
+  "full_goal_complete": false,
+  "release_status": "research_not_signoff",
+  "historical_artifacts_retained": false,
+  "historical_results": {
+    "latest_tl_credit_port_rtl": {
+      "actual_rx_flit_tx_context_integration": true,
+      "normalized_inbound_events": false,
+      "actual_edges": 12988,
+      "width_auth_configs": 4,
+      "real_wiring_faults": 8,
+      "negative_runs": 32,
+      "lint": 2,
+      "synthesis": 2,
+      "state_bits": [
+        1059,
+        1379
+      ],
+      "observed_state_bits": [
+        1060,
+        1380
+      ],
+      "single_clock": true,
+      "latches": false,
+      "unrestricted_reset_hold_queries": 12,
+      "real_safety_faults": 4,
+      "actual_dual_rtl_bootstrap": true,
+      "bootstrap_sent_flits": 12,
+      "bootstrap_received_flits": 12,
+      "bootstrap_link_model": "one-cycle digital register",
+      "complete_reference_induction": false,
+      "full_rx_flit_connection": true,
+      "full_tx_content_validation": true,
+      "tx_packing_budget": true,
+      "credit_free_bootstrap": true,
+      "mapped_equivalence_complete": false,
+      "process_sta": false,
+      "product_adopted": false,
+      "full_goal_complete": false,
+      "candidate": "build/tl_credit_port_rtl_5dilntbk/candidate",
+      "review": "docs/tl_credit_port_rtl_review.md",
+      "evidence": "reports/tl_credit_port_rtl_20260910/evidence.json",
+      "manifest": "reports/tl_credit_port_rtl_20260910/manifest.json",
+      "frozen_files": 231
+    },
+    "latest_tl_credit_peer_payload": {
+      "complete": true,
+      "configs": 16,
+      "actual_cycles": 3088,
+      "actual_frames": 3456,
+      "actual_tokens": 3456,
+      "actual_return_flits": 768,
+      "real_fault_types": 2,
+      "negative_runs": 32,
+      "trace_damages": [
+        {
+          "field": "avail0",
+          "reason": "pre-edge credit state"
+        },
+        {
+          "field": "demands0",
+          "reason": "actual field/data credit ownership"
+        },
+        {
+          "field": "taken0",
+          "reason": "old-credit transmit admission"
+        },
+        {
+          "field": "send0",
+          "reason": "actual send gate/stall"
+        },
+        {
+          "field": "rx0",
+          "reason": "link word/message order"
+        },
+        {
+          "field": "rm0",
+          "reason": "link word/message order"
+        },
+        {
+          "field": "classes0",
+          "reason": "actual receive classes"
+        },
+        {
+          "field": "rxidx0",
+          "reason": "actual source/consumer counters"
+        },
+        {
+          "field": "deleted_cycle",
+          "reason": "trace cycle continuity"
+        }
+      ],
+      "independent_cycle_credit_audit": true,
+      "consumer": "testbench release model",
+      "link": "1/3-cycle digital register pipeline",
+      "actual_receive_buffer_rtl": false,
+      "complete_reference_induction": false,
+      "process_sta": false,
+      "mapped_equivalence_complete": false,
+      "product_adopted": false,
+      "full_goal_complete": false,
+      "evidence": "reports/tl_credit_peer_payload_20260910/evidence.json",
+      "manifest": "reports/tl_credit_peer_payload_20260910/manifest.json",
+      "review": "docs/tl_credit_peer_payload_review.md",
+      "frozen_files": 625
+    },
+    "latest_tl_receive_storage": {
+      "functional_stage_complete": true,
+      "actual_sram_integration": true,
+      "stored_word_bits": 600,
+      "release_policy": "Data second-half and CMD final Data/BE retirement; header-only CMD at header retirement",
+      "configs": 6,
+      "actual_edges": 6750,
+      "actual_stored_words": 2163,
+      "actual_retired_words": 2121,
+      "full_reset_discarded_words": 42,
+      "real_fault_types": 5,
+      "negative_runs": 30,
+      "invalid_parameters": 5,
+      "strict_lint": 2,
+      "synthesis": [
+        {
+          "depth": 1,
+          "cells": 41834,
+          "ff": 1959,
+          "macros": 19,
+          "observed_sram_bits": 600
+        },
+        {
+          "depth": 17,
+          "cells": 41949,
+          "ff": 1977,
+          "macros": 19,
+          "observed_sram_bits": 600
+        }
+      ],
+      "graph_damages": [
+        {
+          "kind": "ff_clock",
+          "reason": "latch or derived clock"
+        },
+        {
+          "kind": "macro_read_clock",
+          "reason": "macro clock or width"
+        },
+        {
+          "kind": "macro_write_clock",
+          "reason": "macro clock or width"
+        },
+        {
+          "kind": "missing_macro",
+          "reason": "19 actual fixed SDP cells"
+        },
+        {
+          "kind": "aliased_q",
+          "reason": "independent macro Q lanes"
+        },
+        {
+          "kind": "lost_release_output",
+          "reason": "all 600 real SRAM Q bits reach saved output cones"
+        }
+      ],
+      "skill_artifact_errors": 0,
+      "skill_artifact_advisory_warnings": 1,
+      "skill_package_selftest_complete": false,
+      "full_receive_credit_capacity_proof": false,
+      "credit_fc_publisher": false,
+      "complete_reference_induction": false,
+      "mapped_equivalence_complete": false,
+      "process_sta": false,
+      "product_adopted": false,
+      "full_goal_complete": false,
+      "candidate": "build/tl_receive_storage_sz5bjg_l/candidate/rtl_normalized",
+      "evidence": "reports/tl_receive_storage_20260910/evidence.json",
+      "review": "docs/tl_receive_storage_review.md",
+      "manifest": "reports/tl_receive_storage_20260910/manifest.json",
+      "frozen_files": 624
+    },
+    "latest_tl_credit_publish": {
+      "functional_stage_complete": true,
+      "width_shared_configs": 8,
+      "actual_edges": 147457,
+      "actual_fc_transfers": 60564,
+      "results": [
+        {
+          "width": 1,
+          "shared": 0,
+          "edges": 866,
+          "fc": 31,
+          "complete": 2,
+          "releases": 30,
+          "stalls": 34
+        },
+        {
+          "width": 1,
+          "shared": 1,
+          "edges": 866,
+          "fc": 26,
+          "complete": 2,
+          "releases": 19,
+          "stalls": 33
+        },
+        {
+          "width": 3,
+          "shared": 0,
+          "edges": 875,
+          "fc": 365,
+          "complete": 2,
+          "releases": 332,
+          "stalls": 130
+        },
+        {
+          "width": 3,
+          "shared": 1,
+          "edges": 884,
+          "fc": 366,
+          "complete": 2,
+          "releases": 337,
+          "stalls": 137
+        },
+        {
+          "width": 8,
+          "shared": 0,
+          "edges": 1807,
+          "fc": 815,
+          "complete": 2,
+          "releases": 688,
+          "stalls": 162
+        },
+        {
+          "width": 8,
+          "shared": 1,
+          "edges": 1818,
+          "fc": 807,
+          "complete": 2,
+          "releases": 708,
+          "stalls": 189
+        },
+        {
+          "width": 16,
+          "shared": 0,
+          "edges": 70190,
+          "fc": 29087,
+          "complete": 2,
+          "releases": 9542,
+          "stalls": 12001
+        },
+        {
+          "width": 16,
+          "shared": 1,
+          "edges": 70151,
+          "fc": 29067,
+          "complete": 2,
+          "releases": 9542,
+          "stalls": 12002
+        }
+      ],
+      "real_fault_types": 7,
+      "negative_runs": 56,
+      "strict_lint": 4,
+      "synthesis": [
+        {
+          "width": 1,
+          "cells": 3454,
+          "ff": 77,
+          "observed_bits": 89
+        },
+        {
+          "width": 16,
+          "cells": 52680,
+          "ff": 385,
+          "observed_bits": 389
+        }
+      ],
+      "proved_safety_and_invariant_queries": 12,
+      "real_formal_negatives": 2,
+      "initial_unrestricted_hold_failures": 2,
+      "hold_proof_requires_certified_valid_active_invariant": true,
+      "actual_receiver_configs": 8,
+      "actual_receiver_cycles": 520,
+      "actual_paid_cmds": 192,
+      "actual_returned_cmds": 192,
+      "receiver_retirement_source": "test model driven by actual Tx CMD taken",
+      "actual_receive_fifo_connection": false,
+      "full_receive_capacity_proof": false,
+      "full_duplex_small_credit_liveness": false,
+      "complete_reference_induction": false,
+      "mapped_equivalence_complete": false,
+      "process_sta": false,
+      "skill_artifact_errors": 0,
+      "skill_artifact_advisory_warnings": 3,
+      "skill_package_selftest_complete": false,
+      "graph_damages": [
+        {
+          "width": 1,
+          "kind": "clock",
+          "reason": "single actual input clock and no latches"
+        },
+        {
+          "width": 1,
+          "kind": "missing_ff",
+          "reason": "complete state count"
+        },
+        {
+          "width": 1,
+          "kind": "missing_observation",
+          "reason": "every actual FF visible in full state bus"
+        },
+        {
+          "width": 16,
+          "kind": "clock",
+          "reason": "single actual input clock and no latches"
+        },
+        {
+          "width": 16,
+          "kind": "missing_ff",
+          "reason": "complete state count"
+        },
+        {
+          "width": 16,
+          "kind": "missing_observation",
+          "reason": "every actual FF visible in full state bus"
+        }
+      ],
+      "product_adopted": false,
+      "full_goal_complete": false,
+      "candidate": "build/tl_credit_publish_ajt7euj_/candidate"
+    },
+    "latest_rs_calendar_reserve_reuse": {
+      "timestamp_utc": "2026-09-10T06:37:20.922412+00:00",
+      "evidence": "reports/rs_calendar_reserve_reuse_20260910/evidence.json",
+      "evidence_sha256": "343afac924ce03c2c654167ea2791fcc5374cc2025752b8ed57f3ca376bd36d6",
+      "frozen_files": 514,
+      "review": "docs/rs_calendar_reserve_reuse_review.md",
+      "selected_implementations": "reports/rs_calendar_reserve_reuse_20260910/selected_updated.json",
+      "next_plan": "docs/rs_calendar_fourteen_plan.md",
+      "next_task": "Continue fourteen unresolved parameter implementations; preserve ten actually closed implementations",
+      "evidence_audit_passed": true,
+      "completed_trials": 4,
+      "healthy_mapping_queries": 12,
+      "actual_sta_reports": 40,
+      "actual_sta_passed": 36,
+      "hold_passed": 40,
+      "electrical_passed": 40,
+      "new_selected_profiles": 1,
+      "newly_closed_profiles": 0,
+      "total_closed_profiles": 10,
+      "remaining_profiles": 14,
+      "combined_selected_sta_passed": 222,
+      "combined_selected_sta_reports": 240,
+      "new_selected_sta_reports": 10,
+      "new_selected_sta_passed": 9,
+      "state_clock_damages": 32,
+      "actual_physical_data_faults": 1,
+      "actual_physical_clock_faults": 1,
+      "new_rtl_simulation_edges": 0,
+      "full_matrix_new_execution": false,
+      "physical_passed": false,
+      "product_adopted": false,
+      "full_goal_complete": false
+    }
+  },
+  "dl_replay": {
+    "new_128x32_joint_conclusions": "468/468",
+    "old_255x64_core_conclusions": "616/616",
+    "actual_dual_peer_cases": 20,
+    "actual_edges": 154882,
+    "payloads": 71600,
+    "best_setup_640ps_ns": -0.641033828,
+    "timing_closed": false
+  },
+  "current_receive_credit": {
+    "functional_matrix_passed": true,
+    "actual_receive_fifo_to_fc": true,
+    "configs": 16,
+    "cycles": 5412,
+    "stored_words": 3072,
+    "fc_transfers": 1712,
+    "completed_initializations": 32,
+    "retired_cmd": 960,
+    "retired_data": 2016,
+    "rtl_fault_types": 7,
+    "negative_runs": 112,
+    "handoff_healthy": 2,
+    "handoff_fault_types": 2,
+    "handoff_negative_runs": 4,
+    "strict_lint": 2,
+    "synthesis": [
+      {
+        "width": 8,
+        "cells": 68063,
+        "ff": 2210,
+        "sram": 19
+      },
+      {
+        "width": 16,
+        "cells": 96345,
+        "ff": 2370,
+        "sram": 19
+      }
+    ],
+    "graph_damages": 8,
+    "parameter_checks": 9,
+    "invalid_parameters": 6,
+    "skill_errors": 0,
+    "skill_advisories": 14,
+    "small_credit_liveness": false,
+    "small_credit_counterexample": {
+      "data_credits_per_slot": 1,
+      "tx_indices": [
+        3,
+        3
+      ],
+      "pending_halves": [
+        3,
+        4
+      ],
+      "fifo_counts": [
+        0,
+        0
+      ],
+      "observation_limit_cycles": 6000
+    },
+    "online_capacity_induction": false,
+    "complete_reference_induction": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "current_evidence": "build/verification/tl_receive_credit/evidence.json",
+  "current_credit_admission": {
+    "evidence": "build/verification/tl_credit_admission/evidence.json",
+    "review": "docs/tl_credit_admission_review.md",
+    "dual_configs": 32,
+    "guard_vectors": 16742,
+    "negative_runs": 28,
+    "oversized_transaction_liveness": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "current_tx_packer": {
+    "review": "docs/tl_tx_packer_review.md",
+    "evidence": "build/verification/tl_tx_packer/evidence.json",
+    "dual_configs": 16,
+    "unit_vectors": 3170,
+    "negative_runs": 48,
+    "oversized_transactions": false,
+    "request_response_arbitration": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "current_tx_channels": {
+    "review": "docs/tl_tx_channels_review.md",
+    "evidence": "build/verification/tl_tx_channels/evidence.json",
+    "actual_configs": 48,
+    "unit_vectors": 1258,
+    "negative_runs": 80,
+    "prepared_class_independence": true,
+    "actual_tx_fifo_queues": false,
+    "oversized_transactions_completed": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "current_tx_buffered": {
+    "review": "docs/tl_tx_buffered_review.md",
+    "evidence": "build/verification/tl_tx_buffered/evidence.json",
+    "actual_configs": 80,
+    "fifo_depth_configs": 6,
+    "negative_runs": 76,
+    "actual_tx_fifo_queues": true,
+    "minimum_capacity_partial_admission": true,
+    "oversized_transactions_completed": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "current_control_partition": {
+    "review": "docs/tl_control_partition_review.md",
+    "evidence": "build/verification/tl_control_partition/evidence.json",
+    "actual_configs": 32,
+    "unit_vectors": 4856,
+    "negative_runs": 72,
+    "source_groups": 1536,
+    "unchanged_fields": 6912,
+    "complete_read_replies": 2304,
+    "individual_oversized_transactions_completed": false,
+    "full_upli_formatter": false,
+    "process_sta": false,
+    "full_goal_complete": false
+  },
+  "control_partition_process_timing": {
+    "review": "docs/tl_control_partition_timing_review.md",
+    "actual_sta_runs": 20,
+    "passed_sta_runs": 6,
+    "widths": [
+      8,
+      16
+    ],
+    "process_corners": 5,
+    "periods_ns": [
+      0.64,
+      6.4
+    ],
+    "worst_setup_slack_ns": -8.615259,
+    "worst_reference_setup_slack_ns": -2.855259,
+    "minimum_hold_slack_ns": 0.011613,
+    "all_timing_closed": false,
+    "mapping_equivalence_closed": false,
+    "mapping_equivalence_note": "Both reset-convergence SAT queries timed out; subsequent induction was not reached",
+    "full_top_sta": false,
+    "physical_signoff": false,
+    "full_goal_complete": false,
+    "superseded_by": "static_credit_reduction"
+  },
+  "static_credit_reduction": {
+    "complete": true,
+    "rtl_equivalence_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "proved_sat_queries": 207,
+    "proof_scope": "binary combinational; 20 unconditional slot lemmas then 3 flags per width",
+    "protocol_assumptions": [],
+    "unit_vectors": {
+      "tl_credit_admission": 16742,
+      "tl_control_partition": 4856
+    },
+    "actual_peer_configs": 32,
+    "identical_cycle_trace_files": 96,
+    "unit_faults": 12,
+    "actual_wrapper_faults": 16,
+    "formal_faults_replayed": 3,
+    "timing_changes": [
+      {
+        "width": 8,
+        "old_cells": 103634,
+        "new_cells": 18743,
+        "old_area_um2": 56881.692,
+        "new_area_um2": 11121.768,
+        "worst_setup_ns": -1.226602,
+        "worst_reference_setup_ns": 4.533397
+      },
+      {
+        "width": 16,
+        "old_cells": 103601,
+        "new_cells": 18893,
+        "old_area_um2": 57934.422,
+        "new_area_um2": 10519.866,
+        "worst_setup_ns": -1.250022,
+        "worst_reference_setup_ns": 4.509978
+      }
+    ],
+    "passed_sta_runs": 10,
+    "artifact_errors": 0,
+    "artifact_advisories": 13,
+    "compatibility_exit": 0,
+    "main_frequency_closed": false,
+    "mapped_equivalence_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_credit_reduction_review.md"
+  },
+  "tl_partition_mapping_reset": {
+    "audit_passed": true,
+    "scope": "actual mapped reset and clock prerequisite only",
+    "reset_proved_widths": [
+      8,
+      16
+    ],
+    "actual_reset_faults_detected": 2,
+    "actual_clock_faults_rejected": 2,
+    "state_bits_per_design": 4,
+    "original_output_ports_observed": 10,
+    "original_output_bits_observed": 529,
+    "post_reset_induction_proved": false,
+    "all_original_outputs_proved": false,
+    "mapped_equivalence_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_partition_mapping_review.md"
+  },
+  "tl_partition_mapping": {
+    "audit_passed": true,
+    "mapped_equivalence_closed": true,
+    "widths": [
+      8,
+      16
+    ],
+    "scope": "tl_control_partition and its three dependencies; binary behavior after one reset edge",
+    "original_output_ports": 10,
+    "original_output_bits": 529,
+    "next_state_bits": 4,
+    "reset_base_proved": true,
+    "all_state_and_clock_correspondence_checked": true,
+    "protocol_input_assumptions": [],
+    "retiming_or_state_encoding_assumptions": [],
+    "cec_timings": [
+      {
+        "width": 8,
+        "seconds": 26.768650523968972
+      },
+      {
+        "width": 16,
+        "seconds": 26.51805497892201
+      }
+    ],
+    "actual_transition_faults": 2,
+    "actual_tag_faults": 2,
+    "actual_reset_faults": 2,
+    "actual_clock_faults": 2,
+    "x_propagation_proof": false,
+    "main_clock_timing_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_partition_mapping_review.md"
+  },
+  "tl_prefix_cost": {
+    "complete": true,
+    "rtl_equivalence_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "mapped_equivalence_widths": [
+      8,
+      16
+    ],
+    "original_output_bits": 529,
+    "next_state_bits": 4,
+    "unit_vectors": 4856,
+    "actual_peer_configs": 32,
+    "identical_trace_files": 96,
+    "unit_faults": 16,
+    "peer_faults": 56,
+    "equivalent_guard_removal_widths": [
+      8,
+      16
+    ],
+    "mapped_mutant_netlists": 6,
+    "mapped_sat_counterexamples": 6,
+    "mapped_clock_rejections": 2,
+    "actual_reset_proofs": 2,
+    "physical": [
+      {
+        "width": 8,
+        "cells": 14830,
+        "area_um2": 8615.502,
+        "worst_setup_ns": -1.159129,
+        "worst_reference_setup_ns": 4.600871
+      },
+      {
+        "width": 16,
+        "cells": 14933,
+        "area_um2": 9021.726,
+        "worst_setup_ns": -1.116678,
+        "worst_reference_setup_ns": 4.643322
+      }
+    ],
+    "reference_sta_passed": 10,
+    "main_sta_passed": 0,
+    "reproduced_identical_netlists": 2,
+    "reproduced_sta_runs": 20,
+    "artifact_errors": 0,
+    "artifact_advisories": 17,
+    "compatibility_exit": 0,
+    "full_top_sta": false,
+    "main_frequency_closed": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_prefix_cost_review.md",
+    "rtl_sha256": "800f8d7ad56612951534150a649103ae2a3fed76a36f139079257fcfe44076b0"
+  },
+  "tl_partition_select": {
+    "complete": true,
+    "rtl_equivalence_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "mapped_equivalence_widths": [
+      8,
+      16
+    ],
+    "unit_vectors": 4856,
+    "actual_peer_configs": 32,
+    "identical_trace_files": 96,
+    "unit_faults": 16,
+    "peer_faults": 56,
+    "tenure_contract_proofs": 2,
+    "tenure_fault_counterexamples": 2,
+    "mapped_reset_proofs": 2,
+    "mapped_fault_counterexamples": 6,
+    "mapped_clock_rejections": 2,
+    "physical": [
+      {
+        "experiment": "select_parallel_timing",
+        "width": 8,
+        "cells": 13161,
+        "area_um2": 7263.396,
+        "worst_setup_ns": -1.247491,
+        "worst_reference_setup_ns": 4.512509
+      },
+      {
+        "experiment": "select_parallel_timing",
+        "width": 16,
+        "cells": 13426,
+        "area_um2": 7276.248,
+        "worst_setup_ns": -1.294584,
+        "worst_reference_setup_ns": 4.465416
+      },
+      {
+        "experiment": "select_sector_only_timing",
+        "width": 8,
+        "cells": 13542,
+        "area_um2": 7669.62,
+        "worst_setup_ns": -1.177818,
+        "worst_reference_setup_ns": 4.582181
+      },
+      {
+        "experiment": "select_sector_only_timing",
+        "width": 16,
+        "cells": 13583,
+        "area_um2": 8058.456,
+        "worst_setup_ns": -1.127425,
+        "worst_reference_setup_ns": 4.632576
+      },
+      {
+        "experiment": "select_tenure_clean_timing",
+        "width": 8,
+        "cells": 15416,
+        "area_um2": 9224.208,
+        "worst_setup_ns": -1.057862,
+        "worst_reference_setup_ns": 4.702137
+      },
+      {
+        "experiment": "select_tenure_clean_timing",
+        "width": 16,
+        "cells": 15236,
+        "area_um2": 8906.31,
+        "worst_setup_ns": -1.054325,
+        "worst_reference_setup_ns": 4.705675
+      }
+    ],
+    "artifact_errors": 0,
+    "artifact_advisories": 28,
+    "compatibility_exit": 0,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_partition_select_review.md"
+  },
+  "tl_auth_selection": {
+    "complete": true,
+    "rtl_equivalence_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "mapped_equivalence_widths": [
+      8,
+      16
+    ],
+    "unit_vectors": 4856,
+    "actual_peer_configs": 32,
+    "identical_trace_files": 96,
+    "unit_faults": 16,
+    "peer_faults": 56,
+    "mapped_reset_proofs": 2,
+    "mapped_sat_counterexamples": 6,
+    "mapped_clock_rejections": 2,
+    "physical": [
+      {
+        "width": 8,
+        "cells": 15125,
+        "area_um2": 8864.604,
+        "worst_setup_ns": -1.044205,
+        "worst_reference_setup_ns": 4.715795
+      },
+      {
+        "width": 16,
+        "cells": 14957,
+        "area_um2": 8989.848,
+        "worst_setup_ns": -1.044889,
+        "worst_reference_setup_ns": 4.715111
+      }
+    ],
+    "reference_sta_passed": 10,
+    "main_sta_passed": 0,
+    "artifact_errors": 0,
+    "artifact_advisories": 17,
+    "compatibility_exit": 0,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_auth_selection_review.md"
+  },
+  "latest_tl_prepared_partition": {
+    "review": "docs/tl_prepared_partition_review.md",
+    "evidence": "build/verification/tl_prepared_partition/evidence.json",
+    "functional_stage_complete": true,
+    "unit_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "unit_vectors": 69462,
+    "actual_peer_configs": 32,
+    "actual_unit_faults": 28,
+    "ownership_induction_widths": [
+      8,
+      16
+    ],
+    "compositional_output_holding": [
+      {
+        "width": 8,
+        "state_bits": 1043,
+        "held_output_input_roots": {
+          "o_valid": [
+            "i_rstn"
+          ],
+          "o_error": [
+            "i_rstn"
+          ],
+          "o_shortfall": [
+            "i_rstn"
+          ],
+          "o_control": [
+            "i_rstn"
+          ],
+          "o_tags": [
+            "i_rstn"
+          ],
+          "o_fields": [
+            "i_rstn"
+          ],
+          "o_end": [
+            "i_rstn"
+          ],
+          "o_cursor": [
+            "i_rstn"
+          ]
+        }
+      },
+      {
+        "width": 16,
+        "state_bits": 1203,
+        "held_output_input_roots": {
+          "o_valid": [
+            "i_rstn"
+          ],
+          "o_error": [
+            "i_rstn"
+          ],
+          "o_shortfall": [
+            "i_rstn"
+          ],
+          "o_control": [
+            "i_rstn"
+          ],
+          "o_tags": [
+            "i_rstn"
+          ],
+          "o_fields": [
+            "i_rstn"
+          ],
+          "o_end": [
+            "i_rstn"
+          ],
+          "o_cursor": [
+            "i_rstn"
+          ]
+        }
+      }
+    ],
+    "formal_fault_witnesses": 4,
+    "physical": [
+      {
+        "width": 8,
+        "cells": 18797,
+        "area_um2": 12195.288,
+        "worst_main_setup_ns": -0.819915,
+        "worst_reference_setup_ns": 4.940085
+      },
+      {
+        "width": 16,
+        "cells": 19510,
+        "area_um2": 13660.416,
+        "worst_main_setup_ns": -0.808205,
+        "worst_reference_setup_ns": 4.951795
+      }
+    ],
+    "reference_sta_passed": 10,
+    "main_sta_passed": 0,
+    "artifact_errors": 0,
+    "artifact_advisories": 17,
+    "compatibility_exit": 0,
+    "full_functional_formal": false,
+    "mapped_equivalence": false,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false
+  },
+  "registered_control_rtl_reference_equivalence": {
+    "dump_scope": "current composed binary RTL theorem",
+    "review": "docs/tl_prepared_equivalence_review.md",
+    "evidence": "build/verification/tl_prepared_equivalence/evidence.json",
+    "complete": true,
+    "scope": "composed binary post-reset RTL equivalence against immutable raw-field baseline; not independent protocol certification",
+    "reference": "1e26fbd486ca4ee96de4635fd9a2442801bfc89d",
+    "rtl_sha256": "def8d202e6394d755485a191fb7f42ba93ec8ef3af28ca061f3f37e4bace7f78",
+    "equivalence_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "public_output_bits": 531,
+    "metadata_inductions": 9,
+    "boundary_inductions": 9,
+    "exhaustive_step_queries": 90,
+    "state_inventory": [
+      {
+        "width": 8,
+        "side": "gold",
+        "state_bits": 956
+      },
+      {
+        "width": 8,
+        "side": "gate",
+        "state_bits": 1044
+      },
+      {
+        "width": 16,
+        "side": "gold",
+        "state_bits": 1116
+      },
+      {
+        "width": 16,
+        "side": "gate",
+        "state_bits": 1204
+      },
+      {
+        "width": 9,
+        "side": "gold",
+        "state_bits": 976
+      },
+      {
+        "width": 9,
+        "side": "gate",
+        "state_bits": 1064
+      },
+      {
+        "width": 10,
+        "side": "gold",
+        "state_bits": 996
+      },
+      {
+        "width": 10,
+        "side": "gate",
+        "state_bits": 1084
+      },
+      {
+        "width": 11,
+        "side": "gold",
+        "state_bits": 1016
+      },
+      {
+        "width": 11,
+        "side": "gate",
+        "state_bits": 1104
+      },
+      {
+        "width": 12,
+        "side": "gold",
+        "state_bits": 1036
+      },
+      {
+        "width": 12,
+        "side": "gate",
+        "state_bits": 1124
+      },
+      {
+        "width": 13,
+        "side": "gold",
+        "state_bits": 1056
+      },
+      {
+        "width": 13,
+        "side": "gate",
+        "state_bits": 1144
+      },
+      {
+        "width": 14,
+        "side": "gold",
+        "state_bits": 1076
+      },
+      {
+        "width": 14,
+        "side": "gate",
+        "state_bits": 1164
+      },
+      {
+        "width": 15,
+        "side": "gold",
+        "state_bits": 1096
+      },
+      {
+        "width": 15,
+        "side": "gate",
+        "state_bits": 1184
+      }
+    ],
+    "formal_fault_witnesses": 8,
+    "reference_vectors": 15436,
+    "actual_full_miter": [
+      {
+        "label": "miter_vectors",
+        "width": 8,
+        "edges": 7718,
+        "negative": false
+      },
+      {
+        "label": "miter_fault_vectors",
+        "width": 8,
+        "edges": 8,
+        "negative": true
+      }
+    ],
+    "mapped_equivalence": false,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "reference_comment_update": {
+      "proved_sha256": "c13af040e824e92bb1a551ae027a36211f087e5a4e32c90264adde3c48cfe2b1",
+      "current_sha256": "041b13b96d2cc9c44c0843c8a903bda1f80d0ad382b56b061e74eab192512294",
+      "change": "exact declaration comment insertion only; all RTL bytes unchanged"
+    },
+    "audit_tests": 8,
+    "artifact_errors": 0,
+    "artifact_advisories": 9
+  },
+  "last_verified_remote_main": "c34f40f2dc00c2e12283897ea0f3de085abfbc7f",
+  "registered_control_mapped_equivalence": {
+    "complete": true,
+    "scope": "binary post-reset sequential RTL versus actual TSMC28 mapped module equivalence; independent payload initial states handled by reset/empty relation",
+    "rtl_sha256": "def8d202e6394d755485a191fb7f42ba93ec8ef3af28ca061f3f37e4bace7f78",
+    "library_sha256": "3be5ac20980ae4c7119d8c794a93288346cf88ea272c74072df9d45d8616713a",
+    "inventory": [
+      {
+        "width": 8,
+        "actual_state_bits": 1035,
+        "public_output_bits": 531,
+        "next_state_bits": 1035,
+        "extra_semantic_observation_bits": 1043
+      },
+      {
+        "width": 16,
+        "actual_state_bits": 1195,
+        "public_output_bits": 531,
+        "next_state_bits": 1195,
+        "extra_semantic_observation_bits": 1203
+      }
+    ],
+    "full_state_cec": 2,
+    "reset_queries": 2,
+    "empty_queries": 2,
+    "constant_inductions": 2,
+    "actual_mapped_fault_checks": 8,
+    "actual_cec_fault_detections": 6,
+    "faults": [
+      {
+        "fault": "clock",
+        "width": 8,
+        "check": "actual_clock"
+      },
+      {
+        "fault": "clock",
+        "width": 16,
+        "check": "actual_clock"
+      },
+      {
+        "fault": "capture",
+        "width": 8,
+        "check": "empty"
+      },
+      {
+        "fault": "capture",
+        "width": 16,
+        "check": "empty"
+      },
+      {
+        "fault": "reset",
+        "width": 8,
+        "check": "reset"
+      },
+      {
+        "fault": "reset",
+        "width": 16,
+        "check": "reset"
+      },
+      {
+        "fault": "output",
+        "width": 8,
+        "check": "owned"
+      },
+      {
+        "fault": "output",
+        "width": 16,
+        "check": "owned"
+      }
+    ],
+    "mapped_oracle_replay": [
+      {
+        "label": "mapped_vectors_w8",
+        "width": 8,
+        "vectors": 7718,
+        "negative": false
+      },
+      {
+        "label": "mapped_vectors_w16",
+        "width": 16,
+        "vectors": 7718,
+        "negative": false
+      },
+      {
+        "label": "mapped_fault_vectors",
+        "width": 8,
+        "vectors": 8,
+        "negative": true
+      }
+    ],
+    "mapped_equivalence": true,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "review": "docs/tl_prepared_mapping_review.md",
+    "evidence": "build/verification/tl_prepared_mapping/evidence.json",
+    "checker_tests": 20,
+    "compatibility_exit": 0,
+    "normal_and_optimized_audits": true
+  },
+  "registered_control_selection_reduction": {
+    "review": "docs/tl_selection_reduction_review.md",
+    "evidence": "build/verification/tl_selection_reduction/evidence.json",
+    "complete": true,
+    "adopted": true,
+    "rtl_sha256": "0e58dd764016974129329bd1c9c6cc7d854c19ff8cb4bb1e7529b52ef1190dc0",
+    "reference": "8bf4afcd54eaec3bc4ac35811fd6266b4ba86e61",
+    "scope": "binary post-reset module equivalence; complete outputs and actual next-state; unchanged capture latency and ownership",
+    "rtl_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "rtl_full_state_cec": 9,
+    "rtl_reset_capture_queries": 18,
+    "selection_combinations": 1048576,
+    "unit_vectors": 69462,
+    "actual_rtl_fault_detections": 28,
+    "actual_peer_configs": 32,
+    "peer_partitioning": {
+      "selection_direct_peers": {
+        "source_groups": 768,
+        "partitions": 2624,
+        "fields": 3456,
+        "split_groups": 576,
+        "stalled_edges": 31176,
+        "completed_single_beat_read_replies": 1152
+      },
+      "selection_direct_minimum": {
+        "source_groups": 768,
+        "partitions": 2624,
+        "fields": 3456,
+        "split_groups": 576,
+        "stalled_edges": 41196,
+        "completed_single_beat_read_replies": 1152
+      }
+    },
+    "mapped_full_state_cec": 2,
+    "mapped_reset_capture_queries": 4,
+    "mapped_equivalence": true,
+    "current_candidate_gate_simulation_rerun": false,
+    "physical": [
+      {
+        "width": 8,
+        "cells": 16542,
+        "area_um2": 10614.744,
+        "worst_main_setup_ns": -0.735223,
+        "worst_reference_setup_ns": 5.024776
+      },
+      {
+        "width": 16,
+        "cells": 17564,
+        "area_um2": 11748.618,
+        "worst_main_setup_ns": -0.723638,
+        "worst_reference_setup_ns": 5.036361
+      }
+    ],
+    "main_sta_passed": 0,
+    "reference_sta_passed": 10,
+    "artifact_errors": 0,
+    "artifact_advisories": 19,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "compatibility_exit": 0,
+    "normal_and_optimized_audits": true,
+    "checker_tests": 20
+  },
+  "registered_control_cost_compression": {
+    "review": "docs/tl_cost_compression_review.md",
+    "evidence": "build/verification/tl_cost_compression/evidence.json",
+    "complete": true,
+    "adopted": true,
+    "rtl_sha256": "d8df94f8b36b7d037366dca0a60c0f389fbf4965e725ec3073f5becdcfeb571a",
+    "scope": "binary post-reset module equivalence and actual mapped equivalence; no protocol/ownership/latency change",
+    "rtl_widths": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "rtl_full_state_cec": 9,
+    "rtl_reset_capture_queries": 18,
+    "independent_arithmetic_theorems": 2,
+    "arithmetic_input_bits": 48,
+    "arithmetic_output_bits": 48,
+    "arithmetic_assumptions": [],
+    "actual_arithmetic_faults": 1,
+    "unit_vectors": 69462,
+    "actual_rtl_fault_detections": 30,
+    "actual_peer_configs": 32,
+    "peer_partitioning": {
+      "cost_compression_peers": {
+        "source_groups": 768,
+        "partitions": 2624,
+        "fields": 3456,
+        "split_groups": 576,
+        "stalled_edges": 31176,
+        "completed_single_beat_read_replies": 1152
+      },
+      "cost_compression_minimum": {
+        "source_groups": 768,
+        "partitions": 2624,
+        "fields": 3456,
+        "split_groups": 576,
+        "stalled_edges": 41196,
+        "completed_single_beat_read_replies": 1152
+      }
+    },
+    "mapped_full_state_cec": 2,
+    "mapped_reset_capture_queries": 4,
+    "mapped_equivalence": true,
+    "current_candidate_gate_simulation_rerun": false,
+    "physical": [
+      {
+        "width": 8,
+        "cells": 17358,
+        "area_um2": 11272.59,
+        "worst_main_setup_ns": -0.70776,
+        "worst_reference_setup_ns": 5.05224
+      },
+      {
+        "width": 16,
+        "cells": 18335,
+        "area_um2": 11753.28,
+        "worst_main_setup_ns": -0.712052,
+        "worst_reference_setup_ns": 5.047947
+      }
+    ],
+    "main_sta_passed": 0,
+    "reference_sta_passed": 10,
+    "artifact_errors": 0,
+    "artifact_advisories": 19,
+    "main_frequency_closed": false,
+    "full_top_sta": false,
+    "full_goal_complete": false,
+    "compatibility_exit": 0,
+    "normal_and_optimized_audits": true,
+    "checker_tests": 26
+  },
+  "production_prepared_transmit_integration": {
+    "review": "docs/tl_tx_prepared_review.md",
+    "evidence": "build/verification/tl_tx_prepared/evidence.json",
+    "complete": true,
+    "rtl": "rtl/tl/tl_tx_prepared.v",
+    "rtl_sha256": "1a602c82a8da561fbbc8d290ee13204eba70b8d02a7dbaf15c96a03550510880",
+    "decoder_sha256": "fcefa9b8f7c2786e3c0a291e881974299ab6f8b33da7ae154350eaee482046ae",
+    "actual_peer_configs": 32,
+    "capture_reports": {
+      "prepared_top_final_peers": {
+        "configs": 16,
+        "edges": 51040,
+        "captures": 768,
+        "tag_captures": 384,
+        "groups_queued": 768,
+        "partitions": 2624,
+        "replacements": 660,
+        "missing_tag_waits": 3172,
+        "held_with_changed_source": 34860,
+        "complete": true,
+        "source_report_sha256": "a354ec6953afcf488592b60edb7873a35bd80f2313199a39b1f15dca5c4dcf99",
+        "scope": "actual source ownership and prepared outputs; full wire audit separate",
+        "full_goal_complete": false
+      },
+      "prepared_top_final_minimum": {
+        "configs": 16,
+        "edges": 64560,
+        "captures": 768,
+        "tag_captures": 384,
+        "groups_queued": 768,
+        "partitions": 2624,
+        "replacements": 648,
+        "missing_tag_waits": 3924,
+        "held_with_changed_source": 44864,
+        "complete": true,
+        "source_report_sha256": "e795364d2151f2cc7253df71e02147148f3b863425d3938a2aad5d3c810b13cc",
+        "scope": "actual source ownership and prepared outputs; full wire audit separate",
+        "full_goal_complete": false
+      }
+    },
+    "unit_configs": 36,
+    "unit_vectors": 5760,
+    "unit_observed_bits": 1064,
+    "unit_coverage": {
+      "captured": 288,
+      "missing_tags": 1548,
+      "error": 2556,
+      "shortfall": 2592,
+      "reset_owned": 216,
+      "reset_queued": 72,
+      "held_source_noise": 7344
+    },
+    "actual_wire_fault_detections": 22,
+    "actual_occupied_reset_fault_detections": 8,
+    "decoder_formal_input_bits": 256,
+    "decoder_formal_output_bits": 32,
+    "artifact_errors": 0,
+    "artifact_advisories": 122,
+    "structure": [
+      {
+        "width": 8,
+        "lint_exit": 0,
+        "synthesis_exit": 0,
+        "passed": true,
+        "cells": 62641,
+        "ff_bits": 6254,
+        "ff_types": [
+          "$_DFFE_PP_",
+          "$_DFF_P_",
+          "$_SDFFCE_PP0P_",
+          "$_SDFFE_PN0P_",
+          "$_SDFFE_PN1P_",
+          "$_SDFF_PN0_",
+          "$_SDFF_PP0_"
+        ],
+        "sram_cells": 64,
+        "single_positive_clock": true
+      },
+      {
+        "width": 16,
+        "lint_exit": 0,
+        "synthesis_exit": 0,
+        "passed": true,
+        "cells": 65001,
+        "ff_bits": 6574,
+        "ff_types": [
+          "$_DFFE_PP_",
+          "$_DFF_P_",
+          "$_SDFFCE_PP0P_",
+          "$_SDFFE_PN0P_",
+          "$_SDFFE_PN1P_",
+          "$_SDFF_PN0_",
+          "$_SDFF_PP0_"
+        ],
+        "sram_cells": 64,
+        "single_positive_clock": true
+      }
+    ],
+    "new_top_full_formal_equivalence": false,
+    "new_top_process_sta": false,
+    "macro_timing_signoff": false,
+    "full_goal_complete": false,
+    "compatibility_exit": 0,
+    "normal_and_optimized_audits": true
+  },
+  "production_transmit_ownership": {
+    "review": "docs/tl_tx_prepared_formal_review.md",
+    "evidence": "build/verification/tl_tx_prepared/ownership_evidence.json",
+    "complete": true,
+    "configurations": 27,
+    "properties_per_configuration": 35,
+    "actual_fault_detections": 6,
+    "reachability_cases": 2,
+    "impossible_capture_queries": 1,
+    "auditor_tests": 15,
+    "normal_and_optimized_audits": true,
+    "rtl_unchanged": true,
+    "full_payload_formal": false,
+    "full_top_sta": false,
+    "full_goal_complete": false
+  },
+  "production_transmit_physical_baseline": {
+    "measurement_complete": true,
+    "fully_measured_widths": [
+      8,
+      16
+    ],
+    "measurements": 60,
+    "main_closed": 0,
+    "reference_closed": 26,
+    "mapped": [
+      {
+        "width": 8,
+        "cells": 73677,
+        "ff_cells": 6254,
+        "macro_cells": 64,
+        "standard_cell_area_um2": 47213.082,
+        "worst_setup_ns": -3.217651,
+        "worst_hold_ns": -0.008036
+      },
+      {
+        "width": 16,
+        "cells": 75364,
+        "ff_cells": 6574,
+        "macro_cells": 64,
+        "standard_cell_area_um2": 48461.994,
+        "worst_setup_ns": -3.261416,
+        "worst_hold_ns": -0.008036
+      }
+    ],
+    "report_parser_tests": 12,
+    "mapped_inventory_tests": 6,
+    "full_matrix_audit_complete": true,
+    "normal_and_optimized_audits": true,
+    "mapped_equivalence": false,
+    "macro_signoff": false,
+    "full_goal_complete": false,
+    "running": false,
+    "review": "docs/tl_tx_prepared_timing_review.md",
+    "evidence": "build/verification/tl_tx_prepared/physical_baseline"
+  },
+  "last_verified_remote_branch": {
+    "branch": "work/tl-receive-credit",
+    "commit": "86d85ed2afa33934494c951f485ca6ae49e1c7fd"
+  },
+  "production_transmit_mapped_correspondence": {
+    "complete": true,
+    "scope": "binary post-reset actual standard-cell equivalence with common arbitrary SRAM read values",
+    "results": [
+      {
+        "width": 8,
+        "complete_partitions": 6,
+        "public_macro_output_bits": 4144,
+        "actual_gold_state_bits": 6244,
+        "actual_gate_state_bits": 6254
+      },
+      {
+        "width": 16,
+        "complete_partitions": 6,
+        "public_macro_output_bits": 4144,
+        "actual_gold_state_bits": 6564,
+        "actual_gate_state_bits": 6574
+      }
+    ],
+    "reset_queries": 4,
+    "cursor_queries": 4,
+    "dormant_queries": 4,
+    "actual_reset_faults": 2,
+    "actual_capture_faults": 2,
+    "actual_partition_faults": 2,
+    "mapped_equivalence": true,
+    "macro_signoff": false,
+    "full_goal_complete": false,
+    "normal_and_optimized_audits": true,
+    "checker_tests": 21,
+    "rtl_changed": false,
+    "main_frequency_closed": false,
+    "review": "docs/tl_tx_prepared_mapping_review.md",
+    "evidence": "build/verification/tl_tx_prepared/mapped_correspondence_evidence.json",
+    "reference_commit": "1f917a1381277a080a700849d638d39b766c665a",
+    "applies_to_current_rtl": false
+  },
+  "production_transmit_qualification_reuse": {
+    "review": "docs/tl_tx_qualification_reuse_review.md",
+    "reference_commit": "1f917a1381277a080a700849d638d39b766c665a",
+    "rtl_equivalence_configurations": 18,
+    "independent_rtl_reset_queries": 36,
+    "actual_ready_wiring_fault_detections": 2,
+    "packer_channel_vectors": 4428,
+    "unit_fault_runs": 32,
+    "peer_fault_runs": 96,
+    "production_unit_configurations": 36,
+    "production_unit_cycles": 5760,
+    "actual_dual_peer_configurations": 32,
+    "peer_cycles": 28868,
+    "sram_words": 13016,
+    "fc_transfers": 7712,
+    "production_wire_fault_detections": 22,
+    "ownership_configurations": 27,
+    "ownership_properties_per_configuration": 35,
+    "ownership_fault_detections": 6,
+    "normal_and_optimized_ownership_audit": true,
+    "normal_and_optimized_peer_audit": true,
+    "clean_clone_make_exit": 0,
+    "clean_clone_equivalence_exit": 0,
+    "skill_errors": 0,
+    "skill_advisories": 20,
+    "physical_measurements": 60,
+    "main_closed": 0,
+    "reference_closed": 26,
+    "normal_and_optimized_physical_audit": true,
+    "mapped": [
+      {
+        "width": 8,
+        "cells": 69038,
+        "ff_cells": 6254,
+        "macro_cells": 64,
+        "standard_cell_area_um2": 44696.106,
+        "worst_setup_ns": -1.85354,
+        "worst_hold_ns": -0.008036
+      },
+      {
+        "width": 16,
+        "cells": 71203,
+        "ff_cells": 6574,
+        "macro_cells": 64,
+        "standard_cell_area_um2": 46074.42,
+        "worst_setup_ns": -1.861665,
+        "worst_hold_ns": -0.008036
+      }
+    ],
+    "actual_mapped_reset_queries": 4,
+    "actual_cursor_queries": 4,
+    "mapped_correspondence_complete": true,
+    "macro_signoff": false,
+    "full_goal_complete": false,
+    "rtl_sources": {
+      "rtl/tl/tl_tx_packer.v": "af74ee50cf8e183ffeeb0e0b47b4812e79245c541a7919031b96a6016f703bdb",
+      "rtl/tl/tl_tx_packer_core.v": "471b37efa4d26ecc49ecd0e1716ac1d6d102fde32fe730696b52bc97f821f433",
+      "rtl/tl/tl_tx_channels.v": "819d9cb5cff51e3ad9f2513d056bc84c7394e7ca5f33a878925cbc406cc373b1"
+    },
+    "evidence_manifest": "build/verification/tl_tx_qualification/rtl_checkpoint_manifest.json",
+    "running_stages": [],
+    "physical_evidence": "build/verification/tl_tx_prepared/qualification_reuse_physical/evidence.json",
+    "actual_mapped_dormant_queries": 4,
+    "mapped_correspondence_evidence": "build/verification/tl_tx_prepared/qualification_reuse_mapped_correspondence_evidence.json",
+    "normal_and_optimized_mapped_audit": true,
+    "mapped_partition_count": 12,
+    "actual_mapped_fault_detections": 6,
+    "mapped_auditor_checks": 31,
+    "source_checkpoint": "222818783cffe75e88cf297414af30a3d780e8f7",
+    "applies_to_current_rtl": false
+  },
+  "transmit_ready_selection_experiment": {
+    "review": "docs/tl_tx_ready_selection_review.md",
+    "adopted": false,
+    "rtl_restored_to": "6839cac6a0e789fdef41787ae6da3e8546e896b2",
+    "reason": "Both widths regress in area and worst setup",
+    "rtl_equivalence_configurations": 9,
+    "independent_reset_queries": 18,
+    "identity_queries": 2,
+    "identity_counterexamples": 2,
+    "actual_rtl_mutant_detections": 2,
+    "channel_vectors": 1258,
+    "channel_unit_fault_detections": 16,
+    "channel_peer_fault_detections": 64,
+    "production_unit_configurations": 36,
+    "production_unit_cycles": 5760,
+    "actual_peer_configurations": 32,
+    "byte_identical_traces": 128,
+    "production_wire_fault_detections": 22,
+    "ownership_configurations": 27,
+    "ownership_properties_per_configuration": 35,
+    "normal_and_optimized_audits": true,
+    "physical_measurements": 60,
+    "main_closed": 0,
+    "reference_closed": 26,
+    "candidate_mapped_equivalence": false,
+    "macro_signoff": false,
+    "candidate_results_apply_to_current_rtl": false,
+    "full_goal_complete": false,
+    "measurements": [
+      {
+        "width": 8,
+        "cells": 69012,
+        "ff_cells": 6254,
+        "area_um2": 44770.698,
+        "worst_setup_ns": -1.859017,
+        "worst_hold_ns": -0.008036
+      },
+      {
+        "width": 16,
+        "cells": 71181,
+        "ff_cells": 6574,
+        "area_um2": 47464.452,
+        "worst_setup_ns": -1.953218,
+        "worst_hold_ns": -0.008036
+      }
+    ],
+    "next_plan": "docs/tl_tx_header_visibility_plan.md"
+  },
+  "transmit_header_visibility": {
+    "review": "docs/tl_tx_header_visibility_review.md",
+    "plan": "docs/tl_tx_header_visibility_plan.md",
+    "adopted": true,
+    "scope": "Final header visibility RTL, actual mapped binary post-reset correspondence and synthetic-SRAM prelayout measurements; full dual-IP Goal remains open",
+    "reference_commit": "6839cac6a0e789fdef41787ae6da3e8546e896b2",
+    "channel_composite_configurations": 9,
+    "channel_default_configurations": 9,
+    "fifo_composition_configurations": 36,
+    "fifo_reset_queries": 72,
+    "actual_missing_mask_fault_detections": 4,
+    "profile_checks": 16,
+    "clean_buffered_configurations_complete": 27,
+    "clean_buffered_middle_configurations_pending": 0,
+    "initial_physical_measurements": 60,
+    "initial_normal_and_optimized_physical_audits": true,
+    "initial_measurements": [
+      {
+        "width": 8,
+        "area_um2": 44790.732,
+        "worst_setup_ns": -1.806385
+      },
+      {
+        "width": 16,
+        "area_um2": 45603.936,
+        "worst_setup_ns": -1.834665
+      }
+    ],
+    "initial_measurements_apply_to_current_source": false,
+    "current_mapped_equivalence": true,
+    "main_frequency_closed": false,
+    "macro_signoff": false,
+    "full_goal_complete": false,
+    "rtl_sources": {
+      "rtl/tl/tl_tx_buffered.v": "4bf6a7e10af3561f1368ecf936a50872b5c573822a2e333b9d3a4953a612a8c7",
+      "rtl/tl/tl_tx_channels.v": "bf535db97580c52dca77779d8861cefdb4340ce67120b4400f90d62974230699",
+      "rtl/upli/upli_receive_fifo.v": "e0bf4e74e5150e008ed0cc4a5aa58fccb0e3d2b6c7ffa3b4a6270dfaafc3b1c3",
+      "rtl/upli/upli_receive_storage.v": "6920eb6927098622a162e193145133caa6af243ce0c4e17cfdfa64940f10bd16"
+    },
+    "source_checkpoint": "1194c73711541aadc2633a52fafe8de368d778ff",
+    "buffered_reset_queries": 54,
+    "current_physical_measurements": 60,
+    "current_measurements": [
+      {
+        "width": 8,
+        "standard_cell_area_um2": 44790.732,
+        "cells": 69382,
+        "flops": 6254,
+        "macros": 64,
+        "profiles": 30,
+        "worst_setup_ns": -1.806385,
+        "worst_hold_ns": -0.008036
+      },
+      {
+        "width": 16,
+        "standard_cell_area_um2": 45603.936,
+        "cells": 69967,
+        "flops": 6574,
+        "macros": 64,
+        "profiles": 30,
+        "worst_setup_ns": -1.834665,
+        "worst_hold_ns": -0.008036
+      }
+    ],
+    "mapped_partitions": 12,
+    "mapped_reset_queries": 4,
+    "mapped_cursor_queries": 4,
+    "mapped_dormant_queries": 4,
+    "mapped_fault_detections": 6,
+    "normal_optimized_audits_identical": true,
+    "unit_configurations": 36,
+    "peer_configurations": 32,
+    "ownership_configurations": 27,
+    "power_evaluated": false,
+    "evidence": "docs/tl_tx_header_visibility_evidence.json",
+    "full_top_cdc_rdc_complete": false,
+    "applies_to_current_rtl": false
+  },
+  "fifo_issue_selection": {
+    "adopted": false,
+    "review": "docs/tl_fifo_issue_selection_review.md",
+    "plan": "docs/tl_fifo_issue_selection_plan.md",
+    "baseline_commit": "6f10b33539624664cc4231bbb681e7b1d62dc401",
+    "candidate_fifo_sha256": "3348d06961770df6da9e10e44077624e6b160312254b72bdc5a9240fe7ff3b06",
+    "fifo_composition_configurations": 36,
+    "fifo_reset_queries": 72,
+    "unit_configurations": 36,
+    "peer_configurations": 32,
+    "identical_peer_trace_files": 128,
+    "prechange_fault_detections": 6,
+    "candidate_fault_detections": 12,
+    "physical_complete": true,
+    "current_mapped_equivalence": false,
+    "full_goal_complete": false,
+    "source_checkpoint": "161ed37248c08d3f7f5e12c63515d9b365adafb0",
+    "buffered_configurations": 6,
+    "buffered_reset_queries": 12,
+    "ownership_configurations": 27,
+    "ownership_normal_optimized_audits_identical": true,
+    "clean_clone_make_exit": 0,
+    "evidence": "docs/tl_fifo_issue_selection_evidence.json",
+    "partial_width8_measurements": 30,
+    "partial_width8_area_um2": 45184.86,
+    "partial_width8_worst_setup_ns": -1.80945,
+    "width16_sta_pending": false,
+    "decision": "reject",
+    "physical_measurements": 60,
+    "measurements": [
+      {
+        "width": 8,
+        "area_um2": 45184.86,
+        "worst_setup_ns": -1.80945,
+        "worst_hold_ns": -0.008036,
+        "flops": 6254,
+        "macros": 64
+      },
+      {
+        "width": 16,
+        "area_um2": 47284.65,
+        "worst_setup_ns": -1.82345,
+        "worst_hold_ns": -0.008036,
+        "flops": 6574,
+        "macros": 64
+      }
+    ],
+    "normal_optimized_physical_audits_identical": true,
+    "restored_from": "6f10b33539624664cc4231bbb681e7b1d62dc401",
+    "candidate_applies_to_current_rtl": false
+  },
+  "credit_slot_selection": {
+    "adopted": true,
+    "review": "docs/tl_credit_slot_selection_review.md",
+    "plan": "docs/tl_credit_slot_selection_plan.md",
+    "reference_commit": "6f10b33539624664cc4231bbb681e7b1d62dc401",
+    "candidate_sha256": "4f7578ab3caa5d1a2909ea19c8d51816097ebb886f040708cd581a66013d2e54",
+    "admission_widths": 9,
+    "admission_sat_queries": 207,
+    "public_output_bits": 123,
+    "independent_vectors": 16742,
+    "packer_channel_configurations": 4,
+    "isolated_fault_detections": 12,
+    "reference_fault_replay": true,
+    "reference_cache_tests": 4,
+    "production_unit_configurations": 36,
+    "production_peer_configurations": 32,
+    "physical_complete": true,
+    "current_mapped_equivalence": true,
+    "full_goal_complete": false,
+    "peer_normal_optimized_audits_identical": true,
+    "identical_trace_files": 128,
+    "production_wire_fault_detections": 22,
+    "standard_admission_checks_complete": true,
+    "wrapper_fault_detections": 16,
+    "physical_measurements": 60,
+    "physical_normal_optimized_audits_identical": true,
+    "ownership_configurations": 27,
+    "ownership_normal_optimized_audits_identical": true,
+    "clean_clone_make_exit": 0,
+    "clean_clone_explicit_reference_queries": 23,
+    "mapped_reset_queries": 4,
+    "mapped_cursor_queries": 4,
+    "mapped_dormant_queries": 4,
+    "mapped_fault_detections": 6,
+    "mapped_partitions_running": false,
+    "main_closed": 0,
+    "reference_closed": 26,
+    "measurements": [
+      {
+        "width": 8,
+        "area_um2": 43569.792,
+        "worst_setup_ns": -1.816202,
+        "worst_hold_ns": -0.008036
+      },
+      {
+        "width": 16,
+        "area_um2": 45162.054,
+        "worst_setup_ns": -1.799045,
+        "worst_hold_ns": -0.008036
+      }
+    ],
+    "mapped_partitions": 12,
+    "mapped_normal_optimized_audits_identical": true,
+    "evidence": "docs/tl_credit_slot_selection_evidence.json",
+    "source_checkpoint": "c84c113402d4fea8443c05687ccd3b056193dd84",
+    "applies_to_current_rtl": true
+  },
+  "delivery_gap_review": "docs/delivery_gap_review.md",
+  "fifo_payload_contract_proof": {
+    "complete": true,
+    "scope": "actual FIFO with authorized parameterized synchronous SRAM behavior",
+    "configurations": 24,
+    "widths": [
+      8,
+      32,
+      512
+    ],
+    "depths": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "invalid_output_profiles": [
+      "zero",
+      "raw"
+    ],
+    "whole_word_inductions": 20,
+    "whole_word_timeouts_retained": 4,
+    "fully_sliced_configurations": 4,
+    "complete_payload_slice_inductions": 32,
+    "properties_per_configuration": [
+      20,
+      22,
+      23,
+      25
+    ],
+    "fault_counterexamples_replayed": 2,
+    "auditor_tests": 12,
+    "normal_optimized_evidence_identical": true,
+    "initial_reset_only_assumption": true,
+    "actual_fifo_sha256": "e0bf4e74e5150e008ed0cc4a5aa58fccb0e3d2b6c7ffa3b4a6270dfaafc3b1c3",
+    "physical_bank_mapping": false,
+    "full_tl_payload": false,
+    "macro_signoff": false,
+    "full_goal_complete": false,
+    "review": "docs/upli_fifo_payload_proof_review.md",
+    "evidence": "docs/upli_fifo_payload_proof_evidence.json"
+  },
+  "latest_endpoint_link_integration": {
+    "date": "2026-09-11",
+    "passed": true,
+    "positive_cases": 7,
+    "connection_fault_cases": 4,
+    "counts": {
+      "tx": 2686,
+      "delivered": 2686,
+      "retired": 2313,
+      "replay": 66,
+      "crc_bad": 12,
+      "dropped": 12,
+      "fc": 1159,
+      "sequence_wraps": 2
+    },
+    "review": "docs/endpoint_link_integration_review.md",
+    "evidence": "build/verification/endpoint_link/retained/summary.json",
+    "evidence_sha256": "cff351dd84d1596e7d3abbcd0b32e73015f0c4957a9fdb104fdee832846e3b66",
+    "optimized_audit_sha256": "3e30f1cce899df7a70a088c2be040c8eb2ddcbfa3f55eecf73af6072da5c6117",
+    "production_rtl_changed": false,
+    "full_endpoint_transaction_loop": false,
+    "standard_dl_framing": false,
+    "crc_computation": false,
+    "process_sta": false,
+    "full_goal_complete": false,
+    "source_hashes": {
+      "verification/endpoint_link/check.py": "39dc0fc6055a68f02a04eb0d097261cfd175b615a3db94290667f15154468991",
+      "verification/endpoint_link/run.py": "6b20fef5cd668cccd8a1ca51e3571aad59b6f65e1c859125e43a93d3cf6e60de",
+      "verification/endpoint_link/run_matrix.py": "e85d8177b165ff6adb1daf4daa94f7068fa5a8755663dc4db10f652403e05ee4"
+    }
+  },
+  "execution_mode": {
+    "parallel_agents_authorized": true,
+    "root": "formal generation, production binding, evidence review and Git checkpoint",
+    "workers": [
+      "actual TL/DL peer integration and next transaction contract",
+      "independent SRAM behavioral simulation",
+      "independent formal audit"
+    ],
+    "next_priority": "module inventory materialized; implement and connect missing functionality across Endpoint/Switch while retaining complete scope"
+  },
+  "latest_sram_storage_mapping": {
+    "date": "2026-09-11",
+    "planned_configurations": 96,
+    "formal_proven_configurations": 95,
+    "formal_complete": false,
+    "unproven": [
+      {
+        "width": 600,
+        "depth": 65535,
+        "reason": "resource timeout; final bit-lowering attempt timed out before SAT"
+      }
+    ],
+    "widths": [
+      8,
+      32,
+      40,
+      256,
+      512,
+      600
+    ],
+    "depths": [
+      1,
+      2,
+      3,
+      5,
+      255,
+      256,
+      257,
+      511,
+      512,
+      513,
+      1024,
+      1025,
+      2048,
+      2049,
+      4097,
+      65535
+    ],
+    "formal_pin_boundary": true,
+    "formal_memory_behavior": false,
+    "formal_input_assumptions": 0,
+    "formal_source_fault_types": 3,
+    "formal_fault_queries": 7,
+    "behavioral_passed_configurations": 96,
+    "behavioral_fault_types": 2,
+    "whole_word_comparisons": 2362336,
+    "behavioral_operations": 1649774,
+    "production_binding_configurations": 24,
+    "production_binding_widths": [
+      256,
+      512,
+      600
+    ],
+    "production_binding_depths": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "full_tl_payload_induction": false,
+    "full_fifo_payload_widths_256_600": false,
+    "macro_signoff": false,
+    "production_rtl_changed": false,
+    "full_goal_complete": false,
+    "reviews": [
+      "docs/sram_storage_mapping_formal_review.md",
+      "docs/sram_storage_mapping_sim_review.md",
+      "docs/sram_storage_mapping_binding_review.md"
+    ],
+    "evidence": "docs/sram_storage_mapping_evidence.json"
+  },
+  "latest_ip_top_delivery": {
+    "date": "2026-09-11",
+    "priority": "module hierarchy and development tops first, then full functionality and integration",
+    "top_modules": [
+      "rtl/endpoint/ualink_endpoint_top.v",
+      "rtl/switch/ualink_switch_top.v"
+    ],
+    "inventory_rtl_modules": 202,
+    "existing_partial_modules": 57,
+    "materialized_interface_shells": 145,
+    "role_shells": {
+      "endpoint": 109,
+      "switch": 127
+    },
+    "rtl_inventory_files_present": true,
+    "all_hardware_function_families_reviewed": true,
+    "requirements_fully_implemented": false,
+    "generic_synthesis_tops_passed": 2,
+    "generic_synthesis_latches": 0,
+    "technology_sta": false,
+    "switch_parameter_cases": 3,
+    "switch_real_mutations_detected": 2,
+    "endpoint_switch_endpoint_runs": [
+      {
+        "label": "delivery_clean",
+        "passed": true,
+        "counts": {
+          "tx": 202,
+          "delivered": 202,
+          "retired": 180,
+          "replay": 0,
+          "crc_bad": 0,
+          "dropped": 0,
+          "fc": 94,
+          "sequence_wraps": 0
+        },
+        "record_sha256": "2ef09456347f5a2cb6ad38f88734c98460f5978fe216c1323c69546023f413b9"
+      },
+      {
+        "label": "delivery_smoke",
+        "passed": true,
+        "counts": {
+          "tx": 201,
+          "delivered": 201,
+          "retired": 178,
+          "replay": 10,
+          "crc_bad": 2,
+          "dropped": 2,
+          "fc": 91,
+          "sequence_wraps": 0
+        },
+        "record_sha256": "6178c2f67e22e9c183758d7edfe9518332182fd3a631b7f1038e3cc8687c4eea"
+      },
+      {
+        "label": "delivery_minimum",
+        "passed": true,
+        "counts": {
+          "tx": 206,
+          "delivered": 206,
+          "retired": 188,
+          "replay": 4,
+          "crc_bad": 2,
+          "dropped": 2,
+          "fc": 106,
+          "sequence_wraps": 0
+        },
+        "record_sha256": "d8ce7c45c0b8519a27631d6655a14a60787daf2421d5c84a9a6620c0a0524267"
+      }
+    ],
+    "actual_network_payload_fault_detected": true,
+    "normal_request_response_fixtures": true,
+    "standard_per_hop_tl_dl_termination": false,
+    "software_inventory_only": 13,
+    "external_platform_boundaries": 4,
+    "full_goal_complete": false,
+    "evidence_hashes": {
+      "config/ip_module_inventory.json": "e5f9f4db2e2548138166553c9fa79decdb165f862c438bf1e46a4e47f47b996d",
+      "build/verification/ip_structure/delivery_smoke/evidence.json": "9c63f2032b0cc5dd413c11655624840a4781f34b29f8201973a8f6acec900609",
+      "build/verification/ip_tops/tops_synthesis/results.json": "395166266d2a75984e6184de85f1db83270f341f6f593afbd922960c37b390fe",
+      "reports/ip_tops/switch_delivery_smoke/summary.json": "167d0a6fa63d342182c91390be81531083da1a9e73342537f3642829992ee021",
+      "build/verification/ip_tops/delivery_clean/record.json": "2ef09456347f5a2cb6ad38f88734c98460f5978fe216c1323c69546023f413b9",
+      "build/verification/ip_tops/delivery_clean/audit.json": "1427cd716f8a561b57b79681efdd7a6c49d79bc9459afb9d090b5a2e9ef7532c",
+      "build/verification/ip_tops/delivery_smoke/record.json": "6178c2f67e22e9c183758d7edfe9518332182fd3a631b7f1038e3cc8687c4eea",
+      "build/verification/ip_tops/delivery_smoke/audit.json": "ad8917b76fb3fb9144fa281f0b8f0921bf794ad8b30418115cad0844ad7dbdf5",
+      "build/verification/ip_tops/delivery_minimum/record.json": "d8ce7c45c0b8519a27631d6655a14a60787daf2421d5c84a9a6620c0a0524267",
+      "build/verification/ip_tops/delivery_minimum/audit.json": "0131f7ea3d7fdc76444da9a3303b8fb95d3515f1e02326213e47ea584fdfec30",
+      "build/verification/ip_structure/scaffold_summary.json": "281f819b5f8e007ac2061587299797054c88a2fc998f6d9740ba75af9b3d2eb1"
+    },
+    "review": "docs/ip_top_bringup.md",
+    "structure_mutation_tests": 8,
+    "normal_optimized_structure_evidence_identical": true
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "module": "tl_tx_packer",
+  "scope": "prepared Control queue + ordered Data/BE queue + matching AuthTags + actual FC publisher; not upstream Request/Response arbitration",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "5.1.1",
+      "5.1.2",
+      "5.7",
+      "5.8"
+    ],
+    "local_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "clock": "i_clk",
+  "reset": "synchronous active-low i_rstn",
+  "parameters": {
+    "WIDTH": [
+      8,
+      16
+    ]
+  },
+  "handshake": "only actual admitted-port o_tx_taken drives i_taken and acknowledges selected sources",
+  "input_contract": [
+    "prepared Control excludes FC-only and unresolved field profiles",
+    "header/associated tags/Data entries and FC candidate stay stable until their corresponding actual-taken acknowledgement",
+    "ordered Data/BE FIFO must eventually supply two halves during a non-final tenure and one half for final tail",
+    "pending, physical available/capacity/shared/done and Tx catch budgets come from the same actual port",
+    "i_auth stays fixed during each reset epoch; upstream supplies valid AuthTags, cryptography not implemented here",
+    "FC source supplies existing ordinary FC or initial-complete format; general TL messages and Data Poison packing remain future work"
+  ],
+  "behavior": [
+    "Control lower, swapped previous Data/BE tail upper",
+    "Auth prevents new header at previous-tail slot",
+    "ordinary FC may share old tail; upper completion waits for old tail to drain",
+    "unfunded next header does not block tail-only transfer",
+    "explicit NOP advances catch budget",
+    "FC/prepared-header round robin at legal Control opportunities",
+    "selected source held under output backpressure; no queue entry acknowledged early"
+  ],
+  "open": [
+    "separate Request/Response queue eligibility and arbitration",
+    "capacity-aware transaction/UPLI splitting",
+    "actual transmit Data buffering and arbitrary source gaps",
+    "Data Poison and remaining TL messages",
+    "complete online capacity and protocol induction",
+    "process STA",
+    "complete Endpoint/Switch integration"
+  ],
+  "verification": "verification/tl_tx_packer",
+  "review": "docs/tl_tx_packer_review.md"
+}

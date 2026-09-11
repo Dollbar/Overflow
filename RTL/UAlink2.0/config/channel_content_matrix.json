@@ -1,0 +1,277 @@
+{
+  "scope": "Finite actual-memory channel accepted-word/original-VC/Pool/normal-return contents; not full UPLI transactions or IP",
+  "profiles": [
+    {
+      "name": "pool",
+      "ports": 1,
+      "payload_width": 5,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "30000"
+    },
+    {
+      "name": "one",
+      "ports": 1,
+      "payload_width": 1,
+      "capacities": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "return_depth": 1,
+      "credit_width": 4,
+      "capacity_hex": "1"
+    },
+    {
+      "name": "vc_only",
+      "ports": 1,
+      "payload_width": 8,
+      "capacities": [
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "return_depth": 4,
+      "credit_width": 4,
+      "capacity_hex": "2"
+    },
+    {
+      "name": "mixed",
+      "ports": 1,
+      "payload_width": 5,
+      "capacities": [
+        2,
+        3,
+        1,
+        0,
+        5
+      ],
+      "return_depth": 4,
+      "credit_width": 4,
+      "capacity_hex": "50132"
+    },
+    {
+      "name": "asymmetric",
+      "ports": 2,
+      "payload_width": 9,
+      "capacities": [
+        1,
+        0,
+        2,
+        0,
+        3,
+        0,
+        2,
+        0,
+        1,
+        1
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "1102030201"
+    },
+    {
+      "name": "four",
+      "ports": 4,
+      "payload_width": 1,
+      "capacities": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "return_depth": 4,
+      "credit_width": 4,
+      "capacity_hex": "11111111111111111111"
+    },
+    {
+      "name": "four_pools",
+      "ports": 4,
+      "payload_width": 5,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        0,
+        5
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "50000300002000010000"
+    },
+    {
+      "name": "zero",
+      "ports": 4,
+      "payload_width": 5,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "return_depth": 16,
+      "credit_width": 4,
+      "capacity_hex": "0"
+    },
+    {
+      "name": "one_tile",
+      "ports": 1,
+      "payload_width": 29,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "30000"
+    },
+    {
+      "name": "two_tiles",
+      "ports": 1,
+      "payload_width": 30,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "30000"
+    },
+    {
+      "name": "five_tiles",
+      "ports": 1,
+      "payload_width": 128,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "return_depth": 1,
+      "credit_width": 4,
+      "capacity_hex": "10000"
+    },
+    {
+      "name": "seventeen_tiles",
+      "ports": 1,
+      "payload_width": 517,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "return_depth": 3,
+      "credit_width": 4,
+      "capacity_hex": "10000"
+    },
+    {
+      "name": "return_sixteen",
+      "ports": 1,
+      "payload_width": 1,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "return_depth": 16,
+      "credit_width": 4,
+      "capacity_hex": "30000"
+    },
+    {
+      "name": "nonbinary",
+      "ports": 1,
+      "payload_width": 5,
+      "capacities": [
+        0,
+        0,
+        0,
+        0,
+        5
+      ],
+      "return_depth": 5,
+      "credit_width": 4,
+      "capacity_hex": "50000"
+    }
+  ],
+  "method": {
+    "reset_steps": 4,
+    "induction_seq": 2,
+    "max_induction_steps": 12,
+    "timeout_seconds_per_sat_instance": 120
+  },
+  "boundary": [
+    "Native inputs symbolic, no SRAM Q/state cuts or assumptions",
+    "One physical macro depth class only, finite capacities and word widths",
+    "Per-account accepted order and per-port retired metadata prefix",
+    "Not complete connection/TDM transaction integration, liveness or PHY/STA signoff"
+  ]
+}

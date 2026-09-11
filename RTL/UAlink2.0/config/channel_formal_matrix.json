@@ -1,0 +1,19 @@
+{
+  "scope": "Actual receive-channel control ownership; arbitrary macro Q, not memory content or full IP",
+  "profiles": [
+    {"name": "single", "ports": 1, "width": 32, "credit_width": 4, "cap_hex": "50132", "return_depth": 4},
+    {"name": "asymmetric", "ports": 2, "width": 128, "credit_width": 6, "cap_hex": "fc1000000", "return_depth": 4},
+    {"name": "four", "ports": 4, "width": 32, "credit_width": 4, "cap_hex": "50132501325013250132", "return_depth": 4},
+    {"name": "wide", "ports": 1, "width": 520, "credit_width": 6, "cap_hex": "10000000", "return_depth": 8},
+    {"name": "classes", "ports": 1, "width": 32, "credit_width": 12, "cap_hex": "801201101001", "return_depth": 4},
+    {"name": "zero", "ports": 4, "width": 32, "credit_width": 4, "cap_hex": "0", "return_depth": 4},
+    {"name": "depth_one", "ports": 1, "width": 1, "credit_width": 3, "cap_hex": "1", "return_depth": 1},
+    {"name": "pool_only", "ports": 1, "width": 8, "credit_width": 3, "cap_hex": "7000", "return_depth": 2},
+    {"name": "return_sixteen", "ports": 2, "width": 8, "credit_width": 4, "cap_hex": "5013250132", "return_depth": 16},
+    {"name": "max_capacity", "ports": 1, "width": 8, "credit_width": 16, "cap_hex": "ffff", "return_depth": 4},
+    {"name": "nonbinary_banks", "ports": 1, "width": 8, "credit_width": 13, "cap_hex": "1001", "return_depth": 3},
+    {"name": "four_zero_one", "ports": 4, "width": 1, "credit_width": 3, "cap_hex": "200000000000", "return_depth": 1}
+  ],
+  "method": {"reset_steps": 6, "induction_seq": 2, "max_induction_steps": 12, "timeout_seconds_per_sat_instance": 120},
+  "limitations": ["Finite elaborations, not all parameters", "No metadata or payload fidelity proof", "No liveness or bounded latency guarantee", "No transaction, TDM, sender-bank or connection-FSM integration proof"]
+}

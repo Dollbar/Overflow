@@ -1,0 +1,27 @@
+# Generated outputs, never source directories.
+/build/
+/reports/
+/artifacts/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.vcd
+*.fst
+*.wdb
+*.jou
+*.log
+
+# Restricted inputs: ignore is not a substitute for access control.
+/specs/private/
+/third_party/private/
+/config/local.json
+.env
+.env.*
+/.erie-verilog-generator-state/
+*.vvp
+*.o
+*.a
+*.dcp
+*.bit
+*.wlf
+*.ghw

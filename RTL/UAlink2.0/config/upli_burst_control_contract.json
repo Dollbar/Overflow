@@ -1,0 +1,74 @@
+{
+  "name": "upli_burst_control",
+  "target": "rtl",
+  "rtl_dialect": "verilog",
+  "description": "Normal request/OrigData full-credit admission, per-port burst ownership and TDM controller; not payload storage, command decode or a complete UPLI core.",
+  "design_requirements": {
+    "target": "rtl", "pipeline_required": true, "streamability": "streamable", "interface_family": "native", "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "The user authorized complete isolated UALink digital RTL and local Verilator/Yosys/OpenSTA. This internal normal-burst component follows the existing independently verified model and the burst RTL plan without changing standard wire fields."
+  },
+  "pipeline_required": true,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "interfaces": {"ports": [
+    {"name": "i_clk", "direction": "input", "width": 1, "role": "clock"},
+    {"name": "i_rstn", "direction": "input", "width": 1, "role": "reset"},
+    {"name": "i_beats_connected", "direction": "input", "width": 1},
+    {"name": "i_candidate_valid", "direction": "input", "width": 1},
+    {"name": "i_candidate_port", "direction": "input", "width": 2},
+    {"name": "i_candidate_vc", "direction": "input", "width": 2},
+    {"name": "i_candidate_pool", "direction": "input", "width": 1},
+    {"name": "i_candidate_has_data", "direction": "input", "width": 1},
+    {"name": "i_candidate_num_beats", "direction": "input", "width": 2},
+    {"name": "i_candidate_data_pools", "direction": "input", "width": 4},
+    {"name": "i_req_balances", "direction": "input", "width": 20},
+    {"name": "i_data_balances", "direction": "input", "width": 20},
+    {"name": "i_req_init", "direction": "input", "width": 4},
+    {"name": "i_data_init", "direction": "input", "width": 4},
+    {"name": "o_candidate_accepted", "direction": "output", "width": 1},
+    {"name": "o_req_valid", "direction": "output", "width": 1},
+    {"name": "o_req_port", "direction": "output", "width": 2},
+    {"name": "o_req_vc", "direction": "output", "width": 2},
+    {"name": "o_req_pool", "direction": "output", "width": 1},
+    {"name": "o_data_valid", "direction": "output", "width": 1},
+    {"name": "o_data_port", "direction": "output", "width": 2},
+    {"name": "o_data_vc", "direction": "output", "width": 2},
+    {"name": "o_data_pool", "direction": "output", "width": 1},
+    {"name": "o_data_offset", "direction": "output", "width": 2},
+    {"name": "o_data_last", "direction": "output", "width": 1},
+    {"name": "o_busy", "direction": "output", "width": 4},
+    {"name": "o_tdm_known", "direction": "output", "width": 1},
+    {"name": "o_tdm_port", "direction": "output", "width": 2}
+  ]},
+  "clock": {"name": "i_clk", "edge": "posedge", "frequency_mhz": 1562.5},
+  "reset": {"name": "i_rstn", "active": "low", "synchronous": true},
+  "behavior": [
+    "Ports1/2/4 and credit width3..16. Balances are pre-edge registered values from real banks; confirmed init is already filtered. No new-return or raw-init bypass.",
+    "Candidate has_data is a local decoded property, not a wire field. The complete request and all1..4 payload beats must be staged before acceptance; this module stores control metadata only.",
+    "Admission checks one request credit and the complete per-pool/per-VC data allocation. Each port may own one unfinished data burst, reserving its unspent credits; actual banks debit actual emitted beats, not the reservation.",
+    "First accepted request determines shared Req/OrigData TDM; blocked candidates do not establish it, idle cycles advance it. Same-port new data requests cannot overlap an old final data beat; read-class requests may overlap without modifying original data VC/Pool.",
+    "First data is emitted with its request. Remaining data must issue in successive slots for that port, in ascending offset and with Last only on final offset. Output invalid fields are zero.",
+    "Connection qualification stays asserted until common synchronous reset. Actual balances/confirmed init must honor outstanding reservations. Invalid credit recovery and exceptional Drop/Isolation truncation are not defined by this normal controller.",
+    "Reset suppresses new events combinationally and clears state synchronously. Busy/phase observation does not clear asynchronously. Unused ports never accept candidates or own bursts."
+  ],
+  "constraints": [
+    "All47 RTL-MD MUST rules apply; native UPLI/project naming and short bilingual headers override AXI/template defaults.",
+    "Chinese same-line semantic comments, one register per sequential always, no raw gated clocks, no RTL function/task or asynchronous reset.",
+    "0.640/6.400ns are target budgets, not claims of timing completion; this new controller requires its own synthesis/equivalence/STA."
+  ],
+  "outputs": [
+    {"path": "rtl/upli/upli_burst_control.v", "kind": "source", "language": "verilog"},
+    {"path": "verification/rtl/upli_burst_control_tb.v", "kind": "testbench", "language": "verilog"},
+    {"path": "verification/formal/upli_burst_properties.v", "kind": "testbench", "language": "verilog"}
+  ],
+  "notes": [
+    "Numeric interface widths describe default ports1/credit4; parameterized widths apply otherwise.",
+    "Control vectors reuse the prior independent sender model and passive monitor, not a Python translation of this RTL. Real-bank/FSM/payload integration is a separate planned task.",
+    "The formal fixture uses an independent countdown/shift-queue reference with arithmetic whole-credit counts; actual control state is uncut. Connection qualification is fixed high, not a real connection handshake. All balance bits, candidate fields, filtered init and reset remain symbolic. Binary-state proofs do not establish four-state X propagation.",
+    "Candidates not accepted retain ownership at the caller, which may retry or select another candidate; all fields must be stable at the sampling edge. This is not a native UPLI ready signal.",
+    "No complete UPLI/IP, exception recovery, CDC/RDC or physical signoff is claimed."
+  ],
+  "subfunctions": [], "workflow": {}, "performance": {}
+}

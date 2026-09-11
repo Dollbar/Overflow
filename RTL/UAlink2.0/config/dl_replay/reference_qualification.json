@@ -1,0 +1,56 @@
+{
+  "profiles": [
+    {
+      "depth": 1,
+      "width": 8,
+      "rows": 10421
+    },
+    {
+      "depth": 3,
+      "width": 32,
+      "rows": 10521
+    },
+    {
+      "depth": 17,
+      "width": 64,
+      "rows": 10677
+    },
+    {
+      "depth": 128,
+      "width": 32,
+      "rows": 10771
+    },
+    {
+      "depth": 255,
+      "width": 64,
+      "rows": 11153
+    },
+    {
+      "depth": 256,
+      "width": 32,
+      "rows": 11025
+    },
+    {
+      "depth": 4095,
+      "width": 32,
+      "rows": 17209
+    },
+    {
+      "depth": 3,
+      "width": 40,
+      "rows": 10553
+    },
+    {
+      "depth": 17,
+      "width": 256,
+      "rows": 11445
+    },
+    {
+      "depth": 4095,
+      "width": 272,
+      "rows": 18169
+    }
+  ],
+  "rows": 121944,
+  "source_sha256": "e318900d524e9c3b79c9cb7e479ad447b762855b777ae2c13dc469ce870da784"
+}

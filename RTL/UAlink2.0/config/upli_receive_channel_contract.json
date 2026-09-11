@@ -1,0 +1,73 @@
+{
+  "name": "upli_receive_channel",
+  "target": "rtl",
+  "rtl_dialect": "verilog",
+  "description": "Common 2.6/4.3 per-account SRAM receive storage and initial/normal credit handoff; not TL transaction or burst validation.",
+  "design_requirements": {
+    "target": "rtl", "pipeline_required": true, "streamability": "streamable", "interface_family": "native", "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized complete UALink digital IP using local Verilator/Yosys/OpenSTA and authorized external SRAM models. This planned internal block retains native no-ready ingress and adds no on-wire fields."
+  },
+  "pipeline_required": true,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "interfaces": {"ports": [
+    {"name": "i_clk", "direction": "input", "width": 1, "role": "clock"},
+    {"name": "i_rstn", "direction": "input", "width": 1, "role": "reset"},
+    {"name": "i_credit_connected", "direction": "input", "width": 1},
+    {"name": "i_beats_connected", "direction": "input", "width": 1},
+    {"name": "i_receive_valid", "direction": "input", "width": 1},
+    {"name": "i_receive_port", "direction": "input", "width": 2},
+    {"name": "i_receive_vc", "direction": "input", "width": 2},
+    {"name": "i_receive_pool", "direction": "input", "width": 1},
+    {"name": "i_receive_payload", "direction": "input", "width": 32},
+    {"name": "i_consumer_port", "direction": "input", "width": 2},
+    {"name": "i_consumer_account", "direction": "input", "width": 3},
+    {"name": "i_consumer_ready", "direction": "input", "width": 1},
+    {"name": "o_head_payload", "direction": "output", "width": 32},
+    {"name": "o_head_vc", "direction": "output", "width": 2},
+    {"name": "o_head_pool", "direction": "output", "width": 1},
+    {"name": "o_head_valid", "direction": "output", "width": 1},
+    {"name": "o_consume_valid", "direction": "output", "width": 1},
+    {"name": "o_receive_accepted", "direction": "output", "width": 1},
+    {"name": "o_diagnostic", "direction": "output", "width": 3},
+    {"name": "o_counts", "direction": "output", "width": 20},
+    {"name": "o_pending_count", "direction": "output", "width": 12},
+    {"name": "o_credit_valid", "direction": "output", "width": 4},
+    {"name": "o_credit_pool", "direction": "output", "width": 4},
+    {"name": "o_credit_vc", "direction": "output", "width": 8},
+    {"name": "o_credit_num", "direction": "output", "width": 8},
+    {"name": "o_credit_init_done", "direction": "output", "width": 4}
+  ]},
+  "clock": {"name": "i_clk", "edge": "posedge", "frequency_mhz": 1562.5},
+  "reset": {"name": "i_rstn", "active": "low", "synchronous": true},
+  "behavior": [
+    "Ports 1/2/4, five accounts per port, capacities0..65535 constrained by credit width3..16; exact FIFO capacity is the sole source of initial credit parameters.",
+    "Word low bits are payload, original VC2, Pool1, then zero byte padding; no added UPLI fields. Zero-capacity accounts instantiate no SRAM.",
+    "Retirement requires real cached head, consumer readiness and old return-queue readiness simultaneously; original metadata is retained atomically.",
+    "Normal credit reservation uses pre-edge per-port init_done and return-direction connection. Registered initial and normal outputs are mutually exclusive per port and merged without another register or cancel mux.",
+    "Diagnostic0 none,1 inactive port,2 not connected,3 not initialized,4 no old capacity; these local codes do not define protocol RAS or recovery.",
+    "All connection levels stay asserted until synchronous interface reset; this single-domain component assumes legal connection-controller outputs."
+  ],
+  "constraints": [
+    "All RTL-MD MUST rules apply. Native UPLI and project snake_case plus short bilingual headers override AXI/template preferences.",
+    "Authored Verilog-2001 uses Chinese same-line semantic comments and one register per clocked always; external SRAM source is read-only and not restyled.",
+    "0.640/6.400ns are unchanged target periods, not a claim of channel-level STA completion. Prior storage component budgets do not sign off this channel."
+  ],
+  "outputs": [
+    {"path": "rtl/upli/upli_receive_channel.v", "kind": "source", "language": "verilog"},
+    {"path": "verification/rtl/upli_receive_channel_tb.v", "kind": "testbench", "language": "verilog"},
+    {"path": "verification/formal/upli_receive_channel_properties.v", "kind": "testbench", "language": "verilog"},
+    {"path": "verification/formal/upli_receive_word_invariant.v", "kind": "testbench", "language": "verilog"},
+    {"path": "verification/formal/upli_channel_content_properties.v", "kind": "testbench", "language": "verilog"}
+  ],
+  "notes": [
+    "Integer interface widths describe ports1/payload32/credit4/return-depth4; parameter-derived widths apply to other configurations.",
+    "The TB separately uses a real sender bank and independent payload/credit journals; direct illegal injections are not legal bank sends.",
+    "Formal observation wrapper proves selected channel control ownership with arbitrary macro Q. It is verification-only, not a synthesizable product top or a memory-content proof.",
+    "The separate channel content checker and read-only word invariant retain actual SDP memory, compare original accepted words and retired VC/Pool to independent queues; only finite exercised configurations are claimed. Neither checker is product RTL.",
+    "No complete UPLI, TL/DL/PHY, CDC/RDC, actual SRAM macro or full-IP physical signoff is claimed."
+  ],
+  "subfunctions": [], "workflow": {}, "performance": {}
+}

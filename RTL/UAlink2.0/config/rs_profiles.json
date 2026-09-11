@@ -1,0 +1,222 @@
+{
+  "historical_only": true,
+  "mapped_netlists_removed": true,
+  "profiles": [
+    {
+      "serial": 100,
+      "lanes": 1,
+      "blocks": 1,
+      "setup": 0.000242584,
+      "recipe": "reserve_ff4",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 1,
+      "blocks": 2,
+      "setup": 0.004337864,
+      "recipe": "bit1_2",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 1,
+      "blocks": 4,
+      "setup": -0.019757031,
+      "recipe": "early",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 100,
+      "lanes": 1,
+      "blocks": 8,
+      "setup": -0.023714364,
+      "recipe": "qualifier6",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 100,
+      "lanes": 2,
+      "blocks": 1,
+      "setup": 0.000242584,
+      "recipe": "qualified_balanced",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 2,
+      "blocks": 2,
+      "setup": 0.004337864,
+      "recipe": "qualified_balanced",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 2,
+      "blocks": 4,
+      "setup": -0.020065228,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 100,
+      "lanes": 2,
+      "blocks": 8,
+      "setup": -0.023714364,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 100,
+      "lanes": 4,
+      "blocks": 1,
+      "setup": 0.000413225,
+      "recipe": "data_admit",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 4,
+      "blocks": 2,
+      "setup": 0.003828216,
+      "recipe": "select4",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 100,
+      "lanes": 4,
+      "blocks": 4,
+      "setup": -0.030790426,
+      "recipe": "reserve2",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 100,
+      "lanes": 4,
+      "blocks": 8,
+      "setup": -0.037218619,
+      "recipe": "data4",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 1,
+      "blocks": 1,
+      "setup": 0.000242584,
+      "recipe": "qualified_balanced",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 200,
+      "lanes": 1,
+      "blocks": 2,
+      "setup": 0.004337864,
+      "recipe": "qualified_balanced",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 200,
+      "lanes": 1,
+      "blocks": 4,
+      "setup": -0.020065228,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 1,
+      "blocks": 8,
+      "setup": -0.023714364,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 2,
+      "blocks": 1,
+      "setup": 0.000413225,
+      "recipe": "qualified_balanced",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 200,
+      "lanes": 2,
+      "blocks": 2,
+      "setup": 0.003828216,
+      "recipe": "replay",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": true
+    },
+    {
+      "serial": 200,
+      "lanes": 2,
+      "blocks": 4,
+      "setup": -0.030790426,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 2,
+      "blocks": 8,
+      "setup": -0.037218619,
+      "recipe": "candidate",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 4,
+      "blocks": 1,
+      "setup": -0.10357926,
+      "recipe": "next2",
+      "source_sha256": "5283e027a00d0ff7a1224563fd7f3a80a8bb6a94847fe97b228b14a60ea0d1cd",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 4,
+      "blocks": 2,
+      "setup": -0.064890429,
+      "recipe": "data4",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 4,
+      "blocks": 4,
+      "setup": -0.095491394,
+      "recipe": "ready4",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    },
+    {
+      "serial": 200,
+      "lanes": 4,
+      "blocks": 8,
+      "setup": -0.085405909,
+      "recipe": "data4",
+      "source_sha256": "bbaab12a0fb10c86699c37fa88247a33d1aa8f365e6140b0feb30ab9703453b8",
+      "all_corners_passed": false
+    }
+  ]
+}

@@ -1,0 +1,1526 @@
+{
+  "name": "dl_control_port",
+  "module_name": "dl_control_port",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "实际Control/Basic/UART组合边界；保留完整双SRAM、仲裁和独立语义状态",
+  "design_requirements": {
+    "confirmed_by_user": true,
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "clocking": {
+      "clock_name": "i_clk",
+      "reset_name": "i_rstn",
+      "reset_active": "low",
+      "reset_synchronous": true
+    }
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "width": 1,
+        "direction": "input",
+        "description": "唯一原始采样时钟",
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "width": 1,
+        "direction": "input",
+        "description": "同步低有效全局复位",
+        "role": "reset"
+      },
+      {
+        "name": "i_fw_tx_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "固件发送字有效"
+      },
+      {
+        "name": "i_fw_tx_word",
+        "width": 32,
+        "direction": "input",
+        "description": "固件原始发送负载"
+      },
+      {
+        "name": "i_fw_rx_ready",
+        "width": 1,
+        "direction": "input",
+        "description": "固件读取当前接收字"
+      },
+      {
+        "name": "i_rx_word_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "可靠有序消息字有效"
+      },
+      {
+        "name": "i_rx_word",
+        "width": 32,
+        "direction": "input",
+        "description": "上游可靠性处理后的消息字"
+      },
+      {
+        "name": "i_segment_available",
+        "width": 1,
+        "direction": "input",
+        "description": "真实消息DWORD发送机会"
+      },
+      {
+        "name": "i_local_request",
+        "width": 1,
+        "direction": "input",
+        "description": "请求本地流复位"
+      },
+      {
+        "name": "i_local_all",
+        "width": 1,
+        "direction": "input",
+        "description": "本地请求的全部流范围"
+      },
+      {
+        "name": "i_credit_pending",
+        "width": 1,
+        "direction": "input",
+        "description": "外部信用调度器稳定队首有效"
+      },
+      {
+        "name": "i_credit_word",
+        "width": 32,
+        "direction": "input",
+        "description": "外部已编码信用通告字"
+      },
+      {
+        "name": "o_msg_uart_tx_storage_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 fw_ready"
+      },
+      {
+        "name": "o_msg_uart_tx_buffered_words",
+        "width": 13,
+        "direction": "output",
+        "description": "transmit 模型公开观察 buffered_words"
+      },
+      {
+        "name": "o_msg_uart_tx_counter",
+        "width": 12,
+        "direction": "output",
+        "description": "transmit 模型公开观察 tx_counter"
+      },
+      {
+        "name": "o_msg_uart_tx_busy",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_busy"
+      },
+      {
+        "name": "o_msg_uart_tx_reserved",
+        "width": 6,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_reserved"
+      },
+      {
+        "name": "o_msg_uart_tx_staged",
+        "width": 6,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_staged"
+      },
+      {
+        "name": "o_msg_uart_tx_latest_fc",
+        "width": 12,
+        "direction": "output",
+        "description": "transmit 模型公开观察 latest_fc"
+      },
+      {
+        "name": "o_msg_uart_tx_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 valid"
+      },
+      {
+        "name": "o_msg_uart_tx_word",
+        "width": 32,
+        "direction": "output",
+        "description": "transmit 模型公开观察 word"
+      },
+      {
+        "name": "o_msg_uart_tx_source",
+        "width": 4,
+        "direction": "output",
+        "description": "transmit 模型公开观察 source"
+      },
+      {
+        "name": "o_msg_uart_tx_word_index",
+        "width": 6,
+        "direction": "output",
+        "description": "transmit 模型公开观察 word_index"
+      },
+      {
+        "name": "o_msg_uart_tx_last",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 last"
+      },
+      {
+        "name": "o_msg_uart_tx_other_take",
+        "width": 10,
+        "direction": "output",
+        "description": "transmit 模型公开观察 other_take"
+      },
+      {
+        "name": "o_msg_uart_tx_other_done",
+        "width": 10,
+        "direction": "output",
+        "description": "transmit 模型公开观察 other_done"
+      },
+      {
+        "name": "o_msg_uart_tx_message_done",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_message_done"
+      },
+      {
+        "name": "o_msg_uart_tx_locked",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_locked"
+      },
+      {
+        "name": "o_msg_uart_tx_error",
+        "width": 1,
+        "direction": "output",
+        "description": "transmit 模型公开观察 error"
+      },
+      {
+        "name": "o_msg_uart_tx_uart_index",
+        "width": 6,
+        "direction": "output",
+        "description": "transmit 模型公开观察 uart_word_index"
+      },
+      {
+        "name": "o_msg_uart_fw_rx_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 fw_valid"
+      },
+      {
+        "name": "o_msg_uart_fw_rx_word",
+        "width": 32,
+        "direction": "output",
+        "description": "receive 模型公开观察 fw_word"
+      },
+      {
+        "name": "o_msg_uart_rx_fill",
+        "width": 12,
+        "direction": "output",
+        "description": "receive 模型公开观察 rx_fill"
+      },
+      {
+        "name": "o_msg_uart_rx_initialized",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 initialized"
+      },
+      {
+        "name": "o_msg_uart_rx_counter",
+        "width": 12,
+        "direction": "output",
+        "description": "receive 模型公开观察 rx_counter"
+      },
+      {
+        "name": "o_msg_uart_rx_credit_available",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 credit_available"
+      },
+      {
+        "name": "o_msg_uart_rx_remaining",
+        "width": 6,
+        "direction": "output",
+        "description": "receive 模型公开观察 remaining"
+      },
+      {
+        "name": "o_msg_uart_rx_dropping",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 dropping"
+      },
+      {
+        "name": "o_msg_uart_rx_header",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 header"
+      },
+      {
+        "name": "o_msg_uart_rx_payload_write",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 payload_write"
+      },
+      {
+        "name": "o_msg_uart_rx_payload_discard",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 payload_discard"
+      },
+      {
+        "name": "o_msg_uart_rx_done",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 done"
+      },
+      {
+        "name": "o_msg_uart_rx_credit_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 credit_valid"
+      },
+      {
+        "name": "o_msg_uart_rx_credit_value",
+        "width": 12,
+        "direction": "output",
+        "description": "receive 模型公开观察 credit_value"
+      },
+      {
+        "name": "o_msg_uart_rx_reset_request",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 reset_request"
+      },
+      {
+        "name": "o_msg_uart_rx_request_all",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 request_all"
+      },
+      {
+        "name": "o_msg_uart_rx_reset_response",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 reset_response"
+      },
+      {
+        "name": "o_msg_uart_rx_response_all",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 response_all"
+      },
+      {
+        "name": "o_msg_uart_rx_response_status",
+        "width": 3,
+        "direction": "output",
+        "description": "receive 模型公开观察 response_status"
+      },
+      {
+        "name": "o_msg_uart_rx_other_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 other_valid"
+      },
+      {
+        "name": "o_msg_uart_rx_other_word",
+        "width": 32,
+        "direction": "output",
+        "description": "receive 模型公开观察 other_word"
+      },
+      {
+        "name": "o_msg_uart_rx_error",
+        "width": 1,
+        "direction": "output",
+        "description": "receive 模型公开观察 error"
+      },
+      {
+        "name": "o_msg_uart_local_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 local_ready"
+      },
+      {
+        "name": "o_msg_uart_stream_reset",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 stream_reset"
+      },
+      {
+        "name": "o_msg_uart_block_messages",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 block_messages"
+      },
+      {
+        "name": "o_msg_uart_reset_tx_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 tx_pending"
+      },
+      {
+        "name": "o_msg_uart_reset_tx_word",
+        "width": 32,
+        "direction": "output",
+        "description": "control 模型公开观察 tx_word"
+      },
+      {
+        "name": "o_msg_uart_reset_tx_kind",
+        "width": 2,
+        "direction": "output",
+        "description": "control 模型公开观察 tx_kind"
+      },
+      {
+        "name": "o_msg_uart_reset_waiting",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 waiting"
+      },
+      {
+        "name": "o_msg_uart_reset_noops_left",
+        "width": 6,
+        "direction": "output",
+        "description": "control 模型公开观察 noops_left"
+      },
+      {
+        "name": "o_msg_uart_reset_response_count",
+        "width": 5,
+        "direction": "output",
+        "description": "control 模型公开观察 response_count"
+      },
+      {
+        "name": "o_msg_uart_local_start",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 local_start"
+      },
+      {
+        "name": "o_msg_uart_local_done",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 local_done"
+      },
+      {
+        "name": "o_msg_uart_retry",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 retry"
+      },
+      {
+        "name": "o_msg_uart_reply_done",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 reply_done"
+      },
+      {
+        "name": "o_msg_uart_reset_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 fault"
+      },
+      {
+        "name": "o_msg_uart_reset_error",
+        "width": 1,
+        "direction": "output",
+        "description": "control 模型公开观察 error"
+      },
+      {
+        "name": "o_msg_uart_fw_tx_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 fw_tx_ready"
+      },
+      {
+        "name": "o_msg_uart_fw_tx_accepted",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 fw_tx_accepted"
+      },
+      {
+        "name": "o_msg_uart_fw_tx_discard",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 fw_tx_discard"
+      },
+      {
+        "name": "o_msg_uart_normal_take",
+        "width": 6,
+        "direction": "output",
+        "description": "端口组合握手或诊断 normal_take"
+      },
+      {
+        "name": "o_msg_uart_credit_take",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 credit_take"
+      },
+      {
+        "name": "o_msg_uart_credit_cancel",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 credit_cancel"
+      },
+      {
+        "name": "o_msg_uart_error",
+        "width": 1,
+        "direction": "output",
+        "description": "端口组合握手或诊断 error"
+      },
+      {
+        "name": "i_basic_local_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 local_valid"
+      },
+      {
+        "name": "i_basic_local_kind",
+        "width": 3,
+        "direction": "input",
+        "description": "原生输入 local_kind"
+      },
+      {
+        "name": "i_basic_local_rate",
+        "width": 16,
+        "direction": "input",
+        "description": "原生输入 local_rate"
+      },
+      {
+        "name": "i_basic_device_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 device_valid"
+      },
+      {
+        "name": "i_basic_device_id",
+        "width": 10,
+        "direction": "input",
+        "description": "原生输入 device_id"
+      },
+      {
+        "name": "i_basic_device_type",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 device_type"
+      },
+      {
+        "name": "i_basic_port_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 port_valid"
+      },
+      {
+        "name": "i_basic_port",
+        "width": 12,
+        "direction": "input",
+        "description": "原生输入 port"
+      },
+      {
+        "name": "i_basic_folding",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 folding"
+      },
+      {
+        "name": "i_basic_tx_ready_advertised",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 tx_ready_advertised"
+      },
+      {
+        "name": "i_basic_symbols_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 symbols_valid"
+      },
+      {
+        "name": "i_basic_tx_limit_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 tx_limit_valid"
+      },
+      {
+        "name": "i_basic_tx_limit",
+        "width": 16,
+        "direction": "input",
+        "description": "原生输入 tx_limit"
+      },
+      {
+        "name": "o_msg_basic_local_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_ready"
+      },
+      {
+        "name": "o_msg_basic_local_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_pending"
+      },
+      {
+        "name": "o_msg_basic_local_waiting",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_waiting"
+      },
+      {
+        "name": "o_msg_basic_remote_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 remote_pending"
+      },
+      {
+        "name": "o_msg_basic_source_pending",
+        "width": 4,
+        "direction": "output",
+        "description": "独立参考观察 source_pending"
+      },
+      {
+        "name": "o_msg_basic_source_words",
+        "width": 128,
+        "direction": "output",
+        "description": "独立参考观察 source_words"
+      },
+      {
+        "name": "o_msg_basic_local_start",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_start"
+      },
+      {
+        "name": "o_msg_basic_local_commit",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_commit"
+      },
+      {
+        "name": "o_msg_basic_local_done",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_done"
+      },
+      {
+        "name": "o_msg_basic_reply_done",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 reply_done"
+      },
+      {
+        "name": "o_msg_basic_rx_request",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_request"
+      },
+      {
+        "name": "o_msg_basic_rx_noop",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_noop"
+      },
+      {
+        "name": "o_msg_basic_rx_unhandled",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unhandled"
+      },
+      {
+        "name": "o_msg_basic_rx_unsupported",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unsupported"
+      },
+      {
+        "name": "o_msg_basic_rx_unmatched_ack",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unmatched_ack"
+      },
+      {
+        "name": "o_msg_basic_rx_overlap",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_overlap"
+      },
+      {
+        "name": "o_msg_basic_peer_rate_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate_valid"
+      },
+      {
+        "name": "o_msg_basic_peer_rate",
+        "width": 16,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate"
+      },
+      {
+        "name": "o_msg_basic_peer_device_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_valid"
+      },
+      {
+        "name": "o_msg_basic_peer_device_type",
+        "width": 2,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_type"
+      },
+      {
+        "name": "o_msg_basic_peer_device_id",
+        "width": 10,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_id"
+      },
+      {
+        "name": "o_msg_basic_peer_port_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_port_valid"
+      },
+      {
+        "name": "o_msg_basic_peer_port",
+        "width": 12,
+        "direction": "output",
+        "description": "独立参考观察 peer_port"
+      },
+      {
+        "name": "o_msg_basic_peer_rate_update",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate_update"
+      },
+      {
+        "name": "o_msg_basic_deadline_miss",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 deadline_miss"
+      },
+      {
+        "name": "o_msg_basic_deadline_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 deadline_fault"
+      },
+      {
+        "name": "o_msg_basic_protocol_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 protocol_fault"
+      },
+      {
+        "name": "o_msg_basic_error",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 error"
+      },
+      {
+        "name": "o_msg_control_take",
+        "direction": "output",
+        "width": 2,
+        "description": "实际提交的两个Control来源消费位。"
+      },
+      {
+        "name": "o_msg_unhandled_valid",
+        "direction": "output",
+        "width": 1,
+        "description": "经UART边界分发后Basic仍未处理的消息字有效。"
+      },
+      {
+        "name": "o_msg_unhandled_word",
+        "direction": "output",
+        "width": 32,
+        "description": "仅有效时转交上层的原始消息字。"
+      },
+      {
+        "name": "o_msg_error",
+        "direction": "output",
+        "width": 1,
+        "description": "当前Basic与UART错误汇总，不反馈发送资格。"
+      },
+      {
+        "name": "i_ctl_request_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "显式本地请求有效"
+      },
+      {
+        "name": "i_ctl_request_channel",
+        "width": 1,
+        "direction": "input",
+        "description": "本地种类零Width一Channel"
+      },
+      {
+        "name": "i_ctl_request_target",
+        "width": 4,
+        "direction": "input",
+        "description": "显式请求原始目标"
+      },
+      {
+        "name": "i_ctl_request_priority",
+        "width": 1,
+        "direction": "input",
+        "description": "显式Width请求优先级"
+      },
+      {
+        "name": "i_ctl_channel_ready",
+        "width": 2,
+        "direction": "input",
+        "description": "Channel0与Channel4在线接收准备"
+      },
+      {
+        "name": "i_ctl_width_ready",
+        "width": 1,
+        "direction": "input",
+        "description": "允许履行普通扩宽Pending重启"
+      },
+      {
+        "name": "i_ctl_clear_soft_lockout",
+        "width": 1,
+        "direction": "input",
+        "description": "本沿固件清除软锁"
+      },
+      {
+        "name": "o_ctl_source_pending",
+        "width": 2,
+        "direction": "output",
+        "description": "沿前有效队首，低位Width高位Channel"
+      },
+      {
+        "name": "o_ctl_source_words",
+        "width": 64,
+        "direction": "output",
+        "description": "沿前两来源字，仅队首有效"
+      },
+      {
+        "name": "o_ctl_source_purpose",
+        "width": 2,
+        "direction": "output",
+        "description": "队首用途：零Request，一回复，二确认"
+      },
+      {
+        "name": "o_ctl_source_request_word",
+        "width": 32,
+        "direction": "output",
+        "description": "队首所属交换的原请求字"
+      },
+      {
+        "name": "o_ctl_local_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "TX和RX处理后的本地接纳资格"
+      },
+      {
+        "name": "o_ctl_local_accept",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿真正接纳本地请求"
+      },
+      {
+        "name": "o_ctl_tx_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿实际发送队首"
+      },
+      {
+        "name": "o_ctl_tx_word",
+        "width": 32,
+        "direction": "output",
+        "description": "本沿实际发送完整字"
+      },
+      {
+        "name": "o_ctl_rx_status",
+        "width": 4,
+        "direction": "output",
+        "description": "本沿接收结果编码"
+      },
+      {
+        "name": "o_ctl_local_busy",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前本地请求占用"
+      },
+      {
+        "name": "o_ctl_local_request_word",
+        "width": 32,
+        "direction": "output",
+        "description": "沿前本地原请求快照"
+      },
+      {
+        "name": "o_ctl_local_phase",
+        "width": 2,
+        "direction": "output",
+        "description": "零排队，一等响应，二确认排队"
+      },
+      {
+        "name": "o_ctl_local_restart",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前本地请求正在履行pending重启"
+      },
+      {
+        "name": "o_ctl_remote_busy",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前对端交换占用"
+      },
+      {
+        "name": "o_ctl_remote_request_word",
+        "width": 32,
+        "direction": "output",
+        "description": "沿前对端原请求快照"
+      },
+      {
+        "name": "o_ctl_remote_reply_word",
+        "width": 32,
+        "direction": "output",
+        "description": "沿前已冻结回复字"
+      },
+      {
+        "name": "o_ctl_remote_reply_sent",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前ACK已发送且仍等确认"
+      },
+      {
+        "name": "o_ctl_remote_from_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "对端交换履行先前pending重启"
+      },
+      {
+        "name": "o_ctl_waiting_peer",
+        "width": 2,
+        "direction": "output",
+        "description": "按kind等待对端重启并完成"
+      },
+      {
+        "name": "o_ctl_owed_restart",
+        "width": 2,
+        "direction": "output",
+        "description": "按kind保留本地重启责任"
+      },
+      {
+        "name": "o_ctl_owed_requests",
+        "width": 64,
+        "direction": "output",
+        "description": "两种kind原始重启目标与消息快照"
+      },
+      {
+        "name": "o_ctl_queue_count",
+        "width": 2,
+        "direction": "output",
+        "description": "沿前两条发送队列占用"
+      },
+      {
+        "name": "o_ctl_local_done",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿本地交换完成"
+      },
+      {
+        "name": "o_ctl_local_done_channel",
+        "width": 1,
+        "direction": "output",
+        "description": "本地完成种类"
+      },
+      {
+        "name": "o_ctl_local_done_target",
+        "width": 4,
+        "direction": "output",
+        "description": "本地完成原目标"
+      },
+      {
+        "name": "o_ctl_local_success",
+        "width": 1,
+        "direction": "output",
+        "description": "本地完成是否成功"
+      },
+      {
+        "name": "o_ctl_remote_done",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿对端交换完成"
+      },
+      {
+        "name": "o_ctl_remote_done_channel",
+        "width": 1,
+        "direction": "output",
+        "description": "对端完成种类"
+      },
+      {
+        "name": "o_ctl_remote_done_target",
+        "width": 4,
+        "direction": "output",
+        "description": "对端完成原目标"
+      },
+      {
+        "name": "o_ctl_remote_success",
+        "width": 1,
+        "direction": "output",
+        "description": "对端完成是否成功"
+      },
+      {
+        "name": "o_ctl_response_miss",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿首次超过回复截止"
+      },
+      {
+        "name": "o_ctl_response_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "回复超时粘滞诊断"
+      },
+      {
+        "name": "o_ctl_restart_miss",
+        "width": 2,
+        "direction": "output",
+        "description": "本沿两种kind首次超过重启截止"
+      },
+      {
+        "name": "o_ctl_restart_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "任一重启超时粘滞诊断"
+      },
+      {
+        "name": "o_ctl_take_error",
+        "width": 1,
+        "direction": "output",
+        "description": "实际消费输入不对应有效单一队首"
+      },
+      {
+        "name": "o_ctl_protocol_error",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿接收或回复策略违约"
+      },
+      {
+        "name": "o_ctl_protocol_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "握手或消费违约粘滞诊断"
+      },
+      {
+        "name": "o_ctl_pending_sent",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿实际发送pending"
+      },
+      {
+        "name": "o_ctl_pending_received",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿匹配接收pending"
+      },
+      {
+        "name": "o_ctl_restart_commit",
+        "width": 2,
+        "direction": "output",
+        "description": "本沿实际提交所欠重启Request"
+      },
+      {
+        "name": "o_ctl_channel_online",
+        "width": 2,
+        "direction": "output",
+        "description": "沿前Channel0与Channel4在线状态"
+      },
+      {
+        "name": "o_ctl_channel_closing",
+        "width": 2,
+        "direction": "output",
+        "description": "沿前正在下线的Channel0与Channel4"
+      },
+      {
+        "name": "o_ctl_negotiated_width",
+        "width": 4,
+        "direction": "output",
+        "description": "协商逻辑宽度，非物理PL状态"
+      },
+      {
+        "name": "o_ctl_soft_lockout",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前硬件软锁"
+      },
+      {
+        "name": "o_ctl_lockout_notify",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿软锁从清除到重新置位通知"
+      },
+      {
+        "name": "o_ctl_peer_tx_ready_support",
+        "width": 1,
+        "direction": "output",
+        "description": "对端最近Width字的TxReady能力"
+      },
+      {
+        "name": "o_ctl_auto_restart",
+        "width": 2,
+        "direction": "output",
+        "description": "本沿两kind自动重启接纳事件"
+      },
+      {
+        "name": "o_ctl_owed_first_channel",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前最早仍未发送的Pending重启义务kind"
+      },
+      {
+        "name": "o_ctl_retry_blocked",
+        "width": 1,
+        "direction": "output",
+        "description": "宽度冲突失败的重试目标有效"
+      },
+      {
+        "name": "o_ctl_retry_target",
+        "width": 4,
+        "direction": "output",
+        "description": "有效冲突失败重试目标"
+      },
+      {
+        "name": "o_ctl_round_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "沿前Width协商轮次有效"
+      },
+      {
+        "name": "o_ctl_round_target",
+        "width": 4,
+        "direction": "output",
+        "description": "当前宽度轮次胜出目标"
+      },
+      {
+        "name": "o_ctl_round_remote_accepted",
+        "width": 1,
+        "direction": "output",
+        "description": "轮次曾接纳对端请求"
+      },
+      {
+        "name": "o_ctl_round_conflict",
+        "width": 1,
+        "direction": "output",
+        "description": "轮次存在不同目标冲突"
+      },
+      {
+        "name": "o_ctl_round_sent_ack",
+        "width": 1,
+        "direction": "output",
+        "description": "轮次已经实际发送ACK"
+      },
+      {
+        "name": "o_ctl_round_received_ack",
+        "width": 1,
+        "direction": "output",
+        "description": "轮次已经匹配收到ACK"
+      },
+      {
+        "name": "o_ctl_round_applied",
+        "width": 1,
+        "direction": "output",
+        "description": "本轮ACK对已应用一次"
+      },
+      {
+        "name": "o_ctl_width_event_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "前一沿形成的寄存宽度动作有效"
+      },
+      {
+        "name": "o_ctl_width_event_old",
+        "width": 4,
+        "direction": "output",
+        "description": "宽度动作前的协商状态"
+      },
+      {
+        "name": "o_ctl_width_event_new",
+        "width": 4,
+        "direction": "output",
+        "description": "宽度动作后的协商状态"
+      },
+      {
+        "name": "o_ctl_width_event_action",
+        "width": 2,
+        "direction": "output",
+        "description": "一进入掉电，二等待对端掉电，三进入Fault"
+      },
+      {
+        "name": "o_ctl_width_event_pl",
+        "width": 1,
+        "direction": "output",
+        "description": "宽度动作使用协议PL编号"
+      },
+      {
+        "name": "o_ctl_repeat_error",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿接纳当前Channel状态请求的诊断"
+      },
+      {
+        "name": "o_ctl_repeat_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "当前Channel状态请求粘滞诊断"
+      },
+      {
+        "name": "o_ctl_unsupported",
+        "width": 1,
+        "direction": "output",
+        "description": "本沿收到未支持的语义消息"
+      },
+      {
+        "name": "o_ctl_unsupported_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "未支持语义消息的粘滞诊断"
+      },
+      {
+        "name": "o_unhandled_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "真正未处理或不支持的消息有效"
+      },
+      {
+        "name": "o_unhandled_word",
+        "width": 32,
+        "direction": "output",
+        "description": "仅有效时转交原始字"
+      },
+      {
+        "name": "o_error",
+        "width": 1,
+        "direction": "output",
+        "description": "当前消息与Control事件诊断汇总"
+      }
+    ]
+  },
+  "parameters": {
+    "C_TX_DEPTH": {
+      "default": 128,
+      "minimum": 1,
+      "maximum": 4095
+    },
+    "C_RX_DEPTH": {
+      "default": 128,
+      "minimum": 1,
+      "maximum": 4095
+    },
+    "C_CLOCK_PERIOD_PS": {
+      "default": 640,
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "C_RESPONSE_DEPTH": {
+      "default": 4,
+      "minimum": 1,
+      "maximum": 16
+    },
+    "C_ROLE_SWITCH": {
+      "default": 0,
+      "values": [
+        0,
+        1
+      ]
+    },
+    "C_LANES": {
+      "default": 4,
+      "values": [
+        1,
+        2,
+        4
+      ]
+    },
+    "C_FOLDING": {
+      "default": 1,
+      "values": [
+        0,
+        1
+      ]
+    },
+    "C_RESILIENCY": {
+      "default": 1,
+      "values": [
+        0,
+        1
+      ]
+    },
+    "C_INITIAL_WIDTH": {
+      "default": 0,
+      "values": [
+        0,
+        1,
+        9
+      ]
+    },
+    "C_ALLOWED_PL_MASK": {
+      "default": 3,
+      "values": [
+        1,
+        2,
+        3
+      ]
+    },
+    "C_TX_READY_SUPPORT": {
+      "default": 0,
+      "values": [
+        0,
+        1
+      ]
+    }
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "normative_sources": [
+    "L2.4.3",
+    "L2.4.3.2",
+    "L2.4.3.3"
+  ],
+  "behavior": [
+    "actual arbiter take commits Control offers",
+    "UART framing and Basic dispatch precede Control decode",
+    "old Channel4 online enables UART; closing blocks only new headers",
+    "same raw clock and synchronous active-low reset"
+  ],
+  "limitations": [
+    "external credit scheduler remains separate",
+    "no CRC/LLR/actual PL sequences",
+    "no new independent proof or physical signoff"
+  ],
+  "constraints": [
+    "Native synchronous internal interface; no new wire fields.",
+    "Every nonempty Verilog code line has a Chinese semantic comment.",
+    "One clock, synchronous low reset, one state register per sequential always, no function/task."
+  ],
+  "implementation_status": "test_first_candidate",
+  "model": "model.ualink.dl_control_port.DLControlPort",
+  "outputs": [
+    "rtl/dl/dl_control_port.v",
+    "verification/rtl/dl_control_port_tb.v"
+  ],
+  "scope": "reliable ordered message-word boundary, not full DL/PHY/IP",
+  "instance_connections": {
+    "message": {
+      "i_clk": "i_clk",
+      "i_rstn": "i_rstn",
+      "i_channel4_enabled": "o_ctl_channel_online[1]",
+      "i_uart_start_allowed": "!o_ctl_channel_closing[1]",
+      "i_fw_tx_valid": "i_fw_tx_valid",
+      "i_fw_tx_word": "i_fw_tx_word",
+      "i_fw_rx_ready": "i_fw_rx_ready",
+      "i_rx_word_valid": "i_rx_word_valid",
+      "i_rx_word": "i_rx_word",
+      "i_segment_available": "i_segment_available",
+      "i_local_request": "i_local_request",
+      "i_local_all": "i_local_all",
+      "i_credit_pending": "i_credit_pending",
+      "i_credit_word": "i_credit_word",
+      "o_uart_tx_storage_ready": "o_msg_uart_tx_storage_ready",
+      "o_uart_tx_buffered_words": "o_msg_uart_tx_buffered_words",
+      "o_uart_tx_counter": "o_msg_uart_tx_counter",
+      "o_uart_tx_busy": "o_msg_uart_tx_busy",
+      "o_uart_tx_reserved": "o_msg_uart_tx_reserved",
+      "o_uart_tx_staged": "o_msg_uart_tx_staged",
+      "o_uart_tx_latest_fc": "o_msg_uart_tx_latest_fc",
+      "o_uart_tx_valid": "o_msg_uart_tx_valid",
+      "o_uart_tx_word": "o_msg_uart_tx_word",
+      "o_uart_tx_source": "o_msg_uart_tx_source",
+      "o_uart_tx_word_index": "o_msg_uart_tx_word_index",
+      "o_uart_tx_last": "o_msg_uart_tx_last",
+      "o_uart_tx_other_take": "o_msg_uart_tx_other_take",
+      "o_uart_tx_other_done": "o_msg_uart_tx_other_done",
+      "o_uart_tx_message_done": "o_msg_uart_tx_message_done",
+      "o_uart_tx_locked": "o_msg_uart_tx_locked",
+      "o_uart_tx_error": "o_msg_uart_tx_error",
+      "o_uart_tx_uart_index": "o_msg_uart_tx_uart_index",
+      "o_uart_fw_rx_valid": "o_msg_uart_fw_rx_valid",
+      "o_uart_fw_rx_word": "o_msg_uart_fw_rx_word",
+      "o_uart_rx_fill": "o_msg_uart_rx_fill",
+      "o_uart_rx_initialized": "o_msg_uart_rx_initialized",
+      "o_uart_rx_counter": "o_msg_uart_rx_counter",
+      "o_uart_rx_credit_available": "o_msg_uart_rx_credit_available",
+      "o_uart_rx_remaining": "o_msg_uart_rx_remaining",
+      "o_uart_rx_dropping": "o_msg_uart_rx_dropping",
+      "o_uart_rx_header": "o_msg_uart_rx_header",
+      "o_uart_rx_payload_write": "o_msg_uart_rx_payload_write",
+      "o_uart_rx_payload_discard": "o_msg_uart_rx_payload_discard",
+      "o_uart_rx_done": "o_msg_uart_rx_done",
+      "o_uart_rx_credit_valid": "o_msg_uart_rx_credit_valid",
+      "o_uart_rx_credit_value": "o_msg_uart_rx_credit_value",
+      "o_uart_rx_reset_request": "o_msg_uart_rx_reset_request",
+      "o_uart_rx_request_all": "o_msg_uart_rx_request_all",
+      "o_uart_rx_reset_response": "o_msg_uart_rx_reset_response",
+      "o_uart_rx_response_all": "o_msg_uart_rx_response_all",
+      "o_uart_rx_response_status": "o_msg_uart_rx_response_status",
+      "o_uart_rx_other_valid": "o_msg_uart_rx_other_valid",
+      "o_uart_rx_other_word": "o_msg_uart_rx_other_word",
+      "o_uart_rx_error": "o_msg_uart_rx_error",
+      "o_uart_local_ready": "o_msg_uart_local_ready",
+      "o_uart_stream_reset": "o_msg_uart_stream_reset",
+      "o_uart_block_messages": "o_msg_uart_block_messages",
+      "o_uart_reset_tx_pending": "o_msg_uart_reset_tx_pending",
+      "o_uart_reset_tx_word": "o_msg_uart_reset_tx_word",
+      "o_uart_reset_tx_kind": "o_msg_uart_reset_tx_kind",
+      "o_uart_reset_waiting": "o_msg_uart_reset_waiting",
+      "o_uart_reset_noops_left": "o_msg_uart_reset_noops_left",
+      "o_uart_reset_response_count": "o_msg_uart_reset_response_count",
+      "o_uart_local_start": "o_msg_uart_local_start",
+      "o_uart_local_done": "o_msg_uart_local_done",
+      "o_uart_retry": "o_msg_uart_retry",
+      "o_uart_reply_done": "o_msg_uart_reply_done",
+      "o_uart_reset_fault": "o_msg_uart_reset_fault",
+      "o_uart_reset_error": "o_msg_uart_reset_error",
+      "o_uart_fw_tx_ready": "o_msg_uart_fw_tx_ready",
+      "o_uart_fw_tx_accepted": "o_msg_uart_fw_tx_accepted",
+      "o_uart_fw_tx_discard": "o_msg_uart_fw_tx_discard",
+      "o_uart_normal_take": "o_msg_uart_normal_take",
+      "o_uart_credit_take": "o_msg_uart_credit_take",
+      "o_uart_credit_cancel": "o_msg_uart_credit_cancel",
+      "o_uart_error": "o_msg_uart_error",
+      "i_basic_local_valid": "i_basic_local_valid",
+      "i_basic_local_kind": "i_basic_local_kind",
+      "i_basic_local_rate": "i_basic_local_rate",
+      "i_basic_device_valid": "i_basic_device_valid",
+      "i_basic_device_id": "i_basic_device_id",
+      "i_basic_device_type": "i_basic_device_type",
+      "i_basic_port_valid": "i_basic_port_valid",
+      "i_basic_port": "i_basic_port",
+      "i_basic_folding": "i_basic_folding",
+      "i_basic_tx_ready_advertised": "i_basic_tx_ready_advertised",
+      "i_basic_symbols_valid": "i_basic_symbols_valid",
+      "i_basic_tx_limit_valid": "i_basic_tx_limit_valid",
+      "i_basic_tx_limit": "i_basic_tx_limit",
+      "o_basic_local_ready": "o_msg_basic_local_ready",
+      "o_basic_local_pending": "o_msg_basic_local_pending",
+      "o_basic_local_waiting": "o_msg_basic_local_waiting",
+      "o_basic_remote_pending": "o_msg_basic_remote_pending",
+      "o_basic_source_pending": "o_msg_basic_source_pending",
+      "o_basic_source_words": "o_msg_basic_source_words",
+      "o_basic_local_start": "o_msg_basic_local_start",
+      "o_basic_local_commit": "o_msg_basic_local_commit",
+      "o_basic_local_done": "o_msg_basic_local_done",
+      "o_basic_reply_done": "o_msg_basic_reply_done",
+      "o_basic_rx_request": "o_msg_basic_rx_request",
+      "o_basic_rx_noop": "o_msg_basic_rx_noop",
+      "o_basic_rx_unhandled": "o_msg_basic_rx_unhandled",
+      "o_basic_rx_unsupported": "o_msg_basic_rx_unsupported",
+      "o_basic_rx_unmatched_ack": "o_msg_basic_rx_unmatched_ack",
+      "o_basic_rx_overlap": "o_msg_basic_rx_overlap",
+      "o_basic_peer_rate_valid": "o_msg_basic_peer_rate_valid",
+      "o_basic_peer_rate": "o_msg_basic_peer_rate",
+      "o_basic_peer_device_valid": "o_msg_basic_peer_device_valid",
+      "o_basic_peer_device_type": "o_msg_basic_peer_device_type",
+      "o_basic_peer_device_id": "o_msg_basic_peer_device_id",
+      "o_basic_peer_port_valid": "o_msg_basic_peer_port_valid",
+      "o_basic_peer_port": "o_msg_basic_peer_port",
+      "o_basic_peer_rate_update": "o_msg_basic_peer_rate_update",
+      "o_basic_deadline_miss": "o_msg_basic_deadline_miss",
+      "o_basic_deadline_fault": "o_msg_basic_deadline_fault",
+      "o_basic_protocol_fault": "o_msg_basic_protocol_fault",
+      "o_basic_error": "o_msg_basic_error",
+      "i_control_pending": "o_ctl_source_pending",
+      "i_control_words": "o_ctl_source_words",
+      "o_control_take": "o_msg_control_take",
+      "o_unhandled_valid": "o_msg_unhandled_valid",
+      "o_unhandled_word": "o_msg_unhandled_word",
+      "o_error": "o_msg_error"
+    },
+    "control": {
+      "i_clk": "i_clk",
+      "i_rstn": "i_rstn",
+      "i_source_take": "o_msg_control_take",
+      "i_rx_valid": "o_msg_unhandled_valid",
+      "i_rx_word": "o_msg_unhandled_word",
+      "i_request_valid": "i_ctl_request_valid",
+      "i_request_channel": "i_ctl_request_channel",
+      "i_request_target": "i_ctl_request_target",
+      "i_request_priority": "i_ctl_request_priority",
+      "i_channel_ready": "i_ctl_channel_ready",
+      "i_width_ready": "i_ctl_width_ready",
+      "i_clear_soft_lockout": "i_ctl_clear_soft_lockout",
+      "o_source_pending": "o_ctl_source_pending",
+      "o_source_words": "o_ctl_source_words",
+      "o_source_purpose": "o_ctl_source_purpose",
+      "o_source_request_word": "o_ctl_source_request_word",
+      "o_local_ready": "o_ctl_local_ready",
+      "o_local_accept": "o_ctl_local_accept",
+      "o_tx_valid": "o_ctl_tx_valid",
+      "o_tx_word": "o_ctl_tx_word",
+      "o_rx_status": "o_ctl_rx_status",
+      "o_local_busy": "o_ctl_local_busy",
+      "o_local_request_word": "o_ctl_local_request_word",
+      "o_local_phase": "o_ctl_local_phase",
+      "o_local_restart": "o_ctl_local_restart",
+      "o_remote_busy": "o_ctl_remote_busy",
+      "o_remote_request_word": "o_ctl_remote_request_word",
+      "o_remote_reply_word": "o_ctl_remote_reply_word",
+      "o_remote_reply_sent": "o_ctl_remote_reply_sent",
+      "o_remote_from_pending": "o_ctl_remote_from_pending",
+      "o_waiting_peer": "o_ctl_waiting_peer",
+      "o_owed_restart": "o_ctl_owed_restart",
+      "o_owed_requests": "o_ctl_owed_requests",
+      "o_queue_count": "o_ctl_queue_count",
+      "o_local_done": "o_ctl_local_done",
+      "o_local_done_channel": "o_ctl_local_done_channel",
+      "o_local_done_target": "o_ctl_local_done_target",
+      "o_local_success": "o_ctl_local_success",
+      "o_remote_done": "o_ctl_remote_done",
+      "o_remote_done_channel": "o_ctl_remote_done_channel",
+      "o_remote_done_target": "o_ctl_remote_done_target",
+      "o_remote_success": "o_ctl_remote_success",
+      "o_response_miss": "o_ctl_response_miss",
+      "o_response_fault": "o_ctl_response_fault",
+      "o_restart_miss": "o_ctl_restart_miss",
+      "o_restart_fault": "o_ctl_restart_fault",
+      "o_take_error": "o_ctl_take_error",
+      "o_protocol_error": "o_ctl_protocol_error",
+      "o_protocol_fault": "o_ctl_protocol_fault",
+      "o_pending_sent": "o_ctl_pending_sent",
+      "o_pending_received": "o_ctl_pending_received",
+      "o_restart_commit": "o_ctl_restart_commit",
+      "o_channel_online": "o_ctl_channel_online",
+      "o_channel_closing": "o_ctl_channel_closing",
+      "o_negotiated_width": "o_ctl_negotiated_width",
+      "o_soft_lockout": "o_ctl_soft_lockout",
+      "o_lockout_notify": "o_ctl_lockout_notify",
+      "o_peer_tx_ready_support": "o_ctl_peer_tx_ready_support",
+      "o_auto_restart": "o_ctl_auto_restart",
+      "o_owed_first_channel": "o_ctl_owed_first_channel",
+      "o_retry_blocked": "o_ctl_retry_blocked",
+      "o_retry_target": "o_ctl_retry_target",
+      "o_round_valid": "o_ctl_round_valid",
+      "o_round_target": "o_ctl_round_target",
+      "o_round_remote_accepted": "o_ctl_round_remote_accepted",
+      "o_round_conflict": "o_ctl_round_conflict",
+      "o_round_sent_ack": "o_ctl_round_sent_ack",
+      "o_round_received_ack": "o_ctl_round_received_ack",
+      "o_round_applied": "o_ctl_round_applied",
+      "o_width_event_valid": "o_ctl_width_event_valid",
+      "o_width_event_old": "o_ctl_width_event_old",
+      "o_width_event_new": "o_ctl_width_event_new",
+      "o_width_event_action": "o_ctl_width_event_action",
+      "o_width_event_pl": "o_ctl_width_event_pl",
+      "o_repeat_error": "o_ctl_repeat_error",
+      "o_repeat_fault": "o_ctl_repeat_fault",
+      "o_unsupported": "o_ctl_unsupported",
+      "o_unsupported_fault": "o_ctl_unsupported_fault"
+    }
+  },
+  "derived_message_inputs": {
+    "i_channel4_enabled": "o_ctl_channel_online[1]",
+    "i_uart_start_allowed": "!o_ctl_channel_closing[1]",
+    "i_control_pending": "o_ctl_source_pending",
+    "i_control_words": "o_ctl_source_words"
+  }
+}

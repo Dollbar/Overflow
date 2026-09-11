@@ -1,0 +1,3038 @@
+{
+  "schema_version": 1,
+  "updated_on": "2026-09-09",
+  "status": "incremental_review_batches_not_clause_complete",
+  "profile_frozen": false,
+  "all_normative_clauses_extracted": false,
+  "source_revisions": {
+    "C": "UALink Common 2.0",
+    "L": "UALink 200G DL/PL 2.0",
+    "M": "UALink Manageability 1.0",
+    "N": "NIST SP 800-38D, November 2007"
+  },
+  "review_decisions": "docs/review_decisions.md",
+  "review_batches": [
+    {
+      "ids": "R001-R040",
+      "count": 40,
+      "note": "Original IDs retained; R036 and R040 narrowed as confirmed behavior was extracted into the next batch."
+    },
+    {
+      "ids": "R041-R044",
+      "count": 4,
+      "note": "Parity formula, initial GCM block numbering, stream-specific key-roll counter and positive block command assignments; no implementation evidence."
+    },
+    {
+      "ids": "R045",
+      "count": 1,
+      "note": "Management per-device port-count limit; user-approved station parameterization contract is separately recorded in docs/ip_delivery_plan.md section 2.1 and config/project.json."
+    },
+    {
+      "ids": "R046-R077",
+      "count": 32,
+      "note": "UPLI frequency change, control/PHY/TL/switch/management acceptance detail from docs/clock_and_rate_plan.md and docs/plan_gap_review.md; no implementation or protocol test evidence."
+    },
+    {
+      "ids": "R078-R100",
+      "count": 23,
+      "note": "Transaction, ordering, RAS and block lifecycle review; 22 text-confirmed, R097 blocked by drain-only issue A18. UART custom payload protocol deferred; no implementation evidence."
+    },
+    {
+      "ids": "R101-R110",
+      "count": 10,
+      "note": "Start-readiness audit: DL CRC/arbitration/LLR, address compression state/eligibility and directional UPLI connection credits; text-confirmed only, no protocol model or RTL evidence."
+    }
+  ],
+  "record_semantics": "Project acceptance requirements paraphrased from cited clauses; not a count of all normative SHALL occurrences. text_confirmed does not mean implemented, tested or externally certified.",
+  "mapping_semantics": "Mappings are logical work packages. Requirement-wide test IDs and coverage checkpoints remain planned unless explicitly evidenced. Per-record model_evidence identifies only exercised subsets, not RTL or full requirement completion.",
+  "defaults": {
+    "implementation_status": "not_started",
+    "test_status": "not_run",
+    "coverage_status": "not_measured",
+    "evidence": []
+  },
+  "mappings": {
+    "topology": {
+      "model": "topology_and_configuration_model",
+      "implementation": [
+        "station_configuration",
+        "switch_configuration",
+        "management_validator"
+      ]
+    },
+    "dl_crc": {
+      "model": "independent_bit_serial_and_polynomial_crc_oracles",
+      "implementation": [
+        "dl_crc_generator",
+        "dl_crc_checker"
+      ]
+    },
+    "dl_receive_validation": {
+      "model": "independent_dl_message_and_flit_validation_model",
+      "implementation": [
+        "dl_message_decoder",
+        "dl_llr_rx",
+        "dl_error_counters"
+      ]
+    },
+    "compression": {
+      "model": "independent_paired_address_cache_and_issue_order_model",
+      "implementation": [
+        "tl_tx_address_cache",
+        "tl_rx_address_cache",
+        "tl_compression_eligibility",
+        "tl_cache_forwarding"
+      ]
+    },
+    "upli": {
+      "model": "upli_channel_credit_model",
+      "implementation": [
+        "endpoint_upli",
+        "switch_upli",
+        "station_control"
+      ]
+    },
+    "reset": {
+      "model": "upli_reset_connection_model",
+      "implementation": [
+        "upli_connection",
+        "tl_compression_cache"
+      ]
+    },
+    "parity": {
+      "model": "independent_parity_and_ras_oracle",
+      "implementation": [
+        "upli_parity",
+        "ras_controller"
+      ]
+    },
+    "tl": {
+      "model": "independent_tl_codec_and_credit_model",
+      "implementation": [
+        "tl_encoder",
+        "tl_decoder",
+        "tl_credit"
+      ]
+    },
+    "llr": {
+      "model": "dl_sequence_and_replay_model",
+      "implementation": [
+        "dl_llr_tx",
+        "dl_llr_rx",
+        "replay_buffer"
+      ]
+    },
+    "management": {
+      "model": "management_lifecycle_and_device_model",
+      "implementation": [
+        "csr_identity",
+        "management_agents",
+        "pod_controller",
+        "ras_firmware",
+        "platform_persistent_store"
+      ]
+    },
+    "security": {
+      "model": "independent_security_mapping_and_context_model",
+      "implementation": [
+        "security_datapath",
+        "security_context",
+        "trusted_configuration"
+      ]
+    },
+    "inc": {
+      "model": "independent_inc_numerical_oracle",
+      "implementation": [
+        "inc_decoder",
+        "inc_numeric_engine"
+      ]
+    },
+    "clock_rate": {
+      "model": "independent_rate_change_and_fifo_timing_model",
+      "implementation": [
+        "upli_rate_controller",
+        "dl_tx_pacer",
+        "rate_adaptation_fifo",
+        "platform_clock_control_adapter"
+      ]
+    },
+    "dl_control": {
+      "model": "independent_dl_message_lifecycle_model",
+      "implementation": [
+        "dl_basic_message_controller",
+        "dl_control_message_controller",
+        "dl_uart",
+        "dl_message_scheduler"
+      ]
+    },
+    "dl_packing": {
+      "model": "independent_dl_sector_and_carry_model",
+      "implementation": [
+        "dl_packer",
+        "dl_unpacker",
+        "dl_llr_rx"
+      ]
+    },
+    "link_state": {
+      "model": "independent_dl_link_and_folding_model",
+      "implementation": [
+        "dl_link_state",
+        "link_width_controller",
+        "phy_power_adapter",
+        "ras_controller"
+      ]
+    },
+    "digital_phy": {
+      "model": "independent_rs_pcs_codeword_model",
+      "implementation": [
+        "rs_control",
+        "pcs_rate_matching",
+        "digital_phy_adapter"
+      ]
+    },
+    "switch_route": {
+      "model": "independent_per_port_routing_model",
+      "implementation": [
+        "switch_route_table",
+        "switch_forwarder",
+        "management_validator"
+      ]
+    },
+    "transaction": {
+      "model": "independent_transaction_lifecycle_and_ordering_model",
+      "implementation": [
+        "endpoint_upli",
+        "switch_upli",
+        "transaction_tracker",
+        "response_assembler",
+        "ordering_scheduler",
+        "local_memory_contract_adapter"
+      ]
+    },
+    "recovery": {
+      "model": "independent_ras_state_and_credit_ledger_model",
+      "implementation": [
+        "ras_controller",
+        "transaction_watchdog",
+        "isolation_completion_engine",
+        "tl_drop_controller",
+        "management_recovery_adapter"
+      ]
+    },
+    "inc_lifecycle": {
+      "model": "independent_block_queue_address_and_completion_model",
+      "implementation": [
+        "inc_request_tracker",
+        "inc_response_reducer",
+        "block_queue_controller",
+        "block_address_generator",
+        "block_status_writer",
+        "management_driver"
+      ]
+    }
+  },
+  "requirements": [
+    {
+      "id": "R001",
+      "family": "F01",
+      "source": "C §1.1 p21–22; §2.4 p37; §9.2 p246",
+      "level": "normative_definition",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "topology",
+      "condition": "200G station profile",
+      "requirement": "一个 station 按四个双向 lanes 建模，不能把 p41 的八 lanes 文字用于翻倍带宽。",
+      "test_id": "T-R001",
+      "coverage": "NUM_STATIONS×STATION_BIFURCATION 的 lane/port 归属与总预算一致，含单实例和非二次幂；具体矩阵见交付计划 §4.1",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A15"
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/evidence.json",
+          "component": "WP01_configuration_subset"
+        }
+      ]
+    },
+    {
+      "id": "R002",
+      "family": "F01",
+      "source": "C §9.2 p246",
+      "level": "mandatory",
+      "roles": [
+        "switch"
+      ],
+      "mapping": "topology",
+      "condition": "switch station",
+      "requirement": "交换 station 具备配置为一个 x4、两个 x2、四个 x1 端口的能力。",
+      "test_id": "T-R002",
+      "coverage": "三种配置各自检查端口数、映射及独立配置能力；初始 STATION_BIFURCATION 参数不得裁掉交换必选能力，角色合法性与数量检查分开",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R003",
+      "family": "F01",
+      "source": "C §2.4 p37",
+      "level": "mandatory",
+      "roles": [
+        "management",
+        "integration"
+      ],
+      "mapping": "topology",
+      "condition": "同一 Pod 部署",
+      "requirement": "Pod 中的 station 按正文要求采用相同 bifurcation，不能将设备配置能力解释为任意混搭许可。",
+      "test_id": "T-R003",
+      "coverage": "一致配置接受；异构配置在部署校验阶段明确处理，不捏造线上错误码；包含多 station 和受控模式重配置场景",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/evidence.json",
+          "component": "WP01_configuration_subset"
+        }
+      ]
+    },
+    {
+      "id": "R004",
+      "family": "F01",
+      "source": "C §2.4 p37",
+      "level": "mandatory",
+      "roles": [
+        "management",
+        "integration"
+      ],
+      "mapping": "topology",
+      "condition": "同一 Pod 部署",
+      "requirement": "各 Accelerator 的 UALink 端口数相等。",
+      "test_id": "T-R004",
+      "coverage": "从 station 数/划分推导端口数量，检查相等/不等端口数；与 Accelerator 总数及 Physical Switch 的 station 数量分开",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/evidence.json",
+          "component": "WP01_configuration_subset"
+        }
+      ]
+    },
+    {
+      "id": "R005",
+      "family": "F08",
+      "source": "C §5.8 p132–135; §8.5.12.1 p233–234",
+      "level": "normative_definition",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "tl",
+      "condition": "所选完整 TL profile",
+      "requirement": "TL 资源模型区分四个 VC，不用 UPLI 表中的 1.0 历史文字限定为单 VC。",
+      "test_id": "T-R005",
+      "coverage": "每个 VC 的请求/响应命令与数据资源，及池关联",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A01"
+      ]
+    },
+    {
+      "id": "R006",
+      "family": "F03",
+      "source": "C §2.6 p43",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "初始化或接口复位",
+      "requirement": "UPLI sender 的信用计数初始为零，不能预置未由接收端释放的信用。",
+      "test_id": "T-R006",
+      "coverage": "所有端口/通道/VC/pool 的初始值及无信用禁发",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/credit_optimization_evidence.json",
+      "rtl_historical_evidence": [
+        "verification/rtl/credit_evidence.json"
+      ],
+      "rtl_additional_evidence": [
+        "verification/rtl/initialization_evidence.json"
+      ]
+    },
+    {
+      "id": "R007",
+      "family": "F03",
+      "source": "C §2.6 p43",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "UPLI credit return",
+      "requirement": "信用返回独立于 beat 的 TDM 相位，可同周期对多个端口返回。",
+      "test_id": "T-R007",
+      "coverage": "非当前 TDM 端口返回及多端口同时返回",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/return_evidence.json",
+          "component": "WP02_normal_credit_return_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/credit_optimization_evidence.json",
+      "rtl_historical_evidence": [
+        "verification/rtl/credit_evidence.json"
+      ],
+      "rtl_additional_evidence": [
+        "verification/rtl/initialization_evidence.json",
+        "verification/rtl/return_evidence.json",
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R008",
+      "family": "F03",
+      "source": "C §2.6 p43",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "对应 CreditVld 有效",
+      "requirement": "返回数量解释为 CreditPortNum+1；无效周期不应用该计数。",
+      "test_id": "T-R008",
+      "coverage": "编码 0/1/2/3 对应 1/2/3/4，及 valid=0 忽略",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/return_evidence.json",
+          "component": "WP02_normal_credit_return_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/credit_optimization_evidence.json",
+      "rtl_historical_evidence": [
+        "verification/rtl/credit_evidence.json"
+      ],
+      "rtl_additional_evidence": [
+        "verification/rtl/initialization_evidence.json",
+        "verification/rtl/return_evidence.json",
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R009",
+      "family": "F03",
+      "source": "C §2.6 p44",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "初始信用释放",
+      "requirement": "CreditInitDone 最早在最后一次初始信用释放之后一个周期断言。",
+      "test_id": "T-R009",
+      "coverage": "同周期错误、下一周期边界、独立端口完成",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/initialization_evidence.json",
+          "component": "WP02_initial_credit_publication_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/initialization_evidence.json",
+      "rtl_additional_evidence": [
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R010",
+      "family": "F03",
+      "source": "C §2.6 p44",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "CreditInitDone 已断言",
+      "requirement": "CreditInitDone 保持到接口复位或断电。",
+      "test_id": "T-R010",
+      "coverage": "初始化后持续保持及复位清除",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/initialization_evidence.json",
+          "component": "WP02_initial_credit_publication_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/initialization_evidence.json",
+      "rtl_additional_evidence": [
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R011",
+      "family": "F03",
+      "source": "C §2.6 p44",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "sender 检测初始信用完成",
+      "requirement": "按实现声明的大于一个周期的连续断言长度确认完成，确认后不再监测该信号。",
+      "test_id": "T-R011",
+      "coverage": "短脉冲不提前完成、阈值边界、完成后噪声不改状态",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/credit_optimization_evidence.json",
+      "rtl_historical_evidence": [
+        "verification/rtl/credit_evidence.json"
+      ],
+      "rtl_additional_evidence": [
+        "verification/rtl/initialization_evidence.json"
+      ]
+    },
+    {
+      "id": "R012",
+      "family": "F03",
+      "source": "C §2.6 p44",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "已接收的 UPLI beat 信用回收",
+      "requirement": "保留并回放接收 beat 的 VC 和 pool 类型，使信用回到原来的资源账户。",
+      "test_id": "T-R012",
+      "coverage": "混合 pool/VC 和跨端口回收；账户守恒",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/receipt_evidence.json",
+          "component": "WP02_receiver_receipt_subset"
+        },
+        {
+          "record": "verification/rtl/return_evidence.json",
+          "component": "WP02_normal_credit_return_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_SRAM_receive_and_credit_handoff_not_complete_UPLI_or_requirement",
+      "rtl_evidence": "verification/rtl/return_evidence.json",
+      "rtl_additional_evidence": [
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R013",
+      "family": "F03",
+      "source": "C §2.6 p44",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "发出带数据的写请求",
+      "requirement": "预先具备请求和完整连续数据 burst 的信用，首个数据 beat 与请求一起发出。",
+      "test_id": "T-R013",
+      "coverage": "只缺请求/只缺任一数据信用禁发，齐备后按 TDM 连续发出",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/burst_evidence.json",
+          "component": "WP02_normal_burst_subset"
+        }
+      ]
+    },
+    {
+      "id": "R014",
+      "family": "F03",
+      "source": "C §2.6 p45",
+      "level": "normative_definition",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "upli",
+      "condition": "跨层流控",
+      "requirement": "UPLI 本地信用环和相邻 TL 间的信用环是独立机制。",
+      "test_id": "T-R014",
+      "coverage": "只阻塞其中一个环时另一个环的账户不被误消费/返还",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R015",
+      "family": "F03",
+      "source": "C §4.1 p101",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "reset",
+      "condition": "UPLIReset_N",
+      "requirement": "复位断言和撤销相对 UPLIClk 同步。",
+      "test_id": "T-R015",
+      "coverage": "接口复位边沿时序契约；不套用异步复位模板",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/return_evidence.json",
+          "component": "WP02_normal_credit_return_subset"
+        },
+        {
+          "record": "verification/rtl/receive_evidence.json",
+          "component": "WP02_SRAM_FIFO_synchronous_reset_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/connection_evidence.json",
+      "rtl_additional_evidence": [
+        "verification/rtl/credit_evidence.json",
+        "verification/rtl/credit_optimization_evidence.json",
+        "verification/rtl/initialization_evidence.json",
+        "verification/rtl/return_evidence.json",
+        "verification/rtl/receive_evidence.json",
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    },
+    {
+      "id": "R016",
+      "family": "F03",
+      "source": "C §4.1 p101",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "reset",
+      "condition": "UPLI 接口复位事件",
+      "requirement": "不保留接口状态，清除信用，终止 outstanding 事务且不为这些事务返回完成。",
+      "test_id": "T-R016",
+      "coverage": "各通道在事务中途复位；不得混淆 isolation 合成完成路径",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R017",
+      "family": "F03",
+      "source": "C §4.1 p101",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "reset",
+      "condition": "复位后重新连接",
+      "requirement": "ClkReq 重连尝试至少晚于复位撤销一个周期。",
+      "test_id": "T-R017",
+      "coverage": "同周期禁止、下一周期边界及不同方向请求",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/connection_evidence.json"
+    },
+    {
+      "id": "R018",
+      "family": "F07",
+      "source": "C §4.1 p101",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "reset",
+      "condition": "相关 TL 存在 Tx 压缩缓存",
+      "requirement": "UPLI reset 清除对应 Tx 地址压缩缓存。",
+      "test_id": "T-R018",
+      "coverage": "热缓存复位后不得继续按旧有效项压缩",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R019",
+      "family": "F05",
+      "source": "C Table 2-21 p70",
+      "level": "mandatory",
+      "roles": [
+        "upli_receiver"
+      ],
+      "mapping": "parity",
+      "condition": "OrigDataVldParity 检查",
+      "requirement": "OrigDataVld 的 parity 每周期检查，包括 OrigDataVld 为零时。",
+      "test_id": "T-R019",
+      "coverage": "有效/无效周期翻转 valid 或 parity 各自检测",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        }
+      ]
+    },
+    {
+      "id": "R020",
+      "family": "F05",
+      "source": "C Table 2-21 p70",
+      "level": "mandatory",
+      "roles": [
+        "upli_sender",
+        "upli_receiver"
+      ],
+      "mapping": "parity",
+      "condition": "OrigDataVld 有效",
+      "requirement": "每 64-bit 数据组的偶校验覆盖该组全部数据，包括被 ByteEn 屏蔽的字节。",
+      "test_id": "T-R020",
+      "coverage": "全使能、部分使能、全屏蔽时仍检查相同数据分组",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        }
+      ]
+    },
+    {
+      "id": "R021",
+      "family": "F10",
+      "source": "L §2.6.6.1 p47; §2.6.6.4 p49",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "dl_rx"
+      ],
+      "mapping": "llr",
+      "condition": "DL flit 序号",
+      "requirement": "有效序号为 1–511，后继 511→1；显式序号零按规定丢弃并记录。",
+      "test_id": "T-R021",
+      "coverage": "510→511→1→2、reset 初值与显式零输入",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A02"
+      ]
+    },
+    {
+      "id": "R022",
+      "family": "F10",
+      "source": "L §2.6.6.1 p47",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "NOP DL flit",
+      "requirement": "NOP 不消费新的序号，使用 Tx_last_seq。",
+      "test_id": "T-R022",
+      "coverage": "空闲 NOP 连续发送和 payload/NOP 混合跨环回",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R023",
+      "family": "F10",
+      "source": "L §2.6.6.5 p50",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "接纳新 flit 到 TxReplay",
+      "requirement": "只有不在 replay、缓冲未满且未确认数小于 255 才能接纳新的 payload。",
+      "test_id": "T-R023",
+      "coverage": "254→255 可接纳，255 禁接纳；物理满和 replay 条件分别触发",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R024",
+      "family": "F10",
+      "source": "L §2.6.6.3 p48",
+      "level": "mandatory",
+      "roles": [
+        "dl_rx"
+      ],
+      "mapping": "llr",
+      "condition": "Command Flit 的 ackReqSeq 为零",
+      "requirement": "丢弃该 Command Flit 并记录错误，不能把零作为 ACK 边界使用。",
+      "test_id": "T-R024",
+      "coverage": "ACK/replay request 的零值与合法非零值",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R025",
+      "family": "F10",
+      "source": "L §2.6.6.3 p48–49",
+      "level": "mandatory",
+      "roles": [
+        "dl_rx",
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "非零 ACK 候选",
+      "requirement": "按有效序号距离检验 ACK 属于 last_ack 到已发送尾部的有效范围，再累计回收相应 replay 项。",
+      "test_id": "T-R025",
+      "coverage": "重复 ACK、合法前进、超前/过旧 ACK、跨环回；AR01 仅算术旁证",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A02"
+      ]
+    },
+    {
+      "id": "R026",
+      "family": "F10",
+      "source": "L §2.6.6.3 p48–49",
+      "level": "mandatory",
+      "roles": [
+        "dl_rx",
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "replay request 且 ignore window 为零",
+      "requirement": "只对当前未确认队列内的候选启动 replay，并按正文设置 first_replay 与 ignore 计数。",
+      "test_id": "T-R026",
+      "coverage": "队首/队尾/队外候选、空队列、ignore window 非零分支",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A02"
+      ]
+    },
+    {
+      "id": "R027",
+      "family": "F10",
+      "source": "L §2.6.6.7 p50–51",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "第一次发送本次 replay",
+      "requirement": "首个 replay flit 使用 explicit replay 编码并重设 explicit 计数，优先级高于普通命令调度。",
+      "test_id": "T-R027",
+      "coverage": "first_replay 与 ACK/replay request 同时待发时的优先级",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R028",
+      "family": "F10",
+      "source": "L §2.6.6.8 p51",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx"
+      ],
+      "mapping": "llr",
+      "condition": "存在未确认 replay 项",
+      "requirement": "ACK watchdog 递减；真正移除队列项的 ACK 才重装；计数到零转 DL Idle。",
+      "test_id": "T-R028",
+      "coverage": "重复 ACK 不无限续命、进展 ACK 重装、超时退出",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R029",
+      "family": "F19",
+      "source": "M Table 4-1 p24; L Table 2-6 p28; C Tables 8-7/8-8 p212; §8.6.1.2 p239",
+      "level": "normative_definition",
+      "roles": [
+        "management",
+        "dl_rx",
+        "security"
+      ],
+      "mapping": "management",
+      "condition": "跨层端口身份处理",
+      "requirement": "管理 PortNum uint16、DL 12-bit、端点间 IV 源端口/INC 安全身份 10-bit 及端点间 KMAC context 的 16-bit 填充表示分开；不隐式截断别名。",
+      "test_id": "T-R029",
+      "coverage": "边界 1023/1024/4095/4096 的表示与配置检查分开；安全可接受范围由 A13 冻结",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A13"
+      ]
+    },
+    {
+      "id": "R030",
+      "family": "F20",
+      "source": "M §8.1 p63",
+      "level": "mandatory",
+      "roles": [
+        "device",
+        "firmware",
+        "platform"
+      ],
+      "mapping": "management",
+      "condition": "CPER 错误记录",
+      "requirement": "设备提供跨重启持久化 CPER 日志的能力。",
+      "test_id": "T-R030",
+      "coverage": "生成记录后设备复位，恢复后仍可读取；存储实现依赖另列",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D03",
+        "D06"
+      ]
+    },
+    {
+      "id": "R031",
+      "family": "F20",
+      "source": "M §8.1 p63",
+      "level": "mandatory",
+      "roles": [
+        "firmware"
+      ],
+      "mapping": "management",
+      "condition": "设备生成 CPER 记录",
+      "requirement": "记录头有效且 Creator ID 等于设备对管理面公布的 UALink UUID。",
+      "test_id": "T-R031",
+      "coverage": "多设备 UUID 匹配和故意错配；具体 CPER 编码等待外部引用锁定",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D03"
+      ]
+    },
+    {
+      "id": "R032",
+      "family": "F20",
+      "source": "M §8.2 p64",
+      "level": "mandatory",
+      "roles": [
+        "pod_controller",
+        "management",
+        "device"
+      ],
+      "mapping": "management",
+      "condition": "仅 Pod Controller 失效/重启",
+      "requirement": "既有工作负载不能仅因为 Controller 故障而失败，设备和代理继续工作。",
+      "test_id": "T-R032",
+      "coverage": "有业务时终止/重启 Controller，数据面持续且重连校准",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R033",
+      "family": "F20",
+      "source": "M §8.3 p65",
+      "level": "mandatory",
+      "roles": [
+        "switch_management_agent",
+        "switch"
+      ],
+      "mapping": "management",
+      "condition": "仅 SMA 失效/重启",
+      "requirement": "业务不能仅因 SMA 故障而失败，不能仅因此改路由或 reset 交换数据面。",
+      "test_id": "T-R033",
+      "coverage": "SMA 重启期间路由/转发保持及重连读取状态",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R034",
+      "family": "F20",
+      "source": "M §8.5 p67",
+      "level": "mandatory",
+      "roles": [
+        "node_management_agent",
+        "endpoint"
+      ],
+      "mapping": "management",
+      "condition": "仅 NMA 失效/重启",
+      "requirement": "业务不能仅因 NMA 故障而失败，重启后重新收集设备状态。",
+      "test_id": "T-R034",
+      "coverage": "NMA 重启、端点业务持续与状态再发现",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R035",
+      "family": "F18",
+      "source": "C §8.6.1.3 p239",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc",
+        "trusted_software"
+      ],
+      "mapping": "security",
+      "condition": "受保护邻居配置与发现",
+      "requirement": "实际邻居与配置不符时不得使能 TL/UPLI；LOCK 后邻居配置保持到 UNLOCK。",
+      "test_id": "T-R035",
+      "coverage": "DeviceID/type/port 各字段错配、LOCK 后修改、UNLOCK 后合法重配",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R036",
+      "family": "F17",
+      "source": "C §8.5.1 p198–200; §8.5.7.9 p223–227",
+      "level": "conditional_mandatory",
+      "roles": [
+        "security"
+      ],
+      "mapping": "security",
+      "condition": "加密/认证模式",
+      "requirement": "请求字段采用唯一、可互操作的 AAD/MSG 位映射；当前概述与表格不一致，不能填入最终常量。初始 GCM 块计数已独立提取为 R042。",
+      "test_id": "T-R036",
+      "coverage": "待澄清后做每字段逐位翻转、PCRC 组合、多 beat 打包及独立已知答案",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A05"
+      ]
+    },
+    {
+      "id": "R037",
+      "family": "F17",
+      "source": "C Table 8-4 p202; Table 8-5 p204; §8.5.7.9 p223",
+      "level": "conditional_mandatory",
+      "roles": [
+        "security",
+        "switch_inc"
+      ],
+      "mapping": "security",
+      "condition": "2.0 响应安全处理",
+      "requirement": "确认 RdRspTypeInfo/WrRspTypeInfo 的认证映射与域关联；TBD 不得默认为不保护。",
+      "test_id": "T-R037",
+      "coverage": "普通/primitive/block 类型扰动及 outstanding 关联，待正确格式确认",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A06"
+      ]
+    },
+    {
+      "id": "R038",
+      "family": "F06",
+      "source": "C Table 5-27 p136; Table 5-35 p142; Table 5-38 p145",
+      "level": "conditional_mandatory",
+      "roles": [
+        "tl_tx",
+        "tl_rx"
+      ],
+      "mapping": "tl",
+      "condition": "完整 block 压缩响应支持",
+      "requirement": "冻结唯一的压缩响应 FTYPE 表，当前表头/解释/汇总冲突不得擅自覆盖。",
+      "test_id": "T-R038",
+      "coverage": "全部响应格式互不混淆，保留值行为；需官方澄清",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A09"
+      ]
+    },
+    {
+      "id": "R039",
+      "family": "F15",
+      "source": "C Table 2-5 p54; §6.6–6.7",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc"
+      ],
+      "mapping": "inc",
+      "condition": "完整 INC 数值 profile",
+      "requirement": "确认 FP8 0x71 与 0x73 的精确语义，不猜测重复条目的正确替代。",
+      "test_id": "T-R039",
+      "coverage": "对应 FP8 全部特殊值及 min/max 差异，待编码关闭",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A10"
+      ]
+    },
+    {
+      "id": "R040",
+      "family": "F05",
+      "source": "C §2.7.7.1 p70; §3.1.1–3.1.2 p85–87; §5.3.3 p115",
+      "level": "mandatory",
+      "roles": [
+        "switch"
+      ],
+      "mapping": "parity",
+      "condition": "交换内部 OrigDataByteEn 错误",
+      "requirement": "确认可独立定位的交换内部 byte-enable 错误应采用的分类和 poison/drop 处置；不混同 UPLI parity 或 Atomic 控制 mask。Parity 公式独立提取为 R041。",
+      "test_id": "T-R040",
+      "coverage": "错误位置×可隔离性×请求类型；保留已明确的混合 data/control 错误规则，冲突路径待澄清",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A17"
+      ]
+    },
+    {
+      "id": "R041",
+      "family": "F05",
+      "source": "C Table 2-21 p70; §3.1.1–3.1.2 p85–86",
+      "level": "mandatory",
+      "roles": [
+        "upli_sender",
+        "upli_receiver"
+      ],
+      "mapping": "parity",
+      "condition": "OrigDataVld 有效",
+      "requirement": "OrigDataByteEnParity 为 64-bit OrigDataByteEn 的归约异或；接收检查该 64-bit 字段加 parity 的偶校验，不包含其它控制/数据或自指反馈。",
+      "test_id": "T-R041",
+      "coverage": "全零/全一/每位 one-hot/交替值/随机值；64 个使能位及 parity 位分别翻转；valid=0 不检查；RAS 处置不由此测试替代",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A12"
+      ]
+    },
+    {
+      "id": "R042",
+      "family": "F17",
+      "source": "C §8.5.7.3 p212; §8.5.7.9 p224–227; N §7.1 Algorithm 4 printed p15/PDF p23",
+      "level": "conditional_mandatory",
+      "roles": [
+        "security"
+      ],
+      "mapping": "security",
+      "condition": "96-bit IV 的 AES-GCM",
+      "requirement": "标签掩码使用低 32-bit 块计数 1，首个 128-bit MSG 块从 2 开始；首段 512-bit 数据对应 2–5。事务 invocation counter 与块计数分开。",
+      "test_id": "T-R042",
+      "coverage": "独立 GCM 已知答案、首块及空 MSG、事务边界；完整 UALink 字段/PCRC 向量仍依赖 R036/R037 和 D03",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A07",
+        "D03"
+      ]
+    },
+    {
+      "id": "R043",
+      "family": "F18",
+      "source": "C Figure 8-7 p216; §8.5.7.5 and Figures 8-9/8-10 p219–221",
+      "level": "conditional_mandatory",
+      "roles": [
+        "security_tx",
+        "security_rx"
+      ],
+      "mapping": "security",
+      "condition": "Write Response 流切换到新派生密钥",
+      "requirement": "按对应握手边界切换并重置写响应流 invocation counter，不再次清零已切换的读响应流或请求流；不能将共享派生密钥解释为同步重置所有流。",
+      "test_id": "T-R043",
+      "coverage": "三流切换之间插入业务、延期握手及背压；逐上下文追踪 key/IV 唯一性；主密钥/epoch 与 SO/SOL 另行验证",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A08"
+      ]
+    },
+    {
+      "id": "R044",
+      "family": "F02",
+      "source": "C Table 2-12 p57; §6.3.2–6.3.4 p163–165",
+      "level": "normative_definition",
+      "roles": [
+        "endpoint",
+        "switch_inc"
+      ],
+      "mapping": "inc",
+      "condition": "支持 Block Collective 命令",
+      "requirement": "显式正向分配 0x20=BlockCollectiveInvoke、0x21=BlockCollectiveAllocate、0x22=BlockCollectiveDeallocate，不因保留行重叠拒绝这三项命令。",
+      "test_id": "T-R044",
+      "coverage": "三个编码逐项往返/命令分派及 Write 类属性；不以此测试宣称完整保留值策略或 Block 压缩格式已冻结",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A11"
+      ]
+    },
+    {
+      "id": "R045",
+      "family": "F01",
+      "source": "M §1.4 Table 1-1 p16; §2.4–2.6 p18–19; §4.5.4 Table 4-13 p33; C §2.4 p37",
+      "level": "mandatory",
+      "roles": [
+        "management",
+        "endpoint",
+        "physical_switch",
+        "integration"
+      ],
+      "mapping": "topology",
+      "condition": "按 Manageability 1.0 管理的 Pod",
+      "requirement": "每个 Accelerator 和每个 Physical Switch 的端口数量分别不超过 1024；按 station 划分后的端口清单检查，不把端口数量上限当 PortNum 取值范围或 station 数固定上限。",
+      "test_id": "T-R045",
+      "coverage": "x4 的 1024/1025、2x2 的 512/513、4x1 的 256/257 个 station 数量边界；模式改变后重查端口清单，全部已配置端口计数不被 link-up 数量替代；数量通过不替代 R002/R003/R004/R029",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/evidence.json",
+          "component": "WP01_configuration_subset"
+        }
+      ]
+    },
+    {
+      "id": "R046",
+      "family": "F09",
+      "source": "L §2.4.2.2 Table 2-4 p26–27",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "clock_rate",
+      "condition": "TL Rate Notification 编码与能力",
+      "requirement": "请求 Rate[31:16] 每 LSB 为 50 kHz，默认 31250、参考 3125；支持 156.25 MHz 最低参考速率；按 x4/x2/x1 每链路 512/256/128-bit 基准归一化，ACK 的 Rate 字段保留。",
+      "test_id": "T-R046",
+      "coverage": "默认/参考/选定中间频点；位宽换算和不同 bifurcation；ACK 不依赖 Rate 回显；不把全部可编码数值当已支持频点",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_basic_evidence.json",
+          "component": "WP05_basic_message_lifecycle_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_control_evidence.json",
+          "component": "WP05_basic_control_actual_RTL_functional_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_proof_evidence.json",
+          "component": "WP05_basic_control_independent_full_state_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        }
+      ],
+      "model_scope": "Literal32-bit Rate request encoding and reservedACKfield handling; width/clock normalization and supported frequency profile remain open.",
+      "rtl_scope": "Actual Basic RTL: stage28 six profiles/41735 edges/all194 outputs and six real faults; stage29 independent156bit state/194bit output induction at six timer configurations, two actual library mappings with48 full bus comparisons, six RTL and one mapped counterexamples. STA7of10 with640ps worstsetup -279.172ps andhold10of10; stableclock only. ActualDL source arbitration, hardwarepacing/PHY and complete end-to-end time budget remain open; requirement still partial.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        }
+      ],
+      "current_integration_scope": "Stage34 actual Basic/UART/SRAM integration:48192 real edges,546 public pre/post output bits,7 independent actual RTL faults. Stage35 two real period mappings plus actual292-buffer repairs each prove173 output/state/macro-transaction buses with complete retained-Q/graph/clock audit; shared two SRAM Q buses establish mapping only. OriginalSTA0of30;actual-buffer hold30of30 andSTA15of30,640ps worstsetup -714.595ps;6.4ns all15 pass under synthetic SRAM views. No new combined independent-reference/content induction,PHY/physical SRAM signoff,hardwarepacing,A20 cadence or complete requirement claim. Stage36 additionally proves combined independent control and actualbit0 content at128words/640and6400ps with noQ/statecutpoints:72 queries,4 actual RTL counterexamples,14 graph rejection controls. Full64-profile word matrix started; frozen checkpoint2of64 is not a full-word claim. Physical640ps and complete requirement remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open"
+    },
+    {
+      "id": "R047",
+      "family": "F09",
+      "source": "L §2.5.1 Figure 2-18 p41",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "clock_rate",
+      "condition": "接收方 UPLI 吞吐低于物理吞吐",
+      "requirement": "发送侧限制 TL flit 接纳到 DL Tx FIFO 的速率，防止低频接收方 Rx FIFO 溢出；pacing 不是降低串行线速，也不由信用足够自动替代。",
+      "test_id": "T-R047",
+      "coverage": "满负载、在途 burst、FIFO 高水位、不同双方频率；独立检查 TL credit/UPLI credit/pacing；VCLK02/VCLK04/VCLK07",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R048",
+      "family": "F09",
+      "source": "L §2.5.2–§2.5.4 p41–42",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "clock_rate",
+      "condition": "UPLI 时钟角色约束",
+      "requirement": "Switch 保持规定的固定 UPLI 时钟/吞吐并响应对端速率变化；只有 Accelerator 可发起 UPLI 调频，直连 Accelerators 允许不同速率并独立同时改变。",
+      "test_id": "T-R048",
+      "coverage": "直连两端同时调频、端点—交换机、交换机非法本地调频请求；不把 station 扩展当提高时钟",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R049",
+      "family": "F09",
+      "source": "L §2.5.4 items 3–4 p42",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "integration"
+      ],
+      "mapping": "clock_rate",
+      "condition": "Accelerator UPLI 调频；用户已选择实现",
+      "requirement": "先调整 Tx pacing、发送参考速率通知并等待 ACK，再无毛刺切至 156.25 MHz、重配 PLL、切新频率，再发新速率通知并等待 ACK；本端发送继续遵守更低的对端速率。",
+      "test_id": "T-R049",
+      "coverage": "VCLK01–VCLK05；两次通知/ACK 完整顺序，缺 ACK 不提前降频，多端口共享时钟，PLL 延迟/异常与 reset；不重配 SerDes 线速",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D06"
+      ]
+    },
+    {
+      "id": "R050",
+      "family": "F09",
+      "source": "L §2.4.2.2 p26; §2.5.4 item 5 p42",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "clock_rate",
+      "condition": "收到 TL Rate Notification 请求",
+      "requirement": "记录通告速率，先调整必要的 Tx pacing，再在收到请求后 1 μs 内发出 ACK；不是等本端 PLL 改好才响应。",
+      "test_id": "T-R050",
+      "coverage": "独立时间 monitor 测时限边界，UART/控制竞争与最低 UPLI 速率；丢失/迟到 ACK 注错；不把该时限当完整调频或本端 ACK 等待超时",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_basic_evidence.json",
+          "component": "WP05_basic_message_lifecycle_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_control_evidence.json",
+          "component": "WP05_basic_control_actual_RTL_functional_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_proof_evidence.json",
+          "component": "WP05_basic_control_independent_full_state_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        }
+      ],
+      "model_scope": "External already-applied pacing qualification and integerps receive-to-actual-commit deadline; hardware pacing,CDC/PHY budget and full arbitration load remain open.",
+      "rtl_scope": "Actual Basic RTL: stage28 six profiles/41735 edges/all194 outputs and six real faults; stage29 independent156bit state/194bit output induction at six timer configurations, two actual library mappings with48 full bus comparisons, six RTL and one mapped counterexamples. STA7of10 with640ps worstsetup -279.172ps andhold10of10; stableclock only. ActualDL source arbitration, hardwarepacing/PHY and complete end-to-end time budget remain open; requirement still partial.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        }
+      ],
+      "current_integration_scope": "Stage34 actual Basic/UART/SRAM integration:48192 real edges,546 public pre/post output bits,7 independent actual RTL faults. Stage35 two real period mappings plus actual292-buffer repairs each prove173 output/state/macro-transaction buses with complete retained-Q/graph/clock audit; shared two SRAM Q buses establish mapping only. OriginalSTA0of30;actual-buffer hold30of30 andSTA15of30,640ps worstsetup -714.595ps;6.4ns all15 pass under synthetic SRAM views. No new combined independent-reference/content induction,PHY/physical SRAM signoff,hardwarepacing,A20 cadence or complete requirement claim. Stage36 additionally proves combined independent control and actualbit0 content at128words/640and6400ps with noQ/statecutpoints:72 queries,4 actual RTL counterexamples,14 graph rejection controls. Full64-profile word matrix started; frozen checkpoint2of64 is not a full-word claim. Physical640ps and complete requirement remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open"
+    },
+    {
+      "id": "R051",
+      "family": "F09",
+      "source": "L §2.4.2–§2.4.2.1 p25–26",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_control",
+      "condition": "Basic Message 请求调度",
+      "requirement": "本地同一 Basic mclass 不超过一个 outstanding 请求；两个方向相同 mclass/mtype 的同时请求是独立序列，不套 Control 的 confirming ACK/pending 流程。",
+      "test_id": "T-R051",
+      "coverage": "Rate/Device ID/Port/Tx Ready 排队与双向同时请求；不因等待自己的 ACK 而拒绝处理对端请求",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_basic_evidence.json",
+          "component": "WP05_basic_message_lifecycle_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_control_evidence.json",
+          "component": "WP05_basic_control_actual_RTL_functional_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_proof_evidence.json",
+          "component": "WP05_basic_control_independent_full_state_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        }
+      ],
+      "model_scope": "One local accepted/outstanding Basic request,matchingACK onlyafteractualrequestcommit,independent opposite direction and stablepertypequeues; correspondingRTL and integratedsourcecontrol remain open.",
+      "rtl_scope": "Actual Basic RTL: stage28 six profiles/41735 edges/all194 outputs and six real faults; stage29 independent156bit state/194bit output induction at six timer configurations, two actual library mappings with48 full bus comparisons, six RTL and one mapped counterexamples. STA7of10 with640ps worstsetup -279.172ps andhold10of10; stableclock only. ActualDL source arbitration, hardwarepacing/PHY and complete end-to-end time budget remain open; requirement still partial.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        }
+      ],
+      "current_integration_scope": "Stage34 actual Basic/UART/SRAM integration:48192 real edges,546 public pre/post output bits,7 independent actual RTL faults. Stage35 two real period mappings plus actual292-buffer repairs each prove173 output/state/macro-transaction buses with complete retained-Q/graph/clock audit; shared two SRAM Q buses establish mapping only. OriginalSTA0of30;actual-buffer hold30of30 andSTA15of30,640ps worstsetup -714.595ps;6.4ns all15 pass under synthetic SRAM views. No new combined independent-reference/content induction,PHY/physical SRAM signoff,hardwarepacing,A20 cadence or complete requirement claim. Stage36 additionally proves combined independent control and actualbit0 content at128words/640and6400ps with noQ/statecutpoints:72 queries,4 actual RTL counterexamples,14 graph rejection controls. Full64-profile word matrix started; frozen checkpoint2of64 is not a full-word claim. Physical640ps and complete requirement remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open"
+    },
+    {
+      "id": "R052",
+      "family": "F12",
+      "source": "L §3.2.2–§3.2.3 p73–74; §3.3.6 p82",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "digital_phy"
+      ],
+      "mapping": "digital_phy",
+      "condition": "适用 DL Up/NOP 状态且不处于规定故障/控制替换事件",
+      "requirement": "DL/RS 保持连续合法码流，提供 NOP 或 payload 并按规定插入控制内容；没有 TL 数据不等于停止 PHY 发射，不插入 Ethernet MAC IPG/start/terminate。",
+      "test_id": "T-R052",
+      "coverage": "低频/零业务持续发送、AM/RAM/Idle 例外及恢复；仿真检查数字码流节奏，模拟 CDR 结论另需外部证据",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D01",
+        "D06"
+      ]
+    },
+    {
+      "id": "R053",
+      "family": "F09",
+      "source": "L §2.3.4 p19–20; §2.6.6.2 p48",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "dl_rx"
+      ],
+      "mapping": "dl_packing",
+      "condition": "sector 打包及空载 DL flit",
+      "requirement": "按 sector 顺序保留 TL carry-over；packer 形成全零 segment headers 的 payload flit 不得自动转 NOP；空载判断还需没有上一 DL flit 的 TL carry-over。",
+      "test_id": "T-R053",
+      "coverage": "无业务、半 segment 供数、跨 segment/跨 DL flit 尾部、DL alternative sector 插入；payload/NOP 的序号与 replay 行为分开",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R054",
+      "family": "F10",
+      "source": "L §2.6.6.2 p47–48",
+      "level": "conditional_mandatory",
+      "roles": [
+        "dl_rx",
+        "integration"
+      ],
+      "mapping": "dl_packing",
+      "condition": "实现支持 TL 接收背压；非 chiplet 为建议，本工程拟选防护，指定 chiplet 条件才无条件要求",
+      "requirement": "TL 背压且无接收空间时遵循规定的 discard/计数/ambiguous/replay 处理；接收 NOP 或无 carry-over 的空载 DL flit 时减少因背压积累的缓存。",
+      "test_id": "T-R054",
+      "coverage": "短期/持续背压、缓冲满、6/7 次错误边界、重放和空载排空；不得确认未保存 payload；不把此恢复当正常调频可溢出的许可",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R055",
+      "family": "F03",
+      "source": "C §4.3 p103",
+      "level": "mandatory",
+      "roles": [
+        "upli_originator",
+        "upli_completer"
+      ],
+      "mapping": "reset",
+      "condition": "UPLI 连接建立和保持",
+      "requirement": "四个 ClkReq/ClkAck 信号完成且具备信用后才传 beat；各信号断言后保持到 UPLIReset_N 断言；Originator 不得等待 Completer 先建立连接。",
+      "test_id": "T-R055",
+      "coverage": "Originator/Completer/同时启动、ACK 延迟、方向性信用返回；调频不得撤销连接信号；无信用禁发",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R056",
+      "family": "F09",
+      "source": "L §2.4.3–§2.4.3.1 p29–32",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_control",
+      "condition": "Control Message 协商",
+      "requirement": "同 mclass 单 outstanding，成功响应后有 confirming ACK；冲突/相同请求按对应决策与接收顺序回复，已发请求后的冲突不能回复 pending；pending 后重启责任按规定交给响应方。",
+      "test_id": "T-R056",
+      "coverage": "单成功/拒绝/pending、相同/冲突同时请求、确认延迟及先后顺序；和 Basic Message 生命周期分开",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_control_exchange_evidence.json",
+          "component": "WP05_shared_control_exchange_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_controller_evidence.json",
+          "component": "WP05_control_semantic_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_cycle_evidence.json",
+          "component": "WP05_control_cycle_interface_subset"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_scope": "Shared Control ownership and ordered real commits with Channel0/4 and bounded Width semantic adapter; 20 new tests,359 full candidate tests,512 paired schedules,13 actual mutations. Cycle controller, reliable lower-DL integration and RTL remain open. Added bounded cycle interface: pre-edge offers, atomic policy, real TX/RX/local order, one-cycle width events;15 tests,256 paired schedules,12 actual mutations. External stable timestamps; hardware timer, integration, RTL and new formal proof remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_control_exchange_evidence.json",
+          "component": "WP05_shared_Control_handshake_hardware_subset"
+        },
+        {
+          "record": "verification/rtl/dl_control_exchange_physical_evidence.json",
+          "component": "WP05_shared_Control_actual_mapping_physical_baseline"
+        },
+        {
+          "record": "verification/rtl/dl_control_controller_evidence.json",
+          "component": "WP05_Channel_Width_semantic_controller_hardware_subset"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_full_word_evidence.json",
+          "component": "WP05_actual_Basic_UART_old_interface_full_word_induction"
+        }
+      ],
+      "current_control_exchange_scope": "Isolated shared Control hardware: local/remote ownership, two-entry ordered queue, confirming ACK and Pending restart responsibility; real 1us/10ms timers;107831795 actual edges,10 actual RTL faults detected. Semantic Channel/Width policy remains external; independent unbounded proof and new mapping/STA not yet executed. No complete IP claim.",
+      "rtl_status": "partial_control_semantics_validated_message_port_and_full_ip_integration_open",
+      "rtl_scope": "Isolated Channel0/4 and Width semantic RTL with original-target Pending restart, actual ACK-pair width events, role/capability admission and soft lockout. 20 main/independent runs plus two Width full-deadline runs:367256110 actual edges;14 actual RTL faults detected;389 candidate model tests. Actual Basic/UART integration, physical PL sequences, independent unbounded protocol proof and this module STA remain open.",
+      "current_control_exchange_physical_scope": "Shared Control hardware: actual TSMC28HPC+ mapping and all26state/40output equivalence for640/6400ps;4SAT mapping queries,12graph negatives,3mapped faults. Original-budget STA6/10:640ps1/5 worstsetup-347.379357ps,6400ps5/5;hold10/10. No independent protocol-unbounded proof or complete IP signoff.",
+      "current_control_controller_rtl_scope": "Isolated Channel0/4 and Width semantic RTL with original-target Pending restart, actual ACK-pair width events, role/capability admission and soft lockout. 20 main/independent runs plus two Width full-deadline runs:367256110 actual edges;14 actual RTL faults detected;389 candidate model tests. Actual Basic/UART integration, physical PL sequences, independent unbounded protocol proof and this module STA remain open.",
+      "current_message_port_full_word_scope": "Frozen stage34/35/36 Basic/UART actual message port:128 logical words, all32-bit content and joint control induction at640/6400ps;64profiles2304queries, full actual SRAM/data/state graph retained. Later UART start gate and semantic Control module are excluded; no new STA or complete IP claim."
+    },
+    {
+      "id": "R057",
+      "family": "F09",
+      "source": "L §2.4.3.2 p33–34",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_control",
+      "condition": "DL Channel Online/Offline",
+      "requirement": "reset 后 channel 默认 offline；offline 禁止对应发送并静默丢弃对应接收；当前状态请求 ACK 并记录；规定请求 1 μs 内响应，online pending 的响应方 10 ms 内重发 online 请求。",
+      "test_id": "T-R057",
+      "coverage": "Channel 0/4 独立控制，offline TL present/UART transport 禁发，重复状态和 pending 责任，未使能/超时/恢复",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_control_codec_evidence.json",
+          "component": "WP05_control_wire_and_pure_decision_subset"
+        },
+        {
+          "record": "verification/model/dl_control_exchange_evidence.json",
+          "component": "WP05_shared_control_exchange_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_controller_evidence.json",
+          "component": "WP05_control_semantic_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_cycle_evidence.json",
+          "component": "WP05_control_cycle_interface_subset"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_scope": "Channel0/4 online/offline completion, current-state ACK diagnostic, pending original-target restart, TL present reference mask and actual UARTPort reference enabled/framing integration. Concurrent online ACK assumes preconfigured RX capacity. Actual TL datapath, cycle controller and RTL remain open. Added bounded cycle interface: pre-edge offers, atomic policy, real TX/RX/local order, one-cycle width events;15 tests,256 paired schedules,12 actual mutations. External stable timestamps; hardware timer, integration, RTL and new formal proof remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/uart_start_gate_evidence.json",
+          "component": "WP05_uart_new_header_permission_actual_SRAM_RTL_subset"
+        },
+        {
+          "record": "verification/rtl/dl_control_exchange_evidence.json",
+          "component": "WP05_shared_Control_handshake_hardware_subset"
+        },
+        {
+          "record": "verification/rtl/dl_control_exchange_physical_evidence.json",
+          "component": "WP05_shared_Control_actual_mapping_physical_baseline"
+        },
+        {
+          "record": "verification/rtl/dl_control_controller_evidence.json",
+          "component": "WP05_Channel_Width_semantic_controller_hardware_subset"
+        }
+      ],
+      "current_integration_scope": "New isolated actual-SRAM message port gates new UART headers independently of Channel enabled, drains already started messages;54750 actual edges,4 independent RTL fault detections,0 static errors/warnings,no new state. New interface formal proof/library mapping/STA and Control RTL are not completed; older proofs and timing do not transfer automatically.",
+      "rtl_status": "partial_uart_closing_gate_not_channel_control_rtl",
+      "rtl_scope": "New isolated actual-SRAM message port gates new UART headers independently of Channel enabled, drains already started messages;54750 actual edges,4 independent RTL fault detections,0 static errors/warnings,no new state. New interface formal proof/library mapping/STA and Control RTL are not completed; older proofs and timing do not transfer automatically.",
+      "current_control_exchange_scope": "Isolated shared Control hardware: local/remote ownership, two-entry ordered queue, confirming ACK and Pending restart responsibility; real 1us/10ms timers;107831795 actual edges,10 actual RTL faults detected. Semantic Channel/Width policy remains external; independent unbounded proof and new mapping/STA not yet executed. No complete IP claim.",
+      "current_control_exchange_physical_scope": "Shared Control hardware: actual TSMC28HPC+ mapping and all26state/40output equivalence for640/6400ps;4SAT mapping queries,12graph negatives,3mapped faults. Original-budget STA6/10:640ps1/5 worstsetup-347.379357ps,6400ps5/5;hold10/10. No independent protocol-unbounded proof or complete IP signoff.",
+      "current_control_controller_rtl_scope": "Isolated Channel0/4 and Width semantic RTL with original-target Pending restart, actual ACK-pair width events, role/capability admission and soft lockout. 20 main/independent runs plus two Width full-deadline runs:367256110 actual edges;14 actual RTL faults detected;389 candidate model tests. Actual Basic/UART integration, physical PL sequences, independent unbounded protocol proof and this module STA remain open."
+    },
+    {
+      "id": "R058",
+      "family": "F09",
+      "source": "L §2.4.2.5 p28; §2.4.4.1.1–2 p36–37",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "firmware"
+      ],
+      "mapping": "dl_control",
+      "condition": "UART stream 初始化/reset",
+      "requirement": "清空相应缓冲/信用并处理禁用期丢弃；reset 清理时阻止其它 DL 消息，发送 40 个不需 ACK 的 No-Op Message 后发送 reset 请求，再放行消息；10 ms 无 SUCCESS 按规定重试。",
+      "test_id": "T-R058",
+      "coverage": "39/40/41 个边界、运行中 reset、丢失响应和重试、与速率通知调度竞争；No-Op Message 不等于 NOP DL flit",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_evidence": [
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/model/uart_reset_evidence.json",
+          "component": "WP05_uart_reset_event_reference_and_peer_datapath_model_integration"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_all_periods_evidence.json",
+          "component": "WP05_original_UART_default128_actual_fullword_joint_induction_two_timer_configurations"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/rtl/uart_rx_proof_timing_evidence.json",
+          "component": "WP05_uart_rx_control_small_actual_memory_induction_and_all_depth_mapping_failed_STA"
+        },
+        {
+          "record": "verification/rtl/uart_rx_optimization_evidence.json",
+          "component": "WP05_default128_actual_full_word_content_induction_and_isolated_STA27_of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_proof_evidence.json",
+          "component": "WP05_actual_default128_port_joint_control_bit0_induction_two_timer_mapping_STA0of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_full_word_evidence.json",
+          "component": "WP05_actual_Basic_UART_old_interface_full_word_induction"
+        }
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open",
+      "model_scope": "Current isolated UARTPort composes public TX/RX/reset references with finite response obligations,actual maintenance take and firmware discard semantics;269 complete model methods pass. Historical scope remains in its original evidence records. A20 cadence,DVFS,upper overload recovery andother protocol deadlines remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_scope": "Current isolated port preserves prior actual SRAM and two-endpoint simulation evidence. Default128/640ps full control andbit0 actual content jointly inductive;all valid SRAM rows andsource-held slots checked. Five actual RTL andfour mapped netlist faults detected. Both640/6400ps configurations pass62 public output,43 state and16 macro transaction bus mapping comparisons;STA0of30 under original budgets. All32 data planes/both timer configurations,candidate adoption,A20,DVFS,upper recovery andfull protocol implementation remain open. This is not physical or interoperability signoff.",
+      "rtl_additional_evidence": [
+        "verification/rtl/uart_port_timing_evidence.json",
+        "verification/rtl/uart_port_phase_evidence.json"
+      ],
+      "uart_joint_proof_scope": "Original actual UART port default128word, all32bits at640/6400ps,64profiles/2048queries with actual graph/clock/source audits; complete requirement,physical timing and later modified candidates not implied.",
+      "current_integration_scope": "Stage34 actual Basic/UART/SRAM integration:48192 real edges,546 public pre/post output bits,7 independent actual RTL faults. Stage35 two real period mappings plus actual292-buffer repairs each prove173 output/state/macro-transaction buses with complete retained-Q/graph/clock audit; shared two SRAM Q buses establish mapping only. OriginalSTA0of30;actual-buffer hold30of30 andSTA15of30,640ps worstsetup -714.595ps;6.4ns all15 pass under synthetic SRAM views. No new combined independent-reference/content induction,PHY/physical SRAM signoff,hardwarepacing,A20 cadence or complete requirement claim. Stage36 additionally proves combined independent control and actualbit0 content at128words/640and6400ps with noQ/statecutpoints:72 queries,4 actual RTL counterexamples,14 graph rejection controls. Full64-profile word matrix started; frozen checkpoint2of64 is not a full-word claim. Physical640ps and complete requirement remain open.",
+      "current_message_port_full_word_scope": "Frozen stage34/35/36 Basic/UART actual message port:128 logical words, all32-bit content and joint control induction at640/6400ps;64profiles2304queries, full actual SRAM/data/state graph retained. Later UART start gate and semantic Control module are excluded; no new STA or complete IP claim."
+    },
+    {
+      "id": "R059",
+      "family": "F09",
+      "source": "L §2.4.4.1.3 and §2.4.4.4 p37–40",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_control",
+      "condition": "UART transport 和信用",
+      "requirement": "用模 2^12 的 DWord 信用控制发送；payload 最多 32 DWords，首 DWord 是 transport 头不占 payload buffer；同一 transport message 的 DWords 之间不得插入其它 DL 消息。",
+      "test_id": "T-R059",
+      "coverage": "零信用、4095→0 环回、1/32 DWords、buffer/credit/最大长度三重限制、连续消息与高优先级控制竞争；stream 0 之外保留值不冒充已支持",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A20"
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_message_scheduler_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/model/uart_credit_evidence.json",
+          "component": "WP05_uart_credit_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_source_evidence.json",
+          "component": "WP05_uart_tx_source_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_proof_integration_evidence.json",
+          "component": "WP05_uart_tx_source_full_proof_and_actual_memory_path_subset"
+        },
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/model/uart_reset_evidence.json",
+          "component": "WP05_uart_reset_event_reference_and_peer_datapath_model_integration"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_all_periods_evidence.json",
+          "component": "WP05_original_UART_default128_actual_fullword_joint_induction_two_timer_configurations"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "model_scope": "Current isolated UARTPort composes public TX/RX/reset references with finite response obligations,actual maintenance take and firmware discard semantics;269 complete model methods pass. Historical scope remains in its original evidence records. A20 cadence,DVFS,upper overload recovery andother protocol deadlines remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_arbiter_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/rtl/dl_message_proof_timing_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_source_evidence.json",
+          "component": "WP05_uart_tx_source_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_proof_integration_evidence.json",
+          "component": "WP05_uart_tx_source_full_proof_and_actual_memory_path_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_physical_evidence.json",
+          "component": "WP05_uart_tx_source_path_mapping_and_failed_physical_baselines"
+        },
+        {
+          "record": "verification/rtl/uart_tx_timing_evidence.json",
+          "component": "WP05_uart_tx_actual_macro_hold_repair_and_source_sizing_partial_physical"
+        },
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/rtl/uart_rx_proof_timing_evidence.json",
+          "component": "WP05_uart_rx_control_small_actual_memory_induction_and_all_depth_mapping_failed_STA"
+        },
+        {
+          "record": "verification/rtl/uart_rx_optimization_evidence.json",
+          "component": "WP05_default128_actual_full_word_content_induction_and_isolated_STA27_of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_proof_evidence.json",
+          "component": "WP05_actual_default128_port_joint_control_bit0_induction_two_timer_mapping_STA0of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        },
+        {
+          "record": "verification/rtl/uart_start_gate_evidence.json",
+          "component": "WP05_uart_new_header_permission_actual_SRAM_RTL_subset"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_full_word_evidence.json",
+          "component": "WP05_actual_Basic_UART_old_interface_full_word_induction"
+        }
+      ],
+      "rtl_scope": "Current isolated port preserves prior actual SRAM and two-endpoint simulation evidence. Default128/640ps full control andbit0 actual content jointly inductive;all valid SRAM rows andsource-held slots checked. Five actual RTL andfour mapped netlist faults detected. Both640/6400ps configurations pass62 public output,43 state and16 macro transaction bus mapping comparisons;STA0of30 under original budgets. All32 data planes/both timer configurations,candidate adoption,A20,DVFS,upper recovery andfull protocol implementation remain open. This is not physical or interoperability signoff.",
+      "rtl_additional_evidence": [
+        "verification/rtl/uart_port_timing_evidence.json",
+        "verification/rtl/uart_port_phase_evidence.json"
+      ],
+      "uart_joint_proof_scope": "Original actual UART port default128word, all32bits at640/6400ps,64profiles/2048queries with actual graph/clock/source audits; complete requirement,physical timing and later modified candidates not implied.",
+      "current_integration_scope": "New isolated actual-SRAM message port gates new UART headers independently of Channel enabled, drains already started messages;54750 actual edges,4 independent RTL fault detections,0 static errors/warnings,no new state. New interface formal proof/library mapping/STA and Control RTL are not completed; older proofs and timing do not transfer automatically.",
+      "current_message_port_full_word_scope": "Frozen stage34/35/36 Basic/UART actual message port:128 logical words, all32-bit content and joint control induction at640/6400ps;64profiles2304queries, full actual SRAM/data/state graph retained. Later UART start gate and semantic Control module are excluded; no new STA or complete IP claim."
+    },
+    {
+      "id": "R060",
+      "family": "F11",
+      "source": "L §2.4.3.3 p34–35",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "firmware"
+      ],
+      "mapping": "link_state",
+      "condition": "所选 Link Folding profile",
+      "requirement": "仅 Accelerator 发起 full/half-width 请求；遵循 PL0/紧急较窄/普通较宽的冲突决策，Priority 置位触发硬件 soft lockout，通知固件并由固件解除扩宽限制。",
+      "test_id": "T-R060",
+      "coverage": "非法宽度和当前宽度、不同 PL 及 Priority 交叉、输方重请求限制、thermal lockout 和固件解除、1 μs 响应/10 ms pending",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_control_codec_evidence.json",
+          "component": "WP05_control_wire_and_pure_decision_subset"
+        },
+        {
+          "record": "verification/model/dl_control_exchange_evidence.json",
+          "component": "WP05_shared_control_exchange_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_controller_evidence.json",
+          "component": "WP05_control_semantic_event_subset"
+        },
+        {
+          "record": "verification/model/dl_control_cycle_evidence.json",
+          "component": "WP05_control_cycle_interface_subset"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_scope": "Bounded Width role/capability/current-width/invalid/urgent admission, ACK-pair negotiated target, conflict winner/retry, sent/received Priority soft lockout and explicit firmware clear. Retry restriction here covers identified simultaneous conflicts; same-width PL failover is separate. Physical PL transitions, cycle controller, RTL and independent interpretation review remain open. Added bounded cycle interface: pre-edge offers, atomic policy, real TX/RX/local order, one-cycle width events;15 tests,256 paired schedules,12 actual mutations. External stable timestamps; hardware timer, integration, RTL and new formal proof remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_control_controller_evidence.json",
+          "component": "WP05_Channel_Width_semantic_controller_hardware_subset"
+        }
+      ],
+      "current_control_controller_rtl_scope": "Isolated Channel0/4 and Width semantic RTL with original-target Pending restart, actual ACK-pair width events, role/capability admission and soft lockout. 20 main/independent runs plus two Width full-deadline runs:367256110 actual edges;14 actual RTL faults detected;389 candidate model tests. Actual Basic/UART integration, physical PL sequences, independent unbounded protocol proof and this module STA remain open."
+    },
+    {
+      "id": "R061",
+      "family": "F11",
+      "source": "L §2.4.2.6 p29; §2.4.3.3 p35",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "link_state",
+      "condition": "支持 Folding；发送义务另受 Tx Ready support 声明约束",
+      "requirement": "支持 Folding 的设备对 Tx Ready Notification 在 1 μs 内 ACK；宣告支持发送该通知时，新增 PL Tx 开始发送有效符号后发送通知；不将这个 CDR 唤醒提示用于 UPLI 调频。",
+      "test_id": "T-R061",
+      "coverage": "support 位 0/1、通知接收必答、PL 有效符号与通知先后、fold/unfold 和 UPLI 调频同时发生",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_basic_evidence.json",
+          "component": "WP05_basic_message_lifecycle_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_control_evidence.json",
+          "component": "WP05_basic_control_actual_RTL_functional_subset"
+        },
+        {
+          "record": "verification/rtl/dl_basic_proof_evidence.json",
+          "component": "WP05_basic_control_independent_full_state_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        },
+        {
+          "record": "verification/model/dl_control_controller_evidence.json",
+          "component": "WP05_control_semantic_event_subset"
+        }
+      ],
+      "model_scope": "Folding capability constraints and negotiated full/half target events in protocol PL coordinates; target enter-PwrDn, initiator wait-peer-PwrDn and unfold enter-Fault are event suggestions only. Physical lane mapping, PwrDn Flit sequencing, Fault/Idle/Up, reordering and PMD low-power are not implemented by this model.",
+      "rtl_scope": "Actual Basic RTL: stage28 six profiles/41735 edges/all194 outputs and six real faults; stage29 independent156bit state/194bit output induction at six timer configurations, two actual library mappings with48 full bus comparisons, six RTL and one mapped counterexamples. STA7of10 with640ps worstsetup -279.172ps andhold10of10; stableclock only. ActualDL source arbitration, hardwarepacing/PHY and complete end-to-end time budget remain open; requirement still partial.",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        },
+        {
+          "record": "verification/rtl/dl_control_controller_evidence.json",
+          "component": "WP05_Channel_Width_semantic_controller_hardware_subset"
+        }
+      ],
+      "current_integration_scope": "Stage34 actual Basic/UART/SRAM integration:48192 real edges,546 public pre/post output bits,7 independent actual RTL faults. Stage35 two real period mappings plus actual292-buffer repairs each prove173 output/state/macro-transaction buses with complete retained-Q/graph/clock audit; shared two SRAM Q buses establish mapping only. OriginalSTA0of30;actual-buffer hold30of30 andSTA15of30,640ps worstsetup -714.595ps;6.4ns all15 pass under synthetic SRAM views. No new combined independent-reference/content induction,PHY/physical SRAM signoff,hardwarepacing,A20 cadence or complete requirement claim. Stage36 additionally proves combined independent control and actualbit0 content at128words/640and6400ps with noQ/statecutpoints:72 queries,4 actual RTL counterexamples,14 graph rejection controls. Full64-profile word matrix started; frozen checkpoint2of64 is not a full-word claim. Physical640ps and complete requirement remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open",
+      "current_control_controller_rtl_scope": "Isolated Channel0/4 and Width semantic RTL with original-target Pending restart, actual ACK-pair width events, role/capability admission and soft lockout. 20 main/independent runs plus two Width full-deadline runs:367256110 actual edges;14 actual RTL faults detected;389 candidate model tests. Actual Basic/UART integration, physical PL sequences, independent unbounded protocol proof and this module STA remain open."
+    },
+    {
+      "id": "R062",
+      "family": "F10",
+      "source": "L §2.7.1 p57–59",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "dl_rx"
+      ],
+      "mapping": "link_state",
+      "condition": "DL 链路状态及所选 Resiliency/Folding 条件",
+      "requirement": "DL NOP 发满 10 个 NOP 且收到连续 2 个 DL flit 后才 Up，期间收到 payload 仍正常处理；PwrDn 的 PMD 低功耗门槛为至少发送 10 个并收到 1 个 PwrDn control flit；按正文故障延时和子状态组合处理。",
+      "test_id": "T-R062",
+      "coverage": "9/10、1/2 连续接收边界、含 payload 的 link-up、fault 延时 0…10 ms/default 5 ms、resilient 单侧/双侧状态与 replay reset 影响域",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R063",
+      "family": "F10",
+      "source": "L §2.7.4 p59",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "dl_rx",
+        "digital_phy"
+      ],
+      "mapping": "link_state",
+      "condition": "DL 内部不可纠正错误/异常 PL ID",
+      "requirement": "发送侧收到 TL error 或打包 parity 错误时反转当前 DL CRC，后续停止向 RS 交付 flit（包括 NOP）并进入 Idle；接收侧按规定标错或丢弃后续数据，Resiliency 下检测重复/非法变化的 PL ID。",
+      "test_id": "T-R063",
+      "coverage": "pack/unpack 各错误位置、CRC inversion、后续隔离、PL ID 冲突和合法 fault 后重建；与普通信道 CRC replay 分开",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R064",
+      "family": "F12",
+      "source": "L §3.3.5–§3.3.6 p81–82",
+      "level": "mandatory",
+      "roles": [
+        "digital_phy"
+      ],
+      "mapping": "digital_phy",
+      "condition": "DL Up/NOP 的 RS rate matching",
+      "requirement": "按每 1024 codewords 的规则注入 Idle Flit Code Sequence，处理 AM/RAM 例外；接收增删依规定 block 粒度，不能在 Data Flit 中间插入 Idle。",
+      "test_id": "T-R064",
+      "coverage": "1023/1024 边界、各模式 AM 周期、RAM 阶段、64B/66B 与适用 256B/257B 粒度、FIFO/时钟误差；完整 IEEE 规则待 D01",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D01"
+      ]
+    },
+    {
+      "id": "R065",
+      "family": "F08",
+      "source": "C §5.7 p129–132",
+      "level": "mandatory",
+      "roles": [
+        "tl_tx",
+        "tl_rx"
+      ],
+      "mapping": "tl",
+      "condition": "请求/响应 control half-flit packing",
+      "requirement": "请求/响应 catch budget 上限分别为 4/8，按每个 TL flit 消退一个相应项；独立于信用限制，不能按每 UPLI/PHY 时钟重新获得 4/8 个额度。",
+      "test_id": "T-R065",
+      "coverage": "满突发后的连续 flit、只有 data 的 flit、NOP、压缩长短请求、DVFS 与 DL 空载；精确 TL flit 事件计数",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R066",
+      "family": "F08",
+      "source": "C §5.7 p132; §5.8 p134",
+      "level": "mandatory",
+      "roles": [
+        "tl_tx",
+        "tl_rx"
+      ],
+      "mapping": "tl",
+      "condition": "TL Flow Control Field 处理",
+      "requirement": "接收支持连续满载 flow-control 字段，不限制下一 TL flit 的更新数量；同 control half-flit 内同一 class/VC 或 pool 不能重复出现非零返还；每字段 data/CMD 最大分别 31/7。",
+      "test_id": "T-R066",
+      "coverage": "每 half-flit 最多 8 字段连续输入、各类/VC/pool 并行更新、重复非零违规、31/7 边界与计数守恒",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R067",
+      "family": "F08",
+      "source": "C §5.8 p134–135",
+      "level": "conditional_mandatory",
+      "roles": [
+        "tl_tx",
+        "tl_rx"
+      ],
+      "mapping": "tl",
+      "condition": "TL 初始化和 Shared Data Buffer 能力",
+      "requirement": "初始无发送信用，释放信用后发 Initial Credit Release Complete；Shared Data Buffer 指示允许请求/响应共享 data pool，发送侧须能接纳某一类初始 data credit 为零；未使能共享时两类都需初始信用。",
+      "test_id": "T-R067",
+      "coverage": "共享开/关、请求数据或响应数据单类零信用、双方能力和初始化顺序、池与 VC 独立、跨类型消耗/归还",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R068",
+      "family": "F13",
+      "source": "C §9.7–§9.7.1 p247–248",
+      "level": "mandatory",
+      "roles": [
+        "switch",
+        "management"
+      ],
+      "mapping": "switch_route",
+      "condition": "路由表容量/初始化/隔离",
+      "requirement": "为各 station 所有可能端口提供独立可编程路由表；表项数至少覆盖交换机单 lane bifurcation 最大支持端口数；reset 默认 deny，deny 或目的 ID 超出表大小的请求/响应静默丢弃并记录。",
+      "test_id": "T-R068",
+      "coverage": "各可能端口独立编程、reset deny、最后合法/首个越界 ID、不同入口同目的不同策略、vPod 隔离；不强制每个可能端口物理独占 SRAM",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R069",
+      "family": "F13",
+      "source": "C §9.7.2 p248",
+      "level": "mandatory",
+      "roles": [
+        "switch"
+      ],
+      "mapping": "switch_route",
+      "condition": "合法路由的出口可达性",
+      "requirement": "任意入口可达任意 station 的任意出口，包括同一个入口端口作为出口的 route-to-self/U-turn；不任意禁止同端口转发。",
+      "test_id": "T-R069",
+      "coverage": "小规模全入口×全出口，含对角线 U-turn；多 station/bifurcation、请求与响应并发，兼顾 deny/security 约束",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R070",
+      "family": "F19",
+      "source": "M §5.1.1.7–§5.1.1.12 p42–44",
+      "level": "mandatory",
+      "roles": [
+        "switch_management_agent",
+        "pod_controller"
+      ],
+      "mapping": "management",
+      "condition": "Route Sync 和 Operational state 同步",
+      "requirement": "SMA 比较路由 last-update-time，丢弃较旧路由；相同时间戳不同内容导致同步失败并关闭连接；从 Operational Sync 起状态含事件时间戳，在连接期间单调且足以区分连续变化。",
+      "test_id": "T-R070",
+      "coverage": "新旧乱序、同戳同内容/不同内容、快照与增量交错、重连边界；不把关闭管理连接等同 reset 数据面",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D02"
+      ]
+    },
+    {
+      "id": "R071",
+      "family": "F19",
+      "source": "M §5.2.1 p44",
+      "level": "mandatory",
+      "roles": [
+        "node_management_agent"
+      ],
+      "mapping": "management",
+      "condition": "Redfish UALink 资源树",
+      "requirement": "断连、NMA/服务重启、小版本固件和普通配置变化保持资源树稳定；硬件增减、规定重大更新/安全修复和不同 NMA 实例按正文例外处理。",
+      "test_id": "T-R071",
+      "coverage": "稳定 URI/数组身份的前后快照、配置变更和重启；合法例外单列，不自定义最终 Redfish schema",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D03"
+      ]
+    },
+    {
+      "id": "R072",
+      "family": "F19",
+      "source": "M §5.1.2 and §5.2.2 p44–45",
+      "level": "mandatory",
+      "roles": [
+        "pod_controller",
+        "switch_management_agent",
+        "node_management_agent"
+      ],
+      "mapping": "management",
+      "condition": "管理连接认证和授权",
+      "requirement": "两类管理连接 TLS 至少 1.2 且执行认证/授权；gNMI 的 mTLS 是建议，Redfish 的 mTLS 是强制，不混淆规范级别。",
+      "test_id": "T-R072",
+      "coverage": "低版本 TLS 拒绝、证书/授权失败、Redfish 缺少双向认证、gNMI 所选更强安全策略单列；不由 TLS 通过推定 UALinkSec 通过",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D02",
+        "D03"
+      ]
+    },
+    {
+      "id": "R073",
+      "family": "F19",
+      "source": "M §6.13 p60",
+      "level": "mandatory",
+      "roles": [
+        "pod_controller",
+        "switch_management_agent",
+        "switch"
+      ],
+      "mapping": "management",
+      "condition": "vPod 拆除流程",
+      "requirement": "先禁相关 switch 端口 TL/UPLI 并报告状态，再移除路由；该流程未降 DL 时保留邻居验证状态，不要求无故重训 PL/DL。",
+      "test_id": "T-R073",
+      "coverage": "工作负载已停止的 teardown、部分失败重试、路由删除顺序、DL 保持/另有真实链路故障的区分；不承诺任意在线拆除无损",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R074",
+      "family": "F19",
+      "source": "M §5.3 Table 5-1 p45",
+      "level": "mandatory",
+      "roles": [
+        "switch_vendor_sdk",
+        "switch_management_agent"
+      ],
+      "mapping": "management",
+      "condition": "Physical Switch 管理交付",
+      "requirement": "Vendor SDK 实现 UALink-SAI 的 get/set/create/remove/receive-notification C API 并覆盖规定属性；RTL CSR 或自制 JSON API 不代替官方接口。",
+      "test_id": "T-R074",
+      "coverage": "官方头文件锁定后做 API/属性映射、通知和错误返回契约测试；未取得资产前不编造官方函数原型",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D02"
+      ]
+    },
+    {
+      "id": "R075",
+      "family": "F10",
+      "source": "L §2.6.5.1 p46; §2.6.6.7 p50–51",
+      "level": "mandatory",
+      "roles": [
+        "dl_tx",
+        "digital_phy"
+      ],
+      "mapping": "llr",
+      "condition": "重复 Replay Request 调度",
+      "requirement": "同事件三份 Replay Request 保持对应序号，后续副本只在相对上一副本新的 codeword group 发送；不能全部落在同一个 FEC interleave group。",
+      "test_id": "T-R075",
+      "coverage": "合法 FEC 分组模式、explicit/first replay 优先级、突发 group 错误、PL backpressure、folding 与 group 边界",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D01"
+      ]
+    },
+    {
+      "id": "R076",
+      "family": "F10",
+      "source": "L §2.6.5.7–8 Table 2-18 p46–47; §2.6.6.8 p51",
+      "level": "normative_definition",
+      "roles": [
+        "dl_tx",
+        "integration"
+      ],
+      "mapping": "llr",
+      "condition": "LLR watchdog 时基/默认值",
+      "requirement": "ACK watchdog 的 24-bit 寄存器以 DL flit time 为单位，默认按串行速率/宽度对应 10.24 ms；不能直接用可变 UPLI 时钟计数使时限随 DVFS 改变。",
+      "test_id": "T-R076",
+      "coverage": "表列 100G/200G 与 1/2/4 lanes 默认值；单位转换、无进展 ACK、参考时钟过渡和 folding 后模式对应；与 R028 前进规则联合",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R077",
+      "family": "F03",
+      "source": "C §4.2 p102; L §2.5.4 p42",
+      "level": "mandatory",
+      "roles": [
+        "upli_originator",
+        "upli_completer",
+        "integration"
+      ],
+      "mapping": "upli",
+      "condition": "每个本地 UPLI 接口的信号时序",
+      "requirement": "同一 UPLI 接口所有信号同步于共同 UPLIClk；实施调频须让接口双方遵守同一切钟契约，跨到 DL/PHY 的速率适配另做，不能把同步 UPLI 两侧直接置于不同时钟。",
+      "test_id": "T-R077",
+      "coverage": "接口两侧时钟一致性、复位/连接及频率切换；CDC/RDC 边界和多端口共享域；不强制所有 station 全芯片共用一个 UPLI 时钟",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D06"
+      ]
+    },
+    {
+      "id": "R078",
+      "family": "F02",
+      "source": "C §2.7.4.2 p52; §2.7.5 p62; §2.7.6 p66",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc"
+      ],
+      "mapping": "transaction",
+      "condition": "普通事务 Tag 命名空间；Block 独立空间另见 R093",
+      "requirement": "ReqTag 在对应端口和事务命名空间内保持唯一，直到该请求全部响应 beat 返回后才能复用；不能仅凭收到首 beat 回收，也不能把 11-bit 字段直接当作已实现并发容量。",
+      "test_id": "T-R078",
+      "coverage": "同端口提前复用拒绝、跨端口同值不串扰、LAST 前后边界、多 beat 与换钥预留资源",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R079",
+      "family": "F03",
+      "source": "C §2.7.8 p71–72; §2.8 p74",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "transaction",
+      "condition": "合法 Read Response；每笔事务可自由选择响应模式",
+      "requirement": "接收端处理 Multi-Beat 与 Single-Beat 两种模式：前者按端口 TDM 连续升序、NumBeats=n−1；后者每 beat NumBeats=0，允许 offset 乱序、间隔及交织，LAST 标记最后传出的 beat，不一定是最大 offset。交换侧保持同 ingress→egress 的 single-beat 响应顺序和 LAST，按单 beat 转发而不等凑齐。",
+      "test_id": "T-R079",
+      "coverage": "两模式混合、1–4 beats、offset 置换、LAST 在低 offset、跨事务交织与背压；不以 NumBeats=0 判断整笔事务完成",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R080",
+      "family": "F02",
+      "source": "C §2.8 p74–75",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "transaction",
+      "condition": "普通 Read，4-byte 对齐且长度不越 256-byte 边界",
+      "requirement": "读数据按地址 mod 64 落在自然 byte lane；跨 64-byte 边界按实际覆盖 beat 传输，不能只用长度除以 64。首末 DWORD 的 ReqAttr byte enable 按长度解释，单 DWORD 忽略高半 enable；无效数据 byte 虽被消费端忽略，仍参与 parity。",
+      "test_id": "T-R080",
+      "coverage": "地址偏移 0/4/56/60、单 DWORD/跨 beat/256-byte 尾边界、首末掩码；地址 60 长度 8 bytes 应有两个 beat",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R081",
+      "family": "F05",
+      "source": "C §2.7.5 p62–65; §2.8 p74–75",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "integration"
+      ],
+      "mapping": "transaction",
+      "condition": "普通 Completer 错误响应；Isolation/Drop/reset 的 burst 例外独立判定",
+      "requirement": "读错误响应仍提供请求所需的全部 beat 和 LAST，缺失数据可制造；所有 beat 的 Status 一致，DataError 按逐 beat 数据错误语义处理，不能把任意非 OKAY 状态都当 poison。Originator 不得用错误响应数据填充缓存或改变缓存行状态。",
+      "test_id": "T-R081",
+      "coverage": "TARGETABORT/DECODE/PROTECTION/CMPTO、全 beat/LAST、Status 一致/逐 beat poison、错误数据不提交；与异常截断模式交叉",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R082",
+      "family": "F03",
+      "source": "C §2.7.8 p71",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc"
+      ],
+      "mapping": "transaction",
+      "condition": "Write/WriteFull/Atomic 请求及 Originator Data 传输",
+      "requirement": "请求与首数据 beat 同周期发出，发出前具备整笔请求和数据 burst 信用；同端口按 TDM 连续升序完成数据后才能发下一 Write/Atomic，允许 Read 请求与前笔数据尾部重叠，接收路径不能拒绝合法 Read 重叠；发端保守调度属于性能选择。",
+      "test_id": "T-R082",
+      "coverage": "1–4 beats、各端口交错、Atomic 与 Write 混排、信用不足、Read 重叠、错误/隔离对 burst 的适用例外",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R083",
+      "family": "F03",
+      "source": "C §2.7.8 p71–72",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "integration"
+      ],
+      "mapping": "transaction",
+      "condition": "UPLI 正常连接和事务进展",
+      "requirement": "通道发送方能无条件接收返回信用；已发请求的响应接收不得依赖 Completer 再处理其它事务，读写响应必须能取得进展。Completer 最早在收到最后 OrigData beat 的下一周期发送 Write Response。",
+      "test_id": "T-R083",
+      "coverage": "请求拥塞下响应前进、返回信用无额外握手依赖、最后数据同拍响应负例/下一拍边界、有限资源死锁环",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R084",
+      "family": "F02",
+      "source": "C §2.7.5 Table 2-15 p62; §2.7.6 Table 2-18 p66",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "security"
+      ],
+      "mapping": "transaction",
+      "condition": "普通读写响应的 SrcPhysAccID 调试字段",
+      "requirement": "响应 SrcPhysAccID 允许不准确或被压缩省略，不能作为功能匹配、路由或安全域选择的唯一甚至必需依据；应按规范使用目的 ID、端口、Tag/类型及可信 outstanding 上下文，响应类型安全映射仍受 A06 阻塞。",
+      "test_id": "T-R084",
+      "coverage": "调试 SrcID 为零/不准确不改变正常事务关联，跨端口同 Tag、目的路由与安全上下文分开；不自行关闭响应认证 TBD",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A06"
+      ]
+    },
+    {
+      "id": "R085",
+      "family": "F04",
+      "source": "C §2.7.9 p72–73; §8.5.12.1 p233–234",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "integration"
+      ],
+      "mapping": "transaction",
+      "condition": "每一 Source/Destination Accelerator 对的合法顺序模式",
+      "requirement": "有地址且落在同一 256-byte 区域的请求从同一 Accelerator 端口出站。non-SO 保持同区同 VC 请求顺序，SO 保持每对端请求跨 VC 顺序，SOL 保持每 VC 顺序；请求排序使用 ReqAddr 的值。读响应与写响应是独立有序流，不强加两类之间或不同源 Accelerator 之间的全局顺序。",
+      "test_id": "T-R085",
+      "coverage": "同区/异区、同 VC/跨 VC、跨源、多个 station 选路、SO/SOL/non-SO 与三条流、安全上下文交叉",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R086",
+      "family": "F04",
+      "source": "C §2.7.10 p73–74",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "integration"
+      ],
+      "mapping": "transaction",
+      "condition": "UPLI 操作端到端交付及目的 Accelerator 内存契约",
+      "requirement": "UPLI/TL 不把一个操作拆成多个独立内存操作交付；内部 flit/beat 打包不属于这种分解。Single-Copy atomicity 和允许的目的内存分解由 Accelerator 契约决定；有序非 Single-Copy 操作的组成访问须按条款在响应前完成，Atomic 分解粒度须为元素大小的倍数。",
+      "test_id": "T-R086",
+      "coverage": "操作身份/长度端到端一致、打包与操作分解区分、目的内存模型正负例；不宣称所有 256-byte 访问天然原子",
+      "review_status": "text_confirmed",
+      "issues": [
+        "D04"
+      ]
+    },
+    {
+      "id": "R087",
+      "family": "F05",
+      "source": "C §3.1.3 p87–88",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc"
+      ],
+      "mapping": "recovery",
+      "condition": "有状态 Accelerator Originator 和交换 egress 的 INC 请求",
+      "requirement": "Accelerator Originator 跟踪已发及排队请求直到全部响应；交换 egress 对 BlockRead/BlockWriteFull/ReadReduce/WriteMulticast/WriteFullMulticast/AtomicNRMulticast 跟踪，而不把普通 transit 转发改成端到端有状态事务。每请求关联可编程 watchdog，超时进入对应 Isolation 范围。",
+      "test_id": "T-R087",
+      "coverage": "排队/已发/部分响应、可编程超时边界、INC/普通转发分类、多端口独立超时；计时实现和起算边界在 G1 冻结",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R088",
+      "family": "F05",
+      "source": "C §3.1.3 p87–88",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc"
+      ],
+      "mapping": "recovery",
+      "condition": "Originator 进入 Isolation Mode",
+      "requirement": "停止受影响端口发往 TL 的 Request/OrigData，对未完成和新到请求合成 CMPTO，丢弃迟到真实响应，同时继续正常接收和返回信用。Accelerator 影响该 station Originator 的全部端口，交换 INC 按超时端口隔离；允许的未完成 burst 截断另列，管理清理后再恢复使用。",
+      "test_id": "T-R088",
+      "coverage": "隔离前/同拍/后的请求、尾 beat 与超时竞态、迟到响应无二次完成、信用守恒、逐端口连续故障及其他 vPod 不串扰",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R089",
+      "family": "F05",
+      "source": "C §3.1.3 p87–89",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "recovery",
+      "condition": "TL/非 TL 的 Drop Mode 与 Isolation Mode 组合",
+      "requirement": "Drop 与 Isolation 独立，可均不在、单独在或同时在。TL Drop 对受影响端口的全部通道和 TL↔DL 双向流量生效；信用仅在信息可靠且可行时允许继续回收，不套用 Isolation 的无条件规则。非 TL 控制错误所在通道的未完 burst 必须终止，其它通道按允许范围处理。",
+      "test_id": "T-R089",
+      "coverage": "四种模式组合、TL/非 TL、data/control 可定位性、损坏信用元数据、受影响通道截断/其他通道合法收尾",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R090",
+      "family": "F05",
+      "source": "C §3.1.4 p90; §3.1.4.3 p94–97",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch",
+        "management"
+      ],
+      "mapping": "recovery",
+      "condition": "Link Down 及链路重新上线，不是另行触发 UPLI reset",
+      "requirement": "Switch TL 仅故障端口进入 Drop，其他端口继续工作且恢复该链路不扰动其它端口；Accelerator TL 对本 station 全端口进入 Drop 并向本地 Originator 发 ISOLATE。两侧相关 UPLI 通道贯穿链路上下线保持 active 和信用，不以全局 UPLIReset_N 清零替代；受损工作负载按管理恢复。",
+      "test_id": "T-R090",
+      "coverage": "同 station 多端口/vPod、连续 link-down/up、信用账本连续、ISOLATE 触发、与控制错误/显式 reset 区分；不承诺作业无损续跑",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R091",
+      "family": "F05",
+      "source": "C §2.7.6 p66–68; §3.1.4.3 p94–97",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "security"
+      ],
+      "mapping": "recovery",
+      "condition": "本地 TL 向 Accelerator Originator 发出的 ISOLATE Write Response",
+      "requirement": "ISOLATE 是本地控制通知，不匹配普通写请求 Tag；AuthTag/SourceID/DestinationID/Tag 为 don't-care，不能因此报认证失败。该通知仍消耗 WrRspPool 对应信用，Pool=0 时 WrRspVC 指示所用 VC 信用。此本地特殊路径不自动豁免远端业务的认证。",
+      "test_id": "T-R091",
+      "coverage": "无同 Tag 请求也能本地隔离、don't-care 扰动、pool/VC 信用不足与回收、普通远端响应不得误入免认证本地控制路径",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R092",
+      "family": "F14",
+      "source": "C §3.1.4.4 p97–100; §6.3 p161–162",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "选定 INC，参与者超时或输入/输出访问返回错误",
+      "requirement": "INC 的超时 dummy CMPTO 进入既定 response/data reduction 完成路径；primitive 按全部实际或替代响应归并，Block 在错误后停止新输入/输出访问并等已发访问返回，再以 BlockWriteFull 写失败状态。不能把两类完成路径都变成普通单响应，也不承诺回滚先前写入的结果。",
+      "test_id": "T-R092",
+      "coverage": "单/多参与者失联、最后响应与超时竞态、Mixed 状态、半完成输出、状态写回拥塞/错误、资源和 Tag 不提前释放",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R093",
+      "family": "F16",
+      "source": "C §6.3 p161–162; §2.7.5–2.7.6 p62–68",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc",
+        "security"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "选定 Block Collectives",
+      "requirement": "BlockRead/BlockWriteFull 由交换侧产生独立 Tag，其值可与 unicast/primitive Tag 重叠；关联与回收使用端口和规范事务类别上下文，不能只以裸 Tag 索引。所有 Block 内存读写包括状态更新使用相应 Block 请求，不伪装成普通事务。",
+      "test_id": "T-R093",
+      "coverage": "相同 Tag 跨类别/端口并发、响应类型及迟到 beat、状态更新 Tag、普通和 INC 信用/安全资源隔离；A06 不随语义确认关闭",
+      "review_status": "text_confirmed",
+      "issues": [
+        "A06"
+      ]
+    },
+    {
+      "id": "R094",
+      "family": "F16",
+      "source": "C §6.3 p161–162; §6.3.4 p166–167",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch_inc",
+        "management"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "BlockCollectiveInvoke 的协议响应与最终完成",
+      "requirement": "交换侧对合法传输到达的 Invoke 及时返回 OKAY Write Response，随后入队校验失败也通过 Status Buffer 报告；OKAY 不表示已入队成功或 Collective 完成。实际成功/失败通过 BlockWriteFull 更新状态缓冲区，上层分别跟踪响应完成与集合完成。",
+      "test_id": "T-R094",
+      "coverage": "OKAY 后资源不足/非法组、正常延迟完成、状态写回背压、软件错误地以 OKAY 释放输入输出 buffer 的负例",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R095",
+      "family": "F16",
+      "source": "C §6.3.1–6.3.2 p162–164",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "management"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "选定 Block 队列与 Allocate",
+      "requirement": "每端口 Control Block Queue 的总容量是实现参数，逻辑 SQ ID 为 0–63，每次申请条目数按编码 N−1 表示 1–128；动态分配满足总资源守恒。重复分配、正分配/释放中的队列及资源不足按既定状态反馈，不把 64×128 当成规范规定必备容量。",
+      "test_id": "T-R095",
+      "coverage": "SQ 0/63、申请 1/128、尾项/总资源不足、重复/并发 Allocate、不同端口同 SQ ID、状态有效位和容量账户",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R096",
+      "family": "F16",
+      "source": "C §6.3.3 p164–165",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "management"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "BlockCollectiveDeallocate，限定 DO=0 的释放流程",
+      "requirement": "停止接纳该 SQ 的新 Invoke，停止现有 Block 的新数据访问，等待已发访问响应，逐项完成 Block 状态更新后再写 Deallocate 成功状态；该更新完成才将 SQ 标为可重新分配。未分配或处于分配/释放过程的 SQ 返回规定失败状态；不把 DO=0 完成流程复制为 DO=1。",
+      "test_id": "T-R096",
+      "coverage": "空/满/多 Block SQ、未开始和部分完成、状态写回延迟、重复释放、成功状态前抢占重新分配、其他 SQ 正常进展",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R097",
+      "family": "F16",
+      "source": "C §6.3.3 p164–165; §6.3.4 p167",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "management"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "BlockCollectiveDeallocate 的 DO=1 drain-only 最终状态与恢复接纳",
+      "requirement": "p164 明确 DO=1 保留分配，但 p165 的通用结束段又写成 unallocated；原图已复核。保留 DO 字段与队列资源，不静默执行释放；DO=1 的完整状态迁移、完成状态及重新接纳 Invoke 的时点待澄清后冻结，不能以删去 drain-only 能力绕开。",
+      "test_id": "T-R097",
+      "coverage": "DO=0/1 对照、drain-only 后容量不归还、后续 Invoke/重复 Allocate/再次 Drain、状态写回前后边界；待澄清后建立唯一预期",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A18"
+      ]
+    },
+    {
+      "id": "R098",
+      "family": "F16",
+      "source": "C §6.3.2–6.3.4 p163–167",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "management",
+        "integration"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "Allocate/Deallocate/Invoke 各自 Status Buffer 的格式和可见性",
+      "requirement": "三类状态缓冲区不能共用一个想当然的完成位布局：Allocate/Deallocate 用首字节的高位 Valid，Invoke 用 V0/V1 区分调用/终止和内存访问错误信息，二者可同时有效。软件先清各自有效位再发请求，按对应规则轮询；256-byte 缓冲区的保留区按适用条款清零。",
+      "test_id": "T-R098",
+      "coverage": "旧有效位残留、V0/V1 单独或同时有效、正常与终止/访问错误竞态、完整 256-byte 写回、状态消费与内存可见性集成契约",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R099",
+      "family": "F16",
+      "source": "C §6.3.5–6.3.6 p168–169",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "management"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "选定 Block Collectives 的地址生成与地址掩码",
+      "requirement": "交换侧提供逻辑 Block Collective Address Mask，覆盖 ReqAddr[56:24]；使用时是从 bit56 开始的连续高位 1。生成 BlockRead/BlockWrite 地址时，掩码选中位取 Base Address，其余位取计算地址，不能仅对初始地址做一次校验后忽略后续跨界访问。",
+      "test_id": "T-R099",
+      "coverage": "掩码最短/最长合法范围、非法不连续配置、输入/输出/状态访问、offset/stride 跨界；掩码约束与安全授权分开验证",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R100",
+      "family": "F16",
+      "source": "C §6.3.5–6.3.7 p168–171",
+      "level": "conditional_mandatory",
+      "roles": [
+        "switch_inc",
+        "model"
+      ],
+      "mapping": "inc_lifecycle",
+      "condition": "Block 的非 stride/stride 参数与精度放大",
+      "requirement": "非 stride 按 LEN+1 个 256-byte 块处理并忽略 XSIZE/YSIZE/SSIZE/SSIZE2；stride 按 XSIZE+1 块每行、YSIZE+1 行、输入/输出各自 SSIZE+1/SSIZE2+1 跳块并忽略 LEN。长度/行大小表示输入规模，精度扩大时输出可为 2/4 倍，不共用输入输出地址步进或容量预算。",
+      "test_id": "T-R100",
+      "coverage": "编码 0 的非零长度/跳距、输入输出不同 stride、2/4 倍输出、边界进位、地址掩码、固定成员数值顺序；保留参数不影响结果",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R101",
+      "family": "F09",
+      "source": "L §2.3.7 p23–24; informative Appendix A p97",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_crc",
+      "condition": "DL CRC 的格式、计算覆盖与位序",
+      "requirement": "CRC 按正文覆盖整个 640-byte DL flit，计算时 CRC 字段置零；输出按 x0→x31 的顺序放入尾部四字节，与 IEEE 802.3 FCS 的发送顺序相反。不得直接取任意 CRC32 软件库的默认参数/序列化结果。附录 A 的多项式说明和示例作为独立复核输入，不能替代规范引用或算作已经通过的向量。",
+      "test_id": "T-R101",
+      "coverage": "640/636-byte 覆盖差异、CRC 字段置零、逐 bit/byte 顺序、非对称 payload、正文/附录示例复现、头/数据/CRC 位翻转",
+      "review_status": "blocked_by_spec_issue",
+      "issues": [
+        "A19"
+      ],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/evidence.json",
+          "component": "WP03_crc_mathematics_subset"
+        }
+      ],
+      "review_update": "Math and coverage reproduced; normative x0-first serialization and informative Appendix A printed time sequence differ under explicit coefficient conventions. No wire encoder/checker approved."
+    },
+    {
+      "id": "R102",
+      "family": "F09",
+      "source": "L §2.4.1.2 p24; §2.4.4 p36–40",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_control",
+      "condition": "Basic/Control/UART 消息共享 DLAltSector",
+      "requirement": "消息仲裁按 Basic、Control、UART 各组内部 round-robin，再做三组之间 round-robin；UART transport 一旦发送，按连续消息规则阻止其它 DL 消息穿插。不能为满足单项 ACK 时限直接改成永久严格优先级或中途抢占 UART，须在规定调度下证明适用时限。",
+      "test_id": "T-R102",
+      "coverage": "三组同时持续有请求、组内公平、最长 UART、reset No-Op 序列、速率 ACK 截止、不同速度/宽度和 replay 的阻塞界",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/dl_message_scheduler_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_source_evidence.json",
+          "component": "WP05_uart_tx_source_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_proof_integration_evidence.json",
+          "component": "WP05_uart_tx_source_full_proof_and_actual_memory_path_subset"
+        },
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/model/uart_reset_evidence.json",
+          "component": "WP05_uart_reset_event_reference_and_peer_datapath_model_integration"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_all_periods_evidence.json",
+          "component": "WP05_original_UART_default128_actual_fullword_joint_induction_two_timer_configurations"
+        },
+        {
+          "record": "verification/model/dl_message_port_evidence.json",
+          "component": "WP05_isolated_Basic_UART_public_cycle_composition"
+        },
+        {
+          "record": "verification/model/dl_control_port_evidence.json",
+          "component": "WP05_control_message_port_reference_subset"
+        }
+      ],
+      "model_scope": "Current isolated UARTPort composes public TX/RX/reset references with finite response obligations,actual maintenance take and firmware discard semantics;269 complete model methods pass. Historical scope remains in its original evidence records. A20 cadence,DVFS,upper overload recovery andother protocol deadlines remain open. Added actual Control/Basic/UART reference composition with framed RX, actual take, Channel4 enabled and closing drain/new-header gate;10 tests,16 paired port schedules,10 mutations. Hardware Control, new UART interface RTL, timebase, formal proof and STA remain open.",
+      "rtl_status": "partial_actual_message_port_control_bit0_and_mapping_proved_fullword_matrix_640ps_and_complete_scope_open",
+      "rtl_evidence": [
+        {
+          "record": "verification/rtl/dl_message_arbiter_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/rtl/dl_message_proof_timing_evidence.json",
+          "component": "WP05_dl_message_arbitration_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_proof_integration_evidence.json",
+          "component": "WP05_uart_tx_source_full_proof_and_actual_memory_path_subset"
+        },
+        {
+          "record": "verification/rtl/uart_tx_physical_evidence.json",
+          "component": "WP05_uart_tx_source_path_mapping_and_failed_physical_baselines"
+        },
+        {
+          "record": "verification/rtl/uart_tx_timing_evidence.json",
+          "component": "WP05_uart_tx_actual_macro_hold_repair_and_source_sizing_partial_physical"
+        },
+        {
+          "record": "verification/rtl/uart_rx_path_evidence.json",
+          "component": "WP05_uart_rx_framing_storage_and_read_credit_subset"
+        },
+        {
+          "record": "verification/rtl/uart_rx_proof_timing_evidence.json",
+          "component": "WP05_uart_rx_control_small_actual_memory_induction_and_all_depth_mapping_failed_STA"
+        },
+        {
+          "record": "verification/rtl/uart_rx_optimization_evidence.json",
+          "component": "WP05_default128_actual_full_word_content_induction_and_isolated_STA27_of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/uart_reset_control_evidence.json",
+          "component": "WP05_standalone_uart_reset_cycle_RTL_full_default_induction_and_mapping_STA8of10_not_integrated"
+        },
+        {
+          "record": "verification/rtl/uart_port_rtl_evidence.json",
+          "component": "WP05_isolated_actual_UART_port_SRAM_reset_and_two_endpoint_simulation_not_joint_induction_or_STA"
+        },
+        {
+          "record": "verification/rtl/uart_port_proof_evidence.json",
+          "component": "WP05_actual_default128_port_joint_control_bit0_induction_two_timer_mapping_STA0of30_not_adopted"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_evidence.json",
+          "component": "WP05_isolated_actual_Basic_UART_SRAM_service_and_independent_fault_checks"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_physical_evidence.json",
+          "component": "WP05_actual_message_port_complete_logic_macro_mapping_and_bounded_STA"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_proof_evidence.json",
+          "component": "WP05_actual_message_port_independent_control_and_bit0_content_two_timer_profiles"
+        },
+        {
+          "record": "verification/rtl/uart_start_gate_evidence.json",
+          "component": "WP05_uart_new_header_permission_actual_SRAM_RTL_subset"
+        },
+        {
+          "record": "verification/rtl/dl_message_port_full_word_evidence.json",
+          "component": "WP05_actual_Basic_UART_old_interface_full_word_induction"
+        }
+      ],
+      "rtl_scope": "Current isolated port preserves prior actual SRAM and two-endpoint simulation evidence. Default128/640ps full control andbit0 actual content jointly inductive;all valid SRAM rows andsource-held slots checked. Five actual RTL andfour mapped netlist faults detected. Both640/6400ps configurations pass62 public output,43 state and16 macro transaction bus mapping comparisons;STA0of30 under original budgets. All32 data planes/both timer configurations,candidate adoption,A20,DVFS,upper recovery andfull protocol implementation remain open. This is not physical or interoperability signoff.",
+      "rtl_additional_evidence": [
+        "verification/rtl/uart_port_timing_evidence.json",
+        "verification/rtl/uart_port_phase_evidence.json"
+      ],
+      "uart_joint_proof_scope": "Original actual UART port default128word, all32bits at640/6400ps,64profiles/2048queries with actual graph/clock/source audits; complete requirement,physical timing and later modified candidates not implied.",
+      "current_integration_scope": "New isolated actual-SRAM message port gates new UART headers independently of Channel enabled, drains already started messages;54750 actual edges,4 independent RTL fault detections,0 static errors/warnings,no new state. New interface formal proof/library mapping/STA and Control RTL are not completed; older proofs and timing do not transfer automatically.",
+      "current_message_port_full_word_scope": "Frozen stage34/35/36 Basic/UART actual message port:128 logical words, all32-bit content and joint control induction at640/6400ps;64profiles2304queries, full actual SRAM/data/state graph retained. Later UART start gate and semantic Control module are excluded; no new STA or complete IP claim."
+    },
+    {
+      "id": "R103",
+      "family": "F09",
+      "source": "L §2.4 p24; §2.6.6.2 p47",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "dl_receive_validation",
+      "condition": "DL 消息保留字段与 DL flit op 保留编码的不同规则",
+      "requirement": "DL 消息的 reserved 字段发送置零、接收忽略；DL flit 的 reserved op 编码则按 ingress 无效 flit 路径丢弃和计数，即使 CRC 正确也不能作为合法 ACK/replay 或 payload 接收。不能把 reserved field、reserved opcode 和未定义消息类统一采用一个猜测的处置。",
+      "test_id": "T-R103",
+      "coverage": "CRC 正确但 reserved op、合法消息 reserved bit 非零、CRC 错误与保留值叠加、ACK/接收队列不被非法 flit 更新",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R104",
+      "family": "F10",
+      "source": "L §2.6.6.2 p47; §2.6.6.4 p49–50",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "llr",
+      "condition": "接收低位序号歧义、CRC/无效 flit 与重放状态",
+      "requirement": "按 ingress 规则累计 Rx_bad_crc_count，达到 7 时设置 ambiguous；在 ambiguous/replay 条件下不能继续仅凭低位序号正常入队，须按 explicit 和期望序号条件重新同步。合法期望接收才按正文清除对应错误/重放状态，NOP 不入 payload 队列。",
+      "test_id": "T-R104",
+      "coverage": "计数 6/7/8 边界、有效但非期望 explicit、CRC 正确的低位别名、NOP/payload、重复 replay、背压丢弃增强与错误计数来源分离",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R105",
+      "family": "F10",
+      "source": "L §2.6.6.7 p50–51",
+      "level": "mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "llr",
+      "condition": "发送 flit 类型与显式序号调度",
+      "requirement": "Tx_explicit_count 按 flit 调度递减并以 7 重装；首个 replay 优先，其后 explicit 到期优先，再是符合新 codeword group 条件的 Replay Request，最后 ACK。每组三份 Replay Request 在首份捕获请求序号并共享该值，不因其间接收进展逐份改变，且保留跨 codeword group 要求。",
+      "test_id": "T-R105",
+      "coverage": "first_replay/explicit/replay-request/ACK 同时就绪、倒计数边界、三份之间 Rx 序号改变、组边界、wrap 511→1",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R106",
+      "family": "F07",
+      "source": "C §5.5 p126–127; §5.6.1 p128",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "compression",
+      "condition": "实现 Tx/Rx 地址压缩缓存",
+      "requirement": "Accelerator Tx 与对应 Switch Rx 缓存按 ReqDstPhysAccID 索引，Switch Tx 与对应 Accelerator Rx 按 ReqSrcPhysAccID 索引；索引策略由 Tx/Rx 配对保持一致。容量和固定读写可见延迟按角色/支持规模配置，不将局部 PortID 误作 Accelerator 缓存行号。",
+      "test_id": "T-R106",
+      "coverage": "源/目的互换、同低位不同 Accelerator ID、多端口/非连续 ID、容量边界、固定 lookup/update latency",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R107",
+      "family": "F07",
+      "source": "C §5.6.1 p128; §5.9.3 Tables 5-32/5-33 p140–141",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "compression",
+      "condition": "启用请求压缩或地址缓存加载",
+      "requirement": "压缩请求须同时满足白名单命令、64/128/192/256-byte 长度、64-byte 对齐且不跨 256-byte、合法 ReqAttr、ReqMetaData[7:3]=0 和缓存命中/存活条件；Atomic 和 Vendor Defined 命令不压缩。CLOAD 只用于规定的可压缩命令类别，但未压缩且 CLOAD=0 始终是合法发端选择，不能把压缩 MAY 写成 MUST。",
+      "test_id": "T-R107",
+      "coverage": "每项条件单独违反、64/128/192/256、partial read enable、metadata 高位、Atomic/Vendor 命令、只命中但尚未满足其它条件",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R108",
+      "family": "F07",
+      "source": "C §5.6.1–5.6.2 p128–129",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "compression",
+      "condition": "地址缓存更新、压缩命中和 TL Control Half-Flit 发出顺序",
+      "requirement": "issued 以请求被放入将在线上出现的位置为界，Half-Flit 内从低 byte 到高 byte 有序；发出的 CLOAD 或压缩请求不能引用在 issued 前已被覆盖的缓存项。Rx 的 CLOAD 更新须对同 Half-Flit 后续及之后的匹配请求可见，可由旁路实现，不以 SRAM 延迟为由返回旧地址。",
+      "test_id": "T-R108",
+      "coverage": "同 Half-Flit load/use/overwrite/use、相同 row/way、多拍阻塞、并发查找更新、发前取消/替换、旁路与 SRAM 结果一致",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R109",
+      "family": "F07",
+      "source": "C §5.5 p124–126; §5.6.2 p129; §4.1 p101",
+      "level": "conditional_mandatory",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "mapping": "compression",
+      "condition": "已启用的 Tx/Rx 地址缓存正常运行、错误和适用复位",
+      "requirement": "Tx 可以失效条目并停止使用它，后续经未压缩加载恢复；Rx 已加载项在正常运行不能自行淘汰/失效，只由后续 CLOAD 替换。缓存检测到错误须触发规定的 link-down 和/或 TL Drop；UPLI reset 对关联 Tx cache 的清除义务另列，不能误变成远端 Rx 的任意后台清除。",
+      "test_id": "T-R109",
+      "coverage": "Tx 单独失效与重载、Rx 禁止自主淘汰、ECC/parity 错误、UPLI reset/重连、与在途压缩请求和 Drop 的交叉",
+      "review_status": "text_confirmed",
+      "issues": []
+    },
+    {
+      "id": "R110",
+      "family": "F03",
+      "source": "C §4.2–4.3 p102–103; §2.7.8 p71",
+      "level": "mandatory",
+      "roles": [
+        "upli_originator",
+        "upli_completer"
+      ],
+      "mapping": "upli",
+      "condition": "UPLI 两个方向连接先后不同时的初始信用和数据 beat",
+      "requirement": "按方向区分连接和信用传送资格：Originator→Completer 方向握手完成后允许该方向信用返回接口传送，反向同理；数据 beat 则必须两方向连接均完成并有对应信用。不能用单个 data-valid 门控所有信用，或把允许早到的方向信用当错误；发端可以选择保守地稍后释信。",
+      "test_id": "T-R110",
+      "coverage": "仅 O→C 完成/仅 C→O 完成、合法提前信用、四信号后首 beat、valid=0 时信用有效、延迟 ACK、复位后重连",
+      "review_status": "text_confirmed",
+      "issues": [],
+      "model_status": "partial_model_validated_not_requirement_complete",
+      "model_evidence": [
+        {
+          "record": "verification/model/upli_evidence.json",
+          "component": "WP02_upli_control_subset"
+        },
+        {
+          "record": "verification/rtl/receive_channel_evidence.json",
+          "component": "WP02_SRAM_receive_channel_subset"
+        }
+      ],
+      "rtl_status": "partial_RTL_functional_validation_not_requirement_complete",
+      "rtl_evidence": "verification/rtl/initialization_evidence.json",
+      "rtl_additional_evidence": [
+        "verification/rtl/receive_channel_evidence.json"
+      ]
+    }
+  ]
+}

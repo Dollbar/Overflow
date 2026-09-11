@@ -1,0 +1,46 @@
+{
+  "adopted": true,
+  "decision": "retain measured area reduction at both widths with disclosed width8 setup regression; all semantic and current mapped gates complete",
+  "source_checkpoint": "c84c113402d4fea8443c05687ccd3b056193dd84",
+  "rtl_sha256": "4f7578ab3caa5d1a2909ea19c8d51816097ebb886f040708cd581a66013d2e54",
+  "physical_measurements": [
+    {
+      "width": 8,
+      "area_um2": 43569.792,
+      "worst_setup_ns": -1.816202,
+      "worst_hold_ns": -0.008036
+    },
+    {
+      "width": 16,
+      "area_um2": 45162.054,
+      "worst_setup_ns": -1.799045,
+      "worst_hold_ns": -0.008036
+    }
+  ],
+  "main_closed": 0,
+  "reference_closed": 26,
+  "mapped_partitions": 12,
+  "mapped_reset_queries": 4,
+  "mapped_cursor_queries": 4,
+  "mapped_dormant_queries": 4,
+  "mapped_fault_detections": 6,
+  "normal_optimized_audits_identical": true,
+  "scope": "current production transmit composition; binary mapped correspondence and synthetic-SRAM prelayout measurements",
+  "power_evaluated": false,
+  "macro_signoff": false,
+  "full_top_cdc_rdc_complete": false,
+  "full_goal_complete": false,
+  "artifacts": {
+    "build/verification/tl_tx_prepared/slot_direct_mapped_correspondence_evidence.json": "3a7fb8205095f758c811ee59005be3464e75c1e609f0255b208c7ed44e23307f",
+    "build/verification/tl_tx_prepared/slot_direct_mapped_correspondence_evidence_optimized.json": "3a7fb8205095f758c811ee59005be3464e75c1e609f0255b208c7ed44e23307f",
+    "build/verification/tl_tx_prepared/slot_direct_physical/evidence.json": "8e15c88c9a4221d31e964a3ced0d5fa593a80d0d56a6f48e8fc3ae546ce9195b",
+    "build/verification/tl_tx_prepared/slot_direct_physical/evidence_optimized.json": "8e15c88c9a4221d31e964a3ced0d5fa593a80d0d56a6f48e8fc3ae546ce9195b",
+    "build/verification/tl_tx_prepared/slot_direct_physical/results.json": "cfd40fc8821a4e3e8a9f08d25024248842a8d9174615ee78114f8ebc32c1c066",
+    "build/verification/tl_credit_reduction/slot_direct_equivalence_audit.json": "34300866674ec23362a80dd3f6013e28fb1c553d307145450f110e9aa9deeae1",
+    "build/verification/tl_credit_reduction/slot_direct_ownership_evidence.json": "d35140fc75dfb37da181a660e5acd8236d47e3f035f521f21d8e9632770e4a78",
+    "build/verification/tl_credit_reduction/slot_direct_ownership_evidence_optimized.json": "d35140fc75dfb37da181a660e5acd8236d47e3f035f521f21d8e9632770e4a78",
+    "build/verification/tl_credit_reduction/slot_direct_clean_clone_evidence.json": "d33ea1f7d4a477e2310e2ab9e1e063aeace4d50adf6bb3d28f37de22d84feff5",
+    "build/verification/tl_credit_reduction/slot_direct_portable_reference_evidence.json": "a01e3b3b07bfb9e47615aa0134d7827f1ec30b3b9d8437479a73bcee98ab8e7a",
+    "build/verification/tl_credit_reduction/slot_direct_trace_identity.json": "47910871d931cd0b927427cde65447d6fa3b88483d13a7261c99c318fa7618e5"
+  }
+}

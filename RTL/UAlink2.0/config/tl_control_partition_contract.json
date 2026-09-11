@@ -1,0 +1,41 @@
+{
+  "module": "tl_control_partition",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "2.7.8",
+      "5.1.1",
+      "5.8",
+      "5.9"
+    ],
+    "sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "clock": "i_clk only",
+  "reset": "synchronous active-low i_rstn",
+  "parameters": {
+    "WIDTH": "8..16; actual RTL unit/peers tested at 8 and 16"
+  },
+  "contract": [
+    "Source is a held batch of naturally aligned prepared independent fields in one 256-bit Control; only one Request or Response class per batch",
+    "Only confirmed field tenure is supported; NOP padding may be zero; nonzero FC fields use a separate publisher and are rejected here",
+    "512-bit source tag bus carries up to eight 64-bit tags in field order; output carries at most four and zeros unused slots in Auth mode",
+    "Keep source Control/tags/valid unchanged until o_source_taken; o_taken confirms only the current output partition entered the downstream header FIFO",
+    "Capacity and Auth/shared mode are from the same real port and stable after initialization throughout a reset epoch",
+    "Partition according to total physical capacity, not available credits; real balance/catch/payload checks remain at actual wire transfer",
+    "Retain original sector alignment/field bits and data order; no change to LEN, OFFSET, LAST, TAG, status or individual transaction tenure",
+    "Downstream Data/BE source ordering is unchanged; source data acceptance remains separately accounted by actual Tx SRAM buffers",
+    "If the earliest individual field exceeds capacity, assert o_shortfall without confirming source or skipping to later transactions"
+  ],
+  "verified_goal_boundary": [
+    "Oversized groups of individually feasible fields can complete with actual CMD/Data capacities of one",
+    "This is not a general UPLI formatter, arbitrary multi-beat transaction splitter or per-VC scheduler",
+    "Source-selected Single-Beat read responses are distinct from rewriting already-issued Multi-Beat transfers; arbitrary Write/Atomic splitting is not inferred"
+  ],
+  "open": [
+    "Individual oversized transaction completion",
+    "Full UPLI encoding/forwarding and per-VC selection",
+    "Poison/general TL message integration",
+    "Full protocol/resource induction and process STA",
+    "Complete Endpoint and Switch IP goal"
+  ]
+}

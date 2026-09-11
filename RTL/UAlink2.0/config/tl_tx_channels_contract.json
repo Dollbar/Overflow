@@ -1,0 +1,56 @@
+{
+  "module": "tl_tx_channels",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "9.1",
+      "5.1.1",
+      "5.1.2",
+      "5.7",
+      "5.8"
+    ],
+    "local_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "clock": "i_clk only",
+  "reset": "synchronous active-low i_rstn",
+  "parameters": {
+    "WIDTH": [
+      8,
+      16
+    ]
+  },
+  "lanes": {
+    "0": "Request prepared-Control, tags and ordered Data/BE",
+    "1": "Response prepared-Control, tags and ordered Data/BE"
+  },
+  "interface_contract": [
+    "external producer queues hold each unacknowledged header/tag/data entry stable",
+    "each prepared Control contains only its own Request or Response fields and NOP padding",
+    "each Data/BE source is ordered according to headers in its own class; storage of these transmit queues is not in this module",
+    "pending, shared/done, available/capacity and Tx catch budgets come from the same actual credit port",
+    "only actual wire o_tx_taken drives i_taken",
+    "Auth configuration stable throughout reset epoch; upstream supplies correct tags; cryptography not implemented here",
+    "Data tenure >1 eventually receives two available halves; final tail needs one; arbitrary FIFO-depth/source-gap liveness remains open"
+  ],
+  "policy": [
+    "prefer fully eligible class over blocked opposite class",
+    "then consider a credit-funded class needing catch-budget NOP",
+    "round robin between equal-priority classes, updated only on actual header transmission",
+    "hold chosen header class under output stall",
+    "old Data/BE owner remains separate from the new header class until the actual event"
+  ],
+  "diagnostics": [
+    "o_header_error independently flags invalid or wrong-class prepared headers",
+    "o_capacity_shortfall independently identifies total-capacity insufficiency without consuming or discarding that head"
+  ],
+  "open": [
+    "actual transmit FIFO queues and SRAM payload buffers",
+    "per-VC queue independence and complete scheduling proof",
+    "oversized transaction completion and UPLI semantics",
+    "Poison and general TL messages",
+    "complete online resource/reference induction",
+    "process STA and full Endpoint/Switch integration"
+  ],
+  "verification": "verification/tl_tx_channels",
+  "review": "docs/tl_tx_channels_review.md"
+}

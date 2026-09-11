@@ -1,0 +1,17 @@
+{
+  "scope": "Actual external SDP behavior, mapping and synchronous FIFO content/order for finite elaborations",
+  "profiles": [
+    {"name": "one", "depth": 1, "width": 8},
+    {"name": "two", "depth": 2, "width": 8},
+    {"name": "three", "depth": 3, "width": 8},
+    {"name": "five", "depth": 5, "width": 32},
+    {"name": "two_tiles", "depth": 5, "width": 40},
+    {"name": "four_tiles", "depth": 3, "width": 128},
+    {"name": "seventeen_tiles", "depth": 3, "width": 520},
+    {"name": "sixteen", "depth": 16, "width": 8},
+    {"name": "sixteen_wide", "depth": 16, "width": 32},
+    {"name": "nonbinary", "depth": 17, "width": 8}
+  ],
+  "method": {"reset_steps": 4, "induction_seq": 2, "max_induction_steps": 12, "timeout_seconds_per_sat_instance": 120},
+  "boundary": ["No cut of SRAM Q or memory state", "Independent accepted-word shift queue", "All native inputs symbolic, arbitrary repeated synchronous reset", "Safety and data order, not liveness", "One macro depth class, width tiling included; not all capacities/banks", "Not channel metadata packing, credit replay or complete IP"]
+}

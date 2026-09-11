@@ -1,0 +1,174 @@
+{
+  "name": "dl_uart_tx_source",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "Stream0 UART complete payload staging and one-message credit reservation over an external exclusive-consumer FIFO.",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "User authorized full local RTL implementation and independent self-review. This bounded native internal interface is an implementation choice under that scope, not a user-specified wire layout."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "direction": "input",
+        "width": 1,
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "direction": "input",
+        "width": 1,
+        "role": "reset"
+      },
+      {
+        "name": "i_channel4_enabled",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_payload_fill",
+        "direction": "input",
+        "width": 12
+      },
+      {
+        "name": "i_payload_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_payload_word",
+        "direction": "input",
+        "width": 32
+      },
+      {
+        "name": "i_credit_valid",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "i_credit_value",
+        "direction": "input",
+        "width": 12
+      },
+      {
+        "name": "i_source_take",
+        "direction": "input",
+        "width": 1
+      },
+      {
+        "name": "o_payload_ready",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_source_pending",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_word",
+        "direction": "output",
+        "width": 32
+      },
+      {
+        "name": "o_word_count",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_word_index",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_busy",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_reserved_words",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_staged_words",
+        "direction": "output",
+        "width": 6
+      },
+      {
+        "name": "o_tx_counter",
+        "direction": "output",
+        "width": 12
+      },
+      {
+        "name": "o_latest_fc",
+        "direction": "output",
+        "width": 12
+      },
+      {
+        "name": "o_message_done",
+        "direction": "output",
+        "width": 1
+      },
+      {
+        "name": "o_error",
+        "direction": "output",
+        "width": 1
+      }
+    ]
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "behavior": [
+    "One reserved stream0 message; payload count=min(pre-edge modulo4096 credits, external FIFO fill,32). New credit on the same edge is usable next cycle.",
+    "Capture1..32 complete payload DWORDs with FIFO ready/valid; pending remains false until all reserved words are actually staged. External FIFO has one consumer and its occupancy includes cached/in-flight read words.",
+    "Fixed stream0 header=(payload_count-1)<<27 |4; total count includes header. First source take consumes header but no payload storage/credit. Final payload take adds captured payload count modulo4096 to TX counter.",
+    "No second reservation while busy. Header/count/current payload remain stable across downstream stalls; later credit/fill changes do not alter the message.",
+    "Staged occupancy includes actual buffered unsent payload only. Wrapper must combine it with external FIFO occupancy to enforce total firmware TX capacity; source has32 staging registers, no additional128-word firmware FIFO.",
+    "Channel4 disable gates FIFO consumption and source pending. After a header was taken, disabling raises a local integration fault and preserves remaining state. Legal offline negotiation must drain first; restore resumes. Coordinated reset with FIFO and arbiter is required for abort.",
+    "Invalid take never consumes or retires words and raises a local error. Independent reservation/staging/credit-update events still proceed. No wire error code assigned.",
+    "Synchronous active-low local reset clears state and suppresses exposed signals combinationally. It does not implement40NoOp/10ms Stream Reset.",
+    "Decoded credit validity/stream eligibility is upstream. Four-transmitted-flit Credit Update cadence UCR01 remains unresolved; no speculative cadence implementation in this source."
+  ],
+  "constraints": [
+    "Verilog2001, same-line Chinese comments, one register per sequential always, no functions/tasks/raw clocks.",
+    "Single clock;640/6400ps simulation periods are characterization inputs, not timing closure or PHY throughput."
+  ],
+  "outputs": [
+    {
+      "path": "rtl/dl/dl_uart_tx_source.v",
+      "kind": "source",
+      "language": "verilog"
+    },
+    {
+      "path": "verification/rtl/uart_tx_source_tb.v",
+      "kind": "testbench",
+      "language": "verilog"
+    }
+  ],
+  "notes": [
+    "Spec:DL/PL2.0 section2.4.1.2/Table2-3 and sections2.4.4.1.3/2.4.4.4/Table2-14.",
+    "Contract details and open cadence point in docs/uart_tx_source_plan.md."
+  ],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {}
+}

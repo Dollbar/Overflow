@@ -1,0 +1,328 @@
+{
+  "name": "dl_basic_message_control",
+  "target": "rtl",
+  "pipeline_required": false,
+  "streamability": "streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "rtl_dialect": "verilog",
+  "description": "模块实现Basic消息单请求及双向独立回复，时限由稳定控制时钟采样。",
+  "design_requirements": {
+    "target": "rtl",
+    "pipeline_required": false,
+    "streamability": "streamable",
+    "interface_family": "native",
+    "interface_profile": {},
+    "confirmed_by_user": true,
+    "confirmation_notes": "Full dual-IP implementation authorized; native internal interface follows the checked Basic plan."
+  },
+  "interfaces": {
+    "ports": [
+      {
+        "name": "i_clk",
+        "width": 1,
+        "direction": "input",
+        "description": "原始稳定控制时钟",
+        "role": "clock"
+      },
+      {
+        "name": "i_rstn",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 reset",
+        "role": "reset"
+      },
+      {
+        "name": "i_local_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 local_valid"
+      },
+      {
+        "name": "i_local_kind",
+        "width": 3,
+        "direction": "input",
+        "description": "原生输入 local_kind"
+      },
+      {
+        "name": "i_local_rate",
+        "width": 16,
+        "direction": "input",
+        "description": "原生输入 local_rate"
+      },
+      {
+        "name": "i_device_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 device_valid"
+      },
+      {
+        "name": "i_device_id",
+        "width": 10,
+        "direction": "input",
+        "description": "原生输入 device_id"
+      },
+      {
+        "name": "i_device_type",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 device_type"
+      },
+      {
+        "name": "i_port_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 port_valid"
+      },
+      {
+        "name": "i_port",
+        "width": 12,
+        "direction": "input",
+        "description": "原生输入 port"
+      },
+      {
+        "name": "i_folding",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 folding"
+      },
+      {
+        "name": "i_tx_ready_advertised",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 tx_ready_advertised"
+      },
+      {
+        "name": "i_symbols_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 symbols_valid"
+      },
+      {
+        "name": "i_tx_limit_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 tx_limit_valid"
+      },
+      {
+        "name": "i_tx_limit",
+        "width": 16,
+        "direction": "input",
+        "description": "原生输入 tx_limit"
+      },
+      {
+        "name": "i_rx_valid",
+        "width": 1,
+        "direction": "input",
+        "description": "原生输入 rx_valid"
+      },
+      {
+        "name": "i_rx_word",
+        "width": 32,
+        "direction": "input",
+        "description": "原生输入 rx_word"
+      },
+      {
+        "name": "i_source_take",
+        "width": 4,
+        "direction": "input",
+        "description": "原生输入 source_take"
+      },
+      {
+        "name": "o_local_ready",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_ready"
+      },
+      {
+        "name": "o_local_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_pending"
+      },
+      {
+        "name": "o_local_waiting",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_waiting"
+      },
+      {
+        "name": "o_remote_pending",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 remote_pending"
+      },
+      {
+        "name": "o_source_pending",
+        "width": 4,
+        "direction": "output",
+        "description": "独立参考观察 source_pending"
+      },
+      {
+        "name": "o_source_words",
+        "width": 128,
+        "direction": "output",
+        "description": "独立参考观察 source_words"
+      },
+      {
+        "name": "o_local_start",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_start"
+      },
+      {
+        "name": "o_local_commit",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_commit"
+      },
+      {
+        "name": "o_local_done",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 local_done"
+      },
+      {
+        "name": "o_reply_done",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 reply_done"
+      },
+      {
+        "name": "o_rx_request",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_request"
+      },
+      {
+        "name": "o_rx_noop",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_noop"
+      },
+      {
+        "name": "o_rx_unhandled",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unhandled"
+      },
+      {
+        "name": "o_rx_unsupported",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unsupported"
+      },
+      {
+        "name": "o_rx_unmatched_ack",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_unmatched_ack"
+      },
+      {
+        "name": "o_rx_overlap",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 rx_overlap"
+      },
+      {
+        "name": "o_peer_rate_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate_valid"
+      },
+      {
+        "name": "o_peer_rate",
+        "width": 16,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate"
+      },
+      {
+        "name": "o_peer_device_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_valid"
+      },
+      {
+        "name": "o_peer_device_type",
+        "width": 2,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_type"
+      },
+      {
+        "name": "o_peer_device_id",
+        "width": 10,
+        "direction": "output",
+        "description": "独立参考观察 peer_device_id"
+      },
+      {
+        "name": "o_peer_port_valid",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_port_valid"
+      },
+      {
+        "name": "o_peer_port",
+        "width": 12,
+        "direction": "output",
+        "description": "独立参考观察 peer_port"
+      },
+      {
+        "name": "o_peer_rate_update",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 peer_rate_update"
+      },
+      {
+        "name": "o_deadline_miss",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 deadline_miss"
+      },
+      {
+        "name": "o_deadline_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 deadline_fault"
+      },
+      {
+        "name": "o_protocol_fault",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 protocol_fault"
+      },
+      {
+        "name": "o_error",
+        "width": 1,
+        "direction": "output",
+        "description": "独立参考观察 error"
+      }
+    ]
+  },
+  "parameters": {
+    "C_CLOCK_PERIOD_PS": {
+      "default": 640,
+      "minimum": 1,
+      "maximum": 1000000000
+    }
+  },
+  "clock": {
+    "name": "i_clk",
+    "edge": "posedge",
+    "frequency_mhz": 1562.5
+  },
+  "reset": {
+    "name": "i_rstn",
+    "active": "low",
+    "synchronous": true
+  },
+  "model": "model/ualink/dl_basic_control.py",
+  "outputs": [
+    "rtl/dl/dl_basic_message_control.v",
+    "verification/rtl/dl_basic_control_tb.v"
+  ],
+  "limitations": [
+    "Stable controller clock only; no live DVFS or real PHY timing",
+    "External pacing limit and PL symbols qualifier",
+    "Full independent induction,mapping andSTA required separately"
+  ]
+}

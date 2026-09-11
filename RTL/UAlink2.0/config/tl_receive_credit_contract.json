@@ -1,0 +1,42 @@
+{
+  "module": "tl_receive_credit",
+  "status": "functional_matrix_passed_small_credit_liveness_open",
+  "specification": {
+    "document": "Common 2.0",
+    "sections": [
+      "5.8",
+      "Table 5-26"
+    ],
+    "local_document_sha256": "15cd742c536e1e701a958db8a04f54666b072b8d95a72a834b0aa7d2c58e3383"
+  },
+  "clock": "i_clk",
+  "reset": "synchronous active-low i_rstn",
+  "parameters": {
+    "WIDTH": [
+      1,
+      16
+    ],
+    "DEPTH": [
+      1,
+      65535
+    ],
+    "COUNT_WIDTH": "derived exact FIFO count width"
+  },
+  "capacity_rule": "2 * sum(initial logical credits) <= DEPTH; sufficient local budget for confirmed tenure",
+  "interface_constraints": [
+    "i_auth remains stable through a reset epoch",
+    "i_fc_send acknowledges the actual chosen outbound FC/MSG1 transfer in a legal Tx slot",
+    "i_valid is a local arrival interface, not new physical link backpressure",
+    "consumer read handshake accepts data and all saved credit releases atomically",
+    "cross-end reset coordination is supplied by link control"
+  ],
+  "known_open": [
+    "full online capacity induction",
+    "small Data credit dual-peer forward progress",
+    "complete opcode/address/length semantics",
+    "process mapping and STA",
+    "complete Endpoint/Switch integration"
+  ],
+  "verification": "verification/tl_receive_credit",
+  "review": "docs/tl_receive_credit_review.md"
+}

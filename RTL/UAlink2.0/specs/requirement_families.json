@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "updated_on": "2026-09-07",
+  "status": "preliminary_work_breakdown_not_clause_complete",
+  "meaning": "Families are review work items, not individual normative requirements or completed tests.",
+  "profile_status": "proposed_not_frozen",
+  "normative_requirement_count": null,
+  "normative_requirements_fully_extracted": false,
+  "partial_acceptance_register": "specs/requirements.json",
+  "partial_register_note": "110 project acceptance records: 103 text-confirmed and 7 blocked after the model-stage A19/R101 wire-order diagnostic. Previous start-readiness snapshot was 104/6. WP01 configuration and WP03 CRC mathematics have partial model evidence; no full requirement or family is signed off. Family-level extraction remains incomplete; counts are not total normative SHALL occurrences or executed tests.",
+  "sources": {
+    "C": "UALink Common 2.0, user supplied evaluation PDF, 249 pages",
+    "L": "UALink 200G DL/PL 2.0, user supplied evaluation PDF, 106 pages",
+    "M": "UALink Manageability 1.0, user supplied evaluation PDF, 71 pages"
+  },
+  "required_future_fields_per_requirement": [
+    "requirement_id", "document_revision", "clause_table_page", "role",
+    "normative_level", "applicability_condition", "profile_selection",
+    "interpretation_and_issue_ids", "model_mapping", "rtl_or_software_mapping",
+    "test_assertion_mapping", "coverage_mapping", "evidence", "review_status"
+  ],
+  "families": [
+    {"id":"F01","topic":"Topology, IDs, planes and vPods","source":"C §1, §7, §9; M §1–4","roles":["endpoint","switch","management"],"status":"clause_extraction_pending","evidence":[]},
+    {"id":"F02","topic":"UPLI fields, commands, data and responses","source":"C §2","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A11","A12"],"evidence":[]},
+    {"id":"F03","topic":"UPLI TDM, credits, burst and connection/reset","source":"C §2.5–2.6, §2.7–2.8, §4","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A01","A15"],"evidence":[]},
+    {"id":"F04","topic":"Ordering, atomic transport and local memory contract","source":"C §1.5, §2.7–2.8, §9","roles":["endpoint","switch","platform"],"status":"clause_extraction_pending","issues":["D04"],"evidence":[]},
+    {"id":"F05","topic":"RAS, parity, poison, drop and isolation","source":"C §3–4","roles":["endpoint","switch"],"status":"clause_extraction_pending","evidence":[]},
+    {"id":"F06","topic":"TL framing, messages and control/data/auth packing","source":"C §5.1–5.4, §5.9","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A09"],"evidence":[]},
+    {"id":"F07","topic":"Compression cache, CLOAD/CWAY, debug backoff","source":"C §5.5–5.6, §5.9–5.10","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A09"],"evidence":[]},
+    {"id":"F08","topic":"TL pacing, four VC classes, pool and shared-data credits","source":"C §5.7–5.8","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A01"],"evidence":[]},
+    {"id":"F09","topic":"DL framing, CRC, control/UART lifecycle and UPLI clock-rate notification/pacing","source":"L §2.3–2.5, Appendix A","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A13"],"evidence":[]},
+    {"id":"F10","topic":"LLR, replay, ACK window and reset","source":"L §2.6–2.7","roles":["endpoint","switch"],"status":"clause_extraction_pending","issues":["A02"],"evidence":[]},
+    {"id":"F11","topic":"Link resiliency, folding and legal negotiated modes","source":"L §2.8–2.9, §3","roles":["endpoint","switch"],"status":"clause_extraction_pending","evidence":[]},
+    {"id":"F12","topic":"Digital RS/PCS/FEC/PMA adapter and alignment","source":"L §3; informative Appendix B separately classified","roles":["digital_phy"],"status":"clause_extraction_pending","issues":["D01","D06"],"evidence":[]},
+    {"id":"F13","topic":"Switch route, repack, fairness, isolation and latency","source":"C §9; M §4","roles":["switch"],"status":"clause_extraction_pending","evidence":[]},
+    {"id":"F14","topic":"INC primitives, group and response reduction","source":"C §2.7, §6","roles":["endpoint","switch_inc"],"status":"clause_extraction_pending","issues":["A10"],"evidence":[]},
+    {"id":"F15","topic":"INC numerical types, widening, rounding and determinism","source":"C Table 2-5, §6.6–6.7","roles":["switch_inc","model"],"status":"clause_extraction_pending","issues":["A10","D03"],"evidence":[]},
+    {"id":"F16","topic":"Block queue, descriptor, tag, completion and cancellation","source":"C §2.7, §6.3–6.4; numerical dependencies §6.6–6.7","roles":["endpoint","switch_inc"],"status":"clause_extraction_pending","issues":["A09","A11","A18"],"evidence":[]},
+    {"id":"F17","topic":"Security GCM/KMAC/PCRC mapping and counters","source":"C §8","roles":["endpoint","switch_inc","security"],"status":"clause_extraction_pending","issues":["A05","A06","A07","D03"],"evidence":[]},
+    {"id":"F18","topic":"Key lifecycle, SOL streams, trusted state and INC domains","source":"C §8","roles":["endpoint","switch_inc","security","platform"],"status":"clause_extraction_pending","issues":["A08","A14"],"evidence":[]},
+    {"id":"F19","topic":"Management attributes, interfaces, discovery and vPod lifecycle","source":"C §7; M §1–6","roles":["management","endpoint","switch"],"status":"clause_extraction_pending","issues":["A03","A14","D02","D03"],"evidence":[]},
+    {"id":"F20","topic":"Telemetry, CPER persistence, headless operation and recovery","source":"M §7–9","roles":["management","endpoint","switch","platform"],"status":"clause_extraction_pending","issues":["D03"],"evidence":[]},
+    {"id":"F21","topic":"Project performance, physical quality and independent interoperability","source":"Project goals; normative recommendations separately identified in docs/ip_delivery_plan.md","roles":["verification","integration"],"status":"acceptance_criteria_proposed","issues":["D05","D06","D07"],"evidence":[]}
+  ]
+}

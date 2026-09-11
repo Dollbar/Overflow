@@ -1,0 +1,17 @@
+# Direct credit-slot matching implementation plan
+
+Execute alone with writing-plans, executing-plans, test-driven-development and erie-verilog-generator. Continue the full dual-IP Goal on the existing local ASIC branch.
+
+**Goal:** Remove a field-slot encode/decode chain from actual credit admission while preserving all 123 public output bits, every input case and the original timing/interface semantics.
+
+**Architecture:** Each field already has Request/Response membership, Pool and two-bit VC. A fixed account can match these directly: category matches Request for accounts 0–4/10–14 and Response for accounts 5–9/15–19; lane zero matches Pool, while lanes 1–4 match non-Pool VC 0–3. Preserve contribution widths, the full reduction tree, shared-pool merge, output masking and all allow/wait/shortfall rules.
+
+**Spec/evidence:** `config/tl_credit_admission_contract.json`, `docs/tl_credit_reduction_review.md`, current `rtl/tl/tl_credit_admission.v`, and the header-data-to-opposite-FIFO-count paths retained by the preceding physical runs. The encode/decode chain is a source-level optimization hypothesis; actual timing benefit must be measured.
+
+- [x] Reproduce `verification/tl_credit_reduction/run_equivalence.py --reference-commit 6f10b33 --widths 8 --label slot_reference_red` rejecting the historical shared reference cache. Make arbitrary explicit references use their immutable per-run snapshots while preserving the legacy `4376b8b` shared baseline contract used by historical auditors. Verify a new-reference run succeeds and leaves existing shared baseline bytes unchanged.
+- [x] Qualify an actual isolated wrong-lane/Pool mutation using the same 20 unconditional slot lemmas and three output-flag queries. A real SAT counterexample must be distinguished from tool failure. Use the adopted `6f10b33` reference and no protocol assumptions or internal free inputs.
+- [x] After the FIFO physical run and audits finish, reject/restore that candidate if unsupported. Implement direct fixed-account matching in an isolated copy of `tl_credit_admission.v`, retaining all other RTL. Replace `w_slots` with field VC/Pool vectors and fixed generate constants for category, lane and VC; compare membership directly without encoded slot arithmetic.
+- [x] Run all WIDTH 8–16 complete admission proofs, current standalone/channel comparisons, independent admission vectors, strict lint and real faults before applying the isolated candidate to active RTL. The candidate requires the same default ports and parameter range 8–16.
+- [x] Repeat production unit, peer, ownership and current actual mapped/physical gates under fresh labels. Adopt only on supported semantic and physical evidence at the original 640 ps/6.4 ns and IO budgets; preserve all failures and source identities.
+
+Commands use existing `run_equivalence.py --reference-commit 6f10b33 --replace FILE --widths ... --label NEW` and `verification/tl_credit_admission/run_rtl.py --replace FILE --label NEW` where supported; inspect each actual CLI before execution. Outputs are immutable RTL copies, generated miters, per-width logs and `results.json` under `build/verification/tl_credit_reduction/NEW`, followed by the established production evidence stages. The next gate is complete semantic proof, then actual physical benefit; this plan does not replace remaining Endpoint/Switch, PHY, protocol, security, INC, management, power or macro-signoff requirements.

@@ -1,0 +1,39 @@
+{
+  "name": "upli_connection_side",
+  "target": "rtl",
+  "rtl_dialect": "verilog",
+  "description": "One side of the synchronous UPLI connection handshake; Common 2.0 sections 4.1-4.3.",
+  "design_requirements": {
+    "target": "rtl", "pipeline_required": true, "streamability": "non_streamable",
+    "interface_family": "native", "interface_profile": {}, "confirmed_by_user": true,
+    "confirmation_notes": "User authorized full UALink RTL implementation and local Verilator/Yosys/OpenSTA. Agent derives this bounded native UPLI module contract from the audited normative/model contract; individual port spelling is an implementation decision, not a separately user-approved standard encoding."
+  },
+  "pipeline_required": true,
+  "streamability": "non_streamable",
+  "interface_family": "native",
+  "interface_profile": {},
+  "interfaces": {"ports": [
+    {"name": "i_clk", "direction": "input", "width": 1, "role": "clock"},
+    {"name": "i_rstn", "direction": "input", "width": 1, "role": "reset"},
+    {"name": "i_ready", "direction": "input", "width": 1},
+    {"name": "i_peer_req", "direction": "input", "width": 1},
+    {"name": "i_peer_ack", "direction": "input", "width": 1},
+    {"name": "o_req", "direction": "output", "width": 1},
+    {"name": "o_ack", "direction": "output", "width": 1},
+    {"name": "o_tx_connected", "direction": "output", "width": 1},
+    {"name": "o_rx_connected", "direction": "output", "width": 1},
+    {"name": "o_beats_connected", "direction": "output", "width": 1}
+  ]},
+  "clock": {"name": "i_clk", "edge": "posedge", "frequency_mhz": 1562.5},
+  "reset": {"name": "i_rstn", "active": "low", "synchronous": true},
+  "behavior": ["Three registered bits per side: post-reset guard, request and acknowledge.", "First deassertion edge remains quiet; request earliest at following edge.", "Ack consumes the prior peer request; request/ack remain asserted until reset.", "Only Completer may optionally wait for peer direction completion.", "Connected flags do not include credits or imply permission to gate clocks."],
+  "constraints": ["Use synthesizable Verilog-2001 and all RTL-MD MUST rules.", "Native UPLI handshake is not replaced with AXI.", "One register per synchronous always block; no gated clocks, inferred latches or CDC.", "Project snake_case module naming; Chinese same-line semantic comments."],
+  "outputs": [
+    {"path": "rtl/upli/upli_connection_side.v", "kind": "source", "language": "verilog"},
+    {"path": "verification/rtl/upli_connection_tb.v", "kind": "testbench", "language": "verilog"}
+  ],
+  "notes": ["Skill default simulator/remote ordering overridden by explicit local Verilator selection.", "Whole skill confidence script currently fails for missing agents-md-generator companion; keep this distinct from artifact gate and actual EDA results."],
+  "subfunctions": [],
+  "workflow": {},
+  "performance": {}
+}

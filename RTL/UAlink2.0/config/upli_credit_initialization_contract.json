@@ -1,0 +1,39 @@
+{
+  "name": "upli_credit_initializer", "target": "rtl", "rtl_dialect": "verilog",
+  "description": "Common 2.0 2.6/4.3 initial credit publication, one channel, registered outputs; docs/credit_initialization_plan.md.",
+  "design_requirements": {
+    "target": "rtl", "pipeline_required": true, "streamability": "non_streamable",
+    "interface_family": "native", "interface_profile": {}, "confirmed_by_user": true,
+    "confirmation_notes": "User authorized independent full UALink implementation and selected local Verilator/Yosys/OpenSTA. Agent derives this internal contract from the plan and audited reference model. Account scan order, zero-account bubble and initial pool VC zero are implementation choices, not new normative fields or separately user-approved constants."
+  },
+  "pipeline_required": true, "streamability": "non_streamable", "interface_family": "native", "interface_profile": {},
+  "interfaces": {"ports": [
+    {"name":"i_clk", "direction":"input", "width":1, "role":"clock"},
+    {"name":"i_rstn", "direction":"input", "width":1, "role":"reset"},
+    {"name":"i_credit_connected", "direction":"input", "width":1},
+    {"name":"o_credit_valid", "direction":"output", "width":4},
+    {"name":"o_credit_pool", "direction":"output", "width":4},
+    {"name":"o_credit_vc", "direction":"output", "width":8},
+    {"name":"o_credit_num", "direction":"output", "width":8},
+    {"name":"o_credit_init_done", "direction":"output", "width":4}
+  ]},
+  "clock": {"name":"i_clk", "edge":"posedge", "frequency_mhz":1562.5},
+  "reset": {"name":"i_rstn", "active":"low", "synchronous":true},
+  "behavior": [
+    "One port independently scans VC0,1,2,3,pool capacities once per reset.",
+    "A zero-capacity account contributes one idle cycle; nonzero accounts issue batches of up to four.",
+    "No publication before return-direction connection; that connection remains high until reset.",
+    "All outputs registered and consumed at the next edge, with no ready handshake.",
+    "Done follows the final initial batch by at least one output cycle and remains asserted until reset.",
+    "No normal return engine, actual buffer allocation, rate transition or on-wire error recovery."
+  ],
+  "constraints": ["All RTL-MD MUST rules apply.", "Single clock, synchronous reset, one register per sequential always block.", "Native UPLI cannot be replaced with AXI; use semantic Chinese same-line comments.", "Project snake_case module names are a recorded style adaptation."],
+  "outputs": [
+    {"path":"rtl/upli/upli_credit_initializer.v", "kind":"source", "language":"verilog"},
+    {"path":"verification/rtl/upli_credit_initialization_tb.v", "kind":"testbench", "language":"verilog"},
+    {"path":"verification/rtl/upli_credit_startup_tb.v", "kind":"testbench", "language":"verilog"},
+    {"path":"verification/formal/upli_credit_initialization_properties.v", "kind":"testbench", "language":"verilog"}
+  ],
+  "notes": ["No arbitrary-state SEU recovery claim.", "No unused ports acquire done or valid.", "Capacity must match actual receiver buffers at integration; parameter values alone do not instantiate those buffers.", "Explicit local user toolchain overrides remote/backend defaults of the skill."],
+  "subfunctions": [], "workflow": {}, "performance": {}
+}

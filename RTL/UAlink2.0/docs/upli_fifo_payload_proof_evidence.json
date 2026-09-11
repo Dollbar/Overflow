@@ -1,0 +1,50 @@
+{
+  "complete": true,
+  "scope": "actual FIFO with authorized parameterized synchronous SRAM behavior",
+  "configurations": 24,
+  "widths": [
+    8,
+    32,
+    512
+  ],
+  "depths": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "invalid_output_profiles": [
+    "zero",
+    "raw"
+  ],
+  "whole_word_inductions": 20,
+  "whole_word_timeouts_retained": 4,
+  "fully_sliced_configurations": 4,
+  "complete_payload_slice_inductions": 32,
+  "properties_per_configuration": [
+    20,
+    22,
+    23,
+    25
+  ],
+  "fault_counterexamples_replayed": 2,
+  "auditor_tests": 12,
+  "normal_optimized_evidence_identical": true,
+  "initial_reset_only_assumption": true,
+  "actual_fifo_sha256": "e0bf4e74e5150e008ed0cc4a5aa58fccb0e3d2b6c7ffa3b4a6270dfaafc3b1c3",
+  "physical_bank_mapping": false,
+  "full_tl_payload": false,
+  "macro_signoff": false,
+  "full_goal_complete": false,
+  "artifacts": {
+    "build/verification/upli_fifo_payload/payload_full/evidence.json": "a624703c2b1f5fec7a1ba6383b47f4872f574782f2f510ab0bf4665b110178c6",
+    "build/verification/upli_fifo_payload/payload_full/evidence_optimized.json": "a624703c2b1f5fec7a1ba6383b47f4872f574782f2f510ab0bf4665b110178c6",
+    "build/verification/upli_fifo_payload/payload_full/results.json": "5b65a28e73d0dda33cf0b605cb51679343158e1e420006b97fec728922d3c42a",
+    "build/verification/upli_fifo_payload/head_fault_visible/replay/evidence.json": "d507ed49e91010a0894d890b5a6ec9b7034340900dec9388881facf78d2a4714",
+    "build/verification/upli_fifo_payload/reservation_fault_visible/replay/evidence.json": "d23e06fefb2f9b2054a9ef5665101780a14a2ee3ae10f81f1b1e1d1f39b46d2d",
+    "build/verification/upli_fifo_payload/payload512_d3_raw0_slices/results.json": "ea7de7f0787e4337f4211309b280bf862be0293be027c9c63ea2efd3051786e0",
+    "build/verification/upli_fifo_payload/payload512_d3_raw1_slices/results.json": "e34be91240ca70922a389e34c769678e39de4edf468ba88ce209e2a69dead125",
+    "build/verification/upli_fifo_payload/payload512_d5_raw0_slices/results.json": "517320b6951c2edf91340b2d67c1e21cdc4ef7c1c28094d26dd83454c94804ad",
+    "build/verification/upli_fifo_payload/payload512_d5_raw1_slices/results.json": "568c77663018be599b08519b9657394224e89760243dc0bf3a86ed4c18d3bd45"
+  }
+}
