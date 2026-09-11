@@ -19,37 +19,29 @@ module ualink_switch_top #( // 提供可综合的参数化研发Switch数据通�
     input wire [PORTS-1:0] i_ready, // 接收每目的端口独立反压。
     output reg [PORTS*DATA_WIDTH-1:0] o_data, // 以完整字宽送出各目的选定的数据。
     output reg [PORTS-1:0] o_last, // 原样传递选定源的包结束标志。
-    output reg [PORTS-1:0] o_route_error, // 有效输入没有唯一enabled目标时置位并拒绝握手。
+    output wire [PORTS-1:0] o_route_error, // 有效输入没有唯一enabled目标时置位并拒绝握手。
     output wire [127:0] o_pending_features // 未实现服务模块的稳定角色位图。
 ); // 结束研发Switch顶层接口。
     reg [PORTS-1:0] locked_q; // 每个输出保存首拍停顿或未完成包的所有权有效位。
     integer owner_q [0:PORTS-1]; // 每个输出保存已绑定的输入索引。
     integer round_robin_q [0:PORTS-1]; // 每个输出保存下一包扫描的首个输入索引。
-    integer destination [0:PORTS-1]; // 组合解码每输入的唯一目的索引。
-    integer match_count [0:PORTS-1]; // 组合统计enabled目标匹配数量以拒绝歧义。
+    wire [PORTS*PORTS-1:0] route_match; // 由实际lookup返回source-major唯一目标onehot矩阵。
     integer selected [0:PORTS-1]; // 每个输出保存此周期的实际选择，负一表示无选择。
-    integer source_port, route_port, egress, offset, candidate; // 组合扫描索引仅用于有界综合循环。
+    integer egress, offset, candidate; // 组合扫描索引仅用于有界综合循环。
     integer state_port; // 独立时序循环索引避免共享过程变量。
+
+    switch_route_lookup #(.PORTS(PORTS)) u_route_lookup ( // 使用真实独立目标查表模块驱动仲裁资格。
+        .i_valid(i_valid), .i_dst(i_dst), .i_route_ids(i_route_ids), // 连接原样10位目标与静态路由表。
+        .i_port_enable(i_port_enable), .o_match(route_match), .o_error(o_route_error) // 接收唯一目标及有效请求拒绝状态。
+    ); // 结束真实lookup实例，top不引用其内部实现状态。
 
     always @(*) begin // 完整计算独立路由、轮询选择与握手，不推断锁存器。
         o_ready = {PORTS{1'b0}}; // 默认不接受任何尚未完成目的选择的输入。
         o_valid = {PORTS{1'b0}}; // 默认所有输出均无有效beat。
         o_data = {(PORTS*DATA_WIDTH){1'b0}}; // 无效输出给出确定零数据。
         o_last = {PORTS{1'b0}}; // 无效输出不声明包结束。
-        o_route_error = {PORTS{1'b0}}; // 在有效输入解码后生成可见路由错误。
         candidate = 0; // 为全部组合路径初始化循环候选变量。
         offset = 0; // 空闲仲裁未执行时也完整驱动扫描偏移以免推断锁存器。
-        for (source_port = 0; source_port < PORTS; source_port = source_port + 1) begin // 独立解析每个输入目标。
-            destination[source_port] = -1; // 默认目标尚未找到。
-            match_count[source_port] = 0; // 为当前输入重新统计匹配数。
-            for (route_port = 0; route_port < PORTS; route_port = route_port + 1) begin // 扫描完整静态目的表。
-                if (i_port_enable[route_port] && i_route_ids[route_port*10 +: 10] == i_dst[source_port*10 +: 10]) begin // 只计入enabled且ID完全匹配的目的。
-                    match_count[source_port] = match_count[source_port] + 1; // 累积重复目标而不静默选择首项。
-                    destination[source_port] = route_port; // 保存匹配索引，唯一性随后独立检查。
-                end // 结束当前目的表项匹配。
-            end // 结束全部目的表项扫描。
-            o_route_error[source_port] = i_valid[source_port] && (match_count[source_port] != 1); // 无匹配和重复enabled匹配均拒绝。
-        end // 结束全部源路由解码。
         for (egress = 0; egress < PORTS; egress = egress + 1) begin // 为每个目的独立仲裁并传输完整字。
             selected[egress] = -1; // 默认当前输出没有可接受源。
             if (rstn) begin // 复位期间抑制正常有效传输。
@@ -59,13 +51,13 @@ module ualink_switch_top #( // 提供可综合的参数化研发Switch数据通�
                     for (offset = 0; offset < PORTS; offset = offset + 1) begin // 最多检查每个输入一次。
                         candidate = round_robin_q[egress] + offset; // 从上个完成包之后的源开始扫描。
                         if (candidate >= PORTS) candidate = candidate - PORTS; // 对非二次幂端口数也正确循环。
-                        if (selected[egress] < 0 && i_valid[candidate] && !o_route_error[candidate] && destination[candidate] == egress) begin // 仅选择第一个合法请求，不覆盖此前选择。
+                        if (selected[egress] < 0 && i_valid[candidate] && route_match[candidate*PORTS+egress]) begin // 仅选择第一个合法请求，不覆盖此前选择。
                             selected[egress] = candidate; // 为此目的选中一个源。
                         end // 结束当前轮询候选判断。
                     end // 结束本输出轮询扫描。
                 end // 结束锁定owner与空闲仲裁分支。
                 if (selected[egress] >= 0) begin // 只有确实选到源才连接输出。
-                    if (!o_route_error[selected[egress]] && destination[selected[egress]] == egress) begin // 保留对已锁源的合法目标检查。
+                    if (route_match[selected[egress]*PORTS+egress]) begin // 保留对已锁源的合法目标检查。
                         o_valid[egress] = i_valid[selected[egress]]; // 包内源气泡不释放owner。
                         o_data[egress*DATA_WIDTH +: DATA_WIDTH] = i_data[selected[egress]*DATA_WIDTH +: DATA_WIDTH]; // 原样连接全部数据位。
                         o_last[egress] = i_last[selected[egress]]; // 原样连接包末拍标志。

@@ -82,20 +82,6 @@ endpoint_request_formatter u_endpoint_request_formatter(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_10),.o_error());
 assign o_pending_features[10]=!implemented_10;
-wire implemented_11;
-endpoint_read_encode u_endpoint_read_encode(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_11),.o_error());
-assign o_pending_features[11]=!implemented_11;
-wire implemented_12;
-endpoint_response_encode u_endpoint_response_encode(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_12),.o_error());
-assign o_pending_features[12]=!implemented_12;
 wire implemented_13;
 endpoint_response_formatter u_endpoint_response_formatter(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -768,6 +754,8 @@ diagnostic_event_mux u_diagnostic_event_mux(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_108),.o_error());
 assign o_pending_features[108]=!implemented_108;
+assign o_pending_features[11]=1'b0;
+assign o_pending_features[12]=1'b0;
 assign o_pending_features[109]=1'b0;
 assign o_pending_features[110]=1'b0;
 assign o_pending_features[111]=1'b0;

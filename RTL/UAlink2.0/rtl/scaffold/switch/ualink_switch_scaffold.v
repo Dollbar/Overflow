@@ -376,13 +376,6 @@ switch_ingress u_switch_ingress(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_52),.o_error());
 assign o_pending_features[52]=!implemented_52;
-wire implemented_53;
-switch_route_lookup u_switch_route_lookup(
- .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
- .i_data(512'd0),.i_meta(128'd0),
- .o_ready(),.o_valid(),.o_data(),.o_meta(),
- .o_implemented(implemented_53),.o_error());
-assign o_pending_features[53]=!implemented_53;
 wire implemented_54;
 switch_route_table u_switch_route_table(
  .i_clk(i_clk),.i_rstn(i_rstn),.i_enable(1'b0),.i_valid(1'b0),
@@ -894,6 +887,7 @@ diagnostic_event_mux u_diagnostic_event_mux(
  .o_ready(),.o_valid(),.o_data(),.o_meta(),
  .o_implemented(implemented_126),.o_error());
 assign o_pending_features[126]=!implemented_126;
+assign o_pending_features[53]=1'b0;
 assign o_pending_features[127]=1'b0;
 endmodule
 `default_nettype wire

@@ -219,8 +219,7 @@ def main() -> int:
     if not args.no_mutations:
         configs += [(4, "routing"), (4, "hold")]
     mutations = {
-        "routing": ("i_route_ids[route_port*10 +: 10] == i_dst[source_port*10 +: 10]",
-                    "i_route_ids[route_port*10 +: 10] != i_dst[source_port*10 +: 10]"),
+        "routing": (".i_dst(i_dst)", ".i_dst({(PORTS*10){1'b0}})"),
         "hold": ("if (locked_q[egress]) begin", "if (1'b0) begin"),
     }
     for ports, mutation in configs:

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T04:51:41.869921+00:00",
+  "updated": "2026-09-11T05:05:45.289188+00:00",
   "full_goal_complete": false,
   "release_status": "research_not_signoff",
   "historical_artifacts_retained": false,
@@ -1487,7 +1487,7 @@
   },
   "last_verified_remote_branch": {
     "branch": "work/tl-receive-credit",
-    "commit": "86d85ed2afa33934494c951f485ca6ae49e1c7fd"
+    "commit": "4a6ccf5037505b859e821d43e4f484cee06d9b0e"
   },
   "production_transmit_mapped_correspondence": {
     "complete": true,
@@ -2075,6 +2075,70 @@
     },
     "review": "docs/ip_top_bringup.md",
     "structure_mutation_tests": 8,
-    "normal_optimized_structure_evidence_identical": true
+    "normal_optimized_structure_evidence_identical": true,
+    "snapshot_note": "Historical initial 57-partial/145-shell snapshot; latest typed subset progress is separate"
+  },
+  "publication": {
+    "repository": "https://github.com/Dollbar/Overflow",
+    "branch": "main",
+    "path": "RTL/UAlink2.0",
+    "verified_commit": "ebbf0db9ecf1ece097d1b3aa211618a19730978f",
+    "imported_source_commit": "4a6ccf5037505b859e821d43e4f484cee06d9b0e",
+    "portable_model_tests": 19,
+    "portable_top_smoke_passed": true
+  },
+  "latest_typed_modules": {
+    "scope": "Typed subset replacements and actual top integration, not complete IP",
+    "evidence_levels": [
+      "RTL_SIM",
+      "GENERIC_SYNTH"
+    ],
+    "inventory_modules": 202,
+    "existing_partial_modules": 60,
+    "unimplemented_shells": 142,
+    "role_shells": {
+      "endpoint": 107,
+      "switch": 126
+    },
+    "stable_promoted_slots": {
+      "endpoint": [
+        11,
+        12
+      ],
+      "switch": [
+        53
+      ]
+    },
+    "encoders": {
+      "vectors": 1345,
+      "actual_faults_detected": 5,
+      "integrated_into_endpoint_transaction_engine": false
+    },
+    "route_lookup": {
+      "ports": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "matrix_comparisons": 13044,
+      "actual_faults_detected": 2,
+      "integrated_in_switch_top": true
+    },
+    "switch_top": {
+      "ports": [
+        2,
+        3,
+        4
+      ],
+      "actual_faults_detected": 2
+    },
+    "top_elaboration_passed": true,
+    "technology_sta": false,
+    "complete_causal_read_transaction": false,
+    "full_goal_complete": false,
+    "rtl_inventory_sha256": "96c410afe7bd4d527f0d030c26d39372a8fce573706f6fc2b0bbaab493cb05ab",
+    "evidence": "docs/typed_modules_evidence.json"
   }
 }

@@ -1,23 +1,24 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "production_transmit_post_reset_mapped_equivalence",
+  "latest_stage": "Published Endpoint/Switch scaffold snapshot to Overflow; implementing typed module subsets",
   "rtl": "rtl/tl/tl_tx_prepared.v",
   "review": "docs/tl_tx_prepared_mapping_review.md",
   "evidence": "build/verification/tl_tx_prepared/mapped_correspondence_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "实际生产发送顶层WIDTH8/16复位后二值映射等价已完成。保持完整源组捕获、入队、线上退休及吞吐契约，优化实际头部FIFO缓存计数经仲裁/重复头部解码返回预取计数的长反馈路径；先提出可验证的元数据保存/复用方案，再改RTL。",
-    "每次实际RTL变更均重新验证独立单位/真实双端/故障矩阵、所有权与相关顺序等价，并映射实际组合顶层重跑五角×三synthetic SRAM视图×双周期STA。当前主周期0/30，参考26/30；SRAM输入hold单独处理。",
-    "继续完整载荷/Data bank形式对应、UPLI事务转换、最终Endpoint/Switch、每VC独立选择、超容量Write/Atomic、Data Poison、数字PHY、INC、安全和管理。真实宏签核与synthetic STA分别报告。"
+    "Complete and verify typed Read/Response encoders and integrated Switch route lookup, then publish the verified increment under Overflow/RTL/UAlink2.0.",
+    "Build the actual causal single64B Read path: admission and Tag/result reservation, request send, received request decode, memory execution, response assembly, full-Tag completion and retirement under backpressure.",
+    "Replace remaining 142 disabled RTL shells progressively; preserve Endpoint/Switch top regressions. Full standard per-hop TL/DL, digital PHY, INC, security, management, CDC/RDC and process timing remain required."
   ],
   "remote_main": "c34f40f2dc00c2e12283897ea0f3de085abfbc7f",
   "new_work_published": false,
   "live_jobs": [],
   "last_authorized_push": {
-    "target": "origin/work/tl-receive-credit",
-    "commit": "d05b0204a61ecbf2b87e82378c138ceedfd40563",
-    "scope": "Prior user-authorized push verified; current mapped equivalence continuation is local."
+    "repository": "https://github.com/Dollbar/Overflow",
+    "branch": "main",
+    "path": "RTL/UAlink2.0",
+    "verified_commit": "ebbf0db9ecf1ece097d1b3aa211618a19730978f"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

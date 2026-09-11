@@ -11,7 +11,7 @@
   ],
   "status_vocabulary": {
     "existing_partial": "Actual RTL file exists; exact verified subset remains per prior evidence; not complete subsystem",
-    "planned": "File absent at inventory snapshot; proposed stable module responsibility, no functional implementation"
+    "planned": "Module is functionally unimplemented; an explicitly disabled provisional shell may exist"
   },
   "provisional_service_interface": {
     "classification": "local_provisional_service_not_native_UPLI_or_normative_wire_interface",
@@ -3617,7 +3617,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "已冻结单64-byte普通Read的128-bit字段编码",
       "dependencies": [],
       "source_refs": [
@@ -3634,19 +3634,16 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "i_valid, i_tag[10:0], i_src/i_dst[9:0]",
+        "Profile fields explicitly declared in RTL and config/endpoint_transaction_contract.json"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "o_valid, o_error, o_control[255:0]; low request/response field and NOP padding"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "unit_rtl_verified_integration_in_progress",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_read_originator",
@@ -3661,7 +3658,14 @@
       "functional_outputs": [
         "一个未压缩128-bit Read字段；不自动构造标准DL framing"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "frozen_subset_see_module_review",
+      "implemented_subset": "Single aligned 64-byte ordinary Read field encoder",
+      "actual_integration_parents": [],
+      "verification_refs": [
+        "docs/endpoint_fields_review.md",
+        "verification/endpoint_transaction/run_fields.py"
+      ],
+      "integration_gap": "Unit RTL only; causal originator/completer/Tag completion remains pending"
     },
     {
       "id": "endpoint_response_encode",
@@ -3671,7 +3675,7 @@
         "endpoint"
       ],
       "subsystem": "endpoint",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "已冻结单Beat普通Read Response的64-bit字段编码",
       "dependencies": [],
       "source_refs": [
@@ -3688,19 +3692,16 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "i_valid, i_tag[10:0], i_src/i_dst[9:0]",
+        "Profile fields explicitly declared in RTL and config/endpoint_transaction_contract.json"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "o_valid, o_error, o_control[255:0]; low request/response field and NOP padding"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "unit_rtl_verified_integration_in_progress",
       "existence_at_inventory": false,
       "integration_parents": [
         "endpoint_response_formatter"
@@ -3714,7 +3715,14 @@
       "functional_outputs": [
         "一个未压缩64-bit Read Response字段；Data所有权单独握手"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "frozen_subset_see_module_review",
+      "implemented_subset": "Single-beat ordinary Read response field encoder; status 0 or 3, data ownership handled separately",
+      "actual_integration_parents": [],
+      "verification_refs": [
+        "docs/endpoint_fields_review.md",
+        "verification/endpoint_transaction/run_fields.py"
+      ],
+      "integration_gap": "Unit RTL only; causal originator/completer/Tag completion remains pending"
     },
     {
       "id": "endpoint_response_formatter",
@@ -6904,7 +6912,7 @@
         "switch"
       ],
       "subsystem": "switch",
-      "status": "planned",
+      "status": "existing_partial",
       "purpose": "按目的ID/角色选择合法出口或INC处理，不截断ID",
       "dependencies": [
         "switch_route_table",
@@ -6924,19 +6932,18 @@
           "source": "C §9; M §4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "typed_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "i_valid[PORTS]",
+        "i_dst and i_route_ids[PORTS*10]",
+        "i_port_enable[PORTS]"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "o_match[source*PORTS+target], unique enabled target; not gated by i_valid",
+        "o_error[PORTS] = valid and nonunique target"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
+      "phase": "unit_rtl_verified_integration_in_progress",
       "existence_at_inventory": false,
       "integration_parents": [
         "switch_core",
@@ -6952,7 +6959,15 @@
       "functional_outputs": [
         "出口转发/重打包事务、复制/仲裁结果及隔离/非法路由事件"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "frozen_subset_see_module_review",
+      "implemented_subset": "Static full 10-bit unique enabled destination lookup; no vPod, CSR routing or INC role decision",
+      "actual_integration_parents": [
+        "ualink_switch_top"
+      ],
+      "verification_refs": [
+        "docs/switch_route_lookup_review.md",
+        "verification/ip_tops/run_route_lookup.py"
+      ]
     },
     {
       "id": "switch_route_table",

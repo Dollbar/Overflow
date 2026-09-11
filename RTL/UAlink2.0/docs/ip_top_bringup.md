@@ -2,6 +2,16 @@
 
 本阶段按用户最新优先级，先补齐两套 IP 的模块层级、接口、实例和构建入口，再逐项实现功能及衔接。完整目标仍以 `ip_delivery_plan.md` 为准；模块壳存在不代表相应协议功能完成。
 
+## 首批接口壳替换
+
+当前库存为60个部分实现、142个未实现壳。Read/Response typed编码器已按单64B普通Read子集验证字段，但尚未接入真正事务引擎。Switch通过真实`switch_route_lookup`端口接收完整10位ID唯一目标矩阵，继续保留包所有权和反压行为。历史初版门级综合属于前一源码快照；本次增量结果见 [模块衔接进展](typed_modules_progress.md)。
+
+```sh
+make ip-module-smoke IP_RUN_LABEL=fresh_modules
+```
+
+输出分别在`build/verification/endpoint_transaction/`和`reports/ip_tops/`。后续连接真实Read发起、内存执行、响应组装及Tag完成。
+
 ## 当前顶层
 
 - `rtl/endpoint/ualink_endpoint_top.v`：将实际 TL 源组捕获/发送 SRAM、信用准入、600-bit 接收 SRAM/FC 发布及 DL 重放合并。新增真实发送 holding 容量预约，把原固定延迟 DL 返回转换为可背压的 ready/valid 输出。

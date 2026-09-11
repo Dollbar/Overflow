@@ -37,6 +37,7 @@ def load_inventory(root):
     require(isinstance(rows, list) and rows, 'missing inventory modules')
     names, paths = set(), set()
     roles = {'endpoint': {}, 'switch': {}}
+    occupied = {'endpoint': set(), 'switch': set()}
     for row in rows:
         name, relative = row['module'], row['path']
         require(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_$]*', name) is not None and name not in names, 'invalid/duplicate module')
@@ -48,11 +49,17 @@ def load_inventory(root):
         text = re.sub(r'/\*.*?\*/|//[^\n]*', '', source.read_text(), flags=re.S)
         declarations = re.findall(r'\bmodule\s+([A-Za-z_][A-Za-z0-9_$]*)', text)
         require(declarations.count(name) == 1, f'module declaration missing/duplicated: {name}')
+        if 'feature_slots' in row:
+            require(isinstance(row['feature_slots'], dict) and row['roles'] and
+                    set(row['roles']) <= set(occupied) and
+                    set(row['feature_slots']) == set(row['roles']), 'invalid feature slot roles')
+            for role, slot in row['feature_slots'].items():
+                require(type(slot) is int and 0 <= slot < 128 and slot not in occupied[role], 'invalid/duplicate role slot')
+                occupied[role].add(slot)
         if row['status'] in ('planned', 'scaffold'):
             require(set(row['roles']) <= set(roles) and row['roles'], 'invalid role list')
             for role in row['roles']:
                 slot = row['feature_slots'][role]
-                require(type(slot) is int and 0 <= slot < 128 and slot not in roles[role], 'invalid/duplicate role slot')
                 roles[role][slot] = row
     return inventory, roles
 

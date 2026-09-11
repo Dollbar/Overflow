@@ -1,18 +1,24 @@
 """Create explicitly unimplemented RTL from config/ip_module_inventory.json.
 
-Run python3 scripts/materialize_ip_scaffold.py [--check] [--root PATH].
+Run python3 scripts/materialize_ip_scaffold.py [--check | --refresh-aggregates]
+[--root PATH].
 Outputs planned RTL and the two role aggregators at inventory paths; --check
-only reads and validates files. Never overwrites an existing differing file.
+only reads and validates files. Changed leaf RTL is never overwritten. Explicit
+--refresh-aggregates permits replacing only the two marked generated role files.
 Next run python3 scripts/check_ip_structure.py --label NEW and review its
 evidence before treating the structure as available, never as implemented.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+AGGREGATE_MARKER = ('// Generated structural inventory: every asserted bit is unimplemented.\n'
+                    '// Run python3 scripts/materialize_ip_scaffold.py --check; then check_ip_structure.py.\n')
 
 
 def require(condition, message):
@@ -32,16 +38,23 @@ def planned_modules(root):
         require(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_$]*', name) is not None, 'invalid module name')
         require(name not in names and path not in paths, 'duplicate inventory module/path')
         names.add(name); paths.add(path)
+        # A promoted module keeps ownership of its stable role slots.
+        if 'feature_slots' in item:
+            require(isinstance(item['feature_slots'], dict) and item['roles'] and
+                    set(item['roles']) <= set(occupied) and
+                    set(item['feature_slots']) == set(item['roles']), 'invalid feature slot roles')
+            for role, slot in item['feature_slots'].items():
+                require(type(slot) is int and 0 <= slot < 128 and slot not in occupied[role], 'invalid/duplicate feature slot')
+                occupied[role].add(slot)
         if item['status'] not in ('planned', 'scaffold'):
             continue
         require(path.startswith('rtl/') and path.endswith('.v') and
                 '..' not in Path(path).parts and not Path(path).is_absolute(), 'unsafe planned RTL path')
         require(name not in ('ualink_endpoint_scaffold', 'ualink_switch_scaffold'), 'aggregator cannot contain itself')
+        require(path not in ('rtl/scaffold/endpoint/ualink_endpoint_scaffold.v',
+                             'rtl/scaffold/switch/ualink_switch_scaffold.v'), 'reserved aggregate path')
         require(item['roles'] and set(item['roles']) <= set(occupied), 'invalid planned roles')
-        for role in item['roles']:
-            slot = item['feature_slots'][role]
-            require(type(slot) is int and 0 <= slot < 128 and slot not in occupied[role], 'invalid/duplicate feature slot')
-            occupied[role].add(slot)
+        require('feature_slots' in item, 'missing planned feature slots')
         planned.append(item)
     return planned
 
@@ -98,16 +111,41 @@ assign o_pending_features[{slot}]=!implemented_{slot};
     return code + 'endmodule\n`default_nettype wire\n'
 
 
-def materialize(root, check=False):
+def replace_aggregate(path, code, previous):
+    require(path.read_text() == previous, f'aggregate changed during refresh: {path}')
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, prefix='.' + path.name + '.', delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(code)
+        os.chmod(temporary, path.stat().st_mode & 0o777)
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def materialize(root, check=False, refresh_aggregates=False):
+    require(not (check and refresh_aggregates), 'check and refresh-aggregates are mutually exclusive')
     modules = planned_modules(root)
     expected = {root / m['path']: shell(m['module']) for m in modules}
+    aggregate_paths = {}
     for role in ('endpoint', 'switch'):
-        expected[root / f'rtl/scaffold/{role}/ualink_{role}_scaffold.v'] = aggregate(role, modules)
+        path = root / f'rtl/scaffold/{role}/ualink_{role}_scaffold.v'
+        expected[path] = aggregate(role, modules)
+        aggregate_paths[path] = f'ualink_{role}_scaffold'
+    refresh = {}
     # Check every collision first, before creating any file.
     for path, code in expected.items():
         require(not path.is_symlink(), f'refusing symlink: {path}')
         if path.exists():
-            require(path.read_text() == code, f'refusing to overwrite changed RTL: {path}')
+            previous = path.read_text()
+            if previous != code:
+                require(refresh_aggregates and path in aggregate_paths, f'refusing to overwrite changed RTL: {path}')
+                require(previous.startswith(AGGREGATE_MARKER), f'missing generated aggregate marker: {path}')
+                require(re.findall(r'^module\s+([A-Za-z_][A-Za-z0-9_$]*)', previous, re.M) ==
+                        [aggregate_paths[path]], f'generated aggregate module identity mismatch: {path}')
+                refresh[path] = previous
         elif check:
             raise ValueError(f'missing generated RTL: {path}')
     if not check:
@@ -116,17 +154,22 @@ def materialize(root, check=False):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 with path.open('x') as stream:
                     stream.write(code)
+            elif path in refresh:
+                replace_aggregate(path, code, refresh[path])
     return dict(planned_modules=len(modules), generated_files=len(expected), readonly=check,
+                refreshed_aggregates=len(refresh),
                 implemented_features=0)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=ROOT)
-    parser.add_argument('--check', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--check', action='store_true')
+    mode.add_argument('--refresh-aggregates', action='store_true')
     args = parser.parse_args()
     try:
-        print(json.dumps(materialize(args.root.resolve(), args.check), indent=2))
+        print(json.dumps(materialize(args.root.resolve(), args.check, args.refresh_aggregates), indent=2))
     except (ValueError, OSError, KeyError, TypeError) as error:
         print(f'SCAFFOLD FAIL: {error}', file=sys.stderr)
         return 1
