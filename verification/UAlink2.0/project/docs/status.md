@@ -6,7 +6,9 @@
 
 最新Switch增量：真实包仲裁器、完整字交叉连接和shadow/active原子路由表已替换三个壳并接入顶层。默认保留静态路由，`ROUTE_CONFIG_ENABLE=1`开放显式本地配置；只有无输入valid且无在途owner时可提交。详见[Switch集成审查](switch_integration_review.md)。
 
-最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应reset和独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
+最新完整Read复位验证：10个正常配置及4项真实漏复位故障均达到判据，覆盖bank1/3、精确1/2/3个响应Beat、后端待结果和完成背压。20笔旧Read取消、80笔新Read复用Tag正确完成，20次先前Write的内存副作用保留。见[复位审查](endpoint_read_reset_review.md)。
+
+最新完整普通 Read 增量：`FULL_READ_ENABLE=1`已贯通4..256B合法DWORD长度、首尾字节掩码、2048位后端结果及完整Tag收齐。三组真实双Endpoint经Switch回归完成1652笔事务，包含12次Write执行及8次重放；接收器/Tag另验证single乱序及multi响应。独立参考模型与RTL编码器分别覆盖532480合法几何/ATTR组合。写在途统一reset在两bank、三窗口通过；完整Read部分响应的统一reset已补齐，独立LinkDown/epoch尚未闭合。详见[Read集成审查](endpoint_read_integration_review.md)。
 
 最新普通 Write 增量：Write Originator、共享 Request Formatter/Tag 表及 Write Completer 已有真实单元实现，覆盖普通4..256B及WriteFull合法几何；`WRITE_ENABLE=1`的core/top接线通过Verilog-2001编译和Yosys展开，混合接收和双实际Endpoint/Switch写后读已通过首批及全部64种普通长度、10种合法Full几何回归（长度组566笔请求/完成），最小bank与DL重放也通过。完整IP功能仍未完成，实施契约见[Write计划](endpoint_write_execution.md)。
 

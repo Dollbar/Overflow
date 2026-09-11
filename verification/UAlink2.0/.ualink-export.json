@@ -2558,6 +2558,15 @@
       "source_sha256": "583a8ebce3c5ac31b7ac634d7a1be56dd81aa70c21cb2c178775141cc9a5782b",
       "transformations": []
     },
+    "verification/UAlink2.0/endpoint_transaction/read_reset_tb.sv": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "fb35eb8d19062f8be541f8421c280d4f742c20dae62cf7b5202e73764ff09341",
+      "source": "verification/endpoint_transaction/read_reset_tb.sv",
+      "source_git_blob": "1b0b9748ff59706ab987797ad354e855da81d0b0",
+      "source_sha256": "fb35eb8d19062f8be541f8421c280d4f742c20dae62cf7b5202e73764ff09341",
+      "transformations": []
+    },
     "verification/UAlink2.0/endpoint_transaction/read_tag_table_tb.sv": {
       "kind": "file",
       "mode": 420,
@@ -2713,6 +2722,21 @@
         {
           "kind": "project_root",
           "line": 9,
+          "original": "Path(__file__).resolve().parents[2]"
+        }
+      ]
+    },
+    "verification/UAlink2.0/endpoint_transaction/run_read_reset.py": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "a5a4cd17ca96fe35da9ac48c415e4f830cb37e5b24eca1d0022bc36b85efd341",
+      "source": "verification/endpoint_transaction/run_read_reset.py",
+      "source_git_blob": "891d4a123dd241170b4c09b419fd370327a8529e",
+      "source_sha256": "f7819e2563c58e4d595848d56ae720e0d20bd43d4b7e14d480014638e997f732",
+      "transformations": [
+        {
+          "kind": "project_root",
+          "line": 13,
           "original": "Path(__file__).resolve().parents[2]"
         }
       ]
@@ -4517,6 +4541,24 @@
       "source_sha256": "385ae7415b17fc68795b4c5fc9f28eef03791698e95aa2ea1fd5f69dbdee06b8",
       "transformations": []
     },
+    "verification/UAlink2.0/project/docs/endpoint_read_reset_evidence.json": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "6f2744357c8db6bebcd28774ae58242b301c7273c3005ed2cbc7d34a2cf599ce",
+      "source": "docs/endpoint_read_reset_evidence.json",
+      "source_git_blob": "1669d1b23659f053130f2be2c19ba962b1b14969",
+      "source_sha256": "6f2744357c8db6bebcd28774ae58242b301c7273c3005ed2cbc7d34a2cf599ce",
+      "transformations": []
+    },
+    "verification/UAlink2.0/project/docs/endpoint_read_reset_review.md": {
+      "kind": "file",
+      "mode": 420,
+      "sha256": "cd84b87cdd4e032c396c4c79dda97128f7744e7c3ebc313fbf60f43774a0de1e",
+      "source": "docs/endpoint_read_reset_review.md",
+      "source_git_blob": "d52dc54fac0bf1637b23d16a56f84d5247b26956",
+      "source_sha256": "cd84b87cdd4e032c396c4c79dda97128f7744e7c3ebc313fbf60f43774a0de1e",
+      "transformations": []
+    },
     "verification/UAlink2.0/project/docs/endpoint_read_reset_test_audit.md": {
       "kind": "file",
       "mode": 420,
@@ -4709,10 +4751,10 @@
     "verification/UAlink2.0/project/docs/goal_checkpoint.json": {
       "kind": "file",
       "mode": 420,
-      "sha256": "2f8bfc264645f85da200b0efec4dc363c1e3a6aa3a001d4f825509bc53ad341a",
+      "sha256": "6aab2f2032774b22cb51386981b223e61390a7af51b17c6718a83871fdb53664",
       "source": "docs/goal_checkpoint.json",
-      "source_git_blob": "719b6f043fcae684abd2cda2f749168785dde625",
-      "source_sha256": "2f8bfc264645f85da200b0efec4dc363c1e3a6aa3a001d4f825509bc53ad341a",
+      "source_git_blob": "2c20a97196255bed04d5ff8de4974ef9195deeeb",
+      "source_sha256": "6aab2f2032774b22cb51386981b223e61390a7af51b17c6718a83871fdb53664",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/ip_delivery_plan.md": {
@@ -4880,10 +4922,10 @@
     "verification/UAlink2.0/project/docs/status.md": {
       "kind": "file",
       "mode": 420,
-      "sha256": "fc378377270069dfceedb34a170745b4fcd087514ab96f21fa8284710391370f",
+      "sha256": "44397f7d224bb4dff062f1a8b932139d34cb8d6303f8b22d5139ae80f19c87cc",
       "source": "docs/status.md",
-      "source_git_blob": "471b3adc0cec85cee757e4ec39a80d07b3989571",
-      "source_sha256": "fc378377270069dfceedb34a170745b4fcd087514ab96f21fa8284710391370f",
+      "source_git_blob": "01c66dcf825afc6a773c92fed323551ea4c87f34",
+      "source_sha256": "44397f7d224bb4dff062f1a8b932139d34cb8d6303f8b22d5139ae80f19c87cc",
       "transformations": []
     },
     "verification/UAlink2.0/project/docs/switch_arbiter_review.md": {
@@ -9812,5 +9854,5 @@
   },
   "owner": "ualink-overflow-export",
   "schema": 1,
-  "source_commit": "013c9fd805669b33a10bc51ef7c27256b7ff304a"
+  "source_commit": "cd10f9cdbae717bcc001b258faf176b8db159125"
 }

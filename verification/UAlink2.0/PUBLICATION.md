@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 939 tracked source files from the UALink development
-repository at commit `013c9fd805669b33a10bc51ef7c27256b7ff304a`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 943 tracked source files from the UALink development
+repository at commit `cd10f9cdbae717bcc001b258faf176b8db159125`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -29,7 +29,16 @@ Expected outputs are in project `build/` or `reports/`, ignored by Git. Use a fr
 its functional SRAM source hashes. The four relative directory links provide one project
 root without duplicate source files; see [layout details](project/docs/overflow_layout.md).
 
-This increment replaces three Switch shells with real packet ownership/round-robin
+This verification increment closes the full ordinary Read uniform-reset test matrix:
+ten normal cases across bank depths 1/3, exact partial response counts 1/2/3, backend
+pending and held-completion windows. Twenty old Reads were cancelled; eighty new Reads
+reused Tags and completed correctly while prior Write memory contents remained intact.
+Four actual missing-reset/cancellation wiring faults were detected. Production RTL is
+unchanged by this increment. Independent LinkDown and protocol epoch recovery remain open.
+See the [Read reset review](project/docs/endpoint_read_reset_review.md) and
+[evidence](project/docs/endpoint_read_reset_evidence.json).
+
+The preceding Switch increment replaces three Switch shells with real packet ownership/round-robin
 arbitration, full-width data fabric, and an atomic shadow/active route table. All three
 are connected in ualink_switch_top. Static routes remain the default; ROUTE_CONFIG_ENABLE=1
 adds a local explicit write/commit interface. Commit requires no ingress valid and no
@@ -69,7 +78,7 @@ The inventory is 202 RTL entries: 72 partially implemented and 130 disabled inte
 scaffolds. Set TRANSACTION_MODE=1 and FULL_READ_ENABLE=1 for the documented complete ordinary
 Read profile; WRITE_ENABLE=1 independently adds ordinary Write/WriteFull. Defaults preserve
 the earlier fixed Read subset. Strict core lint still reports 15 warnings per Write setting;
-new-top process STA is open. Full Read partial-response reset, independent LinkDown/epoch,
+new-top process STA is open. Independent LinkDown/epoch,
 native UPLI, standard per-hop routing/framing, PHY, INC, security, management and CDC/RDC
 remain unfinished. This snapshot is not a complete Endpoint/Switch protocol delivery.
 
@@ -78,3 +87,7 @@ The upstream cleared RTL namespace README and added KD-UAlink2_0.png remain pres
 After this export, the real top configuration test including both actual wiring faults,
 the arbiter port1..5 simulation/static suite, and the complete Read ESE bank1/replay matrix
 were repeated successfully from the published layout before pushing.
+
+The bank1 exact-three-Beat reset case and actual missing-Endpoint-reset fault were rerun
+successfully from the exported layout before pushing. Upstream 25ecfd1 and its uploaded
+UPLI controller pin diagram are preserved as unowned user content.

@@ -1,0 +1,73 @@
+{
+  "scope": "Full ordinary Read in-flight uniform synchronous reset; not independent LinkDown or protocol epoch recovery",
+  "rtl_baseline": "013c9fd805669b33a10bc51ef7c27256b7ff304a",
+  "rtl_changed": false,
+  "full_goal_complete": false,
+  "normal_cases": 10,
+  "actual_fault_cases": 4,
+  "new_read_completions": 80,
+  "cancelled_old_reads": 20,
+  "retained_seed_writes": 20,
+  "new_response_beats": 220,
+  "partial_beat_counts": [
+    1,
+    2,
+    3
+  ],
+  "bank_depths": [
+    1,
+    3
+  ],
+  "records": [
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release/result.json",
+      "sha256": "0b46a818affefada98b56f8b49dd7691ea50c529daf24205a9f0aeffc18e32ce",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_minimum/result.json",
+      "sha256": "f4e1ce94b7778d03c895b7f605ed36d32aee73359251f436ab2ef997b4c019bc",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_partial2/result.json",
+      "sha256": "cbf87fb73443902d7d41b165b01fe5ab20ab63b8e2a092b6b6d018fea34f247f",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_partial2_minimum/result.json",
+      "sha256": "f7919efa1c724e2334e938b6855dad2595d367f77c948ebbc405d9bd85995aa8",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_partial3/result.json",
+      "sha256": "5efbe299dbffebc747cc5264d1489f9e5c16b6e559faf8dc4b62f99d244479ae",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_partial3_minimum/result.json",
+      "sha256": "a11922cc2f2251d6e698fa38e246348e2a6eecb861b62f80b9b44a2af1125b05",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_endpoint_fault/result.json",
+      "sha256": "67f2d003ced54db0ad9bd33bc2ef48ae812533261bce0b110c76e021bb06d5f3",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_endpoint_fault_minimum/result.json",
+      "sha256": "33891b073902908b9fc0b977d1e2221e07bf294b02088f58a5a799e9ba04b724",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_backend_fault/result.json",
+      "sha256": "157dceeae8a65865551333397c1fcb042dc8b5944113db31b8046b9e9799b8fa",
+      "passed": true
+    },
+    {
+      "record": "build/verification/endpoint_transaction/read_reset_release_backend_fault_minimum/result.json",
+      "sha256": "00768091f2476cb3e7bd1324d86ac3b9fadc281612de6c1b292f8ee608f9a429",
+      "passed": true
+    }
+  ]
+}

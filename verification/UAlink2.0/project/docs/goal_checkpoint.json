@@ -1,19 +1,21 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Three Switch shells replaced and integrated: packet arbiter, full-width fabric and atomic route table. 72 partial / 130 shells. Real packet/config/ESE checks passed; full dual IP incomplete.",
+  "latest_stage": "Full ordinary Read uniform reset verified: bank1/3 and exact partial1/2/3 Beat windows, backend pending and completion-held; 80 new Read completions and four actual omitted-reset faults detected. Native Request/OrigData/parity candidates in progress.",
   "rtl": "rtl/endpoint/ualink_endpoint_top.v",
-  "review": "docs/switch_integration_review.md",
-  "evidence": "docs/switch_integration_evidence.json",
+  "review": "docs/endpoint_read_reset_review.md",
+  "evidence": "docs/endpoint_read_reset_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish reviewed Switch arbiter/fabric/atomic route configuration increment to authorized Overflow namespaces.",
-    "Continue standard per-hop TL/DL and transaction routing, with real per-VC ownership and resource boundaries; do not substitute local packet sidebands for standard routing.",
-    "Close full Read partial-response reset and independent LinkDown/epoch, then continue native UPLI, PHY, INC, security, management, strict lint, CDC/RDC and process STA."
+    "Publish full Read uniform-reset tests/evidence without changing production RTL.",
+    "Integrate typed native Request/OrigData fields, common parity and one real shared credit/TDM sender; continue full station receive/response and endpoint adapters.",
+    "Continue independent LinkDown/epoch, standard per-hop TL/DL routing, per-VC resources, PHY, INC, security, management, CDC/RDC and process STA."
   ],
-  "remote_main": "283ef7ddc8ae30caccc6fbaffa3f65383c386732",
+  "remote_main": "5a8fb6053364aad3813eff24b8d52d8e9e9a9e02",
   "live_jobs": [
-    "bounded read-only cleanup audit"
+    "shared parity integration and combinational equivalence",
+    "typed Request/shared sender release tests",
+    "OrigData release and parity review"
   ],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
@@ -23,8 +25,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "283ef7ddc8ae30caccc6fbaffa3f65383c386732",
-    "source_commit": "ec31dfc39379b1b78fb165511b1746e1c1cc72a0"
+    "verified_commit": "5a8fb6053364aad3813eff24b8d52d8e9e9a9e02",
+    "source_commit": "013c9fd805669b33a10bc51ef7c27256b7ff304a"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,
