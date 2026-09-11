@@ -267,24 +267,48 @@ wire sent_pool[0:3];
 wire [618:0] sent_payload[0:3],head_payload[0:3];
 wire [12:0] sent_parity[0:3];
 wire [3:0] head_taken;
-wire  legacy_o_backend_issue_valid;
-wire [10-1:0] legacy_o_backend_issue_token;
-wire  legacy_o_backend_release_ready;
-wire  legacy_o_context_request_ready;
-wire [10-1:0] legacy_o_context_request_token;
-wire  legacy_o_context_error;
-wire [3-1:0] legacy_o_context_count;
-wire [7:0] legacy_o_backend_issue_station;
-wire [1:0] legacy_o_backend_issue_port;
-wire [1:0] legacy_o_backend_issue_vc;
-wire  legacy_o_backend_issue_pool;
-wire [183:0] legacy_o_backend_issue_payload;
-wire [2047:0] legacy_o_backend_issue_data;
-wire [255:0] legacy_o_backend_issue_be;
-wire [3:0] legacy_o_backend_issue_poison;
-wire [3:0] legacy_o_backend_issue_data_pools;
-always @(posedge clk) if(rstn)begin #2;if({legacy_o_backend_issue_valid,legacy_o_backend_issue_token,legacy_o_backend_release_ready,legacy_o_context_request_ready,legacy_o_context_request_token,legacy_o_context_error,legacy_o_context_count,legacy_o_backend_issue_station,legacy_o_backend_issue_port,legacy_o_backend_issue_vc,legacy_o_backend_issue_pool,legacy_o_backend_issue_payload,legacy_o_backend_issue_data,legacy_o_backend_issue_be,legacy_o_backend_issue_poison,legacy_o_backend_issue_data_pools} !== '0)$fatal(1,"IP_TOP_MISMATCH legacy outputs");end
-wire request_ready=consumer_enable && (cycles%47>=31);
+wire legacy_ready=consumer_enable && (cycles%3==0);
+wire context_ready,issue_valid,release_ready,context_error;
+wire [9:0] admission_token,issue_token;
+wire [2:0] context_count;
+reg release_valid=0;reg [9:0] release_token=0;
+reg release_enable=0,manual_release=0;reg [9:0] manual_token=0;reg expect_release_error=0;
+wire backend_ready=consumer_enable&&(cycles%47>=31);
+wire [7:0] issue_station;
+wire [1:0] issue_port;
+wire [1:0] issue_vc;
+wire  issue_pool;
+wire [183:0] issue_payload;
+wire [2047:0] issue_data;
+wire [255:0] issue_be;
+wire [3:0] issue_poison;
+wire [3:0] issue_data_pools;
+wire  unused_o_memory_issue_ready;
+wire  unused_o_memory_command_valid;
+wire [10-1:0] unused_o_memory_command_token;
+wire [7:0] unused_o_memory_command_station;
+wire [1:0] unused_o_memory_command_port;
+wire [1:0] unused_o_memory_command_vc;
+wire  unused_o_memory_command_pool;
+wire [183:0] unused_o_memory_command_payload;
+wire [2047:0] unused_o_memory_command_data;
+wire [255:0] unused_o_memory_command_be;
+wire [3:0] unused_o_memory_command_poison;
+wire [3:0] unused_o_memory_command_data_pools;
+wire  unused_o_memory_result_ready;
+wire  unused_o_memory_completion_valid;
+wire [10-1:0] unused_o_memory_completion_token;
+wire [3:0] unused_o_memory_completion_status;
+wire [2047:0] unused_o_memory_completion_data;
+wire [3:0] unused_o_memory_completion_poison;
+wire  unused_o_memory_final_ready;
+wire  unused_o_memory_release_valid;
+wire [10-1:0] unused_o_memory_release_token;
+wire  unused_o_memory_busy;
+wire  unused_o_memory_error;
+wire  unused_o_memory_error_sticky;
+always @(posedge clk) if(rstn)begin #2;if({unused_o_memory_issue_ready,unused_o_memory_command_valid,unused_o_memory_command_token,unused_o_memory_command_station,unused_o_memory_command_port,unused_o_memory_command_vc,unused_o_memory_command_pool,unused_o_memory_command_payload,unused_o_memory_command_data,unused_o_memory_command_be,unused_o_memory_command_poison,unused_o_memory_command_data_pools,unused_o_memory_result_ready,unused_o_memory_completion_valid,unused_o_memory_completion_token,unused_o_memory_completion_status,unused_o_memory_completion_data,unused_o_memory_completion_poison,unused_o_memory_final_ready,unused_o_memory_release_valid,unused_o_memory_release_token,unused_o_memory_busy,unused_o_memory_error,unused_o_memory_error_sticky} !== '0)$fatal(1,"IP_TOP_MISMATCH memory legacy outputs");end
+wire request_ready=context_ready;
 wire response_ready=consumer_enable && (cycles%7!=0);
 assign sent_port[0]=o_req_port; assign sent_vc[0]=o_req_vc; assign sent_pool[0]=o_req_pool;
 assign sent_payload[0]={435'd0,{o_req_asi,o_req_auth_tag,o_req_src,o_req_dst,o_req_tag,o_req_num_beats,o_req_address,o_req_command,o_req_length,o_req_attr,o_req_metadata}};
@@ -371,42 +395,8 @@ wire [100:0] top_response_write_payload;
 wire [1:0] top_response_retired;
 wire [1:0] top_response_metadata_error;
 wire  top_response_fault_stop_request;
-upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
+upli_endpoint_ip_top #(.C_IS_TL(TL),.C_REQUEST_CONTEXT_ENABLE(1),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
 .i_clk(clk),
-// Memory adapter defaults off; legacy owner remains unchanged.
-.o_memory_issue_ready(),
-.o_memory_command_valid(),
-.i_memory_command_ready(1'd0),
-.o_memory_command_token(),
-.o_memory_command_station(),
-.o_memory_command_port(),
-.o_memory_command_vc(),
-.o_memory_command_pool(),
-.o_memory_command_payload(),
-.o_memory_command_data(),
-.o_memory_command_be(),
-.o_memory_command_poison(),
-.o_memory_command_data_pools(),
-.i_memory_result_valid(1'd0),
-.o_memory_result_ready(),
-.i_memory_result_token(10'd0),
-.i_memory_result_status(4'd0),
-.i_memory_result_data(2048'd0),
-.i_memory_result_poison(4'd0),
-.o_memory_completion_valid(),
-.i_memory_completion_ready(1'd0),
-.o_memory_completion_token(),
-.o_memory_completion_status(),
-.o_memory_completion_data(),
-.o_memory_completion_poison(),
-.i_memory_final_valid(1'd0),
-.o_memory_final_ready(),
-.i_memory_final_token(10'd0),
-.o_memory_release_valid(),
-.o_memory_release_token(),
-.o_memory_busy(),
-.o_memory_error(),
-.o_memory_error_sticky(),
 .i_rstn(rstn),
 .i_originator_ready(1'b1),
 .i_originator_peer_req(cq),
@@ -706,27 +696,55 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_rx_tdm_error_sticky(path_tdm_error_sticky),
 .o_rx_tdm_phase_known(path_tdm_phase_known),
 .o_rx_tdm_expected_port(path_tdm_expected_port),
-.i_context_station(8'd255),
-.i_backend_issue_ready(1'd1),
-.i_backend_release_valid(1'd1),
-.i_backend_release_token(10'd1023),
-.o_backend_issue_valid(legacy_o_backend_issue_valid),
-.o_backend_issue_token(legacy_o_backend_issue_token),
-.o_backend_release_ready(legacy_o_backend_release_ready),
-.o_context_request_ready(legacy_o_context_request_ready),
-.o_context_request_token(legacy_o_context_request_token),
-.o_context_error(legacy_o_context_error),
-.o_context_count(legacy_o_context_count),
-.o_backend_issue_station(legacy_o_backend_issue_station),
-.o_backend_issue_port(legacy_o_backend_issue_port),
-.o_backend_issue_vc(legacy_o_backend_issue_vc),
-.o_backend_issue_pool(legacy_o_backend_issue_pool),
-.o_backend_issue_payload(legacy_o_backend_issue_payload),
-.o_backend_issue_data(legacy_o_backend_issue_data),
-.o_backend_issue_be(legacy_o_backend_issue_be),
-.o_backend_issue_poison(legacy_o_backend_issue_poison),
-.o_backend_issue_data_pools(legacy_o_backend_issue_data_pools),
-.i_rx_request_ready(request_ready),
+.o_memory_issue_ready(unused_o_memory_issue_ready),
+.o_memory_command_valid(unused_o_memory_command_valid),
+.i_memory_command_ready(1'd1),
+.o_memory_command_token(unused_o_memory_command_token),
+.o_memory_command_station(unused_o_memory_command_station),
+.o_memory_command_port(unused_o_memory_command_port),
+.o_memory_command_vc(unused_o_memory_command_vc),
+.o_memory_command_pool(unused_o_memory_command_pool),
+.o_memory_command_payload(unused_o_memory_command_payload),
+.o_memory_command_data(unused_o_memory_command_data),
+.o_memory_command_be(unused_o_memory_command_be),
+.o_memory_command_poison(unused_o_memory_command_poison),
+.o_memory_command_data_pools(unused_o_memory_command_data_pools),
+.i_memory_result_valid(1'd1),
+.o_memory_result_ready(unused_o_memory_result_ready),
+.i_memory_result_token(10'd255),
+.i_memory_result_status(4'd15),
+.i_memory_result_data(2048'd255),
+.i_memory_result_poison(4'd15),
+.o_memory_completion_valid(unused_o_memory_completion_valid),
+.i_memory_completion_ready(1'd1),
+.o_memory_completion_token(unused_o_memory_completion_token),
+.o_memory_completion_status(unused_o_memory_completion_status),
+.o_memory_completion_data(unused_o_memory_completion_data),
+.o_memory_completion_poison(unused_o_memory_completion_poison),
+.i_memory_final_valid(1'd1),
+.o_memory_final_ready(unused_o_memory_final_ready),
+.i_memory_final_token(10'd255),
+.o_memory_release_valid(unused_o_memory_release_valid),
+.o_memory_release_token(unused_o_memory_release_token),
+.o_memory_busy(unused_o_memory_busy),
+.o_memory_error(unused_o_memory_error),
+.o_memory_error_sticky(unused_o_memory_error_sticky),
+.i_rx_request_ready(legacy_ready),
+.o_context_request_ready(context_ready),.o_context_request_token(admission_token),
+.i_context_station(8'h91),.i_backend_issue_ready(backend_ready),
+.i_backend_release_valid(release_valid),.i_backend_release_token(release_token),
+.o_backend_release_ready(release_ready),.o_context_error(context_error),.o_context_count(context_count),
+.o_backend_issue_valid(issue_valid),.o_backend_issue_token(issue_token),
+.o_backend_issue_station(issue_station),
+.o_backend_issue_port(issue_port),
+.o_backend_issue_vc(issue_vc),
+.o_backend_issue_pool(issue_pool),
+.o_backend_issue_payload(issue_payload),
+.o_backend_issue_data(issue_data),
+.o_backend_issue_be(issue_be),
+.o_backend_issue_poison(issue_poison),
+.o_backend_issue_data_pools(issue_data_pools),
+
 .o_rx_request_valid(path_request_valid),
 .o_rx_request_port(path_request_port),
 .o_rx_request_vc(path_request_vc),
@@ -792,6 +810,51 @@ task automatic ck;input condition;input integer id;begin checks=checks+1;if(cond
 task push_native;input integer ch;input integer port;input [1:0] vc;input pool;input [618:0] data;begin
  ck(nw[ch][port]<256,100);nq[ch][port][nw[ch][port]]={pool,vc,data};nw[ch][port]=nw[ch][port]+1;
 end endtask
+integer ctx_w=0,ctx_r=0,ctx_freed=0,ctx_cancelled=0;
+integer ctx_total_w=0,ctx_total_r=0,ctx_total_freed=0,ctx_stalls=0,ctx_errors=0,ctx_checks=0;
+integer ctx_port_read[0:PORTS-1],ctx_due[0:255];
+reg [2500:0] ctx_expected[0:255];reg [9:0] ctx_tokens[0:255];reg ctx_live[0:255],ctx_issued[0:255];
+reg ctx_held=0;reg [2518:0] ctx_held_tuple;
+wire [2518:0] issue_tuple={issue_token,issue_station,issue_port,issue_vc,issue_pool,issue_payload,issue_data,issue_be,issue_poison,issue_data_pools};
+integer ci_index,ci_port,ci_found;
+always @(negedge clk)begin
+ #2;release_valid=0;release_token=0;
+ if(rstn&&!top_drop_roles[1])begin
+  if(manual_release)begin release_valid=1;release_token=manual_token;end
+  else if(release_enable)begin
+   for(integer ix=0;ix<256;ix=ix+1)if(ix<ctx_w&&ctx_live[ix]&&ctx_issued[ix]&&cycles>=ctx_due[ix]&&!release_valid)begin release_valid=1;release_token=ctx_tokens[ix];end
+  end
+ end
+end
+always @(posedge clk)begin
+ if(!rstn||top_drop_roles[1])begin
+  if(ctx_w>ctx_freed)ctx_cancelled=ctx_cancelled+ctx_w-ctx_freed;
+  ctx_w=0;ctx_r=0;ctx_freed=0;ctx_held=0;
+  for(ci_port=0;ci_port<PORTS;ci_port=ci_port+1)ctx_port_read[ci_port]=0;
+  for(ci_index=0;ci_index<256;ci_index=ci_index+1)begin ctx_live[ci_index]=0;ctx_issued[ci_index]=0;end
+ end else if(!fault_mode)begin
+  ck(context_count==ctx_w-ctx_freed,500);ctx_checks=ctx_checks+1;
+  ck(context_error===expect_release_error,501);if(context_error)begin ctx_errors=ctx_errors+1;ck(top_drop_roles==0,502);end
+  if(ctx_held)ck(issue_valid&&issue_tuple===ctx_held_tuple,503);
+  ctx_held=issue_valid&&!backend_ready;if(ctx_held)begin ctx_held_tuple=issue_tuple;ctx_stalls=ctx_stalls+1;end
+  if(issue_valid)begin
+   ck(ctx_r<ctx_w,504);ck(issue_tuple==={ctx_tokens[ctx_r],8'h91,ctx_expected[ctx_r]},505);ctx_checks=ctx_checks+1;
+   if(backend_ready)begin ctx_issued[ctx_r]=1;ctx_due[ctx_r]=cycles+80;ctx_r=ctx_r+1;ctx_total_r=ctx_total_r+1;end
+  end
+  if(release_valid)begin
+   ci_found=-1;
+   for(ci_index=0;ci_index<ctx_w;ci_index=ci_index+1)if(ctx_tokens[ci_index]==release_token&&ctx_live[ci_index]&&ctx_issued[ci_index])begin ck(ci_found==-1,506);ci_found=ci_index;end
+   ck(release_ready===(ci_found>=0),507);
+   if(release_ready)begin ctx_live[ci_found]=0;ctx_freed=ctx_freed+1;ctx_total_freed=ctx_total_freed+1;end
+  end
+  if(path_request_valid&&context_ready)begin
+   ci_port=path_request_port;ck(ctx_w<256&&ctx_port_read[ci_port]<dw[ci_port],508);
+   ctx_expected[ctx_w]=descriptors[ci_port][ctx_port_read[ci_port]];
+   ctx_tokens[ctx_w]=admission_token;ctx_live[ctx_w]=1;ctx_issued[ctx_w]=0;
+   ctx_port_read[ci_port]=ctx_port_read[ci_port]+1;ctx_w=ctx_w+1;ctx_total_w=ctx_total_w+1;
+  end
+ end
+end
 always @(negedge clk)begin
  cycles=cycles+1;
  if(!rstn)select_port<=0;else select_port<=(select_port+1)%PORTS;
@@ -933,7 +996,7 @@ task drain;integer wait_cycles,all_done;begin
    if(nw[ch][pp]!=nr[ch][pp]||nr[ch][pp]!=hr[ch][pp]||cr[ch][pp]!=cw[ch][pp])all_done=0;
    for(integer aa=0;aa<5;aa=aa+1)if(ledger[ch][pp][aa]!=CAP)all_done=0;
   end
-  if(requests+cancelled!=accepted_req||path_counts!=0||path_bridge_busy)all_done=0;
+  if(requests+cancelled!=accepted_req||path_counts!=0||path_bridge_busy||context_count!=0)all_done=0;
   wait_cycles=wait_cycles+1;
  end
  ck(all_done,200);
@@ -955,56 +1018,55 @@ task one_request(input bit write_req);integer before_req,limit;begin
  while(source_handshakes==before_req&&limit<100)begin @(posedge clk);#2;limit=limit+1;end
  ck(limit<100,220);@(negedge clk);#1;i_req_candidate_valid=0;
 end endtask
+task bad_release(input [9:0] token);begin
+ @(negedge clk);#1;manual_release=1;manual_token=token;expect_release_error=1;
+ @(negedge clk);#3;ck(context_error&&!release_ready,520);
+ @(negedge clk);#1;manual_release=0;expect_release_error=0;
+end endtask
+reg [9:0] saved_token;integer saved_returns,saved_issued;
 initial begin
+ // A full table owns four descriptors while the real bridge and SRAM retain later traffic.
  for(round_index=0;round_index<2;round_index=round_index+1)begin
- start_epoch();
+ start_epoch();release_enable=0;
  fork
   drive_req();drive_rd();drive_wr();
-  begin repeat(220)@(negedge clk);#1;consumer_enable=1;end
+  begin
+   repeat(220)@(negedge clk);#1;
+   ck(context_count==4&&ctx_w==4&&ctx_r==0&&path_request_valid,521);
+   consumer_enable=1;
+   repeat(70)@(negedge clk);#1;
+   ck(context_count==4&&ctx_w==4&&ctx_r==4,522);
+   release_enable=1;
+  end
  join
- drain();
- ck(accepted_req==24&&accepted_rd==24&&accepted_wr==24&&requests==24,201);
- ck(sent_count[0]==24&&sent_count[1]==40&&sent_count[2]==60&&sent_count[3]==24,202);
- $display("IP_TOP_ROUND ports=%0d round=%0d requests=%0d req=%0d data=%0d rd=%0d wr=%0d",PORTS,round_index,requests,sent_count[0],sent_count[1],sent_count[2],sent_count[3]);
- if(round_index==0)begin
-  @(negedge clk);#1;consumer_enable=0;
-  fork : abandoned
-   drive_req();drive_rd();drive_wr();
-  join_none
-  repeat(80)@(negedge clk);#1;
-  ck(path_request_valid&&path_counts!=0,203);
-  disable abandoned;i_req_candidate_valid=0;i_rd_candidate_valid=0;i_wr_candidate_valid=0;
-  @(negedge clk);#1;rstn=0;repeat(4)@(negedge clk);#1;rstn=1;consumer_enable=1;
-  repeat(80)@(negedge clk);#1;
-  ck(requests==0&&!path_bridge_busy&&path_counts==0,204);
+ drain();ck(accepted_req==24&&requests==24&&ctx_w==24&&ctx_r==24&&ctx_freed==24,523);
+ $display("CONTEXT_TOP_ROUND ports=%0d round=%0d descriptors=%0d issues=%0d releases=%0d",PORTS,round_index,ctx_w,ctx_r,ctx_freed);
  end
+ // Unknown, duplicate and stale-generation events remain local diagnostics, never Drop.
+ start_epoch();consumer_enable=1;release_enable=0;one_request(0);
+ wait(ctx_r==1);@(negedge clk);#1;saved_token=ctx_tokens[0];bad_release(10'h3ff);
+ @(negedge clk);#1;manual_release=1;manual_token=saved_token;
+ @(negedge clk);#1;manual_release=0;repeat(3)@(negedge clk);#1;ck(context_count==0,524);
+ bad_release(saved_token);one_request(0);wait(ctx_r==2);@(negedge clk);#1;
+ ck(ctx_tokens[1]!=saved_token,525);bad_release(saved_token);release_enable=1;drain();
+ // Actual issued and pending ownership is cancelled only by the common synchronous epoch reset.
+ for(integer mode=0;mode<2;mode=mode+1)begin
+ start_epoch();release_enable=0;consumer_enable=mode;
+ fork : cancelled_source drive_req();join_none
+ repeat(260)@(negedge clk);#1;
+ ck(context_count==4&&ctx_w==4,526);if(mode==0)ck(ctx_r==0,527);else ck(ctx_r==4,528);
+ disable cancelled_source;i_req_candidate_valid=0;
+ start_epoch();consumer_enable=1;release_enable=1;
+ repeat(100)@(negedge clk);#1;ck(context_count==0&&ctx_w==0&&!issue_valid&&path_counts==0&&!path_bridge_busy,529);
+ one_request(1);drain();ck(ctx_w==1&&ctx_freed==1,530);
  end
-  // A real data parity error becomes poison while the descriptor and true credits progress.
- allow_fault=1;start_epoch();data_parity_flip=1;consumer_enable=1;
- one_request(1);data_parity_flip=0;drain();
- ck(data_seen>0&&top_drop_roles==0&&requests==1,221);
- // The same actual source can spend a Req credit before a corrupted return group arrives.
- start_epoch();fault_mode=1;consumer_enable=0;one_request(0);
- saved_bank=o_req_balances;credit_override=1;
- #1;ck(top_raw_credit_error==1&&top_drop_roles==ORIGINATOR_SCOPE&&!o_req_valid&&!o_data_valid,222);
- @(posedge clk);#2;ck(o_req_balances===saved_bank,223);
- @(negedge clk);#1;credit_override=0;fault_ack=3;
- repeat(4)@(negedge clk);#1;ck(top_drop_roles==ORIGINATOR_SCOPE&&top_reset_required==ORIGINATOR_SCOPE&&top_notify_roles==0,224);fault_ack=0;
- // A bad Request control beat uses the forward Completer scope and cancels its holding.
- start_epoch();fault_mode=1;native_flip=1;one_request(0);native_flip=0;
- repeat(3)@(negedge clk);#1;
- ck(top_drop_roles==COMPLETER_SCOPE&&top_reset_required==COMPLETER_SCOPE&&!path_bridge_busy&&!path_request_valid,225);
- check_req_block=1;if(!TL)one_request(0);repeat(4)@(negedge clk);#1;
- // Keep presenting real response candidates: same-role TX must not emit after Drop.
- i_wr_candidate_valid=1;i_wr_candidate_port=0;i_wr_candidate_vc=0;i_wr_candidate_pool=0;
- i_wr_candidate_payload={64'h8000000000000001,2'd0,11'd1024,4'd0,10'd999,10'd777};
- repeat(10)begin @(negedge clk);#1;ck(!o_wr_valid&&!o_wr_candidate_accepted&&!path_receive_accepted[0]&&!path_receive_accepted[1],226);end
- i_wr_candidate_valid=0;fault_ack=3;repeat(4)@(negedge clk);#1;ck(top_drop_roles==COMPLETER_SCOPE&&top_notify_roles==0,227);fault_ack=0;
- // Reset the complete transport/ownership epoch and reuse the same request Tag.
- start_epoch();fault_mode=0;allow_fault=0;consumer_enable=1;one_request(0);drain();
- ck(top_drop_roles==0&&top_reason_sticky==0&&requests==1&&!top_backend_implemented&&response_checks>100,228);
- ck(stalls>100,205);
- $display("IP_TOP_PASS ports=%0d tl=%0d requests=%0d heads=%0d returns=%0d stalls=%0d dropped=%0d checks=%0d cycles=%0d",PORTS,TL,total_requests,total_heads,total_returns,stalls,dropped_beats,checks,cycles);
+ // Drop cancels already-admitted context; RX credit queues keep their existing owner.
+ start_epoch();release_enable=0;consumer_enable=0;one_request(0);wait(ctx_w==1);
+ @(negedge clk);#1;fault_mode=1;native_flip=1;one_request(0);native_flip=0;
+ repeat(8)@(negedge clk);#1;ck(top_drop_roles==COMPLETER_SCOPE&&context_count==0&&!issue_valid&&!path_bridge_busy,531);
+ start_epoch();release_enable=1;consumer_enable=1;one_request(1);drain();
+ ck(ctx_stalls>100&&ctx_errors>=3&&ctx_cancelled>=9&&!top_backend_implemented,532);
+ $display("CONTEXT_TOP_PASS ports=%0d admitted=%0d issued=%0d released=%0d cancelled=%0d ctx_stalls=%0d illegal=%0d heads=%0d returns=%0d checks=%0d",PORTS,ctx_total_w,ctx_total_r,ctx_total_freed,ctx_cancelled,ctx_stalls,ctx_errors,total_heads,total_returns,checks);
  $finish;
 end
 endmodule

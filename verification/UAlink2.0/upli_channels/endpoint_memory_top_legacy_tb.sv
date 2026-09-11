@@ -284,6 +284,31 @@ wire [255:0] legacy_o_backend_issue_be;
 wire [3:0] legacy_o_backend_issue_poison;
 wire [3:0] legacy_o_backend_issue_data_pools;
 always @(posedge clk) if(rstn)begin #2;if({legacy_o_backend_issue_valid,legacy_o_backend_issue_token,legacy_o_backend_release_ready,legacy_o_context_request_ready,legacy_o_context_request_token,legacy_o_context_error,legacy_o_context_count,legacy_o_backend_issue_station,legacy_o_backend_issue_port,legacy_o_backend_issue_vc,legacy_o_backend_issue_pool,legacy_o_backend_issue_payload,legacy_o_backend_issue_data,legacy_o_backend_issue_be,legacy_o_backend_issue_poison,legacy_o_backend_issue_data_pools} !== '0)$fatal(1,"IP_TOP_MISMATCH legacy outputs");end
+wire  unused_o_memory_issue_ready;
+wire  unused_o_memory_command_valid;
+wire [10-1:0] unused_o_memory_command_token;
+wire [7:0] unused_o_memory_command_station;
+wire [1:0] unused_o_memory_command_port;
+wire [1:0] unused_o_memory_command_vc;
+wire  unused_o_memory_command_pool;
+wire [183:0] unused_o_memory_command_payload;
+wire [2047:0] unused_o_memory_command_data;
+wire [255:0] unused_o_memory_command_be;
+wire [3:0] unused_o_memory_command_poison;
+wire [3:0] unused_o_memory_command_data_pools;
+wire  unused_o_memory_result_ready;
+wire  unused_o_memory_completion_valid;
+wire [10-1:0] unused_o_memory_completion_token;
+wire [3:0] unused_o_memory_completion_status;
+wire [2047:0] unused_o_memory_completion_data;
+wire [3:0] unused_o_memory_completion_poison;
+wire  unused_o_memory_final_ready;
+wire  unused_o_memory_release_valid;
+wire [10-1:0] unused_o_memory_release_token;
+wire  unused_o_memory_busy;
+wire  unused_o_memory_error;
+wire  unused_o_memory_error_sticky;
+always @(posedge clk) if(rstn)begin #2;if({unused_o_memory_issue_ready,unused_o_memory_command_valid,unused_o_memory_command_token,unused_o_memory_command_station,unused_o_memory_command_port,unused_o_memory_command_vc,unused_o_memory_command_pool,unused_o_memory_command_payload,unused_o_memory_command_data,unused_o_memory_command_be,unused_o_memory_command_poison,unused_o_memory_command_data_pools,unused_o_memory_result_ready,unused_o_memory_completion_valid,unused_o_memory_completion_token,unused_o_memory_completion_status,unused_o_memory_completion_data,unused_o_memory_completion_poison,unused_o_memory_final_ready,unused_o_memory_release_valid,unused_o_memory_release_token,unused_o_memory_busy,unused_o_memory_error,unused_o_memory_error_sticky} !== '0)$fatal(1,"IP_TOP_MISMATCH memory legacy outputs");end
 wire request_ready=consumer_enable && (cycles%47>=31);
 wire response_ready=consumer_enable && (cycles%7!=0);
 assign sent_port[0]=o_req_port; assign sent_vc[0]=o_req_vc; assign sent_pool[0]=o_req_pool;
@@ -373,40 +398,6 @@ wire [1:0] top_response_metadata_error;
 wire  top_response_fault_stop_request;
 upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
 .i_clk(clk),
-// Memory adapter defaults off; legacy owner remains unchanged.
-.o_memory_issue_ready(),
-.o_memory_command_valid(),
-.i_memory_command_ready(1'd0),
-.o_memory_command_token(),
-.o_memory_command_station(),
-.o_memory_command_port(),
-.o_memory_command_vc(),
-.o_memory_command_pool(),
-.o_memory_command_payload(),
-.o_memory_command_data(),
-.o_memory_command_be(),
-.o_memory_command_poison(),
-.o_memory_command_data_pools(),
-.i_memory_result_valid(1'd0),
-.o_memory_result_ready(),
-.i_memory_result_token(10'd0),
-.i_memory_result_status(4'd0),
-.i_memory_result_data(2048'd0),
-.i_memory_result_poison(4'd0),
-.o_memory_completion_valid(),
-.i_memory_completion_ready(1'd0),
-.o_memory_completion_token(),
-.o_memory_completion_status(),
-.o_memory_completion_data(),
-.o_memory_completion_poison(),
-.i_memory_final_valid(1'd0),
-.o_memory_final_ready(),
-.i_memory_final_token(10'd0),
-.o_memory_release_valid(),
-.o_memory_release_token(),
-.o_memory_busy(),
-.o_memory_error(),
-.o_memory_error_sticky(),
 .i_rstn(rstn),
 .i_originator_ready(1'b1),
 .i_originator_peer_req(cq),
@@ -726,6 +717,39 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_backend_issue_be(legacy_o_backend_issue_be),
 .o_backend_issue_poison(legacy_o_backend_issue_poison),
 .o_backend_issue_data_pools(legacy_o_backend_issue_data_pools),
+.o_memory_issue_ready(unused_o_memory_issue_ready),
+.o_memory_command_valid(unused_o_memory_command_valid),
+.i_memory_command_ready(1'd1),
+.o_memory_command_token(unused_o_memory_command_token),
+.o_memory_command_station(unused_o_memory_command_station),
+.o_memory_command_port(unused_o_memory_command_port),
+.o_memory_command_vc(unused_o_memory_command_vc),
+.o_memory_command_pool(unused_o_memory_command_pool),
+.o_memory_command_payload(unused_o_memory_command_payload),
+.o_memory_command_data(unused_o_memory_command_data),
+.o_memory_command_be(unused_o_memory_command_be),
+.o_memory_command_poison(unused_o_memory_command_poison),
+.o_memory_command_data_pools(unused_o_memory_command_data_pools),
+.i_memory_result_valid(1'd1),
+.o_memory_result_ready(unused_o_memory_result_ready),
+.i_memory_result_token(10'd255),
+.i_memory_result_status(4'd15),
+.i_memory_result_data(2048'd255),
+.i_memory_result_poison(4'd15),
+.o_memory_completion_valid(unused_o_memory_completion_valid),
+.i_memory_completion_ready(1'd1),
+.o_memory_completion_token(unused_o_memory_completion_token),
+.o_memory_completion_status(unused_o_memory_completion_status),
+.o_memory_completion_data(unused_o_memory_completion_data),
+.o_memory_completion_poison(unused_o_memory_completion_poison),
+.i_memory_final_valid(1'd1),
+.o_memory_final_ready(unused_o_memory_final_ready),
+.i_memory_final_token(10'd255),
+.o_memory_release_valid(unused_o_memory_release_valid),
+.o_memory_release_token(unused_o_memory_release_token),
+.o_memory_busy(unused_o_memory_busy),
+.o_memory_error(unused_o_memory_error),
+.o_memory_error_sticky(unused_o_memory_error_sticky),
 .i_rx_request_ready(request_ready),
 .o_rx_request_valid(path_request_valid),
 .o_rx_request_port(path_request_port),

@@ -11994,6 +11994,143 @@
         "Lossless typed physical-egress handoff with queue capacity release independent from downstream record retirement"
       ],
       "functional_interface_status": "typed_queue_scheduler_repack_integration_without_standard_tl_control_data_auth_reconstruction_or_per_hop_tl_dl_signoff"
+    },
+    {
+      "id": "switch_egress_tl_context",
+      "module": "switch_egress_tl_context",
+      "path": "rtl/switch/switch_egress_tl_context.v",
+      "roles": [
+        "switch"
+      ],
+      "subsystem": "switch",
+      "status": "existing_partial",
+      "purpose": "Classify and hold complete local egress records with pre-capture TL context; prepared reconstruction and per-hop transmission remain open.",
+      "dependencies": [
+        "tl_receive_context"
+      ],
+      "source_refs": [
+        {
+          "family": "F06",
+          "source": "C §5.1–5.4, §5.9"
+        },
+        {
+          "family": "F07",
+          "source": "C §5.5–5.6, §5.9–5.10"
+        },
+        {
+          "family": "F08",
+          "source": "C §5.7–5.8"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "outputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/switch/switch_egress_tl_context.v",
+      "integration_parents": [],
+      "functional_inputs": [
+        "Explicit local ownership events and original transaction metadata"
+      ],
+      "functional_outputs": [
+        "Classify and hold complete local egress records with pre-capture TL context; prepared reconstruction and per-hop transmission remain open."
+      ],
+      "functional_interface_status": "bounded_local_subset_without_full_top_protocol_or_process_signoff"
+    },
+    {
+      "id": "ras_dummy_completion",
+      "module": "ras_dummy_completion",
+      "path": "rtl/ras/ras_dummy_completion.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "ras",
+      "status": "existing_partial",
+      "purpose": "Generate backpressure-stable local CMPTO response beats and acknowledge completion only after the final beat is consumed.",
+      "dependencies": [],
+      "source_refs": [
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        },
+        {
+          "family": "F20",
+          "source": "M §7–9"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "outputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/ras/ras_dummy_completion.v",
+      "integration_parents": [],
+      "functional_inputs": [
+        "Explicit local ownership events and original transaction metadata"
+      ],
+      "functional_outputs": [
+        "Generate backpressure-stable local CMPTO response beats and acknowledge completion only after the final beat is consumed."
+      ],
+      "functional_interface_status": "bounded_local_subset_without_full_top_protocol_or_process_signoff"
+    },
+    {
+      "id": "ras_isolation_completion",
+      "module": "ras_isolation_completion",
+      "path": "rtl/ras/ras_isolation_completion.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "ras",
+      "status": "existing_partial",
+      "purpose": "Connect isolation obligations to actual local dummy response generation; native routing and system recovery remain open.",
+      "dependencies": [
+        "ras_originator_isolation",
+        "ras_dummy_completion"
+      ],
+      "source_refs": [
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        },
+        {
+          "family": "F20",
+          "source": "M §7–9"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "integration",
+      "inputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "outputs": [
+        "Actual typed ports documented in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/ras/ras_isolation_completion.v",
+      "integration_parents": [],
+      "functional_inputs": [
+        "Explicit local ownership events and original transaction metadata"
+      ],
+      "functional_outputs": [
+        "Connect isolation obligations to actual local dummy response generation; native routing and system recovery remain open."
+      ],
+      "functional_interface_status": "bounded_local_subset_without_full_top_protocol_or_process_signoff"
     }
   ],
   "software_modules": [
@@ -12406,7 +12543,7 @@
     "Implementation order: all module ownership and hierarchy -> per-module contract/function -> adjacent interface integration -> full traffic/coverage/signoff."
   ],
   "counts": {
-    "existing_rtl": 103,
+    "existing_rtl": 106,
     "planned_rtl": 120,
     "software_planned": 13,
     "external_boundaries": 4

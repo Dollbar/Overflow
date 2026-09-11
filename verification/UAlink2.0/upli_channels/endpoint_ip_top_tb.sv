@@ -356,6 +356,40 @@ wire [1:0] top_response_metadata_error;
 wire  top_response_fault_stop_request;
 upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
 .i_clk(clk),
+// Memory adapter defaults off; legacy owner remains unchanged.
+.o_memory_issue_ready(),
+.o_memory_command_valid(),
+.i_memory_command_ready(1'd0),
+.o_memory_command_token(),
+.o_memory_command_station(),
+.o_memory_command_port(),
+.o_memory_command_vc(),
+.o_memory_command_pool(),
+.o_memory_command_payload(),
+.o_memory_command_data(),
+.o_memory_command_be(),
+.o_memory_command_poison(),
+.o_memory_command_data_pools(),
+.i_memory_result_valid(1'd0),
+.o_memory_result_ready(),
+.i_memory_result_token(10'd0),
+.i_memory_result_status(4'd0),
+.i_memory_result_data(2048'd0),
+.i_memory_result_poison(4'd0),
+.o_memory_completion_valid(),
+.i_memory_completion_ready(1'd0),
+.o_memory_completion_token(),
+.o_memory_completion_status(),
+.o_memory_completion_data(),
+.o_memory_completion_poison(),
+.i_memory_final_valid(1'd0),
+.o_memory_final_ready(),
+.i_memory_final_token(10'd0),
+.o_memory_release_valid(),
+.o_memory_release_token(),
+.o_memory_busy(),
+.o_memory_error(),
+.o_memory_error_sticky(),
 .i_rstn(rstn),
 .i_originator_ready(1'b1),
 .i_originator_peer_req(cq),
@@ -725,7 +759,7 @@ assign cvc[3]=path_wr_credit_vc;
 assign cn[3]=path_wr_credit_num;
 assign head_vc[3]=path_wr_head_vc;
 assign head_pool[3]=path_wr_head_pool;
-task ck;input condition;input integer id;begin checks=checks+1;if(condition!==1'b1)$fatal(1,"IP_TOP_MISMATCH id=%0d cycle=%0d ports=%0d",id,cycles,PORTS);end endtask
+task automatic ck;input condition;input integer id;begin checks=checks+1;if(condition!==1'b1)$fatal(1,"IP_TOP_MISMATCH id=%0d cycle=%0d ports=%0d",id,cycles,PORTS);end endtask
 task push_native;input integer ch;input integer port;input [1:0] vc;input pool;input [618:0] data;begin
  ck(nw[ch][port]<256,100);nq[ch][port][nw[ch][port]]={pool,vc,data};nw[ch][port]=nw[ch][port]+1;
 end endtask

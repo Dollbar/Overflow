@@ -320,6 +320,40 @@ assign i_completer_peer_ack=o_originator_ack;
 always #5 i_clk=~i_clk;
 upli_endpoint_ip_top #(.C_NUM_PORTS(P),.C_IS_TL(TL)) dut(
 .i_clk(i_clk),
+// Memory adapter defaults off for native burst fault isolation.
+.o_memory_issue_ready(),
+.o_memory_command_valid(),
+.i_memory_command_ready(1'd0),
+.o_memory_command_token(),
+.o_memory_command_station(),
+.o_memory_command_port(),
+.o_memory_command_vc(),
+.o_memory_command_pool(),
+.o_memory_command_payload(),
+.o_memory_command_data(),
+.o_memory_command_be(),
+.o_memory_command_poison(),
+.o_memory_command_data_pools(),
+.i_memory_result_valid(1'd0),
+.o_memory_result_ready(),
+.i_memory_result_token(10'd0),
+.i_memory_result_status(4'd0),
+.i_memory_result_data(2048'd0),
+.i_memory_result_poison(4'd0),
+.o_memory_completion_valid(),
+.i_memory_completion_ready(1'd0),
+.o_memory_completion_token(),
+.o_memory_completion_status(),
+.o_memory_completion_data(),
+.o_memory_completion_poison(),
+.i_memory_final_valid(1'd0),
+.o_memory_final_ready(),
+.i_memory_final_token(10'd0),
+.o_memory_release_valid(),
+.o_memory_release_token(),
+.o_memory_busy(),
+.o_memory_error(),
+.o_memory_error_sticky(),
 .i_rstn(i_rstn),
 .i_originator_ready(i_originator_ready),
 .i_originator_peer_req(i_originator_peer_req),
@@ -646,7 +680,7 @@ reg [67:0] req_control;
 reg [8:0] data_control;
 reg [7:0] dp;
 integer b;
-task ck;input condition;input integer id;begin checks=checks+1;if(condition!==1'b1)begin $display("DIAG ordersticky=%h profile=%h auth=%h rawcredit=%h txcredit=%b%b%b%b",o_rx_order_error_sticky,o_rx_auth_profile_error,o_rx_auth_error,o_raw_credit_error,o_tx_req_credit_error,o_tx_data_credit_error,o_tx_rd_credit_error,o_tx_wr_credit_error);$fatal(1,"BURST_FAULT_MISMATCH id=%0d cycle=%0d P=%0d TL=%0d err=%h sticky=%h drop=%h reasons=%h order=%h storage=%h metadata=%h tdm=%h bridge=%b",id,cycles,P,TL,o_rx_burst_error,o_rx_burst_error_sticky,o_drop_roles,o_reason_sticky,o_rx_order_error,o_rx_storage_diagnostic,o_rx_metadata_error,o_rx_tdm_error,o_rx_bridge_error);end end endtask
+task automatic ck;input condition;input integer id;begin checks=checks+1;if(condition!==1'b1)begin $display("DIAG ordersticky=%h profile=%h auth=%h rawcredit=%h txcredit=%b%b%b%b",o_rx_order_error_sticky,o_rx_auth_profile_error,o_rx_auth_error,o_raw_credit_error,o_tx_req_credit_error,o_tx_data_credit_error,o_tx_rd_credit_error,o_tx_wr_credit_error);$fatal(1,"BURST_FAULT_MISMATCH id=%0d cycle=%0d P=%0d TL=%0d err=%h sticky=%h drop=%h reasons=%h order=%h storage=%h metadata=%h tdm=%h bridge=%b",id,cycles,P,TL,o_rx_burst_error,o_rx_burst_error_sticky,o_drop_roles,o_reason_sticky,o_rx_order_error,o_rx_storage_diagnostic,o_rx_metadata_error,o_rx_tdm_error,o_rx_bridge_error);end end endtask
 task tick;
  input rv,dv;input integer port;input [1:0] num,off;input last;input [1:0] vc;input known,hasdata,poison;input [9:0] expected;
  begin

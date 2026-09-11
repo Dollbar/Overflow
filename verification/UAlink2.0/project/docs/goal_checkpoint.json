@@ -1,15 +1,15 @@
 {
   "active_goal": "\u5b8c\u6574Accelerator Endpoint/Controller\u4e0eSwitch\u6570\u5b57RTL IP\uff1b\u672a\u5b8c\u6210",
   "previous_goal_turn": "progress",
-  "latest_stage": "Production Endpoint connects its real Request/OrigData bridge to persistent request context; a separately verified single-outstanding memory lifecycle adapter still awaits top/response-tail integration. Production Switch now has an opt-in bounded queue/scheduler/typed 544-bit egress path. Shared Endpoint/Switch originator isolation now tracks real obligations, late completions, dummy requests and non-wrapping recovery; dummy generation and native TL/DL connection remain open.",
+  "latest_stage": "Endpoint opt-in memory adapter lifecycle top integration, independent Switch TL classification/context holding, and local RAS dummy completion integration. Automatic Endpoint formatting, Switch prepared reconstruction and system RAS/native connections remain open.",
   "rtl": "rtl/upli/upli_endpoint_ip_top.v",
   "review": "docs/upli_endpoint_context_top_execution.md",
   "evidence": "docs/switch_egress_repack_typed_review.md",
   "full_goal_complete": false,
   "next_actions": [
-    "Connect the Endpoint request context and memory adapter to the top and release only after actual result/response ownership completes.",
-    "Connect the Switch typed egress handoff to confirmed prepared Control/Data/Auth construction and the production Switch top.",
-    "Connect the implemented Isolation ledger to real transaction owners and add actual dummy response generation before native TL/DL retirement.",
+    "Implement production response formatter with original command metadata ownership.",
+    "Reconstruct field/Data/Auth groups before Switch prepared and per-hop TL/DL transmission.",
+    "Connect local dummy completion to Tag owners and native response arbitration.",
     "Complete PHY, INC, security, management, CDC/RDC and process STA."
   ],
   "remote_main": "71cc3df1b4f5edd24c04b16844729eaeab18d96f",

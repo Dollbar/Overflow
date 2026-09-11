@@ -22,7 +22,8 @@ parameter integer C_REQUEST_CONTEXT_ENABLE=0, // 关闭时保留已有descriptor
 parameter integer C_CONTEXT_CAPACITY=4, // 唯一本地上下文表容量。
 parameter integer C_CONTEXT_GENERATION_WIDTH=8, // 有限本地token代次，不改网络Tag。
 parameter integer C_CONTEXT_SLOT_WIDTH=(C_CONTEXT_CAPACITY<=2)?1:(C_CONTEXT_CAPACITY<=4)?2:(C_CONTEXT_CAPACITY<=8)?3:4, // 对齐真实表项索引。
-parameter integer C_CONTEXT_COUNT_WIDTH=(C_CONTEXT_CAPACITY<=1)?1:(C_CONTEXT_CAPACITY<=3)?2:(C_CONTEXT_CAPACITY<=7)?3:(C_CONTEXT_CAPACITY<=15)?4:5 // 总占用包含已issue项。
+parameter integer C_CONTEXT_COUNT_WIDTH=(C_CONTEXT_CAPACITY<=1)?1:(C_CONTEXT_CAPACITY<=3)?2:(C_CONTEXT_CAPACITY<=7)?3:(C_CONTEXT_CAPACITY<=15)?4:5, // 总占用包含已issue项。
+parameter integer C_MEMORY_ADAPTER_ENABLE=0 // 默认保留既有原生/context接口，启用时adapter独占后端生命周期。
 )( // typed发送候选与真实响应collector握手分别保留所有权。
 input wire  i_clk, // 完整原生字段、可信描述符或独立消费者资格。
 input wire  i_rstn, // 完整原生字段、可信描述符或独立消费者资格。
@@ -355,7 +356,40 @@ output wire [183:0] o_backend_issue_payload, // 上下文接纳、交付或最�
 output wire [2047:0] o_backend_issue_data, // 上下文接纳、交付或最终释放的明确边界。
 output wire [255:0] o_backend_issue_be, // 上下文接纳、交付或最终释放的明确边界。
 output wire [3:0] o_backend_issue_poison, // 上下文接纳、交付或最终释放的明确边界。
-output wire [3:0] o_backend_issue_data_pools // 上下文接纳、交付或最终释放的明确边界。
+output wire [3:0] o_backend_issue_data_pools, // 上下文接纳、交付或最终释放的明确边界。
+output wire  o_memory_issue_ready, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_command_valid, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire  i_memory_command_ready, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] o_memory_command_token, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [7:0] o_memory_command_station, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [1:0] o_memory_command_port, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [1:0] o_memory_command_vc, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_command_pool, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [183:0] o_memory_command_payload, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [2047:0] o_memory_command_data, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [255:0] o_memory_command_be, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [3:0] o_memory_command_poison, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [3:0] o_memory_command_data_pools, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire  i_memory_result_valid, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_result_ready, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] i_memory_result_token, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire [3:0] i_memory_result_status, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire [2047:0] i_memory_result_data, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire [3:0] i_memory_result_poison, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_completion_valid, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire  i_memory_completion_ready, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] o_memory_completion_token, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [3:0] o_memory_completion_status, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [2047:0] o_memory_completion_data, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [3:0] o_memory_completion_poison, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire  i_memory_final_valid, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_final_ready, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+input wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] i_memory_final_token, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_release_valid, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] o_memory_release_token, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_busy, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_error, // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
+output wire  o_memory_error_sticky // 真实memory生命周期所有权边界，不表示自动执行或自动回包。
 ); // 结束完整原生前端聚合接口。
 wire [3:0] collector_port;wire [1:0] collector_ready; // 实际collector唯一驱动两个原RX的选择和退休。
 assign o_backend_implemented=1'b0; // 上下文仅提供真实issue/release边界，尚无backend执行器，禁止假完成。
@@ -789,7 +823,7 @@ generate if(C_REQUEST_CONTEXT_ENABLE==1)begin:gen_request_context // 单表保�
   .i_request_be(o_rx_request_be), // 完整保存原始be，不从后续输入重建。
   .i_request_poison(o_rx_request_poison), // 完整保存原始poison，不从后续输入重建。
   .i_request_data_pools(o_rx_request_data_pools), // 完整保存原始data_pools，不从后续输入重建。
-  .i_issue_ready(i_backend_issue_ready),.o_issue_valid(o_backend_issue_valid),.o_issue_token(o_backend_issue_token), // issue仅交付，不能释放Tag或容量。
+  .i_issue_ready(context_issue_ready),.o_issue_valid(o_backend_issue_valid),.o_issue_token(o_backend_issue_token), // issue仅交付，不能释放Tag或容量。
   .o_issue_station(o_backend_issue_station), // 同一上下文背压期间保持完整station。
   .o_issue_port(o_backend_issue_port), // 同一上下文背压期间保持完整port。
   .o_issue_vc(o_backend_issue_vc), // 同一上下文背压期间保持完整vc。
@@ -799,13 +833,13 @@ generate if(C_REQUEST_CONTEXT_ENABLE==1)begin:gen_request_context // 单表保�
   .o_issue_be(o_backend_issue_be), // 同一上下文背压期间保持完整be。
   .o_issue_poison(o_backend_issue_poison), // 同一上下文背压期间保持完整poison。
   .o_issue_data_pools(o_backend_issue_data_pools), // 同一上下文背压期间保持完整data_pools。
-  .i_release_valid(i_backend_release_valid),.i_release_token(i_backend_release_token),.o_release_ready(o_backend_release_ready), // 只有合法最终release才归还槽。
+  .i_release_valid(context_release_valid),.i_release_token(context_release_token),.o_release_ready(o_backend_release_ready), // 只有合法最终release才归还槽。
   .o_error(o_context_error),.o_count(o_context_count) // 非法本地事件只诊断，不扩大既有Drop。
  ); // 结束唯一上下文表实例。
 end else begin:gen_legacy_request // 默认关闭保持原真实bridge消费者行为。
  assign context_bridge_ready=i_rx_request_ready; // legacy外部ready继续独占descriptor消费。
  wire unused_context_inputs; // 未启用的新增输入没有协议副作用。
- assign unused_context_inputs=^{i_context_station,i_backend_issue_ready,i_backend_release_valid,i_backend_release_token,context_rstn}; // 只声明未启用输入的本地静态用途。
+ assign unused_context_inputs=^{i_context_station,i_backend_issue_ready,i_backend_release_valid,i_backend_release_token,context_rstn,context_issue_ready,context_release_valid,context_release_token}; // 只声明未启用输入的本地静态用途。
  assign o_backend_issue_valid='b0; // legacy模式新增接口确定归零。
  assign o_backend_issue_token='b0; // legacy模式新增接口确定归零。
  assign o_backend_release_ready='b0; // legacy模式新增接口确定归零。
@@ -826,5 +860,76 @@ end endgenerate // 不并列创建两个descriptor所有者。
 generate if((C_REQUEST_CONTEXT_ENABLE!=0)&&(C_REQUEST_CONTEXT_ENABLE!=1))begin:gen_invalid_context_enable // 显式拒绝未定义模式。
  upli_endpoint_context_enable_invalid ContextEnableInvalid_Inst(); // 错误参数不能静默退回legacy。
 end endgenerate // 结束模式保护。
+wire context_issue_ready,context_release_valid; // memory模式仅由真实adapter拥有交付与最终释放。
+wire [C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH-1:0] context_release_token; // 本地token透传，原184位Request中网络Tag保持不变。
+assign context_issue_ready=(C_MEMORY_ADAPTER_ENABLE==1)?o_memory_issue_ready:i_backend_issue_ready; // 关闭模式保留外部context消费者。
+assign context_release_valid=(C_MEMORY_ADAPTER_ENABLE==1)?o_memory_release_valid:i_backend_release_valid; // 不把command/result/completion当作最终释放。
+assign context_release_token=(C_MEMORY_ADAPTER_ENABLE==1)?o_memory_release_token:i_backend_release_token; // 唯一最终owner给出对应真实token。
+generate if(C_MEMORY_ADAPTER_ENABLE==1)begin:gen_memory_adapter // 一个真实adapter，不复制context容量或信用银行。
+ wire unused_external_context_owner; // 此模式旧外部issue/release端口没有消费资格。
+ assign unused_external_context_owner=^{i_backend_issue_ready,i_backend_release_valid,i_backend_release_token}; // 明确标记兼容输入未使用。
+ endpoint_memory_adapter #(.TOKEN_WIDTH(C_CONTEXT_SLOT_WIDTH+C_CONTEXT_GENERATION_WIDTH),.STATION_WIDTH(8)) MemoryAdapter_Inst( // 复用已实现生命周期，不创建伪backend。
+  .i_clk(i_clk),.i_rstn(context_rstn), // 与context及bridge共用既有Completer取消资格。
+  .i_issue_valid(o_backend_issue_valid),.o_issue_ready(o_memory_issue_ready), // 实际交付才让context标issued。
+  .i_issue_token(o_backend_issue_token), // 完整保存原token直到后端命令实际接纳。
+  .i_issue_station(o_backend_issue_station), // 完整保存原station直到后端命令实际接纳。
+  .i_issue_port(o_backend_issue_port), // 完整保存原port直到后端命令实际接纳。
+  .i_issue_vc(o_backend_issue_vc), // 完整保存原vc直到后端命令实际接纳。
+  .i_issue_pool(o_backend_issue_pool), // 完整保存原pool直到后端命令实际接纳。
+  .i_issue_payload(o_backend_issue_payload), // 完整保存原payload直到后端命令实际接纳。
+  .i_issue_data(o_backend_issue_data), // 完整保存原data直到后端命令实际接纳。
+  .i_issue_be(o_backend_issue_be), // 完整保存原be直到后端命令实际接纳。
+  .i_issue_poison(o_backend_issue_poison), // 完整保存原poison直到后端命令实际接纳。
+  .i_issue_data_pools(o_backend_issue_data_pools), // 完整保存原data_pools直到后端命令实际接纳。
+  .o_backend_valid(o_memory_command_valid),.i_backend_ready(i_memory_command_ready), // 外部真实执行器接纳命令。
+  .o_backend_token(o_memory_command_token), // 原始token完整传给后端，不截断或重分配。
+  .o_backend_station(o_memory_command_station), // 原始station完整传给后端，不截断或重分配。
+  .o_backend_port(o_memory_command_port), // 原始port完整传给后端，不截断或重分配。
+  .o_backend_vc(o_memory_command_vc), // 原始vc完整传给后端，不截断或重分配。
+  .o_backend_pool(o_memory_command_pool), // 原始pool完整传给后端，不截断或重分配。
+  .o_backend_payload(o_memory_command_payload), // 原始payload完整传给后端，不截断或重分配。
+  .o_backend_data(o_memory_command_data), // 原始data完整传给后端，不截断或重分配。
+  .o_backend_be(o_memory_command_be), // 原始be完整传给后端，不截断或重分配。
+  .o_backend_poison(o_memory_command_poison), // 原始poison完整传给后端，不截断或重分配。
+  .o_backend_data_pools(o_memory_command_data_pools), // 原始data_pools完整传给后端，不截断或重分配。
+  .i_result_valid(i_memory_result_valid),.o_result_ready(o_memory_result_ready),.i_result_token(i_memory_result_token), // 真实result归属由adapter状态和token核对。
+  .i_result_status(i_memory_result_status),.i_result_data(i_memory_result_data),.i_result_poison(i_memory_result_poison), // 错误状态也保持完整结果字段。
+  .o_completion_valid(o_memory_completion_valid),.i_completion_ready(i_memory_completion_ready),.o_completion_token(o_memory_completion_token), // formatter接纳不释放context。
+  .o_completion_status(o_memory_completion_status),.o_completion_data(o_memory_completion_data),.o_completion_poison(o_memory_completion_poison), // 结果背压期间完整保持。
+  .i_final_valid(i_memory_final_valid),.o_final_ready(o_memory_final_ready),.i_final_token(i_memory_final_token), // 外部最终响应owner必须在真实最后拍之后确认。
+  .o_release_valid(o_memory_release_valid),.i_release_ready(o_backend_release_ready),.o_release_token(o_memory_release_token), // context实际接纳最终release才结束生命周期。
+  .o_busy(o_memory_busy),.o_error(o_memory_error),.o_error_sticky(o_memory_error_sticky) // 本地诊断独立公开，不扩大既有Drop。
+ ); // 结束唯一memory生命周期adapter。
+end else begin:gen_legacy_memory // 默认关闭时新增接口确定归零，旧context握手原样保留。
+ wire unused_memory_inputs; // 没有启用的执行器/formatter事件不影响旧模式。
+ assign unused_memory_inputs=^{i_memory_command_ready,i_memory_result_valid,i_memory_result_token,i_memory_result_status,i_memory_result_data,i_memory_result_poison,i_memory_completion_ready,i_memory_final_valid,i_memory_final_token}; // 明确默认模式没有新增消费者。
+ assign o_memory_issue_ready='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_valid='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_token='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_station='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_port='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_vc='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_pool='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_payload='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_data='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_be='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_poison='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_command_data_pools='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_result_ready='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_completion_valid='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_completion_token='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_completion_status='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_completion_data='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_completion_poison='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_final_ready='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_release_valid='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_release_token='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_busy='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_error='b0; // 未启用时不声明任何backend能力或所有权事件。
+ assign o_memory_error_sticky='b0; // 未启用时不声明任何backend能力或所有权事件。
+end endgenerate // 互斥选择真实adapter或既有外部生命周期。
+generate if(((C_MEMORY_ADAPTER_ENABLE!=0)&&(C_MEMORY_ADAPTER_ENABLE!=1))||((C_MEMORY_ADAPTER_ENABLE==1)&&(C_REQUEST_CONTEXT_ENABLE!=1)))begin:gen_invalid_memory_mode // 禁止无context的adapter虚接。
+ upli_endpoint_memory_mode_invalid MemoryModeInvalid_Inst(); // 不合法参数组合在展开时明确失败。
+end endgenerate // 结束可执行模式约束。
 endmodule // 结束实际原生前端，backend/collector仍须后续真实接入。
 `default_nettype wire // 恢复独立编译单元默认网络。

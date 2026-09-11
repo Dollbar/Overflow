@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 1120 tracked source files from the UALink development
-repository at commit `59c4bdf1784eab17fa697733953c385d4410193d`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1138 tracked source files from the UALink development
+repository at commit `4bd9d6643b69808dbc50ce0c397e67488062ab71`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -170,3 +170,7 @@ The production Switch top has an opt-in bounded egress path combining Request/Re
 `ras_originator_isolation` now tracks real slot/port/epoch completion obligations for Endpoint-wide or Switch-port isolation. Late real completions are consumed without clearing dummy obligations; dummy request acceptance does not release a slot, and only an independent `dummy_done` clears it. The 24 PORTS×CAPACITY×role configurations and nine RTL mutations pass. An 8-bit epoch completes 255 recoveries and then rejects wrap. The dummy response generator, Tag owner, system recovery and native TL/DL connection remain open.
 
 The source suite passes 403 model and 199 tool tests with two conditional skips. Generic synthesis passes at 147 modules/about 145,890 cells for Endpoint and 133 modules/about 21,468 cells for Switch. Relocated memory-adapter, Endpoint-context, Switch-typed-top, isolation and 223-entry structure suites pass from this published layout. Process STA, CDC/RDC closure and full protocol completion have not been completed.
+
+## Memory lifecycle and local dummy completion
+
+Inventory: 226 RTL entries, 106 partial implementations and 120 explicit shells. The Endpoint opt-in memory adapter is now instantiated in the native top; automatic formatter and backend execution remain external. Production normal/optimized, legacy and compatibility tests pass, including five wiring faults. Switch classification/context holding passes nine configurations and six faults; prepared reconstruction and per-hop transmission remain open. Local RAS dummy completion passes 25 configurations and 11 faults, with final response consumption preceding obligation release. Native Tag/payload routing and system recovery remain open. The full source test suite passes; process STA is still incomplete.

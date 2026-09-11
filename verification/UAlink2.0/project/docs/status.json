@@ -48,8 +48,8 @@
       ]
     },
     "inventory": {
-      "modules": 223,
-      "existing_partial": 103,
+      "modules": 226,
+      "existing_partial": 106,
       "planned_shells": 120
     },
     "native_rx_complete": false,
@@ -2543,7 +2543,8 @@
     "context_cancelled_per_case": 9,
     "context_top_wiring_faults": 4,
     "context_legacy_compatible": true,
-    "context_top_review": "docs/upli_endpoint_context_top_execution.md"
+    "context_top_review": "docs/upli_endpoint_context_top_execution.md",
+    "memory_adapter_integrated": true
   },
   "current_endpoint_request_context": {
     "ports": [
@@ -2572,9 +2573,33 @@
     "rtl_faults": 8,
     "g2001_lint_yosys": true,
     "release_requires_explicit_final_retirement": true,
-    "integrated_into_endpoint_top": false,
+    "integrated_into_endpoint_top": true,
     "executes_memory_operations": false,
     "formats_responses": false,
     "review": "docs/endpoint_memory_adapter_execution.md"
+  },
+  "latest_local_lifecycle_increment": {
+    "endpoint_memory_adapter_top_connected": true,
+    "automatic_response_formatter": false,
+    "backend_executor": false,
+    "switch_tl_classification_holding": true,
+    "switch_prepared_reconstruction": false,
+    "ras_local_dummy_completion": true,
+    "ras_native_top_connected": false,
+    "process_sta_complete": false,
+    "switch_configurations": 9,
+    "switch_faults_detected": 6,
+    "ras_configurations": 25,
+    "ras_faults_detected": 11,
+    "ras_read_beats": 5368,
+    "ras_write_responses": 72,
+    "ras_done_events": 2191,
+    "endpoint_ports": [
+      1,
+      2,
+      4
+    ],
+    "endpoint_wiring_faults_detected": 5,
+    "full_repository_tests_passed": true
   }
 }

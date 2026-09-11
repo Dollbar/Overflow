@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 103 个部分实现RTL模块、120 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 106 个部分实现RTL模块、120 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -401,3 +401,9 @@ SMA/NMA/Pod Controller、gNMI/YANG/Redfish/CPER的官方配套资产、schema和
 4. **系统闭环**：Endpoint—Switch—Endpoint、多VC/多station、INC/安全/管理和故障恢复并发验证；覆盖、性能、CDC/RDC、实际PHY/宏和工艺签核独立报告。
 
 第一阶段不得以未实现壳的数量、展开通过或pending位图覆盖宣称协议功能完成。当前模块库存所用规范族F01–F21仍不是完整逐条规范分母，后续发现真正独立职责时按稳定slot规则追加。
+
+## 本轮新增局部集成
+
+- `rtl/switch/switch_egress_tl_context.v`：真实 TL 分类与完整记录保持，尚未接入自动 prepared 重建。
+- `rtl/ras/ras_dummy_completion.v`：逐拍生成本地 CMPTO 响应。
+- `rtl/ras/ras_isolation_completion.v`：最后响应消费后才确认账本销账；系统顶层接线仍开放。

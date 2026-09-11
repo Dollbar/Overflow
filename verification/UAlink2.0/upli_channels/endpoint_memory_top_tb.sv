@@ -267,24 +267,44 @@ wire sent_pool[0:3];
 wire [618:0] sent_payload[0:3],head_payload[0:3];
 wire [12:0] sent_parity[0:3];
 wire [3:0] head_taken;
-wire  legacy_o_backend_issue_valid;
-wire [10-1:0] legacy_o_backend_issue_token;
-wire  legacy_o_backend_release_ready;
-wire  legacy_o_context_request_ready;
-wire [10-1:0] legacy_o_context_request_token;
-wire  legacy_o_context_error;
-wire [3-1:0] legacy_o_context_count;
-wire [7:0] legacy_o_backend_issue_station;
-wire [1:0] legacy_o_backend_issue_port;
-wire [1:0] legacy_o_backend_issue_vc;
-wire  legacy_o_backend_issue_pool;
-wire [183:0] legacy_o_backend_issue_payload;
-wire [2047:0] legacy_o_backend_issue_data;
-wire [255:0] legacy_o_backend_issue_be;
-wire [3:0] legacy_o_backend_issue_poison;
-wire [3:0] legacy_o_backend_issue_data_pools;
-always @(posedge clk) if(rstn)begin #2;if({legacy_o_backend_issue_valid,legacy_o_backend_issue_token,legacy_o_backend_release_ready,legacy_o_context_request_ready,legacy_o_context_request_token,legacy_o_context_error,legacy_o_context_count,legacy_o_backend_issue_station,legacy_o_backend_issue_port,legacy_o_backend_issue_vc,legacy_o_backend_issue_pool,legacy_o_backend_issue_payload,legacy_o_backend_issue_data,legacy_o_backend_issue_be,legacy_o_backend_issue_poison,legacy_o_backend_issue_data_pools} !== '0)$fatal(1,"IP_TOP_MISMATCH legacy outputs");end
-wire request_ready=consumer_enable && (cycles%47>=31);
+wire context_ready;wire [9:0] context_token,issue_token;wire [2:0] context_count;
+wire issue_valid,context_error,context_release_ready;
+wire [7:0] issue_station;wire [1:0] issue_port,issue_vc;wire issue_pool;
+wire [183:0] issue_payload;wire [2047:0] issue_data;wire [255:0] issue_be;wire [3:0] issue_poison,issue_data_pools;
+wire  memory_issue_ready;
+wire  memory_command_valid;
+reg  memory_command_ready=0;
+wire [10-1:0] memory_command_token;
+wire [7:0] memory_command_station;
+wire [1:0] memory_command_port;
+wire [1:0] memory_command_vc;
+wire  memory_command_pool;
+wire [183:0] memory_command_payload;
+wire [2047:0] memory_command_data;
+wire [255:0] memory_command_be;
+wire [3:0] memory_command_poison;
+wire [3:0] memory_command_data_pools;
+reg  memory_result_valid=0;
+wire  memory_result_ready;
+reg [10-1:0] memory_result_token=0;
+reg [3:0] memory_result_status=0;
+reg [2047:0] memory_result_data=0;
+reg [3:0] memory_result_poison=0;
+wire  memory_completion_valid;
+reg  memory_completion_ready=0;
+wire [10-1:0] memory_completion_token;
+wire [3:0] memory_completion_status;
+wire [2047:0] memory_completion_data;
+wire [3:0] memory_completion_poison;
+reg  memory_final_valid=0;
+wire  memory_final_ready;
+reg [10-1:0] memory_final_token=0;
+wire  memory_release_valid;
+wire [10-1:0] memory_release_token;
+wire  memory_busy;
+wire  memory_error;
+wire  memory_error_sticky;
+wire request_ready=context_ready;
 wire response_ready=consumer_enable && (cycles%7!=0);
 assign sent_port[0]=o_req_port; assign sent_vc[0]=o_req_vc; assign sent_pool[0]=o_req_pool;
 assign sent_payload[0]={435'd0,{o_req_asi,o_req_auth_tag,o_req_src,o_req_dst,o_req_tag,o_req_num_beats,o_req_address,o_req_command,o_req_length,o_req_attr,o_req_metadata}};
@@ -371,42 +391,8 @@ wire [100:0] top_response_write_payload;
 wire [1:0] top_response_retired;
 wire [1:0] top_response_metadata_error;
 wire  top_response_fault_stop_request;
-upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
+upli_endpoint_ip_top #(.C_IS_TL(TL),.C_REQUEST_CONTEXT_ENABLE(1),.C_MEMORY_ADAPTER_ENABLE(1),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(CAP)) top(
 .i_clk(clk),
-// Memory adapter defaults off; legacy owner remains unchanged.
-.o_memory_issue_ready(),
-.o_memory_command_valid(),
-.i_memory_command_ready(1'd0),
-.o_memory_command_token(),
-.o_memory_command_station(),
-.o_memory_command_port(),
-.o_memory_command_vc(),
-.o_memory_command_pool(),
-.o_memory_command_payload(),
-.o_memory_command_data(),
-.o_memory_command_be(),
-.o_memory_command_poison(),
-.o_memory_command_data_pools(),
-.i_memory_result_valid(1'd0),
-.o_memory_result_ready(),
-.i_memory_result_token(10'd0),
-.i_memory_result_status(4'd0),
-.i_memory_result_data(2048'd0),
-.i_memory_result_poison(4'd0),
-.o_memory_completion_valid(),
-.i_memory_completion_ready(1'd0),
-.o_memory_completion_token(),
-.o_memory_completion_status(),
-.o_memory_completion_data(),
-.o_memory_completion_poison(),
-.i_memory_final_valid(1'd0),
-.o_memory_final_ready(),
-.i_memory_final_token(10'd0),
-.o_memory_release_valid(),
-.o_memory_release_token(),
-.o_memory_busy(),
-.o_memory_error(),
-.o_memory_error_sticky(),
 .i_rstn(rstn),
 .i_originator_ready(1'b1),
 .i_originator_peer_req(cq),
@@ -438,6 +424,10 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_response_retired(top_response_retired),
 .o_response_metadata_error(top_response_metadata_error),
 .o_response_fault_stop_request(top_response_fault_stop_request),
+
+
+
+
 .o_drop_roles(top_drop_roles),
 .o_drop_ports(top_drop_ports),
 .o_notify_roles(top_notify_roles),
@@ -706,27 +696,52 @@ upli_endpoint_ip_top #(.C_IS_TL(TL),.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_D
 .o_rx_tdm_error_sticky(path_tdm_error_sticky),
 .o_rx_tdm_phase_known(path_tdm_phase_known),
 .o_rx_tdm_expected_port(path_tdm_expected_port),
-.i_context_station(8'd255),
-.i_backend_issue_ready(1'd1),
-.i_backend_release_valid(1'd1),
-.i_backend_release_token(10'd1023),
-.o_backend_issue_valid(legacy_o_backend_issue_valid),
-.o_backend_issue_token(legacy_o_backend_issue_token),
-.o_backend_release_ready(legacy_o_backend_release_ready),
-.o_context_request_ready(legacy_o_context_request_ready),
-.o_context_request_token(legacy_o_context_request_token),
-.o_context_error(legacy_o_context_error),
-.o_context_count(legacy_o_context_count),
-.o_backend_issue_station(legacy_o_backend_issue_station),
-.o_backend_issue_port(legacy_o_backend_issue_port),
-.o_backend_issue_vc(legacy_o_backend_issue_vc),
-.o_backend_issue_pool(legacy_o_backend_issue_pool),
-.o_backend_issue_payload(legacy_o_backend_issue_payload),
-.o_backend_issue_data(legacy_o_backend_issue_data),
-.o_backend_issue_be(legacy_o_backend_issue_be),
-.o_backend_issue_poison(legacy_o_backend_issue_poison),
-.o_backend_issue_data_pools(legacy_o_backend_issue_data_pools),
-.i_rx_request_ready(request_ready),
+.i_rx_request_ready(cycles[0]),
+.i_context_station(8'h91),.i_backend_issue_ready(cycles[0]),.i_backend_release_valid(1'b1),.i_backend_release_token(10'h3ff),
+.o_backend_issue_valid(issue_valid),.o_backend_issue_token(issue_token),.o_context_request_ready(context_ready),.o_context_request_token(context_token),.o_context_count(context_count),.o_context_error(context_error),.o_backend_release_ready(context_release_ready),
+.o_backend_issue_station(issue_station),
+.o_backend_issue_port(issue_port),
+.o_backend_issue_vc(issue_vc),
+.o_backend_issue_pool(issue_pool),
+.o_backend_issue_payload(issue_payload),
+.o_backend_issue_data(issue_data),
+.o_backend_issue_be(issue_be),
+.o_backend_issue_poison(issue_poison),
+.o_backend_issue_data_pools(issue_data_pools),
+.o_memory_issue_ready(memory_issue_ready),
+.o_memory_command_valid(memory_command_valid),
+.i_memory_command_ready(memory_command_ready),
+.o_memory_command_token(memory_command_token),
+.o_memory_command_station(memory_command_station),
+.o_memory_command_port(memory_command_port),
+.o_memory_command_vc(memory_command_vc),
+.o_memory_command_pool(memory_command_pool),
+.o_memory_command_payload(memory_command_payload),
+.o_memory_command_data(memory_command_data),
+.o_memory_command_be(memory_command_be),
+.o_memory_command_poison(memory_command_poison),
+.o_memory_command_data_pools(memory_command_data_pools),
+.i_memory_result_valid(memory_result_valid),
+.o_memory_result_ready(memory_result_ready),
+.i_memory_result_token(memory_result_token),
+.i_memory_result_status(memory_result_status),
+.i_memory_result_data(memory_result_data),
+.i_memory_result_poison(memory_result_poison),
+.o_memory_completion_valid(memory_completion_valid),
+.i_memory_completion_ready(memory_completion_ready),
+.o_memory_completion_token(memory_completion_token),
+.o_memory_completion_status(memory_completion_status),
+.o_memory_completion_data(memory_completion_data),
+.o_memory_completion_poison(memory_completion_poison),
+.i_memory_final_valid(memory_final_valid),
+.o_memory_final_ready(memory_final_ready),
+.i_memory_final_token(memory_final_token),
+.o_memory_release_valid(memory_release_valid),
+.o_memory_release_token(memory_release_token),
+.o_memory_busy(memory_busy),
+.o_memory_error(memory_error),
+.o_memory_error_sticky(memory_error_sticky),
+
 .o_rx_request_valid(path_request_valid),
 .o_rx_request_port(path_request_port),
 .o_rx_request_vc(path_request_vc),
@@ -792,6 +807,146 @@ task automatic ck;input condition;input integer id;begin checks=checks+1;if(cond
 task push_native;input integer ch;input integer port;input [1:0] vc;input pool;input [618:0] data;begin
  ck(nw[ch][port]<256,100);nq[ch][port][nw[ch][port]]={pool,vc,data};nw[ch][port]=nw[ch][port]+1;
 end endtask
+integer request_limit=24;
+reg command_enable=0,completion_enable=0,final_enable=0,allow_adapter_error=0;
+reg manual_result=0,manual_final=0;reg [9:0] bad_token=0;
+reg [2047:0] expected_result[0:191];reg [3:0] expected_status[0:191],expected_result_poison[0:191];
+reg [618:0] expected_native_rd[0:767];reg [100:0] expected_native_wr[0:191];
+reg [7:0] memory_bytes[0:PORTS*256-1];
+reg backend_pending=0,backend_done=0;integer backend_due=0;
+reg [9:0] b_token=0;reg [1:0] b_port=0,b_vc=0;reg b_pool=0;
+reg [183:0] b_payload=0;reg [2047:0] b_data=0,b_result=0;reg [255:0] b_be=0;reg [3:0] b_status=0;
+integer executed_total=0,commands_total=0,results_total=0,completions_total=0,native_finals_total=0,finals_total=0,releases_total=0,cancel_total=0,adapter_errors=0;
+integer qwrite=0,qissue=0,qcommand=0,qcompletion=0,qnative=0,qfinal=0,qrelease=0,native_beat=0;
+integer p_read[0:PORTS-1];reg [2500:0] qexpected[0:255];reg [9:0] qtoken[0:255];integer qfixture[0:255];
+integer completion_at[0:255],native_at[0:255],final_at[0:255];
+integer f_phase=0,f_due=0;reg f_write=0;reg [1:0] f_num=0;reg [9:0] f_token=0;
+reg [183:0] f_request=0;reg [1:0] f_port=0,f_vc=0;reg f_pool=0;
+reg [2047:0] f_data=0;reg [3:0] f_status=0,f_poison=0;
+reg command_held=0,completion_held=0,issue_held=0;
+reg [2518:0] held_command,held_issue;reg [2065:0] held_completion;
+wire [2518:0] command_tuple={memory_command_token,memory_command_station,memory_command_port,memory_command_vc,memory_command_pool,memory_command_payload,memory_command_data,memory_command_be,memory_command_poison,memory_command_data_pools};
+wire [2518:0] issue_tuple={issue_token,issue_station,issue_port,issue_vc,issue_pool,issue_payload,issue_data,issue_be,issue_poison,issue_data_pools};
+wire [2065:0] completion_tuple={memory_completion_token,memory_completion_status,memory_completion_data,memory_completion_poison};
+integer ix,pp,fi,byte_count,base,kid;reg [2047:0] assembled;
+initial begin
+ for(integer bp=0;bp<PORTS;bp=bp+1)for(integer bi=0;bi<256;bi=bi+1)memory_bytes[bp*256+bi]=(bp*13+bi*3+7)&255;
+end
+// The backend executes real byte writes once after the accepted command delay. Memory survives transport reset.
+always @(posedge clk)begin
+ if(!rstn||top_drop_roles[1])begin
+  backend_pending<=0;backend_done<=0;b_result<=0;b_status<=0;f_phase<=0;
+ end else begin
+  if(memory_command_valid&&memory_command_ready)begin
+   backend_pending<=1;backend_done<=0;backend_due<=cycles+13;
+   b_token<=memory_command_token;b_port<=memory_command_port;b_vc<=memory_command_vc;b_pool<=memory_command_pool;
+   b_payload<=memory_command_payload;b_data<=memory_command_data;b_be<=memory_command_be;commands_total<=commands_total+1;
+  end
+  if(backend_pending&&!backend_done&&cycles>=backend_due)begin
+   base=b_port*256;byte_count=(b_payload[21:16]+1)*4;
+   if(b_payload[27:22]==6'h28||b_payload[27:22]==6'h29)
+    for(integer lane=0;lane<256;lane=lane+1)if(lane<byte_count&&(b_payload[27:22]==6'h29||b_be[lane]))memory_bytes[base+lane]=b_data[lane*8+:8];
+   assembled=0;for(integer lane=0;lane<256;lane=lane+1)assembled[lane*8+:8]=memory_bytes[base+lane];
+   b_result<=assembled;kid=b_payload[97:87]-1024;
+   if(b_payload[27:22]!=3)b_status<=0;
+   else case(kid%5)0:b_status<=0;1:b_status<=2;2:b_status<=3;3:b_status<=6;default:b_status<=8;endcase
+   backend_done<=1;executed_total<=executed_total+1;
+  end
+  if(memory_result_valid&&memory_result_ready&&!manual_result)begin backend_pending<=0;backend_done<=0;results_total<=results_total+1;end
+  // This formatter is test-only. Production retains these explicit ownership ports.
+  if(memory_completion_valid&&memory_completion_ready)begin
+   f_phase<=1;f_token<=memory_completion_token;f_request<=b_payload;f_port<=b_port;f_vc<=b_vc;f_pool<=b_pool;
+   f_data<=memory_completion_data;f_status<=memory_completion_status;f_poison<=memory_completion_poison;
+   f_write<=b_payload[27:22]!=3;f_num<=((b_payload[21:16]+1)/16)-1;completions_total<=completions_total+1;
+  end
+  if((o_rd_candidate_accepted||o_wr_candidate_accepted)&&f_phase==1)f_phase<=2;
+  if((o_rd_valid&&o_rd_last)||o_wr_valid)begin f_phase<=3;f_due<=cycles+7;native_finals_total<=native_finals_total+1;end
+  if(memory_final_valid&&memory_final_ready&&!manual_final)begin f_phase<=4;finals_total<=finals_total+1;end
+  if(memory_release_valid&&context_release_ready)begin f_phase<=0;releases_total<=releases_total+1;end
+ end
+end
+// Drive external interfaces on the opposite edge; no posedge feedback to DUT ready/valid.
+always @(negedge clk)begin
+ #2;
+ memory_command_ready=rstn&&command_enable&&(cycles%17>=8)&&!backend_pending;
+ memory_result_valid=rstn&&(manual_result||backend_done);memory_result_token=manual_result?bad_token:b_token;
+ memory_result_status=b_status;memory_result_data=b_result;memory_result_poison=4'h9;
+ memory_completion_ready=rstn&&completion_enable&&(cycles%19>=11);
+ memory_final_valid=rstn&&(manual_final||(final_enable&&f_phase==3&&cycles>=f_due));memory_final_token=manual_final?bad_token:f_token;
+ i_rd_candidate_valid=0;i_wr_candidate_valid=0;
+ if(rstn&&f_phase==1)begin
+  if(f_write)begin
+   i_wr_candidate_valid=1;i_wr_candidate_port=f_port;i_wr_candidate_vc=f_vc;i_wr_candidate_pool=f_pool;
+   i_wr_candidate_payload={64'd0,2'd0,f_request[97:87],f_status,f_request[107:98],f_request[117:108]};
+  end else begin
+   i_rd_candidate_valid=1;i_rd_candidate_port=f_port;i_rd_candidate_vc=f_vc;i_rd_candidate_pools={4{f_pool}};
+   for(integer beat=0;beat<4;beat=beat+1)i_rd_candidate_payload[beat*619+:619]={64'd0,f_request[107:98],f_request[117:108],f_request[97:87],f_num,f_data[beat*512+:512],f_status,beat[1:0],(beat==f_num),f_poison[beat],2'd0};
+  end
+ end
+end
+always @(posedge clk)begin
+ if(!rstn||top_drop_roles[1])begin
+  if(qwrite>qrelease)cancel_total=cancel_total+qwrite-qrelease;
+  qwrite=0;qissue=0;qcommand=0;qcompletion=0;qnative=0;qfinal=0;qrelease=0;native_beat=0;
+  command_held=0;completion_held=0;issue_held=0;
+  for(pp=0;pp<PORTS;pp=pp+1)p_read[pp]=0;
+ end else begin
+  ck(context_count==qwrite-qrelease,600);ck(!context_error,601);
+  if(qfinal>qrelease)ck(memory_release_valid,624);
+  if(issue_held)ck(issue_valid&&issue_tuple===held_issue,602);
+  issue_held=issue_valid&&!memory_issue_ready;if(issue_held)held_issue=issue_tuple;
+  if(command_held)ck(memory_command_valid&&command_tuple===held_command,603);
+  command_held=memory_command_valid&&!memory_command_ready;if(command_held)held_command=command_tuple;
+  if(completion_held)ck(memory_completion_valid&&completion_tuple===held_completion,604);
+  completion_held=memory_completion_valid&&!memory_completion_ready;if(completion_held)held_completion=completion_tuple;
+  if(issue_valid)begin
+   ck(qissue<qwrite&&issue_tuple==={qtoken[qissue],8'h91,qexpected[qissue]},605);
+   if(memory_issue_ready)qissue=qissue+1;
+  end
+  if(memory_command_valid)begin
+   ck(qcommand<qissue&&command_tuple==={qtoken[qcommand],8'h91,qexpected[qcommand]},606);
+   if(memory_command_ready)begin $display("MEM_TRACE epoch=%0d token=%h command=%0d",round_index,memory_command_token,cycles);qcommand=qcommand+1;end
+  end
+  if(memory_result_valid&&memory_result_ready&&!manual_result)begin
+   ck(qcommand>qcompletion&&backend_done,607);fi=qfixture[qcompletion];
+   ck(memory_result_data===expected_result[fi]&&memory_result_status===expected_status[fi]&&memory_result_poison===expected_result_poison[fi],608);
+  end
+  if(memory_completion_valid)begin
+   ck(qcompletion<qcommand,609);fi=qfixture[qcompletion];
+   ck(completion_tuple==={qtoken[qcompletion],expected_status[fi],expected_result[fi],expected_result_poison[fi]},610);
+   if(memory_completion_ready)begin completion_at[qcompletion]=cycles;$display("MEM_TRACE epoch=%0d token=%h completion=%0d",round_index,memory_completion_token,cycles);qcompletion=qcompletion+1;end
+  end
+  if(o_rd_valid)begin
+   ck(qnative<qcompletion,611);fi=qfixture[qnative];
+   ck(o_rd_payload===expected_native_rd[fi*4+native_beat],612);
+   ck({o_rd_port,o_rd_vc,o_rd_pool}===qexpected[qnative][2500:2496],613);
+   ck(cycles>completion_at[qnative],614);native_beat=native_beat+1;
+   if(o_rd_last)begin ck(native_beat==4,615);native_beat=0;native_at[qnative]=cycles;qnative=qnative+1;end
+  end
+  if(o_wr_valid)begin
+   ck(qnative<qcompletion,616);fi=qfixture[qnative];
+   ck({o_wr_auth_tag,o_wr_type_info,o_wr_tag,o_wr_status,o_wr_src,o_wr_dst}===expected_native_wr[fi],617);
+   ck({o_wr_port,o_wr_vc,o_wr_pool}===qexpected[qnative][2500:2496],618);
+   ck(cycles>completion_at[qnative],619);native_at[qnative]=cycles;qnative=qnative+1;
+  end
+  if(memory_final_valid&&memory_final_ready&&!manual_final)begin
+   ck(qfinal<qnative&&cycles>native_at[qfinal]&&memory_final_token==qtoken[qfinal],620);
+   final_at[qfinal]=cycles;$display("MEM_TRACE epoch=%0d token=%h native_last=%0d final=%0d",round_index,memory_final_token,native_at[qfinal],cycles);qfinal=qfinal+1;
+  end
+  if(memory_release_valid)begin
+   ck(qrelease<qfinal&&cycles>final_at[qrelease]&&memory_release_token==qtoken[qrelease],621);
+   if(context_release_ready)begin $display("MEM_TRACE epoch=%0d token=%h release=%0d",round_index,memory_release_token,cycles);qrelease=qrelease+1;end
+  end
+  if(path_request_valid&&context_ready)begin
+   pp=path_request_port;ck(qwrite<256&&p_read[pp]<dw[pp],622);
+   qexpected[qwrite]=descriptors[pp][p_read[pp]];qtoken[qwrite]=context_token;
+   qfixture[qwrite]=round_index*24+(path_request_payload[97:87]-1024);p_read[pp]=p_read[pp]+1;qwrite=qwrite+1;
+  end
+ end
+ #1;
+ if(rstn&&memory_error)begin ck(allow_adapter_error&&top_drop_roles==0,623);adapter_errors=adapter_errors+1;end
+end
+
 always @(negedge clk)begin
  cycles=cycles+1;
  if(!rstn)select_port<=0;else select_port<=(select_port+1)%PORTS;
@@ -895,7 +1050,7 @@ always @(posedge clk)begin
 end
 function [511:0] pattern;input integer seed;integer j;begin for(j=0;j<64;j=j+1)pattern[j*8+:8]=(seed*17+j*29)&255;end endfunction
 task drive_req;integer k,j,before_count;reg [1:0] number;begin
- for(k=0;k<24;k=k+1)begin
+ for(k=0;k<request_limit;k=k+1)begin
   @(negedge clk);#1;i_req_candidate_valid=1;i_req_candidate_port=k%PORTS;i_req_candidate_vc=(k/PORTS)%4;i_req_candidate_pool=k%2;
   number=k%4;i_req_candidate_has_data=(k%3)!=1;i_req_candidate_num_beats=number;i_req_candidate_data_pools=k%16;
   i_req_candidate_request={2'd2,64'h8000000000000001,10'd777,10'd999,(11'd1024+k[10:0]),(i_req_candidate_has_data?number:2'd0),57'h100000000001000,(i_req_candidate_has_data?((k%2)?6'h29:6'h28):6'd3),(i_req_candidate_has_data?{number,4'hf}:6'd63),8'ha5,(k[7:0]^round_index[7:0])};
@@ -933,7 +1088,7 @@ task drain;integer wait_cycles,all_done;begin
    if(nw[ch][pp]!=nr[ch][pp]||nr[ch][pp]!=hr[ch][pp]||cr[ch][pp]!=cw[ch][pp])all_done=0;
    for(integer aa=0;aa<5;aa=aa+1)if(ledger[ch][pp][aa]!=CAP)all_done=0;
   end
-  if(requests+cancelled!=accepted_req||path_counts!=0||path_bridge_busy)all_done=0;
+  if(requests+cancelled!=accepted_req||path_counts!=0||path_bridge_busy||context_count!=0||memory_busy)all_done=0;
   wait_cycles=wait_cycles+1;
  end
  ck(all_done,200);
@@ -955,56 +1110,59 @@ task one_request(input bit write_req);integer before_req,limit;begin
  while(source_handshakes==before_req&&limit<100)begin @(posedge clk);#2;limit=limit+1;end
  ck(limit<100,220);@(negedge clk);#1;i_req_candidate_valid=0;
 end endtask
+task bad_event(input bit is_final,input [9:0] token);begin
+ @(negedge clk);#1;allow_adapter_error=1;bad_token=token;manual_final=is_final;manual_result=!is_final;
+ repeat(2)@(negedge clk);#1;manual_final=0;manual_result=0;
+ repeat(2)@(negedge clk);#1;allow_adapter_error=0;
+end endtask
+reg [2047:0] fixture_data;reg [3:0] fixture_status,fixture_poison;reg [618:0] fixture_rd0,fixture_rd1,fixture_rd2,fixture_rd3;reg [100:0] fixture_wr;
+integer fixture_fd,fixture_n;reg [4095:0] fixture_path;integer saved_exec;reg [9:0] previous_token;
 initial begin
+ if(!$value$plusargs("VECTORS=%s",fixture_path))$fatal(1,"IP_TOP_MISMATCH fixture path missing");
+ fixture_fd=$fopen(fixture_path,"r");if(!fixture_fd)$fatal(1,"IP_TOP_MISMATCH fixture open");
+ for(integer row=0;row<192;row=row+1)begin
+  fixture_n=$fscanf(fixture_fd,"%h %h %h %h %h %h %h %h\n",fixture_data,fixture_status,fixture_poison,fixture_rd0,fixture_rd1,fixture_rd2,fixture_rd3,fixture_wr);
+  ck(fixture_n==8,650);expected_result[row]=fixture_data;expected_status[row]=fixture_status;expected_result_poison[row]=fixture_poison;expected_native_rd[row*4]=fixture_rd0;expected_native_rd[row*4+1]=fixture_rd1;expected_native_rd[row*4+2]=fixture_rd2;expected_native_rd[row*4+3]=fixture_rd3;expected_native_wr[row]=fixture_wr;
+ end
  for(round_index=0;round_index<2;round_index=round_index+1)begin
- start_epoch();
- fork
-  drive_req();drive_rd();drive_wr();
-  begin repeat(220)@(negedge clk);#1;consumer_enable=1;end
- join
- drain();
- ck(accepted_req==24&&accepted_rd==24&&accepted_wr==24&&requests==24,201);
- ck(sent_count[0]==24&&sent_count[1]==40&&sent_count[2]==60&&sent_count[3]==24,202);
- $display("IP_TOP_ROUND ports=%0d round=%0d requests=%0d req=%0d data=%0d rd=%0d wr=%0d",PORTS,round_index,requests,sent_count[0],sent_count[1],sent_count[2],sent_count[3]);
- if(round_index==0)begin
-  @(negedge clk);#1;consumer_enable=0;
-  fork : abandoned
-   drive_req();drive_rd();drive_wr();
-  join_none
-  repeat(80)@(negedge clk);#1;
-  ck(path_request_valid&&path_counts!=0,203);
-  disable abandoned;i_req_candidate_valid=0;i_rd_candidate_valid=0;i_wr_candidate_valid=0;
-  @(negedge clk);#1;rstn=0;repeat(4)@(negedge clk);#1;rstn=1;consumer_enable=1;
-  repeat(80)@(negedge clk);#1;
-  ck(requests==0&&!path_bridge_busy&&path_counts==0,204);
+  start_epoch();consumer_enable=1;command_enable=0;completion_enable=0;final_enable=0;request_limit=24;
+  fork
+   drive_req();
+   begin
+    repeat(220)@(negedge clk);#1;ck(context_count==4&&qissue==1&&qwrite==4&&memory_command_valid,651);
+    command_enable=1;wait(qcommand==1);bad_event(0,10'h3ff);bad_event(1,10'h3ff);
+    wait(memory_completion_valid);repeat(20)@(negedge clk);#1;ck(context_count==4&&qrelease==0&&qcompletion==0,652);
+    completion_enable=1;wait(qnative==1);repeat(30)@(negedge clk);#1;
+    ck(context_count==4&&qrelease==0&&!memory_completion_valid&&memory_busy,653);
+    final_enable=1;
+   end
+  join
+  drain();ck(qwrite==24&&qissue==24&&qcommand==24&&qcompletion==24&&qnative==24&&qfinal==24&&qrelease==24,654);
+  $display("MEM_TOP_ROUND ports=%0d epoch=%0d commands=%0d native_final=%0d final=%0d release=%0d",PORTS,round_index,qcommand,qnative,qfinal,qrelease);
  end
- end
-  // A real data parity error becomes poison while the descriptor and true credits progress.
- allow_fault=1;start_epoch();data_parity_flip=1;consumer_enable=1;
- one_request(1);data_parity_flip=0;drain();
- ck(data_seen>0&&top_drop_roles==0&&requests==1,221);
- // The same actual source can spend a Req credit before a corrupted return group arrives.
- start_epoch();fault_mode=1;consumer_enable=0;one_request(0);
- saved_bank=o_req_balances;credit_override=1;
- #1;ck(top_raw_credit_error==1&&top_drop_roles==ORIGINATOR_SCOPE&&!o_req_valid&&!o_data_valid,222);
- @(posedge clk);#2;ck(o_req_balances===saved_bank,223);
- @(negedge clk);#1;credit_override=0;fault_ack=3;
- repeat(4)@(negedge clk);#1;ck(top_drop_roles==ORIGINATOR_SCOPE&&top_reset_required==ORIGINATOR_SCOPE&&top_notify_roles==0,224);fault_ack=0;
- // A bad Request control beat uses the forward Completer scope and cancels its holding.
- start_epoch();fault_mode=1;native_flip=1;one_request(0);native_flip=0;
- repeat(3)@(negedge clk);#1;
- ck(top_drop_roles==COMPLETER_SCOPE&&top_reset_required==COMPLETER_SCOPE&&!path_bridge_busy&&!path_request_valid,225);
- check_req_block=1;if(!TL)one_request(0);repeat(4)@(negedge clk);#1;
- // Keep presenting real response candidates: same-role TX must not emit after Drop.
- i_wr_candidate_valid=1;i_wr_candidate_port=0;i_wr_candidate_vc=0;i_wr_candidate_pool=0;
- i_wr_candidate_payload={64'h8000000000000001,2'd0,11'd1024,4'd0,10'd999,10'd777};
- repeat(10)begin @(negedge clk);#1;ck(!o_wr_valid&&!o_wr_candidate_accepted&&!path_receive_accepted[0]&&!path_receive_accepted[1],226);end
- i_wr_candidate_valid=0;fault_ack=3;repeat(4)@(negedge clk);#1;ck(top_drop_roles==COMPLETER_SCOPE&&top_notify_roles==0,227);fault_ack=0;
- // Reset the complete transport/ownership epoch and reuse the same request Tag.
- start_epoch();fault_mode=0;allow_fault=0;consumer_enable=1;one_request(0);drain();
- ck(top_drop_roles==0&&top_reason_sticky==0&&requests==1&&!top_backend_implemented&&response_checks>100,228);
- ck(stalls>100,205);
- $display("IP_TOP_PASS ports=%0d tl=%0d requests=%0d heads=%0d returns=%0d stalls=%0d dropped=%0d checks=%0d cycles=%0d",PORTS,TL,total_requests,total_heads,total_returns,stalls,dropped_beats,checks,cycles);
+ // Reset a real command before its scheduled memory effect; no old result may emerge.
+ round_index=2;start_epoch();consumer_enable=1;command_enable=1;completion_enable=1;final_enable=1;request_limit=4;saved_exec=executed_total;
+ fork : before_execution drive_req();join_none
+ wait(qcommand==1);@(negedge clk);#1;previous_token=qtoken[0];disable before_execution;i_req_candidate_valid=0;
+ round_index=3;start_epoch();consumer_enable=1;repeat(30)@(negedge clk);#1;
+ ck(executed_total==saved_exec&&!memory_busy&&!memory_completion_valid&&!memory_release_valid&&context_count==0,655);
+ request_limit=2;drive_req();drain();
+ // Reset after real execution while completion is held; backend bytes survive the cancellation.
+ round_index=4;start_epoch();consumer_enable=1;command_enable=1;completion_enable=0;final_enable=0;request_limit=1;
+ drive_req();wait(memory_completion_valid);repeat(15)@(negedge clk);#1;saved_exec=executed_total;
+ ck(qcommand==1&&qcompletion==0&&context_count==1,656);
+ round_index=5;start_epoch();consumer_enable=1;completion_enable=1;final_enable=1;
+ repeat(25)@(negedge clk);#1;ck(executed_total==saved_exec&&!memory_busy&&!memory_completion_valid&&context_count==0,657);
+ request_limit=2;drive_req();drain();
+ // Final native transfer alone still does not release until the external final owner reports it.
+ round_index=6;start_epoch();consumer_enable=1;command_enable=1;completion_enable=1;final_enable=0;request_limit=1;
+ drive_req();wait(qnative==1);repeat(12)@(negedge clk);#1;ck(context_count==1&&qfinal==0&&qrelease==0,658);
+ previous_token=qtoken[0];round_index=7;start_epoch();consumer_enable=1;final_enable=1;
+ bad_event(1,previous_token);ck(!memory_busy&&context_count==0,659);
+ request_limit=2;drive_req();drain();
+ ck(adapter_errors>=6&&cancel_total>=3&&!top_backend_implemented&&commands_total==executed_total+1,660);
+ $display("MEMORY_TOP_PASS ports=%0d commands=%0d executed=%0d results=%0d completions=%0d native_final=%0d final=%0d release=%0d cancelled=%0d errors=%0d heads=%0d returns=%0d checks=%0d cycles=%0d",PORTS,commands_total,executed_total,results_total,completions_total,native_finals_total,finals_total,releases_total,cancel_total,adapter_errors,total_heads,total_returns,checks,cycles);
  $finish;
 end
+
 endmodule

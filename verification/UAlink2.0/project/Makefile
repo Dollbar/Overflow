@@ -158,6 +158,8 @@ native-endpoint-smoke:
 	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_endpoint_context_top.py" --label "$(IP_RUN_LABEL)_context_top" --kd28-root "$(KD28_ROOT)" --static
 	$(PYTHON) "$(ROOT_DIR)/verification/endpoint_transaction/run_memory_adapter.py" --label "$(IP_RUN_LABEL)_memory_adapter" --faults --static
 
+	$(PYTHON) "$(ROOT_DIR)/verification/upli_channels/run_endpoint_memory_top.py" --label "$(IP_RUN_LABEL)_memory_top" --kd28-root "$(KD28_ROOT)" --static
+
 switch-egress-smoke:
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_scheduler.py" --label "$(IP_RUN_LABEL)_scheduler" --faults
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_pipeline.py" --label "$(IP_RUN_LABEL)_pipeline" --faults
@@ -165,8 +167,12 @@ switch-egress-smoke:
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_typed_pipeline.py" --label "$(IP_RUN_LABEL)_typed_pipeline" --faults
 	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_typed_top.py" --label "$(IP_RUN_LABEL)_typed_top" --faults
 
+	$(PYTHON) "$(ROOT_DIR)/verification/ip_tops/run_switch_egress_tl_context.py" --label "$(IP_RUN_LABEL)_tl_context" --faults
+
 ras-isolation-smoke:
 	$(PYTHON) -B "$(ROOT_DIR)/verification/ras/run_isolation.py" --label "$(IP_RUN_LABEL)_isolation" --faults
+
+	$(PYTHON) -B "$(ROOT_DIR)/verification/ras/run_dummy.py" --label "$(IP_RUN_LABEL)_dummy" --faults
 
 # Actual Read execution path through two Endpoint tops and the Switch.
 .PHONY: ip-transaction-smoke ip-transaction-elaborate ip-transaction-capacity
