@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 979 tracked source files from the UALink development
-repository at commit `aae2ff01ae1955d201cb2f6c799cd42d75434df6`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 1006 tracked source files from the UALink development
+repository at commit `cf8fd72e0b37b3b1f7fd167324d7def096c708a3`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -103,3 +103,11 @@ Relocated shared sender tests including faults/static checks, OrigData real send
 All four native channel types now have typed transmit fields and parity RTL. Final Read Response tests passed 7396 vectors and eight actual faults; Write Response passed 3508 vectors and five actual faults, with strict static checks. Independent cross-review found no concrete field/parity/reset wiring defect. Current inventory is 203 entries, 78 partial implementations and 125 explicit shells (Endpoint/Switch pending slots 93/118). Structure and actual full Read partial-response reset compatibility pass. Relocated Read normal/fault/static tests plus Write normal/static and control-parity fault pass in this repository layout.
 
 Response credit/TDM sender candidates and credit guard/return adapters are the next parallel tasks; full native station/Endpoint integration and process STA remain open. Read Response debug Src is preserved per Beat and will not be used for functional sender admission. Commands and exact scope: project/docs/upli_response_integration_review.md; next integration contract: project/docs/upli_station_integration_execution.md.
+
+## Native response senders and TX/SRAM loop
+
+Five new partial implementations provide Read/Write Response credit/TDM senders, a credit parity guard, a direct returned-credit adapter and a three-sender aggregate. Current inventory: 208 entries, 83 partial implementations, 125 explicit shells; Endpoint/Switch pending slots remain 93/118. Five actual 1/2/4-port configurations at credit widths3/4/16 and capacities4/5 complete 1480 native beats through SRAM and retire them. Uniform reset cancels 249 sent/unretired payloads; new rounds show no old-data leakage. Final g2001, strict lint, Yosys, structure, repository make test and existing full Read reset compatibility pass; 17 actual sender/adapter/aggregate faults are detected.
+
+Read sender final production matrix covers30351 cycles; Write sender production wide run covers1552 cycles/467 sends, with identical frozen RTL also validated across six configurations. Credit adapters cover3418 independent vectors. Independent aggregate bit-level review checks three senders/four guards, four banks and distinct capacity mapping. Evidence and exact commands: project/docs/upli_station_tx_integration_review.md.
+
+Relocated Read sender full matrix/faults, Write sender wide/static, credit adapter actual SRAM integration and station port4/width16/capacity5/static plus actual guard fault have passed from this publication layout. The aggregate tests independent response streams, not backend-derived native response causality. Complete native RX ordering/validation, required poison/Drop policy, Endpoint context adapters, independent LinkDown/epoch and process STA remain open. Diagnostic-only credit guards do not implement required corrupted-credit discard/recovery.

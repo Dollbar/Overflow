@@ -1,0 +1,54 @@
+`timescale 1ns/1ps
+module tb;parameter PORTS=1;parameter CW=4;reg clk=0;always #5 clk=~clk;
+reg [1-1:0] i_rstn=0;
+reg [1-1:0] i_credit_connected=0;
+reg [1-1:0] i_beats_connected=0;
+reg [1-1:0] i_candidate_valid=0;
+reg [2-1:0] i_candidate_port=0;
+reg [2-1:0] i_candidate_vc=0;
+reg [4-1:0] i_candidate_pools=0;
+reg [2476-1:0] i_candidate_payload=0;
+reg [4-1:0] i_credit_valid=0;
+reg [4-1:0] i_credit_pool=0;
+reg [8-1:0] i_credit_vc=0;
+reg [8-1:0] i_credit_num=0;
+reg [4-1:0] i_credit_init_done=0;
+wire [1-1:0] o_candidate_accepted;
+wire [1-1:0] o_candidate_error;
+wire [1-1:0] o_valid;
+wire [2-1:0] o_port;
+wire [64-1:0] o_auth_tag;
+wire [10-1:0] o_src;
+wire [10-1:0] o_dst;
+wire [11-1:0] o_tag;
+wire [2-1:0] o_num_beats;
+wire [512-1:0] o_data;
+wire [4-1:0] o_status;
+wire [2-1:0] o_offset;
+wire [1-1:0] o_last;
+wire [1-1:0] o_data_error;
+wire [2-1:0] o_type_info;
+wire [2-1:0] o_vc;
+wire [1-1:0] o_pool;
+wire [1-1:0] o_valid_parity;
+wire [1-1:0] o_auth_tag_parity;
+wire [8-1:0] o_data_parity;
+wire [1-1:0] o_control_parity;
+wire [619-1:0] o_payload;
+wire [PORTS*5*CW-1:0] o_balances;
+wire [4-1:0] o_init_confirmed;
+wire [1-1:0] o_credit_error;
+wire [1-1:0] o_credit_error_sticky;
+wire [4-1:0] o_busy;
+wire [1-1:0] o_tdm_known;
+wire [2-1:0] o_tdm_port;
+upli_read_response_sender #(.C_NUM_PORTS(PORTS),.C_CREDIT_WIDTH(CW),.C_DEFAULT_CAPACITY(4)) dut(.i_clk(clk),.i_rstn(i_rstn),.i_credit_connected(i_credit_connected),.i_beats_connected(i_beats_connected),.i_candidate_valid(i_candidate_valid),.i_candidate_port(i_candidate_port),.i_candidate_vc(i_candidate_vc),.i_candidate_pools(i_candidate_pools),.i_candidate_payload(i_candidate_payload),.i_credit_valid(i_credit_valid),.i_credit_pool(i_credit_pool),.i_credit_vc(i_credit_vc),.i_credit_num(i_credit_num),.i_credit_init_done(i_credit_init_done),.o_candidate_accepted(o_candidate_accepted),.o_candidate_error(o_candidate_error),.o_valid(o_valid),.o_port(o_port),.o_auth_tag(o_auth_tag),.o_src(o_src),.o_dst(o_dst),.o_tag(o_tag),.o_num_beats(o_num_beats),.o_data(o_data),.o_status(o_status),.o_offset(o_offset),.o_last(o_last),.o_data_error(o_data_error),.o_type_info(o_type_info),.o_vc(o_vc),.o_pool(o_pool),.o_valid_parity(o_valid_parity),.o_auth_tag_parity(o_auth_tag_parity),.o_data_parity(o_data_parity),.o_control_parity(o_control_parity),.o_payload(o_payload),.o_balances(o_balances),.o_init_confirmed(o_init_confirmed),.o_credit_error(o_credit_error),.o_credit_error_sticky(o_credit_error_sticky),.o_busy(o_busy),.o_tdm_known(o_tdm_known),.o_tdm_port(o_tdm_port));
+wire [618:0] native_word={o_auth_tag,o_src,o_dst,o_tag,o_num_beats,o_data,o_status,o_offset,o_last,o_data_error,o_type_info};
+reg ea,ev,ece,ebe,ese,ek;reg [1:0] ep,evc,ephase;reg epool;reg [618:0] ew;reg [10:0] epar;reg [PORTS*5*CW-1:0] ebal;reg [3:0] einit,ebusy;integer fd,count=0,n;
+initial begin @(posedge clk);#1;fd=$fopen("vectors.txt","r");if(!fd)$fatal(1,"NO_VECTORS");while(!$feof(fd))begin @(negedge clk);#1;
+n=$fscanf(fd,"%h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h %h\n",i_rstn,i_credit_connected,i_beats_connected,i_candidate_valid,i_candidate_port,i_candidate_vc,i_candidate_pools,i_candidate_payload,i_credit_valid,i_credit_pool,i_credit_vc,i_credit_num,i_credit_init_done,ea,ev,ep,evc,epool,ew,epar,ece,ebe,ese,ebal,einit,ebusy,ek,ephase);
+if(n==28)begin #1;count=count+1;
+if({o_candidate_accepted,o_valid,o_port,o_vc,o_pool,native_word,o_payload,o_data_parity,o_auth_tag_parity,o_control_parity,o_valid_parity,o_candidate_error,o_credit_error,o_credit_error_sticky,o_balances,o_init_confirmed,o_busy,o_tdm_known,o_tdm_port}!=={ea,ev,ep,evc,epool,ew,ew,epar,ece,ebe,ese,ebal,einit,ebusy,ek,ephase})$fatal(1,"READ_SENDER_MISMATCH cycle=%0d ports=%0d accepted=%b/%b valid=%b/%b port=%0d/%0d payload=%h/%h balance=%h/%h phase=%0d/%0d",count,PORTS,o_candidate_accepted,ea,o_valid,ev,o_port,ep,native_word,ew,o_balances,ebal,o_tdm_port,ephase);
+end else if(n!=-1)$fatal(1,"BAD_VECTOR n=%0d",n);end
+$display("READ_SENDER_PASS ports=%0d cycles=%0d",PORTS,count);$finish;end
+endmodule

@@ -4241,7 +4241,7 @@
       "phase": "existing_source_not_full_protocol_signoff",
       "existence_at_inventory": true,
       "integration_parents": [
-        "upli_station_port"
+        "upli_read_response_sender"
       ],
       "feature_slots": {
         "endpoint": 20,
@@ -4297,7 +4297,7 @@
       "phase": "existing_source_not_full_protocol_signoff",
       "existence_at_inventory": true,
       "integration_parents": [
-        "upli_station_port"
+        "upli_write_response_sender"
       ],
       "feature_slots": {
         "endpoint": 21,
@@ -4462,7 +4462,9 @@
         "upli_request_channel",
         "upli_orig_data_channel",
         "upli_read_response_channel",
-        "upli_write_response_channel"
+        "upli_write_response_channel",
+        "upli_credit_guard",
+        "upli_credit_return_adapter"
       ],
       "feature_slots": {
         "endpoint": 24,
@@ -10995,7 +10997,7 @@
       "external_dependencies": [],
       "port_source": "rtl/upli/upli_request_data_sender.v",
       "integration_parents": [
-        "upli_station_port"
+        "upli_station_tx"
       ],
       "functional_inputs": [
         "complete staged candidate and actual credit returns"
@@ -11004,6 +11006,266 @@
         "native Request/OrigData sends and generated parity"
       ],
       "functional_interface_status": "typed_transmit_subset_not_full_station"
+    },
+    {
+      "id": "upli_write_response_sender",
+      "module": "upli_write_response_sender",
+      "path": "rtl/upli/upli_write_response_sender.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Independent Write Response credit bank and TDM sender; complete native fields/parity; upstream execution and RAS responsibility.",
+      "dependencies": [
+        "upli_credit_bank",
+        "upli_write_response_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Exact typed input widths and semantics in port_source and execution contract"
+      ],
+      "outputs": [
+        "Exact typed output widths and semantics in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_write_response_sender.v",
+      "integration_parents": [
+        "upli_station_tx"
+      ],
+      "functional_inputs": [
+        "Actual native candidate/credit groups and explicit ownership qualification as applicable"
+      ],
+      "functional_outputs": [
+        "Actual native events or diagnostic/generation subset as applicable"
+      ],
+      "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
+    },
+    {
+      "id": "upli_read_response_sender",
+      "module": "upli_read_response_sender",
+      "path": "rtl/upli/upli_read_response_sender.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Independent Read Response credit/TDM sender with full staged multi-beat tails and transparent single-beat offsets; no Tag collector or receiver.",
+      "dependencies": [
+        "upli_credit_bank",
+        "upli_read_response_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Exact typed input widths and semantics in port_source and execution contract"
+      ],
+      "outputs": [
+        "Exact typed output widths and semantics in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_read_response_sender.v",
+      "integration_parents": [
+        "upli_station_tx"
+      ],
+      "functional_inputs": [
+        "Actual native candidate/credit groups and explicit ownership qualification as applicable"
+      ],
+      "functional_outputs": [
+        "Actual native events or diagnostic/generation subset as applicable"
+      ],
+      "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
+    },
+    {
+      "id": "upli_credit_guard",
+      "module": "upli_credit_guard",
+      "path": "rtl/upli/upli_credit_guard.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Diagnostic-only complete returned-credit parity checker; no credit-drop or isolation policy.",
+      "dependencies": [
+        "upli_parity"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Exact typed input widths and semantics in port_source and execution contract"
+      ],
+      "outputs": [
+        "Exact typed output widths and semantics in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_credit_guard.v",
+      "integration_parents": [
+        "upli_station_tx"
+      ],
+      "functional_inputs": [
+        "Actual native candidate/credit groups and explicit ownership qualification as applicable"
+      ],
+      "functional_outputs": [
+        "Actual native events or diagnostic/generation subset as applicable"
+      ],
+      "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
+    },
+    {
+      "id": "upli_credit_return_adapter",
+      "module": "upli_credit_return_adapter",
+      "path": "rtl/upli/upli_credit_return_adapter.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Direct registered receive-credit bus passthrough and full parity generation; no extra cycle or gating.",
+      "dependencies": [
+        "upli_parity"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Exact typed input widths and semantics in port_source and execution contract"
+      ],
+      "outputs": [
+        "Exact typed output widths and semantics in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_credit_return_adapter.v",
+      "integration_parents": [
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "Actual native candidate/credit groups and explicit ownership qualification as applicable"
+      ],
+      "functional_outputs": [
+        "Actual native events or diagnostic/generation subset as applicable"
+      ],
+      "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
+    },
+    {
+      "id": "upli_station_tx",
+      "module": "upli_station_tx",
+      "path": "rtl/upli/upli_station_tx.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Two-role normal native TX aggregate: three senders, four banks and three independent phases; four diagnostic credit guards; not a full physical station or Endpoint adapter.",
+      "dependencies": [
+        "upli_request_data_sender",
+        "upli_read_response_sender",
+        "upli_write_response_sender",
+        "upli_credit_guard"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "Exact typed input widths and semantics in port_source and execution contract"
+      ],
+      "outputs": [
+        "Exact typed output widths and semantics in port_source and execution contract"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_station_tx.v",
+      "integration_parents": [
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "Actual native candidate/credit groups and explicit ownership qualification as applicable"
+      ],
+      "functional_outputs": [
+        "Actual native events or diagnostic/generation subset as applicable"
+      ],
+      "functional_interface_status": "native_transmit_or_credit_subset_not_full_station"
     }
   ],
   "software_modules": [

@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 78 个部分实现RTL模块、125 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 83 个部分实现RTL模块、125 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -95,6 +95,11 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 
 | 文件 | 角色 / 状态 / slot | 职责 |
 |---|---|---|
+| `rtl/upli/upli_write_response_sender.v` | E/S / existing_partial / — | Independent Write Response credit bank and TDM sender; complete native fields/parity; upstream execution and RAS responsibility. |
+| `rtl/upli/upli_read_response_sender.v` | E/S / existing_partial / — | Independent Read Response credit/TDM sender with full staged multi-beat tails and transparent single-beat offsets; no Tag collector or receiver. |
+| `rtl/upli/upli_credit_guard.v` | E/S / existing_partial / — | Diagnostic-only complete returned-credit parity checker; no credit-drop or isolation policy. |
+| `rtl/upli/upli_credit_return_adapter.v` | E/S / existing_partial / — | Direct registered receive-credit bus passthrough and full parity generation; no extra cycle or gating. |
+| `rtl/upli/upli_station_tx.v` | E/S / existing_partial / — | Two-role normal native TX aggregate: three senders, four banks and three independent phases; four diagnostic credit guards; not a full physical station or Endpoint adapter. |
 | `rtl/upli/upli_request_data_sender.v` | E/S / existing_partial / — | Native typed Request/OrigData TX around one shared burst sender and two credit banks; fixed 184-bit local request bundle; upstream command legality required. |
 | `rtl/upli/upli_burst_control.v` | E/S / existing_partial / — | Native normal Request/OrigData full-credit admission and per-port TDM control. |
 | `rtl/upli/upli_burst_sender.v` | E/S / existing_partial / — | UPLI normal complete-staged sender; Common 2.0 sections 2.5 and 2.7.8. |

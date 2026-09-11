@@ -1,0 +1,198 @@
+{
+  "scope": "Native normal two-role TX aggregation and actual SRAM/credit returns; no native RX/RAS/Endpoint backend causality signoff",
+  "full_goal_complete": false,
+  "inventory": {
+    "entries": 208,
+    "existing_partial": 83,
+    "planned": 125,
+    "endpoint_pending_slots": 93,
+    "switch_pending_slots": 118
+  },
+  "source_sha256": {
+    "rtl/upli/upli_station_tx.v": "46e3c8f810d714fcfea296e8cd87b5ea0219558843a5493be985a11b457950da",
+    "rtl/upli/upli_read_response_sender.v": "4ec11412689f2daddf1f10afc77193898b4314ce0b3574109a37c0a0a5cc7e5f",
+    "rtl/upli/upli_write_response_sender.v": "6c15608737f63088083fa733a7612888121cbb29c44e6cf5c1ae246912d210b5",
+    "rtl/upli/upli_credit_guard.v": "2acb855aafc6a3570675ad8a103ac99a999ca97ce31b1447cfb3390447ae8bc6",
+    "rtl/upli/upli_credit_return_adapter.v": "a18cd146b85824cb4f375e86ab832a5b0e451d2b0cdc32669be2dc91a0083199",
+    "rtl/upli/upli_parity.v": "9e12e67c72e50616d5298616d0cabf3e551c8fd7df360ed7c00c722266c32c94",
+    "rtl/upli/upli_request_data_sender.v": "acd90c8a2feaf04177a52558cb58d180a9ae06e9305932bf73f2058585be4115",
+    "rtl/upli/upli_credit_bank.v": "e8708486800eeedbd9f588902a6f9d4f980e6fd130f88001694b3cc37caec803",
+    "rtl/upli/upli_receive_channel.v": "8fb9827e3490d4258205f501ab38237633dd2592ee599eeee320defa117cbc43",
+    "verification/upli_channels/run_station_tx.py": "9e76b5f6667d242b877b9873880efe485bac29e809f9c2a9a4fdad9d0567ab2c",
+    "verification/upli_channels/station_tx_tb.sv": "03f03ce0625beb6718d24438e37f3e45396a751c5e03b94473b375eb054d6ae3",
+    "verification/upli_channels/run_read_response_sender.py": "5cf4c6b1daa495ca953b97488c97cc661b3a1241679b73cc1b457e0e44892496",
+    "verification/upli_channels/read_response_sender_tb.sv": "e2d9151ef055e76730ecba19df4f811a9875a635e56a0ebd0542b78e4690dd03",
+    "verification/upli_channels/read_response_sender_reference.py": "9cfbe057feaff16f9b0f98ae94f3d70a30ac8a521a1b3ee16d3407e4b0acf7c2",
+    "verification/upli_channels/read_response_sender_vectors.py": "6b919f9fdb0eb3b2ed283db8450e4d99fd8443d59c9bbb5f609711ed1ee1b664",
+    "verification/upli_channels/run_write_response_sender.py": "d8f485a570099b5ea93449b75b81984fe4ed7bfb490d59fb1f0b03e7dc7eb9d0",
+    "verification/upli_channels/write_response_sender_tb.sv": "4dbac35135a3aa0c02c6f147268a84d48ec997911d6bc7b2fb6ae55dbb0892bd",
+    "verification/upli_channels/write_response_sender_reference.py": "a80c6c2e6c9958e3f9f9baa682ad948e30ceab36e8203f44b0da16481e1bb03d",
+    "verification/upli_channels/run_credit_adapter.py": "cb082ae4a11c5b0cfa003533c1d76b4e97b54f191e9471694d769b6458fd8a7c",
+    "verification/upli_channels/credit_adapter_tb.sv": "a77b5e28704db4d0cc1177732b05024539c31622479519fd3f1540ddd91038a0",
+    "verification/upli_channels/credit_adapter_receive_tb.sv": "256d6c22706c25e811d1fc81e9f9208012cde438e9a7643d217b3336c155ca2f",
+    "verification/upli_channels/credit_adapter_reference.py": "79f7654130175f116991021fbc1a9a75e400cb5a11387cedd62a353a98ca90bb"
+  },
+  "runs": [
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release/result.json",
+      "sha256": "58d148cff9f0136fd751ca572ca22472f722890503d5731c9baac7e32e0d044e",
+      "passed": true,
+      "verified_artifact_hashes": 242
+    },
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release_wide/result.json",
+      "sha256": "984fb77f8b6a38516bc2c099aec9e181a56a8ba7e5c1dd0f008e7034660715e8",
+      "passed": true,
+      "verified_artifact_hashes": 226
+    },
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release_minimum/result.json",
+      "sha256": "18471c002f15e73c5353c3c7b773ae9fad8def994ca2162877cc6e4ee2fc67e8",
+      "passed": true,
+      "verified_artifact_hashes": 226
+    },
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release_rd_tag/result.json",
+      "sha256": "26dfcea6d27a10f8cd1cad933f8b92313f6eed2073ef376a4f5fb45f72394f79",
+      "passed": true,
+      "verified_artifact_hashes": 221
+    },
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release_wr_tag/result.json",
+      "sha256": "a8a2a5ebe8cd9954ad52f8796e86406cbb8cfcd4e09ea8c21322f08d24299dc5",
+      "passed": true,
+      "verified_artifact_hashes": 221
+    },
+    {
+      "path": "build/verification/upli_channels/station_tx/station_release_guard_bypass/result.json",
+      "sha256": "f0fd9872a63e552f0a0c762e42ac8a3b096262aada80ce67aff19c8a318929a1",
+      "passed": true,
+      "verified_artifact_hashes": 221
+    },
+    {
+      "path": "build/verification/upli_channels/write_response_sender/sender_installed/result.json",
+      "sha256": "52109d899c03b1c5bcf43151f4085a72ca4b470bb5c54c319b1d590300077e7b",
+      "passed": true,
+      "verified_artifact_hashes": 16
+    },
+    {
+      "path": "build/verification/upli_channels/write_response_sender/sender_installed_debit/result.json",
+      "sha256": "c1a5167f0fc32538ae6fb9b3ac8a20dd467fb8c3aeb02ff776815e51d9becc10",
+      "passed": true,
+      "verified_artifact_hashes": 11
+    },
+    {
+      "path": "build/verification/upli_channels/write_response_sender/sender_installed_phase/result.json",
+      "sha256": "0202802396334f7caf6c58a90304df00fd6ae553eb8d34e6a7f803b707049c07",
+      "passed": true,
+      "verified_artifact_hashes": 11
+    },
+    {
+      "path": "build/verification/upli_channels/write_response_sender/sender_installed_high_tag/result.json",
+      "sha256": "251bb85e94d64ccfbe78e6f7a082f2f37002eba451ebda92e02dc542142af3b1",
+      "passed": true,
+      "verified_artifact_hashes": 11
+    },
+    {
+      "path": "build/verification/upli_channels/credit_adapter/adapter_installed/result.json",
+      "sha256": "cdfda055bde249364fe2eacc3a003d7f19938e5dd154ffea6e42c4fe7b9ed24f",
+      "passed": true,
+      "verified_artifact_hashes": 34
+    },
+    {
+      "path": "build/verification/upli_channels/credit_adapter/adapter_final_guard_valid/result.json",
+      "sha256": "e1771d9055f5bf69951d5cc53c1393a9aa57e691841ab50f7d6a43f4efd9fab4",
+      "passed": true,
+      "verified_artifact_hashes": 13
+    },
+    {
+      "path": "build/verification/upli_channels/credit_adapter/adapter_final_guard_mask/result.json",
+      "sha256": "9c4f221b5dca66741e7acd05c8fa59ed66b35e531d10243b615c80500a442ab6",
+      "passed": true,
+      "verified_artifact_hashes": 13
+    },
+    {
+      "path": "build/verification/upli_channels/credit_adapter/adapter_final_init/result.json",
+      "sha256": "4e4f2d74106627059f04b409c4d29baa9a4abbd729bcfba500ad0d5c32a397f2",
+      "passed": true,
+      "verified_artifact_hashes": 24
+    },
+    {
+      "path": "build/verification/upli_channels/credit_adapter/adapter_installed_adapter_gate/result.json",
+      "sha256": "6c4479be76140fc2203d00c1942a763a47b925ba2a89d5f993860aa9c3f3305c",
+      "passed": true,
+      "verified_artifact_hashes": 24
+    },
+    {
+      "path": "build/verification/upli_channels/read_response_sender/sender_release/summary.json",
+      "sha256": "b023ed3b03302b38db3a7c21d780c33d5edb59f4f07442a3bf9c8a6e72f036bb",
+      "passed": true,
+      "verified_artifact_hashes": 88
+    },
+    {
+      "path": "build/verification/ip_structure/station_installed/evidence.json",
+      "sha256": "85b4a20b94a902da79aee79ea539cce578d0040bea12a6e52b44b4a5721a8872",
+      "passed": true,
+      "verified_artifact_hashes": 0
+    },
+    {
+      "path": "build/verification/endpoint_transaction/station_read_reset_compat/result.json",
+      "sha256": "44b7e3bb7db3e860a80c6aa26eeec33a265ecf43ff7abf8b0725eb94f4d8dfa3",
+      "passed": true,
+      "verified_artifact_hashes": 231
+    }
+  ],
+  "verified_artifact_hashes": 1833,
+  "aggregate": {
+    "configurations": 5,
+    "ports": [
+      1,
+      2,
+      4
+    ],
+    "credit_widths": [
+      3,
+      4,
+      16
+    ],
+    "capacities": [
+      4,
+      5
+    ],
+    "clock_edges": 5885,
+    "checks": 170670,
+    "completed_rounds": 10,
+    "native_beats_delivered_and_retired": 1480,
+    "sent_unretired_payloads_cancelled_by_uniform_reset": 249,
+    "actual_faults_detected": 3
+  },
+  "sender_adapter_actual_faults_detected": 14,
+  "read_sender_normal_cycles": 30351,
+  "write_sender_final_production": {
+    "ports": 4,
+    "width": 16,
+    "cycles": 1552,
+    "sends": 467
+  },
+  "credit_unit_vectors": 3418,
+  "make_test": {
+    "exit": 0,
+    "log": "build/development/station_make_test.log",
+    "sha256": "5fa585f766174340d7d220a2a3ee31093a930c56398d6e690cf0b9e2e707a4ca"
+  },
+  "independent_reviews": [
+    "docs/upli_read_response_sender_audit.md",
+    "docs/upli_station_tx_audit.md"
+  ],
+  "open": [
+    "Full native RX parity/TDM/burst validation and error ownership",
+    "Endpoint native context preservation and backend-derived response causality",
+    "Independent LinkDown/epoch and full station integration",
+    "Standard per-hop TL/DL, PHY, INC, security, management, CDC/RDC and process STA"
+  ],
+  "historical_failures_retained": [
+    "station_fault_guard_bypass: non-triggered Request-guard mutant in earlier Read-only parity injection",
+    "station_installed and station_installed_wide: unsized CLI parameter lint failure fixed without RTL change",
+    "adapter_installed_guard_valid/guard_mask/adapter_init: over-broad integration expectation without triggering conditions; final selected unit/integration cases listed above"
+  ]
+}
