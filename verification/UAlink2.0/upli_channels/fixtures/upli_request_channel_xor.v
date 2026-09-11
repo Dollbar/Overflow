@@ -52,18 +52,9 @@ module upli_request_channel ( // 原生Request字段发送模块，信用与TDM�
     assign o_port = i_port & {2{o_valid}}; // 完整port字段透传且确定无效输出。
     assign o_vc = i_vc & {2{o_valid}}; // 完整vc字段透传且确定无效输出。
     assign o_pool = i_pool & {1{o_valid}}; // 完整pool字段透传且确定无效输出。
-    wire [10:0] unused_parity_groups; // Request不消费data、BE与credit组，但显式连接全部输出位。
-    wire [14:0] unused_errors; // 生成模式关闭输入校验，不向原生发送接口添加诊断。
-    wire unused_control_error, unused_data_error, unused_auth_error; // 保持公共primitive完整命名连接。
-    upli_parity #(.CHANNEL_KIND(0)) Parity_Inst ( // 实际使用Request公共校验组，不保留leaf内重复XOR。
-        .i_check_enable(1'b0), .i_valid(o_valid), // valid与字段共同使用既有reset/valid门控后的实际输出。
-        .i_control({o_tag, o_length, o_attr, o_command, o_metadata, o_vc, o_asi, o_src, o_dst, o_port, o_num_beats, o_pool}), // 完整68位控制包含十一位Tag和全部typed字段。
-        .i_address(o_address), .i_auth(o_auth_tag), // 独立保护实际输出的完整57位地址与64位授权标签。
-        .i_data(512'd0), .i_byte_enable(64'd0), // Request没有此两组原生数据校验输出。
-        .i_credit_valid(4'd0), .i_credit_pool(4'd0), .i_credit_vc(8'd0), .i_credit_num(8'd0), // 信用所有权仍属于外部sender，此leaf不建立第二组管理。
-        .i_received_parity(15'd0), // 生成模式不消费远端接收校验值。
-        .o_parity({unused_parity_groups, o_auth_tag_parity, o_address_parity, o_control_parity, o_valid_parity}), // 直接将公共位3/2/1/0连到对应原生输出。
-        .o_errors(unused_errors), .o_control_error(unused_control_error), .o_data_error(unused_data_error), .o_auth_error(unused_auth_error) // 不改变发送接口或增加状态。
-    ); // 结束唯一实际Request公共parity实例。
+    assign o_valid_parity = o_valid; // 单比特偶校验复制valid本身。
+    assign o_auth_tag_parity = ^o_auth_tag; // 授权标签独立偶校验，不混入地址或控制。
+    assign o_address_parity = ^o_address; // 地址含全部高位及低位，不截断保护。
+    assign o_control_parity = ^{o_tag, o_length, o_attr, o_command, o_metadata, o_vc, o_asi, o_src, o_dst, o_port, o_num_beats, o_pool}; // Table2-2定义的68位控制集合。
 endmodule // 结束upli_request_channel无状态字段与parity发送模块，不声明完整Request接收功能。
 `default_nettype wire // 恢复后续独立源码编译默认值。

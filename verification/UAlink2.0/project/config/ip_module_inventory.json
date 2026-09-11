@@ -2619,8 +2619,7 @@
       "port_source": "rtl/upli/upli_burst_sender.v",
       "integration_parents": [
         "endpoint_write_originator",
-        "upli_orig_data_channel",
-        "upli_request_channel"
+        "upli_request_data_sender"
       ],
       "functional_inputs": [
         "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
@@ -4156,11 +4155,10 @@
         "switch"
       ],
       "subsystem": "upli",
-      "status": "planned",
-      "purpose": "完整Request字段的原生UPLI发送/接收与独立信用账户",
+      "status": "existing_partial",
+      "purpose": "Typed native Request TX field preservation and parity generation; receive/credit/station integration remains incomplete.",
       "dependencies": [
-        "upli_receive_channel",
-        "upli_burst_sender"
+        "upli_parity"
       ],
       "source_refs": [
         {
@@ -4176,34 +4174,31 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "reset, actual Request valid and all native Request fields"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "native Request fields and valid/control/address/auth parity"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
-        "upli_station_port"
+        "upli_request_data_sender"
       ],
       "feature_slots": {
         "endpoint": 19,
         "switch": 1
       },
       "functional_inputs": [
-        "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
+        "reset, actual Request valid and all native Request fields"
       ],
       "functional_outputs": [
-        "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
+        "native Request fields and valid/control/address/auth parity"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_transmit_or_parity_subset_not_full_station",
+      "port_source": "rtl/upli/upli_request_channel.v"
     },
     {
       "id": "upli_read_response_channel",
@@ -4329,11 +4324,10 @@
         "switch"
       ],
       "subsystem": "upli",
-      "status": "planned",
-      "purpose": "512-bit OrigData、64-bit ByteEn、Error和连续burst原生通道",
+      "status": "existing_partial",
+      "purpose": "Typed native OrigData TX field preservation and unmasked parity generation; receive/credit/station integration remains incomplete.",
       "dependencies": [
-        "upli_receive_channel",
-        "upli_burst_sender"
+        "upli_parity"
       ],
       "source_refs": [
         {
@@ -4349,34 +4343,31 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "actual OrigData valid, 512-bit data, 64 byte enables and native controls"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "native OrigData fields and valid/control/data/byte-enable parity"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
-        "upli_station_port"
+        "upli_request_data_sender"
       ],
       "feature_slots": {
         "endpoint": 22,
         "switch": 4
       },
       "functional_inputs": [
-        "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
+        "actual OrigData valid, 512-bit data, 64 byte enables and native controls"
       ],
       "functional_outputs": [
-        "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
+        "native OrigData fields and valid/control/data/byte-enable parity"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_transmit_or_parity_subset_not_full_station",
+      "port_source": "rtl/upli/upli_orig_data_channel.v"
     },
     {
       "id": "upli_tdm_scheduler",
@@ -4443,8 +4434,8 @@
         "switch"
       ],
       "subsystem": "upli",
-      "status": "planned",
-      "purpose": "请求/响应/OrigData控制和完整数据parity生成检查、错误分类",
+      "status": "existing_partial",
+      "purpose": "Common four-channel parity generation and gated diagnostic classification; no RAS recovery or isolation policy.",
       "dependencies": [],
       "source_refs": [
         {
@@ -4460,34 +4451,32 @@
           "source": "C §3–4"
         }
       ],
-      "interface_status": "local_provisional_service",
+      "interface_status": "existing_rtl_ports",
       "level": "leaf",
       "inputs": [
-        "service enable and valid",
-        "opaque 512-bit data",
-        "opaque 128-bit local metadata"
+        "channel kind, full control/address/auth/data/byte-enable/credit groups, received parity and check enable"
       ],
       "outputs": [
-        "service ready/valid and opaque data/meta",
-        "implemented capability",
-        "unimplemented-service error"
+        "generated parity, per-group errors and control/data/auth classification"
       ],
-      "phase": "skeleton_then_contract_then_function_then_integration",
-      "existence_at_inventory": false,
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
       "integration_parents": [
-        "upli_station_port"
+        "upli_request_channel",
+        "upli_orig_data_channel"
       ],
       "feature_slots": {
         "endpoint": 24,
         "switch": 6
       },
       "functional_inputs": [
-        "原生UPLI字段、TDM端口、初始/归还信用、连接与时钟状态"
+        "channel kind, full control/address/auth/data/byte-enable/credit groups, received parity and check enable"
       ],
       "functional_outputs": [
-        "实际UPLI通道beat、信用归还、接纳/退休及parity诊断"
+        "generated parity, per-group errors and control/data/auth classification"
       ],
-      "functional_interface_status": "local_provisional_until_module_contract_freeze"
+      "functional_interface_status": "typed_transmit_or_parity_subset_not_full_station",
+      "port_source": "rtl/upli/upli_parity.v"
     },
     {
       "id": "tl_port",
@@ -10963,6 +10952,59 @@
         "同步后的握手/数据、复位/时钟状态和存储/诊断结果"
       ],
       "functional_interface_status": "local_provisional_until_module_contract_freeze"
+    },
+    {
+      "id": "upli_request_data_sender",
+      "module": "upli_request_data_sender",
+      "path": "rtl/upli/upli_request_data_sender.v",
+      "roles": [
+        "endpoint",
+        "switch"
+      ],
+      "subsystem": "upli",
+      "status": "existing_partial",
+      "purpose": "Native typed Request/OrigData TX around one shared burst sender and two credit banks; fixed 184-bit local request bundle; upstream command legality required.",
+      "dependencies": [
+        "upli_burst_sender",
+        "upli_request_channel",
+        "upli_orig_data_channel"
+      ],
+      "source_refs": [
+        {
+          "family": "F02",
+          "source": "C §2"
+        },
+        {
+          "family": "F03",
+          "source": "C §2.5–2.6, §2.7–2.8, §4"
+        },
+        {
+          "family": "F05",
+          "source": "C §3–4"
+        }
+      ],
+      "interface_status": "existing_rtl_ports",
+      "level": "leaf",
+      "inputs": [
+        "existing shared sender candidate, staged data and credit/init interfaces; fixed 184-bit request bundle"
+      ],
+      "outputs": [
+        "actual typed native Request/OrigData fields and parity; sender credit/init/status outputs"
+      ],
+      "phase": "existing_source_not_full_protocol_signoff",
+      "existence_at_inventory": true,
+      "external_dependencies": [],
+      "port_source": "rtl/upli/upli_request_data_sender.v",
+      "integration_parents": [
+        "upli_station_port"
+      ],
+      "functional_inputs": [
+        "complete staged candidate and actual credit returns"
+      ],
+      "functional_outputs": [
+        "native Request/OrigData sends and generated parity"
+      ],
+      "functional_interface_status": "typed_transmit_subset_not_full_station"
     }
   ],
   "software_modules": [

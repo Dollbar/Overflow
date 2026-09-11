@@ -1,4 +1,3 @@
-`timescale 1ns/1ps // 与共同编译的typed发送接口使用相同仿真时间单位。
 // Native UPLI OrigData transmit fields; Common 2.0 Table 2-21, sections 2.5/2.7.8/3.1.1.
 // 日期2026-09-11；共享 sender 负责信用、连接及连续 burst，此层组合生成保护码。
 `default_nettype none // 显式声明所有连接，避免拼写错误形成隐式网络。
@@ -35,18 +34,14 @@ module upli_orig_data_channel ( // 原生 OrigData 输出模块不插入握手�
     assign o_orig_data_error = i_error; // 保持原始数据 poison 标志，不能重新解释为本地 ready，不改变有效或数据。
     assign o_orig_data_vc = i_vc; // 保持保持首次 Request 的虚拟通道，不改变有效或数据。
     assign o_orig_data_pool = i_pool; // 保持本拍实际使用共享池信用的标志，不改变有效或数据。
-    wire [1:0] unused_credit_parity, unused_auth_address_parity; // OrigData没有信用返回、授权与地址保护输出。
-    wire [14:0] unused_errors; // 此leaf只生成保护码，不新增接收端检查事件。
-    wire unused_control_error, unused_data_error, unused_auth_error; // 显式连接公共primitive的未消费诊断端口。
-    upli_parity #(.CHANNEL_KIND(3)) Parity_Inst ( // 实际使用OrigData公共数据与控制保护，不保留leaf内XOR。
-        .i_check_enable(1'b0), .i_valid(o_orig_data_valid), // valid为零时依然保留原生数据和字段透传行为。
-        .i_control({59'd0, o_orig_data_pool, o_orig_data_vc, o_orig_data_port_id, o_orig_data_offset, o_orig_data_error, o_orig_data_last}), // 控制低9位顺序为pool/vc/port/offset/error/last。
-        .i_address(57'd0), .i_auth(64'd0), // OrigData不消费Request地址与授权组。
-        .i_data(o_orig_data), .i_byte_enable(o_orig_data_byte_en), // 所有数据lane都参与保护，不能按BE、valid或poison过滤。
-        .i_credit_valid(4'd0), .i_credit_pool(4'd0), .i_credit_vc(8'd0), .i_credit_num(8'd0), // 不创建第二个credit bank或接口时序域。
-        .i_received_parity(15'd0), // 只生成原生保护码，不依赖接收校验输入。
-        .o_parity({unused_credit_parity, o_orig_data_byte_en_parity, o_orig_data_parity, unused_auth_address_parity, o_orig_data_fields_parity, o_orig_data_valid_parity}), // 直接映射公共位12、11:4、1、0到原生组。
-        .o_errors(unused_errors), .o_control_error(unused_control_error), .o_data_error(unused_data_error), .o_auth_error(unused_auth_error) // 所有诊断输出均不改变原始发送字段。
-    ); // 结束唯一实际OrigData公共parity实例。
+    assign o_orig_data_valid_parity = i_valid; // 单位有效信号与其校验位保持偶数个置位。
+    assign o_orig_data_byte_en_parity = ^i_byte_en; // 独立保护六十四个字节使能，依据第三章明确语义。
+    assign o_orig_data_fields_parity = ^{i_last,i_error,i_offset,i_port_id,i_vc,i_pool}; // 九位控制包含 poison 和信用选择。
+    genvar gen_group; // 八个固定六十四位分组分别生成数据偶校验。
+    generate // 常量展开全部数据保护分组，不形成动态选择。
+        for (gen_group = 32'd0; gen_group < 32'd8; gen_group = gen_group + 32'd1) begin : gen_data_parity // 每组覆盖所有八个字节，包括禁用字节。
+            assign o_orig_data_parity[gen_group] = ^i_data[gen_group*64 +: 64]; // 数据保护不以 ByteEn 掩蔽。
+        end // 结束八个独立数据保护分组。
+    endgenerate // 结束固定数据奇偶校验硬件展开。
 endmodule // 结束 upli_orig_data_channel 原生字段与保护码输出层。
 `default_nettype wire // 恢复后续独立编译单元的默认网络设置。

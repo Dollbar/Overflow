@@ -4,7 +4,7 @@
 
 ## 状态和使用规则
 
-当前记录 72 个部分实现RTL模块、130 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
+当前记录 76 个部分实现RTL模块、127 个显式未实现RTL壳、13 个软件管理模块和4类外部平台边界。已有顶层文件也只是 `existing_partial`；文件存在不代表其所有功能已实现。骨架生成后，库存的 `planned` 仍表示功能未实现，不能因文件出现就自动变更为完成。
 
 - `existing_partial`：保持现有真实RTL及其接口，不复制或替换为壳。实际验证范围仍以对应契约/证据为准。
 - `planned`：稳定模块名、目标文件、角色、职责和依赖已登记；不存在可用功能。所有新壳采用明确的内部provisional service接口，后续用逐模块契约替换。
@@ -42,7 +42,7 @@ output o_implemented, o_error
 
 ## 稳定功能位
 
-Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别98/123个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
+Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch使用128-bit角色内位图，已分配slot0–126（127个）。每个最初planned条目自带 `feature_slots`，晋升后仍保留。Endpoint的11/12、Switch的53已由typed子集实现替代，事务核、发起器、Tag表、接收器、响应组装器和completer进一步晋升后，当前壳位分别95/120个。shared模块通过同一稳定module id映射到各角色独立slot。未分配位和已移除壳的slot为0，其余未实现壳位为1；零位仅表示该壳不再待实现，不证明相应子系统或集成完整符合性。
 
 不得因排序或实现进展重编号已分配slot；用已验证typed子集替换壳时保留slot，更新部分实现状态、实际集成父模块与证据；清除位不代表全部规范功能完成。新增模块追加slot；超过128时先显式扩展位图版本/本地接口，不截断。此位图是研发可观测性，不是标准能力协商字段。
 
@@ -95,6 +95,7 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 
 | 文件 | 角色 / 状态 / slot | 职责 |
 |---|---|---|
+| `rtl/upli/upli_request_data_sender.v` | E/S / existing_partial / — | Native typed Request/OrigData TX around one shared burst sender and two credit banks; fixed 184-bit local request bundle; upstream command legality required. |
 | `rtl/upli/upli_burst_control.v` | E/S / existing_partial / — | Native normal Request/OrigData full-credit admission and per-port TDM control. |
 | `rtl/upli/upli_burst_sender.v` | E/S / existing_partial / — | UPLI normal complete-staged sender; Common 2.0 sections 2.5 and 2.7.8. |
 | `rtl/upli/upli_connection_side.v` | E/S / existing_partial / — | UPLI single-side connection controller; Common 2.0 sections 4.1-4.3. |
@@ -105,12 +106,12 @@ Endpoint使用128-bit角色内位图，已分配slot0–108（109个）；Switch
 | `rtl/upli/upli_receive_fifo.v` | E/S / existing_partial / — | Synchronous receive FIFO controller for a one-cycle registered SDP SRAM. |
 | `rtl/upli/upli_receive_storage.v` | E/S / existing_partial / — | Bind the synchronous receive FIFO to externally supplied KD28 SDP storage. |
 | `rtl/upli/upli_station_port.v` | E/S / planned / E:18/S:0 | 原生station UPLI四通道、连接、TDM、信用与parity总装 |
-| `rtl/upli/upli_request_channel.v` | E/S / planned / E:19/S:1 | 完整Request字段的原生UPLI发送/接收与独立信用账户 |
+| `rtl/upli/upli_request_channel.v` | E/S / existing_partial / E:19/S:1 | Typed native Request TX field preservation and parity generation; receive/credit/station integration remains incomplete. |
 | `rtl/upli/upli_read_response_channel.v` | E/S / planned / E:20/S:2 | 完整Read Response/Data原生通道、Single/Multi-Beat时序和信用 |
 | `rtl/upli/upli_write_response_channel.v` | E/S / planned / E:21/S:3 | Write Response含适用本地控制事件的原生通道及信用 |
-| `rtl/upli/upli_orig_data_channel.v` | E/S / planned / E:22/S:4 | 512-bit OrigData、64-bit ByteEn、Error和连续burst原生通道 |
+| `rtl/upli/upli_orig_data_channel.v` | E/S / existing_partial / E:22/S:4 | Typed native OrigData TX field preservation and unmasked parity generation; receive/credit/station integration remains incomplete. |
 | `rtl/upli/upli_tdm_scheduler.v` | E/S / planned / E:23/S:5 | 按station bifurcation管理1/2/4端口原生通道slot与连续burst |
-| `rtl/upli/upli_parity.v` | E/S / planned / E:24/S:6 | 请求/响应/OrigData控制和完整数据parity生成检查、错误分类 |
+| `rtl/upli/upli_parity.v` | E/S / existing_partial / E:24/S:6 | Common four-channel parity generation and gated diagnostic classification; no RAS recovery or isolation policy. |
 
 ### tl
 

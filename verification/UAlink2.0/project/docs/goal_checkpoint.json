@@ -1,21 +1,21 @@
 {
   "active_goal": "完整Accelerator Endpoint/Controller与Switch数字RTL IP；未完成",
   "previous_goal_turn": "progress",
-  "latest_stage": "Full ordinary Read uniform reset verified: bank1/3 and exact partial1/2/3 Beat windows, backend pending and completion-held; 80 new Read completions and four actual omitted-reset faults detected. Native Request/OrigData/parity candidates in progress.",
+  "latest_stage": "Native Request/OrigData and common parity installed with one actual shared credit/TDM sender; final RTL unit, fault, structure and Read reset compatibility checks pass. Typed Read/Write response candidates developing in parallel.",
   "rtl": "rtl/endpoint/ualink_endpoint_top.v",
-  "review": "docs/endpoint_read_reset_review.md",
-  "evidence": "docs/endpoint_read_reset_evidence.json",
+  "review": "docs/upli_native_sender_integration_review.md",
+  "evidence": "docs/upli_native_sender_evidence.json",
   "full_goal_complete": false,
   "next_actions": [
-    "Publish full Read uniform-reset tests/evidence without changing production RTL.",
-    "Integrate typed native Request/OrigData fields, common parity and one real shared credit/TDM sender; continue full station receive/response and endpoint adapters.",
-    "Continue independent LinkDown/epoch, standard per-hop TL/DL routing, per-VC resources, PHY, INC, security, management, CDC/RDC and process STA."
+    "Publish frozen native Request/OrigData shared sender and reproducible tests.",
+    "Integrate reviewed native response leaves, then full station RX/credit/parity and Endpoint adapters.",
+    "Continue independent LinkDown/epoch, standard per-hop TL/DL, per-VC resources, PHY, INC, security, management, CDC/RDC and process STA."
   ],
-  "remote_main": "5a8fb6053364aad3813eff24b8d52d8e9e9a9e02",
+  "remote_main": "145d3ef1635da5c934480c45f68a88542a3bf88c",
   "live_jobs": [
-    "shared parity integration and combinational equivalence",
-    "typed Request/shared sender release tests",
-    "OrigData release and parity review"
+    "Read Response typed TX candidate and independent validation",
+    "Write Response typed TX candidate and independent validation",
+    "Common parity portable equivalence proof release"
   ],
   "last_authorized_push": {
     "repository": "https://github.com/Dollbar/Overflow",
@@ -25,8 +25,8 @@
       "verification/UAlink2.0",
       "simulator/UAlink2.0"
     ],
-    "verified_commit": "5a8fb6053364aad3813eff24b8d52d8e9e9a9e02",
-    "source_commit": "013c9fd805669b33a10bc51ef7c27256b7ff304a"
+    "verified_commit": "145d3ef1635da5c934480c45f68a88542a3bf88c",
+    "source_commit": "cd10f9cdbae717bcc001b258faf176b8db159125"
   },
   "prior_functional_stage_evidence": {
     "functional_stage_complete": true,

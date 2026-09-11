@@ -1,7 +1,7 @@
 # UALink source delivery
 
-This snapshot imports 943 tracked source files from the UALink development
-repository at commit `cd10f9cdbae717bcc001b258faf176b8db159125`. The [ownership manifest](.ualink-export.json)
+This snapshot imports 968 tracked source files from the UALink development
+repository at commit `fdbc4ad9f1a7ff2df3552e14ebc634d557756119`. The [ownership manifest](.ualink-export.json)
 records original and exported hashes, deterministic path adaptations and relative links.
 
 - [Digital RTL](../../rtl/UAlink2.0/): Endpoint/Switch tops and implementation/scaffold modules.
@@ -91,3 +91,9 @@ were repeated successfully from the published layout before pushing.
 The bank1 exact-three-Beat reset case and actual missing-Endpoint-reset fault were rerun
 successfully from the exported layout before pushing. Upstream 25ecfd1 and its uploaded
 UPLI controller pin diagram are preserved as unowned user content.
+
+## Native Request / OrigData sender increment
+
+Typed Request/OrigData leaves now use a shared parity primitive, with an actual one-sender/two-credit-bank native transmit wrapper. Inventory: 203 modules, 76 partial implementations and 127 explicit shells. Final-source tests cover 970 Request, 3688 OrigData and 7084 parity vectors, actual 1/2/4-port shared credit/TDM sending, 16 simulation faults and two formal counterexamples. Full-output combinational equivalence, strict static checks, structure checks and repository make test pass; full Read partial-response uniform-reset compatibility also passes.
+
+Relocated shared sender tests including faults/static checks, OrigData real sender matrix, and shared parity equivalence have been rerun from this published layout. The first CEC relocation failure was fixed in the source root expression; no RTL change was required. Tests and fixtures live under verification/UAlink2.0/upli_channels. Complete station/Endpoint native adapters, response integration, RX/RAS, independent LinkDown, protocol completion, CDC/RDC and process STA remain open. See project/docs/upli_native_sender_integration_review.md for commands and scope.

@@ -1,0 +1,114 @@
+{
+  "scope": "Native Request/OrigData typed TX, shared credit/TDM sender and four-channel parity primitive; not complete UPLI station or full Endpoint IP",
+  "full_goal_complete": false,
+  "inventory": {
+    "total": 203,
+    "existing_partial": 76,
+    "planned": 127,
+    "endpoint_pending_slots": 95,
+    "switch_pending_slots": 120
+  },
+  "final_source_sha256": {
+    "verification/upli_channels/run_request_data_sender.py": "2d745eee8d04b6a409e42696d91fd839ea8766831de61f0ed10ba8fc8c745cb0",
+    "verification/upli_channels/sender_orig_data_tb.sv": "72fd440ee446d8aac993a309fd08a293ff749f066f3a82aa744c2d415dd8e284",
+    "verification/upli_channels/run_shared_parity.py": "2d8ffcb63517d8c5b5e48b164a9b946c9f2fa7726d52b41a5ad39e82e90b21f3",
+    "verification/upli_channels/run_orig_data.py": "c96a6db4a2c6521747c8a93fea877eb1054d8cc5003026d72b62be732b1071bd",
+    "verification/upli_channels/request_channel_tb.sv": "4e2444932244cb7248f12848604c2c1e85a35b9676094661efb5c5c23255e9c7",
+    "verification/upli_channels/run_request_channel.py": "465051c20a2d3dd000beb0662fd9e4262b316ef514c88f1ea9348bf6cfc42444",
+    "verification/upli_channels/run_parity.py": "df3666fa0994775f03d5ca174b7f0776936ce982b8f624b3ea24f958a01482ce",
+    "verification/upli_channels/request_reference.py": "43658224578be35e6d897ff5b4eb7cae0ffdf7431cf0c5d82e7bd33a514f9e2e",
+    "verification/upli_channels/orig_data_tb.sv": "43dcce8e897a29e0075afabffd6fb1ac49eeaa514cbf93e55e82f9e53d4c6f5d",
+    "verification/upli_channels/parity_tb.sv": "ff644abd46d9d3fbf5a0156db4753e755186bd08b63337368311322eefaa6acf",
+    "verification/upli_channels/request_data_sender_tb.sv": "fc07d8fd0d8788541af5cbb52049973334df854dc04a03e6b7f2d173b569e6cb",
+    "verification/upli_channels/fixtures/upli_request_channel_xor.v": "a2e02374041e4615c0c68e449747cbd85594226fe880c3b3f7e0e6577fd57fda",
+    "verification/upli_channels/fixtures/README.md": "ac349edea069bf465a99b00282f2d1ee76fbd40394828e5d67157f196e62d8c0",
+    "verification/upli_channels/fixtures/upli_orig_data_channel_xor.v": "36bce7856ddea52b0e76090e3ae1d166dac64bda4bf9706068f358b83c3eb530",
+    "rtl/upli/upli_request_channel.v": "01e1d95d86af69e4b78c65590a1575eb9c2700370f968ecc85d4c487c23bccb7",
+    "rtl/upli/upli_orig_data_channel.v": "04e0a789c80e6d52e825af77a123e76d8c0f886f347692dd0a9e9c3f0dc6457f",
+    "rtl/upli/upli_parity.v": "9e12e67c72e50616d5298616d0cabf3e551c8fd7df360ed7c00c722266c32c94",
+    "rtl/upli/upli_request_data_sender.v": "acd90c8a2feaf04177a52558cb58d180a9ae06e9305932bf73f2058585be4115",
+    "rtl/upli/upli_burst_sender.v": "2d5e1b78cf9ff6c42d294d65ff7f1035d2f30d7d214f2a19364e8ac6efff285e",
+    "rtl/upli/upli_burst_control.v": "cc4367395dbb323ddfd1b5b0e03f9210424a5a4083960ca93b2527515465baef",
+    "rtl/upli/upli_credit_bank.v": "e8708486800eeedbd9f588902a6f9d4f980e6fd130f88001694b3cc37caec803"
+  },
+  "runs": [
+    {
+      "path": "build/verification/upli_channels/parity/native_installed/result.json",
+      "sha256": "e1c1ded7503f1b651e7a256f8798a9f11ee776e48162d548dbcbed07c179d162",
+      "passed": true,
+      "verified_artifact_hashes": 59
+    },
+    {
+      "path": "build/verification/upli_channels/request_channel/native_installed/result.json",
+      "sha256": "b63a5f48dde11c9ede0b760b66ca8d572a84122067134432e9ca9078f3c704e7",
+      "passed": true,
+      "verified_artifact_hashes": 46
+    },
+    {
+      "path": "build/verification/upli_channels/request_data_sender/native_final/result.json",
+      "sha256": "95daad7f7a0f02a5b5fd9e30916e44dbc263af393fecba7851385d8a62aec7ba",
+      "passed": true,
+      "verified_artifact_hashes": 43
+    },
+    {
+      "path": "build/verification/upli_channels/orig_data/native_installed/result.json",
+      "sha256": "a4fd6b6dd340e602ba0848bd6ea2df304dc83497a4bd027cabc1da2f4392011c",
+      "passed": true,
+      "verified_artifact_hashes": 24
+    },
+    {
+      "path": "build/verification/upli_channels/orig_data/native_installed_data_msb/result.json",
+      "sha256": "b01fe790c01e42f37afecd9197b377e141e3d763aaddbb2436676368b20efe0f",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/orig_data/native_installed_masked_parity/result.json",
+      "sha256": "a2265ab75a762a68c26ca74b5160b7e4efa7ab3f6647cc44c63a4e8c4fad95cc",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/orig_data/native_installed_poison/result.json",
+      "sha256": "72f0387a27a48c3115410096721133969815655557482b382d54eefdf401acfa",
+      "passed": true,
+      "verified_artifact_hashes": 5
+    },
+    {
+      "path": "build/verification/upli_channels/shared_parity/native_installed/result.json",
+      "sha256": "01d398f92e7ab11e410efcfe3af3c3b7eedc8749a31f4c0c677575c0d2d0662b",
+      "passed": true,
+      "verified_artifact_hashes": 42
+    },
+    {
+      "path": "build/verification/ip_structure/native_sender_installed/evidence.json",
+      "sha256": "c9fbf0f2bedbad5cab0bab80a993f0b436af42d0d26bb8ffe70d8e91ef6ee85d",
+      "passed": true
+    },
+    {
+      "path": "build/verification/endpoint_transaction/native_sender_read_reset/result.json",
+      "sha256": "10fad2001a3c26411a7b751e801c25cc58a00944e7992ad3e38e22fe79c50074",
+      "passed": true
+    }
+  ],
+  "unit_vectors": {
+    "request": 970,
+    "orig_data": 3688,
+    "parity": 7084
+  },
+  "actual_simulation_faults": 16,
+  "actual_formal_faults": 2,
+  "open": [
+    "native response channel integration",
+    "station RX, credit return, parity/RAS isolation and Endpoint adapters",
+    "independent LinkDown/epoch",
+    "standard per-hop TL/DL, per-VC resources, PHY, INC, security, management",
+    "CDC/RDC and full process STA"
+  ],
+  "compatibility_make_test": {
+    "exit": 0,
+    "log": "build/development/native_sender_make_test.log",
+    "sha256": "a6e464343cf0e789df19cf7d4f2288d1e165301499800a860ebf310ceb35b198"
+  },
+  "publication_path_fix": "CEC runner uses direct __file__ root expression recognized by relocation; published-layout first failure retained under build."
+}
